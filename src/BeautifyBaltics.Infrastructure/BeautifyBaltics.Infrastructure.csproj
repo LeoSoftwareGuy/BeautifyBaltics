@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BeautifyBaltics.Domain\BeautifyBaltics.Domain.csproj" />
+    <ProjectReference Include="..\BeautifyBaltics.Persistence\BeautifyBaltics.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Marten" Version="8.11.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+    <PackageReference Include="WolverineFx" Version="4.12.2" />
+    <PackageReference Include="WolverineFx.FluentValidation" Version="4.12.2" />
+    <PackageReference Include="WolverineFx.Http.Marten" Version="4.12.2" />
+    <PackageReference Include="WolverineFx.Marten" Version="4.12.2" />
+  </ItemGroup>
+
+</Project>

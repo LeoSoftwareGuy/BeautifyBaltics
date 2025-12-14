@@ -1,0 +1,10 @@
+{
+  "name": "@beautify-baltics-apps/back-office-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "implicitDependencies": [
+      "@beautify-baltics-apps/back-office"
+    ]
+  }
+}
