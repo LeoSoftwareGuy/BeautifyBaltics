@@ -14,11 +14,13 @@ public class ClientConfiguration : IConfigureMarten
     {
         options.Schema.For<Client>()
             .DocumentAlias("cnt")
+            .UniqueIndex(x => x.Email)
+            .UniqueIndex(x => x.PhoneNumber)
             .MapProjectionMetadata();
 
         options.Projections.Add<ClientProjection>(ProjectionLifecycle.Inline);
 
-        options.Events.AddEventType(typeof(ClientRegistered));
+        options.Events.AddEventType(typeof(ClientCreated));
         options.Events.AddEventType(typeof(ClientProfileUpdated));
     }
 }

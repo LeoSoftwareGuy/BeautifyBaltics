@@ -25,16 +25,17 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
 {
     public static async Task<Booking> Create(IEvent<BookingCreated> @event, IQuerySession session, CancellationToken cancellationToken)
     {
-        var master = await session.LoadAsync<Master>(@event.Data.MasterId, cancellationToken);
-        if (master == null) throw new InvalidOperationException($"Booking with master ID '{@event.Data.MasterId}' not found.");
+        var master = await session.LoadAsync<Master>(@event.Data.MasterId, cancellationToken)
+            ?? throw new InvalidOperationException($"Booking with master ID '{@event.Data.MasterId}' not found.");
 
-        var client = await session.LoadAsync<Client>(@event.Data.ClientId, cancellationToken);
-        if (client == null) throw new InvalidOperationException($"Booking with client ID '{@event.Data.ClientId}' not found.");
+        var client = await session.LoadAsync<Client>(@event.Data.ClientId, cancellationToken)
+            ?? throw new InvalidOperationException($"Booking with client ID '{@event.Data.ClientId}' not found.");
 
         var masterJob = await session.LoadAsync<MasterJob>(@event.Data.MasterJobId, cancellationToken);
-        if (masterJob == null) throw new InvalidOperationException($"Booking with master job ID {@event.Data.MasterJobId} not found.");
 
-        return new Booking(@event.StreamId)
+        return masterJob == null
+            ? throw new InvalidOperationException($"Booking with master job ID {@event.Data.MasterJobId} not found.")
+            : new Booking(@event.StreamId)
         {
             MasterId = @event.Data.MasterId,
             MasterName = $"{master.FirstName} {master.LastName}",

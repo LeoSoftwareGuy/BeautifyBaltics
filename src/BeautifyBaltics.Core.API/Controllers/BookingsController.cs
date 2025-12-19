@@ -7,7 +7,6 @@ using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
-using CreateBookingRequest = BeautifyBaltics.Core.API.Application.Booking.Commands.CreateBooking.CreateBookingRequest;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -75,6 +74,13 @@ public class BookingsController(IMessageBus bus) : ApiController
         return Ok(response);
     }
 
+    /// <summary>
+    /// Update status of booking
+    /// </summary>
+    /// <param name="id">Booking id</param>
+    /// <param name="request">Update status booking request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Updated booking id</returns>
     [HttpPost("{id:guid}/status")]
     public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] UpdateBookingRequest request, CancellationToken cancellationToken)
     {

@@ -16,7 +16,7 @@ public record Client(Guid Id) : Projection
 
 public class ClientProjection : SingleStreamProjection<Client, Guid>
 {
-    public static Client Create(IEvent<ClientRegistered> @event)
+    public static Client Create(IEvent<ClientCreated> @event)
     {
         return new Client(@event.StreamId)
         {

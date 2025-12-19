@@ -2,8 +2,7 @@
 
 namespace BeautifyBaltics.Domain.Aggregates.Client.Events;
 
-public record ClientRegistered(
-    Guid ClientId,
+public record ClientCreated(
     string FirstName,
     string LastName,
     ContactInformation Contacts

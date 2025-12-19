@@ -1,10 +1,10 @@
+using BeautifyBaltics.Core.API.Application.Booking.Queries.FindBookings;
+using BeautifyBaltics.Core.API.Application.Client.Commands.UpdateClientProfile;
+using BeautifyBaltics.Core.API.Application.Client.Queries.FindClients;
+using BeautifyBaltics.Core.API.Application.Client.Queries.GetClientById;
+using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Contracts.Clients;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
-using BeautifyBaltics.Domain.Aggregates.Client;
-using BeautifyBaltics.Domain.Aggregates.Client.Events;
-using BeautifyBaltics.Domain.ValueObjects;
-using BeautifyBaltics.Persistence.Projections;
-using BeautifyBaltics.Persistence.Repositories.Client;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
@@ -13,39 +13,64 @@ namespace BeautifyBaltics.Core.API.Controllers;
 [Route("clients")]
 public class ClientsController(IMessageBus bus) : ApiController
 {
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<ClientResponse>>> Search([FromQuery] ClientSearchDTO criteria, CancellationToken cancellationToken)
+    /// <summary>
+    /// Find clients
+    /// </summary>
+    /// <param name="request">Find clients request</param>
+    /// <returns>Paged response of clients</returns>
+    [HttpGet(Name = "FindClients")]
+    [ProducesResponseType(typeof(PagedResponse<FindClientsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<PagedResponse<FindBookingsResponse>>> Find([FromQuery] FindBookingsRequest request)
     {
-        var clients = await clientRepository.SearchAsync(criteria, cancellationToken);
-        return Ok(clients.Select(ToResponse));
+        var response = await bus.InvokeForTenantAsync<PagedResponse<FindBookingsResponse>>(TenantId, request);
+        return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<ClientResponse>> GetById(Guid id, CancellationToken cancellationToken)
+    /// <summary>
+    /// Get client by id
+    /// </summary>
+    /// <param name="id">Client id</param>
+    /// <param name="request">Request parameters</param>
+    /// <returns>Client or not found</returns>
+    [HttpGet("{id:guid}", Name = "GetClientById")]
+    [ProducesResponseType(typeof(GetClientByIdResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetClientByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetClientByIdRequest request)
     {
-        var client = await clientRepository.GetByIdAsync(id, cancellationToken);
-        if (client is null) return NotFound();
-        return Ok(ToResponse(client));
+        var response = await bus.InvokeForTenantAsync<GetClientByIdResponse>(TenantId, request with { Id = id });
+        return Ok(response);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<ClientResponse>> Register([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
+    /// <summary>
+    /// Create client
+    /// </summary>
+    /// <param name="request">Create client request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    [HttpPost(Name = "CreateClient")]
+    [ProducesResponseType(typeof(ClientResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<CreatedAtActionResult> Create([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
     {
-        var clientId = Guid.NewGuid();
-        var contacts = new ContactInformation(request.Email, request.PhoneNumber);
-        commandRepository.StartStream<ClientAggregate>(new ClientRegistered(clientId, request.FirstName, request.LastName, contacts));
-
-        await documentSession.SaveChangesAsync(cancellationToken);
-        var client = await clientRepository.GetByIdAsync(clientId, cancellationToken);
-        return CreatedAtAction(nameof(GetById), new { id = clientId }, ToResponse(client!));
+        var response = await bus.InvokeForTenantAsync<ClientResponse>(TenantId, request, cancellationToken);
+        return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
-    private static ClientResponse ToResponse(Client projection) => new()
+    /// <summary>
+    /// Update client
+    /// </summary>
+    /// <param name="id">Client id</param>
+    /// <param name="request">Update client request</param>
+    /// <returns>Updated client id</returns>
+    [HttpPut("{id:guid}", Name = "UpdateClientProfile")]
+    [ProducesResponseType(typeof(UpdateClientProfileResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> Update([FromRoute] Guid id, UpdateClientProfileRequest request)
     {
-        Id = projection.Id,
-        FirstName = projection.FirstName,
-        LastName = projection.LastName,
-        Email = projection.Email,
-        PhoneNumber = projection.PhoneNumber
-    };
+        var response = await bus.InvokeForTenantAsync<UpdateClientProfileResponse>(TenantId, request with { ClientID = id });
+        return Ok(response);
+    }
 }

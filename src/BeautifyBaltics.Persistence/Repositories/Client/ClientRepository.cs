@@ -19,11 +19,9 @@ public class ClientRepository(IQuerySession session) : QueryRepository<Projectio
     {
         var query = _session.Query<Projections.Client>().AsQueryable();
 
-        if (string.IsNullOrWhiteSpace(search.Text)) return query;
-
-        query = query.Where(x => x.FirstName.Contains(search.Text));
-        query = query.Where(x => x.LastName.Contains(search.Text));
-        query = query.Where(x => x.Email.Contains(search.Text));
+        if (search.FirstName is not null) query = query.Where(x => x.FirstName.NgramSearch(search.FirstName));
+        if (search.LastName is not null) query = query.Where(x => x.LastName.NgramSearch(search.LastName));
+        if (search.Email is not null) query = query.Where(x => x.Email.NgramSearch(search.Email));
 
         return query;
     }
