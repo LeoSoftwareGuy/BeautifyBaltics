@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigureMarten, BookingConfiguration>();
         services.AddSingleton<IConfigureMarten, ClientConfiguration>();
         services.AddSingleton<IConfigureMarten, MasterJobConfiguration>();
+        services.AddSingleton<IConfigureMarten, MasterAvailabilitySlotConfiguration>();
         services.AddSingleton<IConfigureMarten, JobConfiguration>();
 
         return services;
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommandRepository, CommandRepository>();
         services.AddScoped<IMasterRepository, MasterRepository>();
         services.AddScoped<IMasterJobRepository, MasterJobRepository>();
+        services.AddScoped<IMasterAvailabilitySlotRepository, MasterAvailabilitySlotRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<IJobRepository, JobRepository>();

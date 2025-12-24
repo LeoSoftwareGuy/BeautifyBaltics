@@ -6,18 +6,19 @@ using BeautifyBaltics.Persistence.Configurations.Extensions;
 
 namespace BeautifyBaltics.Persistence.Configurations;
 
-    public class MasterJobConfiguration : IConfigureMarten
+public class MasterJobConfiguration : IConfigureMarten
+{
+    public void Configure(IServiceProvider services, StoreOptions options)
     {
-        public void Configure(IServiceProvider services, StoreOptions options)
-        {
-            options.Schema.For<MasterJob>()
-                .DocumentAlias("mtr_job")
-                .MapProjectionMetadata();
+        options.Schema.For<MasterJob>()
+            .DocumentAlias("mtr_job")
+            .ForeignKey<Master>(x => x.MasterId)
+            .MapProjectionMetadata();
 
-            options.Projections.Add<MasterJobProjection>(ProjectionLifecycle.Inline);
+        options.Projections.Add<MasterJobProjection>(ProjectionLifecycle.Inline);
 
-            options.Events.AddEventType(typeof(MasterJobCreated));
-            options.Events.AddEventType(typeof(MasterJobUpdated));
-            options.Events.AddEventType(typeof(MasterJobDeleted));
-        }
+        options.Events.AddEventType(typeof(MasterJobCreated));
+        options.Events.AddEventType(typeof(MasterJobUpdated));
+        options.Events.AddEventType(typeof(MasterJobDeleted));
     }
+}

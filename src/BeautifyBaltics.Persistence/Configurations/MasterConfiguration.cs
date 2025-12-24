@@ -13,12 +13,12 @@ public class MasterConfiguration : IConfigureMarten
     public void Configure(IServiceProvider services, StoreOptions options)
     {
         options.Schema.For<Master>()
-            .DocumentAlias("mtr")
+            .DocumentAlias("master")
             .MapProjectionMetadata();
 
         options.Projections.Add<MasterProjection>(ProjectionLifecycle.Inline);
 
         options.Events.AddEventType(typeof(MasterCreated));
-        options.Events.AddEventType(typeof(MasterAvailabilityDefined));
+        options.Events.AddEventType(typeof(MasterAvailabilitySlotCreated));
     }
 }

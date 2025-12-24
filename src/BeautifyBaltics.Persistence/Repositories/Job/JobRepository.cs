@@ -19,10 +19,17 @@ public class JobRepository(IQuerySession session) : QueryRepository<Domain.Docum
     {
         var query = _session.Query<Domain.Documents.Job>().AsQueryable();
 
-        if (string.IsNullOrWhiteSpace(search.Text)) return query;
+        if (!string.IsNullOrWhiteSpace(search.Text))
+        {
+            var text = search.Text.Trim();
+            query = query.Where(x => x.Name.Contains(text) || x.Description.Contains(text));
+        }
 
-        query = query.Where(x => x.Name.Contains(search.Text));
-        query = query.Where(x => x.Description.Contains(search.Text));
+        if (!string.IsNullOrWhiteSpace(search.Category))
+        {
+            var category = search.Category.Trim();
+            query = query.Where(x => x.Category == category);
+        }
 
         return query;
     }

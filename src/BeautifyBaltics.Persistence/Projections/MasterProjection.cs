@@ -20,8 +20,6 @@ public record Master(Guid Id) : Projection
     public string? City { get; init; }
 }
 
-public record MasterAvailabilitySlot(DateTime Start, DateTime End);
-
 public class MasterProjection : SingleStreamProjection<Master, Guid>
 {
     public static Master Create(IEvent<MasterCreated> @event)
@@ -48,11 +46,5 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             Email = @event.Contacts.Email,
             PhoneNumber = @event.Contacts.PhoneNumber,
         };
-    }
-
-    public static Master Apply(MasterAvailabilityDefined @event, Master current)
-    {
-        var availability = @event.Slots.Select(s => new MasterAvailabilitySlot(s.Start, s.End)).ToArray();
-        return current with { Availability = availability };
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BeautifyBaltics.Domain.Documents;
 using Marten;
+using Marten.Schema.Indexing.Unique;
 
 namespace BeautifyBaltics.Persistence.Configurations
 {
@@ -9,6 +10,7 @@ namespace BeautifyBaltics.Persistence.Configurations
         {
             options.Schema.For<Job>()
                 .SingleTenanted()
+                .UniqueIndex(Marten.Schema.UniqueIndexType.Computed, "uq_job_name", TenancyScope.PerTenant, x => x.Name)
                 .DocumentAlias("job");
         }
     }

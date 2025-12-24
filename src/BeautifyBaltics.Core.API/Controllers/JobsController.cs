@@ -1,61 +1,75 @@
-using BeautifyBaltics.Core.API.Contracts.Jobs;
-using BeautifyBaltics.Persistence.Projections;
-using BeautifyBaltics.Persistence.Repositories.Job;
-using BeautifyBaltics.Persistence.Repositories.SeedWork;
-
-using Marten;
-
+using BeautifyBaltics.Core.API.Application.Job.Commands.CreateJob;
+using BeautifyBaltics.Core.API.Application.Job.Commands.UpdateJob;
+using BeautifyBaltics.Core.API.Application.Job.Queries.FindJobs;
+using BeautifyBaltics.Core.API.Application.Job.Queries.GetJobById;
+using BeautifyBaltics.Core.API.Application.SeedWork;
+using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
+using Wolverine;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class JobsController(
-    IJobRepository jobRepository,
-    ICommandRepository commandRepository,
-    IDocumentSession documentSession
-) : ControllerBase
+[Route("jobs")]
+public class JobsController(IMessageBus bus) : ApiController
 {
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<JobResponse>>> Search([FromQuery] JobSearchDTO criteria, CancellationToken cancellationToken)
+    /// <summary>
+    /// Find jobs
+    /// </summary>
+    /// <param name="request">Find jobs request</param>
+    /// <returns>Paged response of jobs</returns>
+    [HttpGet(Name = "FindJobs")]
+    [ProducesResponseType(typeof(PagedResponse<FindJobsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<PagedResponse<FindJobsResponse>>> Find([FromQuery] FindJobsRequest request)
     {
-        var jobs = await jobRepository.SearchAsync(criteria, cancellationToken);
-        return Ok(jobs.Select(ToResponse));
+        var response = await bus.InvokeForTenantAsync<PagedResponse<FindJobsResponse>>(TenantId, request);
+        return Ok(response);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult<JobResponse>> GetById(Guid id, CancellationToken cancellationToken)
+    /// <summary>
+    /// Get job by id
+    /// </summary>
+    /// <param name="id">Job id</param>
+    /// <param name="request">Request parameters</param>
+    /// <returns>Job or not found</returns>
+    [HttpGet("{id:guid}", Name = "GetJobById")]
+    [ProducesResponseType(typeof(GetJobByIdResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetJobByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetJobByIdRequest request)
     {
-        var job = await jobRepository.GetByIdAsync(id, cancellationToken);
-        if (job is null) return NotFound();
-        return Ok(ToResponse(job));
+        var response = await bus.InvokeForTenantAsync<GetJobByIdResponse>(TenantId, request with { Id = id });
+        return Ok(response);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<JobResponse>> Create([FromBody] CreateJobRequest request, CancellationToken cancellationToken)
+    /// <summary>
+    /// Create a job
+    /// </summary>
+    /// <param name="request">Create job request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    [HttpPost(Name = "CreateJob")]
+    [ProducesResponseType(typeof(CreateJobResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<CreatedAtActionResult> Create([FromBody] CreateJobRequest request, CancellationToken cancellationToken)
     {
-        var job = new JobProjection
-        {
-            Id = Guid.NewGuid(),
-            Name = request.Name,
-            Description = request.Description,
-            Duration = TimeSpan.FromMinutes(request.DurationMinutes),
-            Images = request.Images
-        };
-
-        commandRepository.Insert(job);
-        await documentSession.SaveChangesAsync(cancellationToken);
-
-        return CreatedAtAction(nameof(GetById), new { id = job.Id }, ToResponse(job));
+        var response = await bus.InvokeForTenantAsync<CreateJobResponse>(TenantId, request, cancellationToken);
+        return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
-    private static JobResponse ToResponse(JobProjection job) => new()
+    /// <summary>
+    /// Update job
+    /// </summary>
+    /// <param name="id">Job id</param>
+    /// <param name="request">Update job request</param>
+    /// <returns>Updated job id</returns>
+    [HttpPut("{id:guid}", Name = "UpdateJob")]
+    [ProducesResponseType(typeof(UpdateJobResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> Update([FromRoute] Guid id, UpdateJobRequest request)
     {
-        Id = job.Id,
-        Name = job.Name,
-        Description = job.Description,
-        DurationMinutes = (int)job.Duration.TotalMinutes,
-        Images = job.Images
-    };
+        var response = await bus.InvokeForTenantAsync<UpdateJobResponse>(TenantId, request with { JobId = id });
+        return Ok(response);
+    }
 }

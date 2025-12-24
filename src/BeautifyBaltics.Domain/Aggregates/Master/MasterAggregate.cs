@@ -6,7 +6,7 @@ namespace BeautifyBaltics.Domain.Aggregates.Master;
 
 public partial class MasterAggregate : Aggregate
 {
-    private readonly List<AvailabilitySlot> _availability = [];
+    private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = new();
     private readonly Dictionary<Guid, MasterJob> _jobs = new();
 
     public string FirstName { get; private set; } = string.Empty;
@@ -15,7 +15,7 @@ public partial class MasterAggregate : Aggregate
     public string? Gender { get; private set; }
     public ContactInformation Contacts { get; private set; } = new(string.Empty, string.Empty);
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
-    public IReadOnlyCollection<AvailabilitySlot> Availability => _availability.AsReadOnly();
+    public IReadOnlyCollection<MasterAvailabilitySlot> Availability => _availabilities.Values.ToList();
 
     public MasterAggregate() { }
 
@@ -66,9 +66,25 @@ public partial class MasterAggregate : Aggregate
         this._jobs.Remove(@event.MasterJobId);
     }
 
-    public void Apply(MasterAvailabilityDefined @event)
+    public void Apply(MasterAvailabilitySlotCreated @event)
     {
-        _availability.Clear();
-        _availability.AddRange(@event.Slots);
+        this._availabilities.Add(@event.MasterAvailabilityId,
+            new MasterAvailabilitySlot(
+                @event.MasterAvailabilityId,
+                @event.MasterId,
+                @event.StartAt,
+                @event.EndAt
+            )
+        );
+    }
+
+    public void Apply(MasterAvailabilitySlotUpdated @event)
+    {
+        this._availabilities[@event.MasterAvailabilityId].Update(@event.MasterId, @event.StartAt, @event.EndAt);
+    }
+
+    public void Apply(MasterAvailabilitySlotDeleted @event)
+    {
+        this._availabilities.Remove(@event.MasterAvailabilitySlotId);
     }
 }

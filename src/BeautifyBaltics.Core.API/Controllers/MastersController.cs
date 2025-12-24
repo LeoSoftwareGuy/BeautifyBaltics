@@ -53,7 +53,7 @@ public class MastersController(
         if (request.Availability.Count > 0)
         {
             var slots = request.Availability.Select(a => new AvailabilitySlot(a.Start, a.End)).ToArray();
-            commandRepository.Append<MasterAggregate>(masterId, new MasterAvailabilityDefined(masterId, slots));
+            commandRepository.Append<MasterAggregate>(masterId, new MasterAvailabilityCreated(masterId, slots));
         }
 
         await documentSession.SaveChangesAsync(cancellationToken);
@@ -92,7 +92,7 @@ public class MastersController(
         if (!await masterRepository.ExistsAsync(id, cancellationToken)) return NotFound();
 
         var slots = request.Availability.Select(a => new AvailabilitySlot(a.Start, a.End)).ToArray();
-        commandRepository.Append<MasterAggregate>(id, new MasterAvailabilityDefined(id, slots));
+        commandRepository.Append<MasterAggregate>(id, new MasterAvailabilityCreated(id, slots));
 
         await documentSession.SaveChangesAsync(cancellationToken);
         return NoContent();

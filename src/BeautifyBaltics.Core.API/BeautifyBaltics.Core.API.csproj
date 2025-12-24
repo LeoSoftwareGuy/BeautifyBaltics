@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\Job\Commands\" />
     <Folder Include="Application\Job\Queries\" />
     <Folder Include="Application\Master\Commands\" />
     <Folder Include="Application\Master\Queries\" />
