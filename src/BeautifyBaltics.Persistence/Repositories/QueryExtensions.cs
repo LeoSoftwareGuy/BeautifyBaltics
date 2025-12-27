@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Marten;
+using System.Reflection;
 
 namespace BeautifyBaltics.Persistence.Repositories
 {

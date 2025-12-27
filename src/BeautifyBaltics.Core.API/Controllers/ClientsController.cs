@@ -1,9 +1,9 @@
 using BeautifyBaltics.Core.API.Application.Booking.Queries.FindBookings;
+using BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient;
 using BeautifyBaltics.Core.API.Application.Client.Commands.UpdateClientProfile;
 using BeautifyBaltics.Core.API.Application.Client.Queries.FindClients;
 using BeautifyBaltics.Core.API.Application.Client.Queries.GetClientById;
 using BeautifyBaltics.Core.API.Application.SeedWork;
-using BeautifyBaltics.Core.API.Contracts.Clients;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
@@ -48,12 +48,12 @@ public class ClientsController(IMessageBus bus) : ApiController
     /// <param name="request">Create client request</param>
     /// <param name="cancellationToken">Cancellation token</param>
     [HttpPost(Name = "CreateClient")]
-    [ProducesResponseType(typeof(ClientResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(CreateClientResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<CreatedAtActionResult> Create([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<ClientResponse>(TenantId, request, cancellationToken);
+        var response = await bus.InvokeForTenantAsync<CreateClientResponse>(TenantId, request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
