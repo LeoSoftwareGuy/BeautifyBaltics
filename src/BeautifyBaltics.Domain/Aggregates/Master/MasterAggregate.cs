@@ -6,8 +6,8 @@ namespace BeautifyBaltics.Domain.Aggregates.Master;
 
 public partial class MasterAggregate : Aggregate
 {
-    private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = new();
-    private readonly Dictionary<Guid, MasterJob> _jobs = new();
+    private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = [];
+    private readonly Dictionary<Guid, MasterJob> _jobs = [];
 
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
@@ -19,19 +19,8 @@ public partial class MasterAggregate : Aggregate
 
     public MasterAggregate() { }
 
-    public MasterAggregate(MasterCreated @event)
+    public MasterAggregate(MasterCreated @event) : this()
     {
-        Apply(@event);
-    }
-
-    public void Apply(MasterCreated @event)
-    {
-        Id = @event.MasterId;
-        FirstName = @event.FirstName;
-        LastName = @event.LastName;
-        Age = @event.Age;
-        Gender = @event.Gender;
-        Contacts = @event.Contacts;
     }
 
     public void Apply(MasterProfileUpdated @event)

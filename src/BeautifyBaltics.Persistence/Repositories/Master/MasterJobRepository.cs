@@ -22,6 +22,10 @@ public class MasterJobRepository(IQuerySession session)
     {
         var query = _session.Query<Projections.MasterJob>().AsQueryable();
 
+        if (search.MasterId.HasValue) query = query.Where(x => x.MasterId == search.MasterId);
+
+        if (search.MasterJobId.HasValue) query = query.Where(x => x.Id == search.MasterJobId);
+
         return query;
     }
 }
