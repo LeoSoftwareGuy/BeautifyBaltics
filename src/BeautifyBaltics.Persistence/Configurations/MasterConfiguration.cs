@@ -23,8 +23,5 @@ public class MasterConfiguration : IConfigureMarten
         options.Events.AddEventType(typeof(MasterJobCreated));
         options.Events.AddEventType(typeof(MasterJobUpdated));
         options.Events.AddEventType(typeof(MasterJobDeleted));
-        options.Events.AddEventType(typeof(MasterAvailabilitySlotCreated));
-        options.Events.AddEventType(typeof(MasterAvailabilitySlotUpdated));
-        options.Events.AddEventType(typeof(MasterAvailabilitySlotDeleted));
     }
 }

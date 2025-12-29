@@ -15,7 +15,7 @@ public class BookingConfiguration : IConfigureMarten
     public void Configure(IServiceProvider services, StoreOptions options)
     {
         options.Schema.For<Booking>()
-            .DocumentAlias("bok")
+            .DocumentAlias("booking")
             .ForeignKey<Master>(x => x.MasterId)
             .ForeignKey<Client>(x => x.ClientId)
             .UniqueIndex(UniqueIndexType.Computed, "uq_bok_sch_at_master", TenancyScope.PerTenant, x => x.MasterId, x => x.ScheduledAt)

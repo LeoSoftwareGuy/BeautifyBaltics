@@ -11,7 +11,7 @@ public class MasterJobConfiguration : IConfigureMarten
     public void Configure(IServiceProvider services, StoreOptions options)
     {
         options.Schema.For<MasterJob>()
-            .DocumentAlias("mtr_job")
+            .DocumentAlias("master_job")
             .ForeignKey<Master>(x => x.MasterId)
             .MapProjectionMetadata();
 

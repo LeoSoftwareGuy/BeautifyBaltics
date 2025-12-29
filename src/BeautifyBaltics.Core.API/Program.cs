@@ -1,3 +1,4 @@
+using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Infrastructure;
 using BeautifyBaltics.Persistence;
 using BeautifyBaltics.ServiceDefaults;
@@ -21,10 +22,18 @@ builder.AddAzureBlobServiceClient(connectionName: "blobs", s =>
     s.DisableTracing = false;
 });
 
+builder.Logging.AddSimpleConsole(o =>
+{
+    o.IncludeScopes = true;
+});
+
 builder.Services.AddHttpContextAccessor();
 
 // Register Mapster in the IoC container
 builder.Services.AddMapster();
+
+// Register exceptions handling
+builder.Services.AddDefaultExceptionHandler();
 
 builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null);
 

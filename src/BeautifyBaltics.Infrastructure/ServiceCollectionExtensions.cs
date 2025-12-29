@@ -62,7 +62,7 @@ public static class ServiceCollectionExtensions
         var tenantIds = configurationManager.GetSection("Tenants").Get<Dictionary<string, string>>()?.Keys.ToArray()
                        ?? throw new ArgumentException("tenants");
 
-        const string databaseName = "beatify_baltics_db";
+        const string databaseName = "beautify_baltics_db";
 
         return services.AddMarten(options =>
             {

@@ -13,7 +13,7 @@ public class ClientConfiguration : IConfigureMarten
     public void Configure(IServiceProvider services, StoreOptions options)
     {
         options.Schema.For<Client>()
-            .DocumentAlias("cnt")
+            .DocumentAlias("client")
             .UniqueIndex(x => x.Email)
             .UniqueIndex(x => x.PhoneNumber)
             .MapProjectionMetadata();
