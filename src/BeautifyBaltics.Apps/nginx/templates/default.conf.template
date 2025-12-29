@@ -1,0 +1,51 @@
+map $http_x_forwarded_host $xfh_host {
+    ""      $host;
+    default $http_x_forwarded_host;
+}
+
+map $http_x_forwarded_proto $xfh_proto {
+    ""      $scheme;
+    default $http_x_forwarded_proto;
+}
+
+map $http_x_forwarded_port $xfh_port {
+    ""      $server_port;
+    default $http_x_forwarded_port;
+}
+
+server {
+  listen       ${PORT};
+  server_name  localhost;
+
+  server_name _;
+
+  location /api {
+    proxy_http_version 1.1;
+
+    # Tell Dapr which app to invoke
+    proxy_set_header   dapr-app-id         api;
+    proxy_set_header   dapr-app-protocol   http;
+    proxy_set_header   dapr-app-port       8080;
+
+    # Preserve Host and client info
+    proxy_set_header   Host                $host;
+    proxy_set_header   X-Real-IP           $remote_addr;
+    proxy_set_header   X-Forwarded-For     $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Forwarded-Host    $xfh_host;
+    proxy_set_header   X-Forwarded-Proto   $xfh_proto;
+    proxy_set_header   X-Forwarded-Port    $xfh_port;
+
+    # Match /api/(health|alive|docs/v1) and strip the /api prefix
+    if ($request_uri ~ ^/api/(health|alive|docs/v1)$) {
+        rewrite ^/api/(.*)$ /$1 break;
+    }
+
+    # Send it to the Dapr HTTP ingress
+    proxy_pass         http://127.0.0.1:3500;
+  }
+
+  location / {
+    root /usr/share/nginx/html;
+    try_files $uri $uri/ /index.html;
+  }
+}
