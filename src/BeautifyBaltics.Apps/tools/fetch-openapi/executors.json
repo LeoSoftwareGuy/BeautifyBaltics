@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "openapi-fetcher": {
+      "implementation": "./src/executors/openapi-fetcher",
+      "schema": "./src/executors/schema.json",
+      "description": "openapi-fetcher executor"
+    }
+  }
+}

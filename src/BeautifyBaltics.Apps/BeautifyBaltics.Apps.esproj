@@ -3,4 +3,10 @@
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="tools\fetch-openapi\tsconfig.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tools\fetch-openapi\tsconfig.json" />
+  </ItemGroup>
 </Project>

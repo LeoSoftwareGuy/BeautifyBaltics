@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "OpenapiFetcher executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "outputPath": {
+      "type": "string",
+      "description": "The path where the OpenAPI schema will be saved."
+    },
+    "openapiUrl": {
+      "type": "string",
+      "description": "The URL of the OpenAPI schema to fetch."
+    }
+  },
+  "required": []
+}

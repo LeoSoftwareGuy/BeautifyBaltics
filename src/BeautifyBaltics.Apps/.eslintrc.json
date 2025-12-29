@@ -1,0 +1,68 @@
+{
+  "root": true,
+  "plugins": [ "@nx", "@typescript-eslint", "simple-import-sort" ],
+  "extends": [
+    "plugin:@nx/typescript",
+    "eslint:recommended",
+    "airbnb",
+    "airbnb-typescript"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.base.json"
+  },
+  "rules": {
+    "@nx/enforce-module-boundaries": [
+      "error",
+      {
+        "enforceBuildableLibDependency": true,
+        "allow": [],
+        "depConstraints": [
+          {
+            "sourceTag": "*",
+            "onlyDependOnLibsWithTags": [ "*" ]
+          }
+        ]
+      }
+    ],
+    "max-len": "off",
+    "import/extensions": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/prefer-default-export": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/require-default-props": "off",
+    "react/prop-types": "off",
+    "no-console": "warn",
+    "no-alert": "off",
+    "no-restricted-exports": "off",
+    "no-throw-literal": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "simple-import-sort/exports": "error",
+    "simple-import-sort/imports": [
+      "error",
+      {
+        "groups": [
+          [ "^react", "^@?\\w" ],
+          [ "^@depowise-ta" ],
+          [ "^(@|components|utils|config)(/.*|$)" ],
+          [ "^\\u0000" ],
+          [ "^\\.\\.(?!/?$)", "^\\.\\./?$" ],
+          [ "^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$" ],
+          [ "^.+\\.?(css)$" ]
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [ "*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx" ],
+      "env": {
+        "jest": true
+      },
+      "rules": {}
+    }
+  ]
+}

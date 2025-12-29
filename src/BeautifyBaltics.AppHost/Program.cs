@@ -36,6 +36,7 @@ internal class Program
             .WaitFor(dataProtectionKeys);
 
         builder.AddNpmApp("back-office-app", "../BeautifyBaltics.Apps", "serve:back-office")
+            .WithEnvironment("NODE_ENV", "development")
             .WithReference(coreApi)
             .WithHttpEndpoint(port: 4300, env: "PORT")
             .WithExternalHttpEndpoints()
