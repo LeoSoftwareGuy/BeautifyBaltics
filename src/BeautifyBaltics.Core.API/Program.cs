@@ -1,18 +1,84 @@
 using BeautifyBaltics.Infrastructure;
 using BeautifyBaltics.Persistence;
 using BeautifyBaltics.ServiceDefaults;
+using JasperFx;
+using JasperFx.CodeGeneration;
+using JasperFx.Resources;
+using Mapster;
+using Microsoft.AspNetCore.HttpOverrides;
+using Wolverine;
+using Wolverine.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddWolverineDefaults();
+builder.AddNpgsqlDataSource(connectionName: "postgres", s => { s.DisableHealthChecks = true; });
 
-builder.Services.AddMartenDefaults(builder.Configuration);
+// Register Azure Blob Storage clients in the IoC container
+builder.AddAzureBlobServiceClient(connectionName: "blobs", s =>
+{
+    s.DisableHealthChecks = true;
+    s.DisableTracing = false;
+});
+
+builder.Services.AddHttpContextAccessor();
+
+// Register Mapster in the IoC container
+builder.Services.AddMapster();
+
+builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null);
+
 builder.Services.ConfigurePersistence();
+
+builder.Services.AddWolverineDefaults(o =>
+{
+    o.ApplicationAssembly = typeof(Program).Assembly;
+
+    if (builder.Environment.IsDevelopment())
+    {
+        // https://wolverinefx.net/guide/durability/leadership-and-troubleshooting.html#solo-mode
+        o.Durability.Mode = DurabilityMode.Solo;
+    }
+});
+
+// Configure Wolverine to use the current tenant ID from the HTTP context
+// A custom middleware that extracts the tenant ID from the HTTP request and sets it in the Wolverine context
+builder.Services.AddWolverineTenantDetection();
+
+
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+//if (!builder.Environment.IsIntegrationTesting())
+//{
+    // Configure CritterStack defaults
+    builder.Services.CritterStackDefaults(x =>
+    {
+        x.ApplicationAssembly = typeof(Program).Assembly;
+
+        x.Production.GeneratedCodeMode = TypeLoadMode.Auto; // TODO: switch to Static if codegen write issues are resolved
+        x.Production.ResourceAutoCreate = AutoCreate.None;
+        x.Production.SourceCodeWritingEnabled = false;
+    });
+//}
+
+builder.Services.AddRequestTimeouts();
+builder.Services.AddOutputCache();
+
+// Configure Wolverine to use CritterStack for resource management
+builder.Host.UseResourceSetupOnStartup();
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
@@ -20,9 +86,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-app.MapDefaultEndpoints();
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
-app.Run();
+app.MapDefaultEndpoints();
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseRequestTimeouts();
+app.UseOutputCache();
+
+app.MapControllers();
+
+app.MapDeadLettersEndpoints("/api/v1/debug/dead-letters").WithTags("Debug");
+
+return await app.RunJasperFxCommands(args);
