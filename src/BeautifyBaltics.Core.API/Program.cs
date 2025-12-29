@@ -7,6 +7,8 @@ using JasperFx.CodeGeneration;
 using JasperFx.Resources;
 using Mapster;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Wolverine;
 using Wolverine.Http;
 
@@ -78,6 +80,21 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         x.Production.SourceCodeWritingEnabled = false;
     });
 //}
+
+builder.Services.AddAuthorization();
+
+var bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JwtSecret"]!);
+
+builder.Services.AddAuthentication().AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(bytes),
+        ValidAudience = builder.Configuration["Authentication:ValidAudience"],
+        ValidIssuer = builder.Configuration["Authentication:ValidIssuer"]
+    };
+});
 
 builder.Services.AddRequestTimeouts();
 builder.Services.AddOutputCache();

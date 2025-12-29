@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautifyBaltics.Core.API.In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautifyBaltics.AppHost", "src\BeautifyBaltics.AppHost\BeautifyBaltics.AppHost.csproj", "{15B6C046-616E-47CB-BE01-EC5BFD3BBFF3}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "BeautifyBaltics.Apps", "src\BeautifyBaltics.Apps\BeautifyBaltics.Apps.esproj", "{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{15B6C046-616E-47CB-BE01-EC5BFD3BBFF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15B6C046-616E-47CB-BE01-EC5BFD3BBFF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15B6C046-616E-47CB-BE01-EC5BFD3BBFF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +71,6 @@ Global
 		{9016DF07-338F-43E4-9D09-4D290ADADF69} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
 		{0ACECF0B-B1BE-4BA9-B048-5611FBD575BB} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
 		{15B6C046-616E-47CB-BE01-EC5BFD3BBFF3} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
+		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
 	EndGlobalSection
 EndGlobal
