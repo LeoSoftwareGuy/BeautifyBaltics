@@ -1,0 +1,42 @@
+.search {
+  font-size: var(--mantine-font-size-md);
+}
+
+.content {
+  overflow: visible;
+}
+
+.actionsGroup {
+  &:before {
+    text-transform: none;
+    font-weight: 400;
+    font-size: var(--mantine-font-size-xs);
+    margin-bottom: var(--mantine-spacing-xs);
+  }
+}
+
+.actionLabel {
+  font-size: var(--mantine-font-size-xs);
+}
+
+.action {
+  &:where([data-selected]) {
+    @mixin where-light {
+      background-color: var(--mantine-color-gray-0);
+      color: initial;
+      --action-description-color: initial;
+    }
+
+    @mixin where-dark {
+      background-color: var(--mantine-color-dark-6);
+      color: initial;
+      --action-description-color: initial;
+    }
+
+    --action-description-opacity: 1;
+  }
+}
+
+.empty {
+  font-size: var(--mantine-font-size-xs);
+}

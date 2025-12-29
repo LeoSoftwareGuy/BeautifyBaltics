@@ -1,0 +1,4 @@
+.navbar {
+  overflow: hidden;
+  transition-property: all;
+}

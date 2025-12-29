@@ -1,0 +1,13 @@
+.root {
+  border-radius: var(--mantine-radius-md);
+}
+
+.children {
+  margin-left: var(--mantine-spacing-lg);
+  padding-left: var(--mantine-spacing-sm);
+  border-left: rem(1px) solid var(--mantine-color-gray-2);
+
+  &[data-active] {
+    background-color: var(--mantine-color-gray-9);
+  }
+}

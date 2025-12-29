@@ -1,0 +1,8 @@
+/* You can add global styles to this file, and also import other style files */
+.react-grid-item {
+  transition: none;
+}
+
+  .react-grid-item.react-grid-placeholder {
+    background: var(--mantine-color-gray-4);
+  }

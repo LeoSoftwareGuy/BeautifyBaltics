@@ -1,0 +1,21 @@
+.root {
+  border: none;
+}
+
+.control {
+  &:where([data-active]) {
+    background-color: var(--mantine-color-gray-1);
+    color: var(--mantine-color-black);
+  }
+
+  > svg {
+    width: var(--control-icon-size, 16px);
+    height: var(--control-icon-size, 16px);
+    stroke-width: 1.5;
+  }
+}
+
+.content {
+  border: 1px solid var(--mantine-color-default-border);
+  border-radius: 0;
+}

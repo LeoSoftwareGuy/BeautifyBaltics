@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.1414993">
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.1414993">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
     <Platforms>AnyCPU</Platforms>
@@ -8,5 +8,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="tools\fetch-openapi\tsconfig.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Include="apps\back-office\project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="apps\back-office\src\state\ednpoints\" />
   </ItemGroup>
 </Project>

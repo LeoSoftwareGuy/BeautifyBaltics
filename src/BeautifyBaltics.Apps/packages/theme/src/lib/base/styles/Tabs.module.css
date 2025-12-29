@@ -1,0 +1,6 @@
+.tab {
+  &[data-active] {
+    color: var(--mantine-color-black);
+    background-color: var(--mantine-color-gray-1);
+  }
+}

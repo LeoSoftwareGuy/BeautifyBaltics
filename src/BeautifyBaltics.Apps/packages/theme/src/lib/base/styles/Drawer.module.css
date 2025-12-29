@@ -1,0 +1,11 @@
+.title {
+  font-weight: 700;
+}
+
+.header {
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.body {
+  padding: var(--mantine-spacing-md);
+}

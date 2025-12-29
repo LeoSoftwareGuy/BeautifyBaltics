@@ -6,10 +6,7 @@
   "scripts": {
     "serve:back-office": "run-script-os",
     "serve:back-office:win32": "nx serve back-office --port=%PORT%",
-    "serve:back-office:default": "nx serve back-office --port=$PORT",
-    "serve:portal": "run-script-os",
-    "serve:portal:win32": "nx serve portal --port=%PORT%",
-    "serve:portal:default": "nx serve portal --port=$PORT"
+    "serve:back-office:default": "nx serve back-office --port=$PORT"
   },
   "private": true,
   "overrides": {

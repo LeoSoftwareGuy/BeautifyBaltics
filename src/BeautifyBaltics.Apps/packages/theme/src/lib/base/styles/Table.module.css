@@ -1,0 +1,14 @@
+.thead {
+  background-color: var(--mantine-color-white);
+}
+
+.tfoot {
+  background-color: var(--mantine-color-white);
+  font-weight: 700;
+  
+  .tr {
+    &:where([data-with-row-border]) {
+      border-top: rem(1px) solid var(--table-border-color);
+    }
+  }
+}

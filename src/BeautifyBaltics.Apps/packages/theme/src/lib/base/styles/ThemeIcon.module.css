@@ -1,0 +1,15 @@
+.root {
+  svg {
+    width: 65%;
+    height: 65%;
+    stroke-width: 1.8;
+  }
+
+  &[data-size="xl"] {
+    svg {
+      width: 55%;
+      height: 55%;
+      stroke-width: 1.6;
+    }
+  }
+}

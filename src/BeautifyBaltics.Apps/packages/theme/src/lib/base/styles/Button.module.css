@@ -1,0 +1,9 @@
+.inner {
+  .section[data-position="left"] {
+    margin-inline-end: 4px;
+  }
+
+  .section[data-position="right"] {
+    margin-inline-start: 4px;
+  }
+}

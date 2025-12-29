@@ -1,0 +1,35 @@
+{
+  "name": "back-office",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/back-office/src",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project back-office --web",
+  "targets": {
+    "fetch-openapi": {
+      "executor": "@beautify-baltics-apps/fetch-openapi:openapi-fetcher",
+      "options": {
+        "outputPath": "apps/back-office/src/state/core-api-spec.yaml",
+        "openapiUrl": "http://localhost:5262/openapi/core-api.yaml"
+      }
+    },
+    "codegen-state": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "node node_modules/orval/dist/bin/orval.js --config ./apps/back-office/orval.config.ts"
+          }
+        ],
+        "parallel": false
+      }
+    },
+    "lint-state": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [ "apps/back-office/src/state/**/*.ts" ],
+        "fix": true
+      }
+    }
+  }
+}
