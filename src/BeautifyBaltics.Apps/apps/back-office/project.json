@@ -10,7 +10,7 @@
       "executor": "@beautify-baltics-apps/fetch-openapi:openapi-fetcher",
       "options": {
         "outputPath": "apps/back-office/src/state/core-api-spec.yaml",
-        "openapiUrl": "http://localhost:5262/openapi/core-api.yaml"
+        "openapiUrl": "http://localhost:5224/openapi/core-api.yaml"
       }
     },
     "codegen-state": {

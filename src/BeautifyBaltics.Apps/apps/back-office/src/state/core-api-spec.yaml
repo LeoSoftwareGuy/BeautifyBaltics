@@ -1,0 +1,1657 @@
+﻿openapi: 3.0.4
+info:
+  title: Beautify Baltics Core API
+  description: Beautify Baltics Core API for back-office operations
+  version: v1
+paths:
+  /api/v1/bookings:
+    get:
+      tags:
+        - Bookings
+      summary: Find bookings
+      operationId: FindBookings
+      parameters:
+        - name: masterId
+          in: query
+          description: Filter by master id
+          schema:
+            type: string
+            format: uuid
+        - name: clientId
+          in: query
+          description: Filter by client id
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            $ref: '#/components/schemas/BookingStatus'
+        - name: from
+          in: query
+          description: Filter by from
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: Filter by to
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindBookingsResponsePagedResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+    post:
+      tags:
+        - Bookings
+      summary: Create booking
+      operationId: CreateBooking
+      requestBody:
+        description: Create booking request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBookingResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/bookings/{id}':
+    get:
+      tags:
+        - Bookings
+      summary: Get booking by id
+      operationId: GetBookingById
+      parameters:
+        - name: id
+          in: path
+          description: Booking id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: query
+          description: Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBookingByIdResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    put:
+      tags:
+        - Bookings
+      summary: Update booking
+      operationId: UpdateBooking
+      parameters:
+        - name: id
+          in: path
+          description: Booking id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update booking request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookingRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBookingResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/bookings/{id}/status':
+    post:
+      tags:
+        - Bookings
+      summary: Update status of booking
+      parameters:
+        - name: id
+          in: path
+          description: Booking id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update status booking request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookingRequest'
+      responses:
+        '200':
+          description: OK
+  '/api/v1/bookings/{id}/reschedule':
+    post:
+      tags:
+        - Bookings
+      summary: Reschedule booking
+      parameters:
+        - name: id
+          in: path
+          description: Booking id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Reschedule booking request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RescheduleBookingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RescheduleBookingRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RescheduleBookingResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/clients:
+    get:
+      tags:
+        - Clients
+      summary: Find clients
+      operationId: FindClients
+      parameters:
+        - name: masterId
+          in: query
+          description: Filter by master id
+          schema:
+            type: string
+            format: uuid
+        - name: clientId
+          in: query
+          description: Filter by client id
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            $ref: '#/components/schemas/BookingStatus'
+        - name: from
+          in: query
+          description: Filter by from
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: Filter by to
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindClientsResponsePagedResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+    post:
+      tags:
+        - Clients
+      summary: Create client
+      operationId: CreateClient
+      requestBody:
+        description: Create client request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClientRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateClientRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateClientResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/clients/{id}':
+    get:
+      tags:
+        - Clients
+      summary: Get client by id
+      operationId: GetClientById
+      parameters:
+        - name: id
+          in: path
+          description: Client id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetClientByIdResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    put:
+      tags:
+        - Clients
+      summary: Update client
+      operationId: UpdateClientProfile
+      parameters:
+        - name: id
+          in: path
+          description: Client id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update client request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClientProfileRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateClientProfileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateClientProfileResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/jobs:
+    get:
+      tags:
+        - Jobs
+      summary: Find jobs
+      operationId: FindJobs
+      parameters:
+        - name: text
+          in: query
+          description: Filter by text
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Filter by category
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindJobsResponsePagedResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+    post:
+      tags:
+        - Jobs
+      summary: Create a job
+      operationId: CreateJob
+      requestBody:
+        description: Create job request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateJobResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/jobs/{id}':
+    get:
+      tags:
+        - Jobs
+      summary: Get job by id
+      operationId: GetJobById
+      parameters:
+        - name: id
+          in: path
+          description: Job id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetJobByIdResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    put:
+      tags:
+        - Jobs
+      summary: Update job
+      operationId: UpdateJob
+      parameters:
+        - name: id
+          in: path
+          description: Job id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update job request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateJobResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/masters:
+    get:
+      tags:
+        - Masters
+      summary: Find masters
+      operationId: FindMasters
+      parameters:
+        - name: text
+          in: query
+          schema:
+            type: string
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindMastersResponsePagedResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+    post:
+      tags:
+        - Masters
+      summary: Create master
+      operationId: CreateMaster
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMasterRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateMasterRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMasterResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{id}':
+    get:
+      tags:
+        - Masters
+      summary: Get master by id
+      operationId: GetMasterById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMasterByIdResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    put:
+      tags:
+        - Masters
+      summary: Update master profile
+      operationId: UpdateMasterProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterProfileRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterProfileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMasterProfileResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/jobs':
+    post:
+      tags:
+        - Masters
+      summary: Add job to a master
+      operationId: CreateMasterJob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMasterJobRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateMasterJobRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMasterJobResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/availability':
+    post:
+      tags:
+        - Masters
+      summary: Define master availability slots
+      operationId: CreateMasterAvailability
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMasterAvailabilityRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateMasterAvailabilityRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMasterAvailabilityResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+components:
+  schemas:
+    BookingCommandDTO:
+      required:
+        - clientId
+        - masterId
+        - masterJobId
+        - scheduledAt
+      type: object
+      properties:
+        masterId:
+          type: string
+          description: Id of master
+          format: uuid
+        clientId:
+          type: string
+          description: Id of client
+          format: uuid
+        masterJobId:
+          type: string
+          description: Id of the job
+          format: uuid
+        scheduledAt:
+          type: string
+          description: Booking date and time
+          format: date-time
+        durationMinutes:
+          maximum: 1440
+          minimum: 1
+          type: string
+          description: Duration of the job
+          format: date-span
+        price:
+          minimum: 0
+          type: number
+          description: Price of the job
+          format: double
+      additionalProperties: false
+    BookingDTO:
+      required:
+        - clientId
+        - clientName
+        - duration
+        - id
+        - masterId
+        - masterJobId
+        - masterJobTitle
+        - masterName
+        - price
+        - scheduledAt
+        - status
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          format: uuid
+        masterId:
+          type: string
+          description: Master ID
+          format: uuid
+        clientId:
+          type: string
+          description: Client ID
+          format: uuid
+        masterJobId:
+          type: string
+          description: Master job ID
+          format: uuid
+        clientName:
+          minLength: 1
+          type: string
+          description: Client name
+        masterName:
+          minLength: 1
+          type: string
+          description: Master name
+        masterJobTitle:
+          minLength: 1
+          type: string
+          description: Master job title
+        scheduledAt:
+          type: string
+          description: Scheduled at
+          format: date-time
+        duration:
+          type: string
+          description: Duration
+          format: date-span
+        price:
+          type: number
+          description: Price
+          format: double
+        status:
+          $ref: '#/components/schemas/BookingStatus'
+      additionalProperties: false
+    BookingStatus:
+      enum:
+        - Requested
+        - Confirmed
+        - Completed
+        - Cancelled
+      type: string
+    ClientCommandDTO:
+      required:
+        - contacts
+        - firstName
+        - lastName
+      type: object
+      properties:
+        firstName:
+          minLength: 1
+          type: string
+          description: First name
+        lastName:
+          minLength: 1
+          type: string
+          description: Last name
+        contacts:
+          $ref: '#/components/schemas/ContactInformation'
+      additionalProperties: false
+    ClientDTO:
+      required:
+        - email
+        - firstName
+        - id
+        - lastName
+        - phoneNumber
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID
+          format: uuid
+        firstName:
+          minLength: 1
+          type: string
+          description: First name
+        lastName:
+          minLength: 1
+          type: string
+          description: Last name
+        email:
+          minLength: 1
+          type: string
+          description: Email address
+        phoneNumber:
+          minLength: 1
+          type: string
+          description: Phone number
+      additionalProperties: false
+    ContactInformation:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+          nullable: true
+      additionalProperties: false
+    CreateBookingRequest:
+      allOf:
+        - $ref: '#/components/schemas/BookingCommandDTO'
+        - type: object
+          additionalProperties: false
+    CreateBookingResponse:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of created booking
+          format: uuid
+      additionalProperties: false
+    CreateClientRequest:
+      allOf:
+        - $ref: '#/components/schemas/ClientCommandDTO'
+        - type: object
+          additionalProperties: false
+    CreateClientResponse:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id
+          format: uuid
+      additionalProperties: false
+    CreateJobRequest:
+      allOf:
+        - $ref: '#/components/schemas/JobCommandDTO'
+        - type: object
+          additionalProperties: false
+    CreateJobResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      additionalProperties: false
+    CreateMasterAvailabilityRequest:
+      required:
+        - availability
+        - masterId
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        availability:
+          type: array
+          items:
+            $ref: '#/components/schemas/MasterAvailabilitySlotCommandDTO'
+      additionalProperties: false
+    CreateMasterAvailabilityResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    CreateMasterJobRequest:
+      required:
+        - job
+        - masterId
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        job:
+          $ref: '#/components/schemas/MasterJobOfferingCommandDTO'
+      additionalProperties: false
+    CreateMasterJobResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    CreateMasterRequest:
+      allOf:
+        - $ref: '#/components/schemas/MasterProfileCommandDTO'
+        - type: object
+          additionalProperties: false
+    CreateMasterResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      additionalProperties: false
+    FindBookingsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BookingDTO'
+        - type: object
+          additionalProperties: false
+    FindBookingsResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindBookingsResponse'
+          description: Items
+      additionalProperties: false
+    FindClientsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ClientDTO'
+        - type: object
+          additionalProperties: false
+    FindClientsResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindClientsResponse'
+          description: Items
+      additionalProperties: false
+    FindJobsResponse:
+      allOf:
+        - $ref: '#/components/schemas/JobDTO'
+        - type: object
+          additionalProperties: false
+    FindJobsResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindJobsResponse'
+          description: Items
+      additionalProperties: false
+    FindMastersResponse:
+      allOf:
+        - $ref: '#/components/schemas/MasterDTO'
+        - type: object
+          additionalProperties: false
+    FindMastersResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindMastersResponse'
+          description: Items
+      additionalProperties: false
+    GetBookingByIdResponse:
+      allOf:
+        - $ref: '#/components/schemas/BookingDTO'
+        - type: object
+          additionalProperties: false
+    GetClientByIdResponse:
+      allOf:
+        - $ref: '#/components/schemas/ClientDTO'
+        - type: object
+          additionalProperties: false
+    GetJobByIdResponse:
+      allOf:
+        - $ref: '#/components/schemas/JobDTO'
+        - type: object
+          additionalProperties: false
+    GetMasterByIdResponse:
+      allOf:
+        - $ref: '#/components/schemas/MasterDTO'
+        - type: object
+          properties:
+            jobs:
+              type: array
+              items:
+                $ref: '#/components/schemas/MasterJobDTO'
+              nullable: true
+            availability:
+              type: array
+              items:
+                $ref: '#/components/schemas/MasterAvailabilitySlotDTO'
+              nullable: true
+          additionalProperties: false
+    JobCommandDTO:
+      required:
+        - category
+        - durationMinutes
+        - name
+      type: object
+      properties:
+        name:
+          minLength: 1
+          type: string
+          description: Name
+        category:
+          minLength: 1
+          type: string
+          description: Category
+        description:
+          type: string
+          description: Desciption
+          nullable: true
+        durationMinutes:
+          maximum: 1440
+          minimum: 1
+          type: integer
+          description: Duration in minutes
+          format: int32
+        images:
+          type: array
+          items:
+            type: string
+          description: Images
+          nullable: true
+      additionalProperties: false
+    JobDTO:
+      required:
+        - category
+        - description
+        - durationMinutes
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+        category:
+          minLength: 1
+          type: string
+        description:
+          type: string
+          nullable: true
+        durationMinutes:
+          maximum: 1440
+          minimum: 1
+          type: integer
+          format: int32
+        images:
+          type: array
+          items:
+            type: string
+          nullable: true
+      additionalProperties: false
+    MasterAvailabilitySlotCommandDTO:
+      required:
+        - end
+        - start
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+      additionalProperties: false
+    MasterAvailabilitySlotDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+    MasterDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        age:
+          type: integer
+          format: int32
+          nullable: true
+        gender:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+          nullable: true
+        rating:
+          type: number
+          format: double
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        city:
+          type: string
+          nullable: true
+      additionalProperties: false
+    MasterJobDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        jobId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+        durationMinutes:
+          type: integer
+          format: int32
+      additionalProperties: false
+    MasterJobOfferingCommandDTO:
+      required:
+        - jobId
+        - title
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+        title:
+          maxLength: 256
+          minLength: 1
+          type: string
+        price:
+          minimum: 0
+          type: number
+          format: double
+        durationMinutes:
+          maximum: 1440
+          minimum: 1
+          type: integer
+          format: int32
+      additionalProperties: false
+    MasterProfileCommandDTO:
+      required:
+        - email
+        - firstName
+        - lastName
+        - phoneNumber
+      type: object
+      properties:
+        firstName:
+          maxLength: 128
+          minLength: 1
+          type: string
+        lastName:
+          maxLength: 128
+          minLength: 1
+          type: string
+        age:
+          maximum: 120
+          minimum: 18
+          type: integer
+          format: int32
+          nullable: true
+        gender:
+          maxLength: 64
+          type: string
+          nullable: true
+        email:
+          minLength: 1
+          type: string
+          format: email
+        phoneNumber:
+          maxLength: 32
+          minLength: 1
+          type: string
+      additionalProperties: false
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        status:
+          type: integer
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+      additionalProperties: { }
+    RescheduleBookingRequest:
+      required:
+        - bookingId
+        - duration
+        - scheduledAt
+      type: object
+      properties:
+        bookingId:
+          type: string
+          description: Booking ID
+          format: uuid
+        scheduledAt:
+          type: string
+          description: Schedule date and time
+          format: date-time
+        duration:
+          type: string
+          description: Duration of booking
+          format: date-span
+      additionalProperties: false
+    RescheduleBookingResponse:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of created booking
+          format: uuid
+      additionalProperties: false
+    UpdateBookingRequest:
+      allOf:
+        - $ref: '#/components/schemas/BookingCommandDTO'
+        - required:
+            - bookingId
+          type: object
+          properties:
+            bookingId:
+              type: string
+              description: Booking ID
+              format: uuid
+          additionalProperties: false
+    UpdateBookingResponse:
+      required:
+        - bookingId
+      type: object
+      properties:
+        bookingId:
+          type: string
+          description: ID of the updated booking
+          format: uuid
+      additionalProperties: false
+    UpdateClientProfileRequest:
+      allOf:
+        - $ref: '#/components/schemas/ClientCommandDTO'
+        - required:
+            - clientID
+          type: object
+          properties:
+            clientID:
+              type: string
+              description: Client id
+              format: uuid
+          additionalProperties: false
+    UpdateClientProfileResponse:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id
+          format: uuid
+      additionalProperties: false
+    UpdateJobRequest:
+      allOf:
+        - $ref: '#/components/schemas/JobCommandDTO'
+        - required:
+            - jobId
+          type: object
+          properties:
+            jobId:
+              type: string
+              description: Job ID
+              format: uuid
+          additionalProperties: false
+    UpdateJobResponse:
+      required:
+        - jobId
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    UpdateMasterProfileRequest:
+      allOf:
+        - $ref: '#/components/schemas/MasterProfileCommandDTO'
+        - required:
+            - masterId
+          type: object
+          properties:
+            masterId:
+              type: string
+              format: uuid
+          additionalProperties: false
+    UpdateMasterProfileResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    ValidationProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        status:
+          type: integer
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          nullable: true
+      additionalProperties: { }
