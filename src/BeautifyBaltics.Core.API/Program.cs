@@ -2,12 +2,17 @@ using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Infrastructure;
 using BeautifyBaltics.Persistence;
 using BeautifyBaltics.ServiceDefaults;
+using BeautifyBaltics.ServiceDefaults.Extensions;
 using JasperFx;
 using JasperFx.CodeGeneration;
 using JasperFx.Resources;
 using Mapster;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
 using System.Text;
 using Wolverine;
 using Wolverine.Http;
@@ -83,17 +88,44 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddAuthorization();
 
-var bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JwtSecret"]!);
+//var bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JwtSecret"]!);
 
-builder.Services.AddAuthentication().AddJwtBearer(options =>
+//builder.Services.AddAuthentication().AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuerSigningKey = true,
+//        IssuerSigningKey = new SymmetricSecurityKey(bytes),
+//        ValidAudience = builder.Configuration["Authentication:ValidAudience"],
+//        ValidIssuer = builder.Configuration["Authentication:ValidIssuer"]
+//    };
+//});
+
+builder.AddDefaultHealthChecks()
+    .AddNpgSql(name: "npgsql")
+    .AddAzureBlobStorage(name: "azureblobstorage");
+
+// Register controllers in the IoC container
+builder.Services.AddApiControllers(o =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    o.Groups.Add(new ApiGroup
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(bytes),
-        ValidAudience = builder.Configuration["Authentication:ValidAudience"],
-        ValidIssuer = builder.Configuration["Authentication:ValidIssuer"]
-    };
+        Assembly = typeof(Program).Assembly,
+        GroupName = "core-api",
+        RoutePrefix = "api/v1"
+    });
+});
+
+builder.Services.AddOpenApi(o =>
+{
+    o.Docs.Add(("core-api", new OpenApiInfo
+    {
+        Title = "Beautify Baltics Core API",
+        Version = "v1",
+        Description = "Beautify Baltics Core API for back-office operations"
+    }));
+
+    o.Assemblies = [typeof(Program).Assembly];
 });
 
 builder.Services.AddRequestTimeouts();
@@ -106,11 +138,15 @@ var app = builder.Build();
 
 app.UseForwardedHeaders();
 
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline.
+app.UseOpenApiUI(o =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    o.Title = "BB Core.API Docs";
+    o.Documents =
+    [
+        new ScalarDocument("core-api", "Core API"),
+    ];
+});
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
