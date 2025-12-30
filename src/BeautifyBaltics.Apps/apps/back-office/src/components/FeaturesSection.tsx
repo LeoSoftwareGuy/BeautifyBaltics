@@ -1,27 +1,30 @@
-import { Card } from "@/components/ui/card";
-import { Calendar, Shield, Star, Image } from "lucide-react";
+/* eslint-disable react/no-array-index-key */
+import { Card } from '@mantine/core';
+import {
+  Calendar, Image, Shield, Star,
+} from 'lucide-react';
 
-const FeaturesSection = () => {
+function FeaturesSection() {
   const features = [
     {
       icon: Calendar,
-      title: "Easy Booking",
-      description: "Book appointments instantly with real-time availability updates",
+      title: 'Easy Booking',
+      description: 'Book appointments instantly with real-time availability updates',
     },
     {
       icon: Image,
-      title: "Portfolio Showcase",
-      description: "Browse master portfolios to find the perfect match for your style",
+      title: 'Portfolio Showcase',
+      description: 'Browse master portfolios to find the perfect match for your style',
     },
     {
       icon: Star,
-      title: "Verified Reviews",
-      description: "Read authentic reviews from real customers to make informed decisions",
+      title: 'Verified Reviews',
+      description: 'Read authentic reviews from real customers to make informed decisions',
     },
     {
       icon: Shield,
-      title: "Secure Platform",
-      description: "Safe and secure booking with verified professionals only",
+      title: 'Secure Platform',
+      description: 'Safe and secure booking with verified professionals only',
     },
   ];
 
@@ -39,7 +42,7 @@ const FeaturesSection = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <Card 
+            <Card
               key={index}
               className="p-6 hover:shadow-lg transition-all animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
@@ -55,6 +58,6 @@ const FeaturesSection = () => {
       </div>
     </section>
   );
-};
+}
 
 export default FeaturesSection;

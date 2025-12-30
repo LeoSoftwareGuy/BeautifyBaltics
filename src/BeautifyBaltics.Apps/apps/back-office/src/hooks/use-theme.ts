@@ -1,6 +1,5 @@
-import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-
 import { depowise, swedbank } from '@beautify-baltics-apps/theme';
+import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 
 const themes: { [key: string]: typeof depowise } = {
   depowise,

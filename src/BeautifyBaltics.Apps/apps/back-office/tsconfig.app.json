@@ -1,6 +1,24 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@beautify-baltics-apps/api-client": [
+        "../../packages/api-client/src/index.ts"
+      ],
+      "@beautify-baltics-apps/theme": [
+        "../../packages/theme/src/index.ts"
+      ],
+      "@beautify-baltics-apps/devtools": [
+        "../../packages/devtools/src/index.ts"
+      ],
+      "@beautify-baltics-apps/components": [
+        "../../packages/components/src/index.ts"
+      ]
+    },
     "outDir": "dist",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
     "jsx": "react-jsx",
@@ -13,8 +31,7 @@
       "@nx/react/typings/image.d.ts",
       "vite/client",
       "vitest/importMeta"
-    ],
-    "rootDir": "src"
+    ]
   },
   "exclude": [
     "out-tsc",
@@ -29,6 +46,7 @@
     "src/**/*.test.jsx"
   ],
   "include": [
+    "../../packages/theme/src/lib/mantine.d.ts",
     "src/**/*.js",
     "src/**/*.jsx",
     "src/**/*.ts",

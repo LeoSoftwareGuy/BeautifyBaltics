@@ -1,11 +1,13 @@
-import React, {
-  createContext, useCallback, useContext, useEffect, useMemo,
-} from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 
-import { GetUserSessionByIdResponse } from '@/state/endpoints/api.schemas';
-import { useGetSession } from '@/state/endpoints/session';
+type SessionUser = {
+  email: string;
+  name: string;
+};
 
-type Session = GetUserSessionByIdResponse & {
+type Session = {
+  user: SessionUser | null;
+  isAuthenticated: boolean;
   logout: () => void;
 };
 
@@ -16,37 +18,30 @@ interface SessionProviderProps {
 }
 
 function SessionProvider({ children }: SessionProviderProps) {
-  const {
-    data: user, isLoading,
-  } = useGetSession({ query: { retry: false } });
-
-  useEffect(() => {
-    if (isLoading || user?.isAuthenticated) {
-      return;
-    }
-
-    window.location.href = `/api/v1/auth/signin?redirectUrl=${getLocationHref()}`;
-  }, [user?.isAuthenticated, isLoading]);
-
-  const handleLogout = useCallback(() => {
-    window.location.href = `/api/v1/auth/signout?redirectUrl=${getLocationHref()}`;
-  }, []);
-
-  const getLocationHref = () => encodeURI(window.location.href);
-
-  const contextValue = useMemo(() => {
-    if (!user) return null;
-    return { ...user, logout: handleLogout };
-  }, [user, handleLogout]);
-
-  if (!user?.isAuthenticated) return null;
+  const contextValue = useMemo<Session>(
+    () => ({
+      user: {
+        name: 'Beautify Baltics User',
+        email: 'user@beautifybaltics.com',
+      },
+      isAuthenticated: true,
+      logout: () => {
+        // Placeholder logout flow while authentication is not implemented.
+        // Replace with redirect once backend auth is available.
+        console.info('Logout requested, but authentication is not configured.');
+      },
+    }),
+    [],
+  );
 
   return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;
 }
 
 export const useSession = () => {
   const context = useContext(SessionContext);
-  if (!context) throw new Error('useSession must be used within a SessionProvider');
+  if (!context) {
+    throw new Error('useSession must be used within a SessionProvider');
+  }
   return context;
 };
 

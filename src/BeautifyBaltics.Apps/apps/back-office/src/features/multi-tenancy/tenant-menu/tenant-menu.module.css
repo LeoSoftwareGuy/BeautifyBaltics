@@ -1,0 +1,28 @@
+.button {
+  display: flex;
+  width: 100%;
+  justify-items: stretch;
+  align-items: center;
+  padding: var(--mantine-spacing-xs);
+  border-radius: var(--mantine-radius-md);
+  transition-duration: 0.2s;
+  transition-property: padding;
+  background-color: var(--mantine-color-gray-0);
+
+  &:hover {
+    background-color: var(--mantine-color-gray-1);
+  }
+}
+
+.radio {
+  transition: border-color 150ms ease;
+
+  &[data-checked] {
+    border-color: var(--mantine-primary-color-filled);
+    outline: 1px solid var(--mantine-primary-color-filled);
+  }
+
+  &:hover {
+    background-color: var(--mantine-color-gray-0);
+  }
+}

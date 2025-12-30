@@ -1,11 +1,12 @@
-import { createRoute } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
-import HomePage from '@/features/home/home-page';
+import { HomeView } from './home/index.route';
 
-import { rootRoute } from './__root';
-
-export const homeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: HomePage,
+export const Route = createFileRoute('/')({
+  beforeLoad: () => ({
+    breadcrumbs: [
+      { title: 'Home', path: '/home' },
+    ],
+  }),
+  component: HomeView,
 });
