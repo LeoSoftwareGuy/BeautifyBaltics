@@ -10,7 +10,11 @@
   },
   "private": true,
   "overrides": {
-    "react-is": "^19.0.0"
+    "react-is": "^19.0.0",
+    "@supabase/auth-ui-react": {
+      "react": "19.1.1",
+      "react-dom": "19.1.1"
+    }
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "1.7.7",
@@ -25,6 +29,8 @@
     "@mantine/nprogress": "8.3.5",
     "@mantine/spotlight": "8.3.5",
     "@mantine/tiptap": "8.3.5",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
     "@tabler/icons-react": "3.35.0",
     "@tanstack/react-query": "5.90.2",
     "@tanstack/react-query-devtools": "5.90.2",

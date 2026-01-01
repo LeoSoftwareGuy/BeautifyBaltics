@@ -48,6 +48,7 @@ export default defineConfig({
       // Fix: https://github.com/tabler/tabler-icons/issues/1233
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
     },
+    dedupe: ['react', 'react-dom'],
   },
 
   build: {

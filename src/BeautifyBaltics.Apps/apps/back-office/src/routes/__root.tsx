@@ -1,7 +1,7 @@
 import { DevtoolsContainer, TanStackQueryDevtools, TanStackRouterDevtools } from '@beautify-baltics-apps/devtools';
 import { ModalsProvider } from '@mantine/modals';
 import { QueryClient } from '@tanstack/react-query';
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
 
 import {
   MainNavigation,
@@ -31,6 +31,19 @@ export const Route = createRootRouteWithContext<RouteContext>()({
 
 function Root() {
   usePageTitle();
+  const location = useRouterState({ select: (state) => state.location });
+  const isPublicRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');
+
+  if (isPublicRoute) {
+    return (
+      <>
+        <NavigationLoadingIndicator />
+        <ModalsProvider>
+          <Outlet />
+        </ModalsProvider>
+      </>
+    );
+  }
 
   return (
     <AppLayout

@@ -2,6 +2,7 @@ import {
   Avatar, Group, Menu, Stack, Text,
 } from '@mantine/core';
 import { IconBell, IconLogout, IconSettings } from '@tabler/icons-react';
+import { useNavigate } from '@tanstack/react-router';
 
 import { useSession } from '@/contexts/session-context';
 
@@ -9,9 +10,20 @@ import UserButton from './user-button';
 
 export default function UserMenu() {
   const { user, logout } = useSession();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const displayName = typeof user?.user_metadata?.full_name === 'string'
+    ? user?.user_metadata?.full_name
+    : user?.email ?? 'Beautify Baltics user';
+  const displayEmail = user?.email ?? '';
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate({ to: '/login', search: { redirect: '/home', registered: false }, replace: true });
+    } catch (error) {
+      console.error('Failed to logout', error);
+    }
   };
 
   if (!user) return null;
@@ -19,7 +31,7 @@ export default function UserMenu() {
   return (
     <Menu shadow="md" width={260} position="right-end">
       <Menu.Target>
-        <UserButton name={user.name} email={user.email} />
+        <UserButton name={displayName} email={displayEmail} />
       </Menu.Target>
 
       <Menu.Dropdown>
@@ -27,7 +39,7 @@ export default function UserMenu() {
           <Group gap="xs" wrap="nowrap" w="100%">
             <Avatar
               td="none"
-              name={user.name}
+              name={displayName}
               color="initials"
               size="md"
               radius="md"
@@ -35,8 +47,8 @@ export default function UserMenu() {
             />
 
             <Stack w={170} gap={4}>
-              <Text fz="sm" lh={1} truncate="end">{user.name}</Text>
-              <Text fz="sm" c="gray" lh={1} truncate="end">{user.email}</Text>
+              <Text fz="sm" lh={1} truncate="end">{displayName}</Text>
+              <Text fz="sm" c="gray" lh={1} truncate="end">{displayEmail}</Text>
             </Stack>
           </Group>
         </Menu.Item>
