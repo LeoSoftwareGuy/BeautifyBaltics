@@ -23,7 +23,7 @@ public class ClientsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<PagedResponse<FindBookingsResponse>>> Find([FromQuery] FindBookingsRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<PagedResponse<FindBookingsResponse>>(TenantId, request);
+        var response = await bus.InvokeAsync<PagedResponse<FindBookingsResponse>>(request);
         return Ok(response);
     }
 
@@ -38,7 +38,7 @@ public class ClientsController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetClientByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetClientByIdRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<GetClientByIdResponse>(TenantId, request with { Id = id });
+        var response = await bus.InvokeAsync<GetClientByIdResponse>(request with { Id = id });
         return Ok(response);
     }
 
@@ -53,8 +53,7 @@ public class ClientsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<CreatedAtActionResult> Create([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<CreateClientResponse>(
-            TenantId,
+        var response = await bus.InvokeAsync<CreateClientResponse>(
             request with { SupabaseUserId = UserId },
             cancellationToken);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
@@ -73,7 +72,7 @@ public class ClientsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult> Update([FromRoute] Guid id, UpdateClientProfileRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<UpdateClientProfileResponse>(TenantId, request with { ClientID = id });
+        var response = await bus.InvokeAsync<UpdateClientProfileResponse>(request with { ClientID = id });
         return Ok(response);
     }
 }

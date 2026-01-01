@@ -22,7 +22,7 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<PagedResponse<FindMastersResponse>>> Find([FromQuery] FindMastersRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<PagedResponse<FindMastersResponse>>(TenantId, request);
+        var response = await bus.InvokeAsync<PagedResponse<FindMastersResponse>>(request);
         return Ok(response);
     }
 
@@ -34,7 +34,7 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetMasterByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetMasterByIdRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<GetMasterByIdResponse>(TenantId, request with { Id = id });
+        var response = await bus.InvokeAsync<GetMasterByIdResponse>(request with { Id = id });
         return Ok(response);
     }
 
@@ -46,8 +46,7 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult> Create([FromBody] CreateMasterRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<CreateMasterResponse>(
-            TenantId,
+        var response = await bus.InvokeAsync<CreateMasterResponse>(
             request with { SupabaseUserId = UserId },
             cancellationToken);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
@@ -62,7 +61,7 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> UpdateProfile([FromRoute] Guid id, [FromBody] UpdateMasterProfileRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<UpdateMasterProfileResponse>(TenantId, request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateMasterProfileResponse>(request with { MasterId = id }, cancellationToken);
         return Ok(response);
     }
 
@@ -75,7 +74,7 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> CreateMasterJob([FromRoute] Guid id, [FromBody] CreateMasterJobRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<CreateMasterJobResponse>(TenantId, request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<CreateMasterJobResponse>(request with { MasterId = id }, cancellationToken);
         return Ok(response);
     }
 
@@ -88,7 +87,7 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> CreateMasterAvailability([FromRoute] Guid id, [FromBody] CreateMasterAvailabilityRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<CreateMasterAvailabilityResponse>(TenantId, request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<CreateMasterAvailabilityResponse>(request with { MasterId = id }, cancellationToken);
         return Ok(response);
     }
 }

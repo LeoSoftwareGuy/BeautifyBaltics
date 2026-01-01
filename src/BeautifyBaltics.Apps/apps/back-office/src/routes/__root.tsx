@@ -10,7 +10,6 @@ import {
   SecondaryNavigation,
 } from '@/components/navigation';
 import { MegaSearch } from '@/features/mega-search';
-import { TenantMenu } from '@/features/multi-tenancy';
 import { UserMenu } from '@/features/users';
 import usePageTitle from '@/hooks/use-page-title';
 import { AppLayout } from '@/layouts';
@@ -52,7 +51,7 @@ function Root() {
         end: <MegaSearch />,
       }}
       navbar={{
-        top: <TenantMenu />,
+        top: null,
         upperMiddle: <MainNavigation />,
         lowerMiddle: <SecondaryNavigation />,
         bottom: <UserMenu />,

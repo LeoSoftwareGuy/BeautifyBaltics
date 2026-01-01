@@ -23,7 +23,7 @@ public class BookingsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<PagedResponse<FindBookingsResponse>>> Find([FromQuery] FindBookingsRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<PagedResponse<FindBookingsResponse>>(TenantId, request);
+        var response = await bus.InvokeAsync<PagedResponse<FindBookingsResponse>>(request);
         return Ok(response);
     }
 
@@ -38,7 +38,7 @@ public class BookingsController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetBookingByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetBookingByIdRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<GetBookingByIdResponse>(TenantId, request with { Id = id });
+        var response = await bus.InvokeAsync<GetBookingByIdResponse>(request with { Id = id });
         return Ok(response);
     }
 
@@ -53,7 +53,7 @@ public class BookingsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<CreatedAtActionResult> Create(CreateBookingRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<CreateBookingResponse>(TenantId, request);
+        var response = await bus.InvokeAsync<CreateBookingResponse>(request);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
@@ -70,7 +70,7 @@ public class BookingsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult> Update([FromRoute] Guid id, UpdateBookingRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<UpdateBookingResponse>(TenantId, request with { BookingId = id });
+        var response = await bus.InvokeAsync<UpdateBookingResponse>(request with { BookingId = id });
         return Ok(response);
     }
 
@@ -84,7 +84,7 @@ public class BookingsController(IMessageBus bus) : ApiController
     [HttpPost("{id:guid}/status")]
     public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] UpdateBookingRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<UpdateBookingResponse>(TenantId, request with { BookingId = id });
+        var response = await bus.InvokeAsync<UpdateBookingResponse>(request with { BookingId = id });
         return Ok(response);
     }
 
@@ -102,7 +102,7 @@ public class BookingsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult> Reschedule(Guid id, [FromBody] RescheduleBookingRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<RescheduleBookingResponse>(TenantId, request with { BookingId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<RescheduleBookingResponse>(request with { BookingId = id }, cancellationToken);
         return Ok(response);
     }
 }

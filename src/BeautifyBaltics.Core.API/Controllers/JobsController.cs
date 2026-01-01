@@ -22,7 +22,7 @@ public class JobsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<PagedResponse<FindJobsResponse>>> Find([FromQuery] FindJobsRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<PagedResponse<FindJobsResponse>>(TenantId, request);
+        var response = await bus.InvokeAsync<PagedResponse<FindJobsResponse>>(request);
         return Ok(response);
     }
 
@@ -37,7 +37,7 @@ public class JobsController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetJobByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetJobByIdRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<GetJobByIdResponse>(TenantId, request with { Id = id });
+        var response = await bus.InvokeAsync<GetJobByIdResponse>(request with { Id = id });
         return Ok(response);
     }
 
@@ -52,7 +52,7 @@ public class JobsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<CreatedAtActionResult> Create([FromBody] CreateJobRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<CreateJobResponse>(TenantId, request, cancellationToken);
+        var response = await bus.InvokeAsync<CreateJobResponse>(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
@@ -69,7 +69,7 @@ public class JobsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult> Update([FromRoute] Guid id, UpdateJobRequest request)
     {
-        var response = await bus.InvokeForTenantAsync<UpdateJobResponse>(TenantId, request with { JobId = id });
+        var response = await bus.InvokeAsync<UpdateJobResponse>(request with { JobId = id });
         return Ok(response);
     }
 }

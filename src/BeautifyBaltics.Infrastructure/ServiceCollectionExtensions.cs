@@ -1,10 +1,8 @@
-﻿using BeautifyBaltics.Infrastructure.Extensions;
-using JasperFx;
+﻿using JasperFx;
 using JasperFx.Events;
 using JasperFx.Events.Daemon;
 using Marten;
 using Marten.Services;
-using Marten.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Wolverine;
 using Wolverine.ErrorHandling;
 using Wolverine.FluentValidation;
-using Wolverine.Http;
 
 namespace BeautifyBaltics.Infrastructure;
 
@@ -59,9 +56,6 @@ public static class ServiceCollectionExtensions
      )
     {
         var connectionString = configurationManager.GetConnectionString("postgres") ?? throw new ArgumentException("Postgres connection string is required", nameof(configurationManager));
-        var tenantIds = configurationManager.GetSection("Tenants").Get<Dictionary<string, string>>()?.Keys.ToArray()
-                       ?? throw new ArgumentException("tenants");
-
         const string databaseName = "beautify_baltics_db";
 
         return services.AddMarten(options =>
@@ -69,12 +63,6 @@ public static class ServiceCollectionExtensions
                 options.UseSystemTextJsonForSerialization(casing: Casing.CamelCase);
 
                 options.Connection($"{connectionString};Database={databaseName}");
-
-                options.MultiTenantedWithSingleServer($"{connectionString};Database={databaseName}", t =>
-                {
-                    t.WithTenants(tenantIds).InDatabaseNamed(databaseName);
-                });
-
                 options.DatabaseSchemaName = "app";
                 options.Events.DatabaseSchemaName = "event";
                 // Turn on Otel tracing for connection activity, and
@@ -82,8 +70,6 @@ public static class ServiceCollectionExtensions
                 // operations 
                 options.OpenTelemetry.TrackConnections = TrackLevel.Verbose;
                 options.OpenTelemetry.TrackEventCounters();
-
-                options.Events.TenancyStyle = TenancyStyle.Conjoined;
 
                 options.Events.MetadataConfig.HeadersEnabled = true;
                 options.Events.MetadataConfig.CausationIdEnabled = true;
@@ -106,10 +92,6 @@ public static class ServiceCollectionExtensions
                 // Give the high‐water checker 30 seconds before skipping
                 options.Projections.StaleSequenceThreshold = TimeSpan.FromSeconds(30);
 
-                // Marking all documents as multi-tenanted (Conjoined) by default
-                // This can be overridden on a per-document basis
-                options.Policies.AllDocumentsAreMultiTenanted();
-
                 options.Policies.ForAllDocuments(x =>
                 {
                     x.Metadata.CausationId.Enabled = true;
@@ -128,14 +110,6 @@ public static class ServiceCollectionExtensions
             .UseLightweightSessions()
             .AddAsyncDaemon(environment.IsDevelopment() ? DaemonMode.Solo : DaemonMode.HotCold)
             .ApplyAllDatabaseChangesOnStartup();
-    }
-
-    public static IServiceCollection AddWolverineTenantDetection(this IServiceCollection services)
-    {
-        var options = new WolverineHttpOptions();
-        options.TenantId.IsClaimTypeNamed(CustomClaimTypes.TenantId);
-        services.AddSingleton(options);
-        return services;
     }
 
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)

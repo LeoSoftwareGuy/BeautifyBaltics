@@ -8,7 +8,6 @@ using JasperFx.CodeGeneration;
 using JasperFx.Resources;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -56,11 +55,6 @@ builder.Services.AddWolverineDefaults(o =>
         o.Durability.Mode = DurabilityMode.Solo;
     }
 });
-
-// Configure Wolverine to use the current tenant ID from the HTTP context
-// A custom middleware that extracts the tenant ID from the HTTP request and sets it in the Wolverine context
-builder.Services.AddWolverineTenantDetection();
-
 
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();

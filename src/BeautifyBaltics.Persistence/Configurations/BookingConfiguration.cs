@@ -18,8 +18,8 @@ public class BookingConfiguration : IConfigureMarten
             .DocumentAlias("booking")
             .ForeignKey<Master>(x => x.MasterId)
             .ForeignKey<Client>(x => x.ClientId)
-            .UniqueIndex(UniqueIndexType.Computed, "uq_bok_sch_at_master", TenancyScope.PerTenant, x => x.MasterId, x => x.ScheduledAt)
-            .UniqueIndex(UniqueIndexType.Computed, "uq_bok_sch_at_client", TenancyScope.PerTenant, x => x.ClientId, x => x.ScheduledAt)
+            .UniqueIndex(UniqueIndexType.Computed, "uq_bok_sch_at_master", x => x.MasterId, x => x.ScheduledAt)
+            .UniqueIndex(UniqueIndexType.Computed, "uq_bok_sch_at_client", x => x.ClientId, x => x.ScheduledAt)
             .MapProjectionMetadata();
 
         options.Projections.Add<BookingProjection>(ProjectionLifecycle.Inline);
