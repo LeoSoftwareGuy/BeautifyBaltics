@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import FeaturesSection from '@/components/FeaturesSection';
-import HeroSection from '@/components/HeroSection';
+import { HomePage } from '@/features/home';
 import { requireAuthenticated } from '@/utils/auth';
 
 export const Route = createFileRoute('/home/')({
@@ -18,10 +17,5 @@ export const Route = createFileRoute('/home/')({
 });
 
 export function HomeView() {
-  return (
-    <main className="min-h-screen">
-      <HeroSection />
-      <FeaturesSection />
-    </main>
-  );
+  return <HomePage />;
 }

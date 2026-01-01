@@ -13,6 +13,8 @@ import { Route as IndexRouteRouteImport } from './routes/index.route'
 import { Route as RegisterIndexRouteRouteImport } from './routes/register/index.route'
 import { Route as LoginIndexRouteRouteImport } from './routes/login/index.route'
 import { Route as HomeIndexRouteRouteImport } from './routes/home/index.route'
+import { Route as ExploreIndexRouteRouteImport } from './routes/explore/index.route'
+import { Route as MasterMasterIdIndexRouteRouteImport } from './routes/master/$masterId/index.route'
 
 const IndexRouteRoute = IndexRouteRouteImport.update({
   id: '/',
@@ -34,39 +36,71 @@ const HomeIndexRouteRoute = HomeIndexRouteRouteImport.update({
   path: '/home/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExploreIndexRouteRoute = ExploreIndexRouteRouteImport.update({
+  id: '/explore/',
+  path: '/explore/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasterMasterIdIndexRouteRoute =
+  MasterMasterIdIndexRouteRouteImport.update({
+    id: '/master/$masterId/',
+    path: '/master/$masterId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRouteRoute
+  '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
+  '/master/$masterId': typeof MasterMasterIdIndexRouteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRouteRoute
+  '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
+  '/master/$masterId': typeof MasterMasterIdIndexRouteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRouteRoute
+  '/explore/': typeof ExploreIndexRouteRoute
   '/home/': typeof HomeIndexRouteRoute
   '/login/': typeof LoginIndexRouteRoute
   '/register/': typeof RegisterIndexRouteRoute
+  '/master/$masterId/': typeof MasterMasterIdIndexRouteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/explore'
+    | '/home'
+    | '/login'
+    | '/register'
+    | '/master/$masterId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login' | '/register'
-  id: '__root__' | '/' | '/home/' | '/login/' | '/register/'
+  to: '/' | '/explore' | '/home' | '/login' | '/register' | '/master/$masterId'
+  id:
+    | '__root__'
+    | '/'
+    | '/explore/'
+    | '/home/'
+    | '/login/'
+    | '/register/'
+    | '/master/$masterId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRouteRoute: typeof IndexRouteRoute
+  ExploreIndexRouteRoute: typeof ExploreIndexRouteRoute
   HomeIndexRouteRoute: typeof HomeIndexRouteRoute
   LoginIndexRouteRoute: typeof LoginIndexRouteRoute
   RegisterIndexRouteRoute: typeof RegisterIndexRouteRoute
+  MasterMasterIdIndexRouteRoute: typeof MasterMasterIdIndexRouteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,14 +133,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore/': {
+      id: '/explore/'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/$masterId/': {
+      id: '/master/$masterId/'
+      path: '/master/$masterId'
+      fullPath: '/master/$masterId'
+      preLoaderRoute: typeof MasterMasterIdIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRouteRoute: IndexRouteRoute,
+  ExploreIndexRouteRoute: ExploreIndexRouteRoute,
   HomeIndexRouteRoute: HomeIndexRouteRoute,
   LoginIndexRouteRoute: LoginIndexRouteRoute,
   RegisterIndexRouteRoute: RegisterIndexRouteRoute,
+  MasterMasterIdIndexRouteRoute: MasterMasterIdIndexRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
