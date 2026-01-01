@@ -8,5 +8,6 @@ public class CreateMasterRequestValidator : AbstractValidator<CreateMasterReques
     public CreateMasterRequestValidator()
     {
         Include(new MasterProfileCommandValidator());
+        RuleFor(v => v.SupabaseUserId).NotEmpty();
     }
 }

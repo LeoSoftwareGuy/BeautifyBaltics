@@ -11,7 +11,13 @@ public class CreateMasterEventHandler(ICommandRepository commandRepository)
     {
         var contacts = new ContactInformation(request.Email, request.PhoneNumber);
 
-        var @event = new MasterCreated(request.FirstName, request.LastName, request.Age, request.Gender, contacts);
+        var @event = new MasterCreated(
+            request.FirstName,
+            request.LastName,
+            request.Age,
+            request.Gender,
+            contacts,
+            request.SupabaseUserId);
        
         var id = commandRepository.StartStream<MasterAggregate>(@event);
 

@@ -7,5 +7,6 @@ public record MasterCreated(
     string LastName,
     int? Age,
     string? Gender,
-    ContactInformation Contacts
+    ContactInformation Contacts,
+    string SupabaseUserId
 );

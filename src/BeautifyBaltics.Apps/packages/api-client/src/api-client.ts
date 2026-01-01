@@ -11,7 +11,7 @@ import { StatusCodes } from './status-codes';
 import { ProblemDetails, ValidationProblemDetails } from './types';
 import utils from './utils';
 
-type ApiClient = ({
+export type ApiClientRequest = {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   params?: Record<string, any>;
@@ -19,7 +19,7 @@ type ApiClient = ({
   data?: any;
   signal?: AbortSignal;
   responseType?: 'json' | 'blob';
-});
+};
 
 export const apiClient = async <T>({
   url,
@@ -29,7 +29,7 @@ export const apiClient = async <T>({
   headers,
   responseType,
   signal,
-}: ApiClient): Promise<T> => {
+}: ApiClientRequest): Promise<T> => {
   const requestHeaders: HeadersInit = new Headers();
 
   if (headers?.['Content-Type'] === 'application/json') {

@@ -9,6 +9,7 @@ public partial class MasterAggregate : Aggregate
     private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = [];
     private readonly Dictionary<Guid, MasterJob> _jobs = [];
 
+    public string SupabaseUserId { get; private set; } = string.Empty;
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public int? Age { get; private set; }
@@ -21,6 +22,17 @@ public partial class MasterAggregate : Aggregate
 
     public MasterAggregate(MasterCreated @event) : this()
     {
+        Apply(@event);
+    }
+
+    public void Apply(MasterCreated @event)
+    {
+        SupabaseUserId = @event.SupabaseUserId;
+        FirstName = @event.FirstName;
+        LastName = @event.LastName;
+        Age = @event.Age;
+        Gender = @event.Gender;
+        Contacts = @event.Contacts;
     }
 
     public void Apply(MasterProfileUpdated @event)

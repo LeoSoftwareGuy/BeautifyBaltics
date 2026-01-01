@@ -11,7 +11,8 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient
             var @event = new ClientCreated(
              FirstName: request.FirstName,
              LastName: request.LastName,
-             Contacts: request.Contacts
+             Contacts: request.Contacts,
+             SupabaseUserId: request.SupabaseUserId
             );
 
             var id = commandRepository.StartStream<ClientAggregate>(@event);

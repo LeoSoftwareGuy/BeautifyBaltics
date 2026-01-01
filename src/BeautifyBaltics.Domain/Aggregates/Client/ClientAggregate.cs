@@ -8,12 +8,22 @@ public class ClientAggregate : Aggregate
 {
     public ClientAggregate() { }
 
+    public string SupabaseUserId { get; private set; } = string.Empty;
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public ContactInformation Contacts { get; private set; } = new(string.Empty, string.Empty);
 
     public ClientAggregate(ClientCreated @event) : this()
     {
+        Apply(@event);
+    }
+
+    public void Apply(ClientCreated @event)
+    {
+        SupabaseUserId = @event.SupabaseUserId;
+        FirstName = @event.FirstName;
+        LastName = @event.LastName;
+        Contacts = @event.Contacts;
     }
 
     public void Apply(ClientProfileUpdated @event)

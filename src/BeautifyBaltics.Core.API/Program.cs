@@ -86,20 +86,32 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     });
 //}
 
+var jwtSecret = builder.Configuration["Authentication:JwtSecret"];
+if (string.IsNullOrWhiteSpace(jwtSecret))
+{
+    throw new InvalidOperationException("Authentication:JwtSecret configuration value is missing.");
+}
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Authentication:ValidIssuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Authentication:ValidAudience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromMinutes(1),
+        };
+    });
+
 builder.Services.AddAuthorization();
-
-//var bytes = Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JwtSecret"]!);
-
-//builder.Services.AddAuthentication().AddJwtBearer(options =>
-//{
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuerSigningKey = true,
-//        IssuerSigningKey = new SymmetricSecurityKey(bytes),
-//        ValidAudience = builder.Configuration["Authentication:ValidAudience"],
-//        ValidIssuer = builder.Configuration["Authentication:ValidIssuer"]
-//    };
-//});
 
 builder.AddDefaultHealthChecks()
     .AddNpgSql(name: "npgsql")

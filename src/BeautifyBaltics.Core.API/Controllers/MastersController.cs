@@ -46,7 +46,10 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult> Create([FromBody] CreateMasterRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<CreateMasterResponse>(TenantId, request, cancellationToken);
+        var response = await bus.InvokeForTenantAsync<CreateMasterResponse>(
+            TenantId,
+            request with { SupabaseUserId = UserId },
+            cancellationToken);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 

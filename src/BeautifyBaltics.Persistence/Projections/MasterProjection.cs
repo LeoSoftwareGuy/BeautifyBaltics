@@ -8,6 +8,7 @@ namespace BeautifyBaltics.Persistence.Projections;
 
 public record Master(Guid Id) : Projection
 {
+    public string SupabaseUserId { get; init; } = string.Empty;
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
     public int? Age { get; init; }
@@ -26,6 +27,7 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
     {
         return new Master(@event.StreamId)
         {
+            SupabaseUserId = @event.Data.SupabaseUserId,
             FirstName = @event.Data.FirstName,
             LastName = @event.Data.LastName,
             Age = @event.Data.Age,

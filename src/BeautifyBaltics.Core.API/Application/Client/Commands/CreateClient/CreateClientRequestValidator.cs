@@ -8,6 +8,7 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient
         public CreateClientRequestValidator()
         {
             Include(new ClientCommandValidator());
+            RuleFor(v => v.SupabaseUserId).NotEmpty();
         }
     }
 }

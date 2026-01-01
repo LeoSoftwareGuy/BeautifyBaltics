@@ -53,7 +53,10 @@ public class ClientsController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<CreatedAtActionResult> Create([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeForTenantAsync<CreateClientResponse>(TenantId, request, cancellationToken);
+        var response = await bus.InvokeForTenantAsync<CreateClientResponse>(
+            TenantId,
+            request with { SupabaseUserId = UserId },
+            cancellationToken);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
