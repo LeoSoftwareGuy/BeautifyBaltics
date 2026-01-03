@@ -9,7 +9,7 @@ type FiltersBarProps = {
   onSortChange: (value: 'date' | 'price') => void;
 };
 
-function FiltersBar({
+function ClientFiltersBar({
   filter,
   sortBy,
   onFilterChange,
@@ -44,4 +44,4 @@ function FiltersBar({
   );
 }
 
-export default FiltersBar;
+export default ClientFiltersBar;

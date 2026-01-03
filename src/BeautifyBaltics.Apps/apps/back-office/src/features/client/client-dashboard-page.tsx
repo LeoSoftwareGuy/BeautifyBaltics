@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Box, Container, Stack } from '@mantine/core';
 
-import BookingCard from './components/client-booking-card';
-import DashboardHeader from './components/client-dashboard-header';
-import DashboardStats from './components/client-dashboard-stats';
-import FiltersBar from './components/client-filters-bar';
+import ClientBookingCard from './components/client-booking-card';
+import ClientDashboardHeader from './components/client-dashboard-header';
+import ClientDashboardStats from './components/client-dashboard-stats';
+import ClientFiltersBar from './components/client-filters-bar';
 import { type BookingStatus, MOCK_BOOKINGS } from './data';
 
 function ClientDashboardPage() {
@@ -33,13 +33,13 @@ function ClientDashboardPage() {
     <Box bg="var(--mantine-color-body)" mih="100vh">
       <Container size="lg" py="xl">
         <Stack gap="xl">
-          <DashboardHeader />
-          <DashboardStats
+          <ClientDashboardHeader />
+          <ClientDashboardStats
             upcomingCount={upcomingCount}
             completedCount={completedCount}
             totalSpent={totalSpent}
           />
-          <FiltersBar
+          <ClientFiltersBar
             filter={filter}
             sortBy={sortBy}
             onFilterChange={setFilter}
@@ -47,7 +47,7 @@ function ClientDashboardPage() {
           />
           <Stack gap="md">
             {filteredBookings.map((booking) => (
-              <BookingCard key={booking.id} booking={booking} />
+              <ClientBookingCard key={booking.id} booking={booking} />
             ))}
           </Stack>
         </Stack>

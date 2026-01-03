@@ -28,7 +28,7 @@ function StatCard({ label, value, icon }: { label: string; value: string; icon: 
   );
 }
 
-function DashboardStats({
+function ClientDashboardStats({
   upcomingCount,
   completedCount,
   totalSpent,
@@ -42,4 +42,4 @@ function DashboardStats({
   );
 }
 
-export default DashboardStats;
+export default ClientDashboardStats;

@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { Session as SupabaseSession, User } from '@supabase/supabase-js';
 
+import { clearPendingProvision, loadPendingProvision, provisionUserProfile } from '@/features/auth';
 import { supabase } from '@/integrations/supabase/client';
 
 type SessionContextValue = {
@@ -80,6 +81,28 @@ function SessionProvider({ children }: SessionProviderProps) {
     if (error) throw error;
   }, []);
 
+  useEffect(() => {
+    const currentSession = session;
+    if (!currentSession?.user) {
+      return;
+    }
+
+    const pending = loadPendingProvision();
+    if (!pending) {
+      return;
+    }
+
+    const run = async () => {
+      try {
+        await provisionUserProfile(pending);
+        clearPendingProvision();
+      } catch (error) {
+        console.error('Failed to provision pending user profile', error);
+      }
+    };
+
+    run();
+  }, [session]);
 
   const contextValue = useMemo<SessionContextValue>(
     () => ({

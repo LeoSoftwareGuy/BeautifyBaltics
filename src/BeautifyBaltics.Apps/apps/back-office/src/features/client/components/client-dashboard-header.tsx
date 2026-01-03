@@ -4,7 +4,7 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowLeft } from 'lucide-react';
 
-function DashboardHeader() {
+function ClientDashboardHeader() {
   const navigate = useNavigate();
 
   return (
@@ -14,9 +14,7 @@ function DashboardHeader() {
           variant="subtle"
           leftSection={<ArrowLeft size={16} />}
           onClick={() => navigate({ to: '/explore' })}
-        >
-          Back
-        </Button>
+        />
         <Stack gap={0}>
           <Title order={2}>My Bookings</Title>
           <Title order={6} c="dimmed">Manage your appointments</Title>
@@ -27,4 +25,4 @@ function DashboardHeader() {
   );
 }
 
-export default DashboardHeader;
+export default ClientDashboardHeader;

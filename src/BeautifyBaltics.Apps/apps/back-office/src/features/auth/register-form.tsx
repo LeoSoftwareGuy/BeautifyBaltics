@@ -15,6 +15,7 @@ import { notifications } from '@mantine/notifications';
 import { supabase } from '@/integrations/supabase/client';
 
 import { provisionUserProfile } from './provision-user';
+import { savePendingProvision } from './provisioning-storage';
 
 type RoleOption = 'client' | 'master';
 
@@ -79,6 +80,13 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
           title: 'Check your inbox',
           message: 'Please confirm your email before signing in.',
           color: 'yellow',
+        });
+        savePendingProvision({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+          role: values.role,
         });
         onRequireEmailVerification?.();
         return;

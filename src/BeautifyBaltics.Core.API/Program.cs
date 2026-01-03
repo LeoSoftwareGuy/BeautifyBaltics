@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Infrastructure;
@@ -12,7 +10,6 @@ using JasperFx.Resources;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;

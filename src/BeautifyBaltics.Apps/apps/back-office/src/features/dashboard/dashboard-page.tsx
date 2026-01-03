@@ -5,7 +5,7 @@ import {
 import { ClientDashboardPage } from '@/features/client';
 import { useGetUser } from '@/state/endpoints/users';
 
-import MasterDashboardPage from './master-dashboard-page';
+import MasterDashboardPage from '../master/master-dashboard-page';
 
 function DashboardPage() {
   const {

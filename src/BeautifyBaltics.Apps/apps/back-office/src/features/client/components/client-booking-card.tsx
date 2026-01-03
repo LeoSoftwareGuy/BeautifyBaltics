@@ -26,7 +26,7 @@ const STATUS_LABELS: Record<Booking['status'], { label: string; color: string }>
   cancelled: { label: 'Cancelled', color: 'red' },
 };
 
-function BookingCard({ booking }: BookingCardProps) {
+function ClientBookingCard({ booking }: BookingCardProps) {
   const statusMeta = STATUS_LABELS[booking.status];
 
   const getActionLabel = () => {
@@ -87,4 +87,4 @@ function BookingCard({ booking }: BookingCardProps) {
   );
 }
 
-export default BookingCard;
+export default ClientBookingCard;
