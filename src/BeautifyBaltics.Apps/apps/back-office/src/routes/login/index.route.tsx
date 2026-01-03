@@ -15,6 +15,8 @@ import { supabase } from '@/integrations/supabase/client';
 import type { FileRouteTypes } from '@/routeTree.gen';
 import { normalizeRoutePath, redirectIfAuthenticated } from '@/utils/auth';
 
+import { AnchorLink } from '../../components/navigation';
+
 type RoutePath = FileRouteTypes['to'];
 type LoginSearch = {
   redirect: RoutePath;
@@ -86,6 +88,16 @@ function LoginView() {
             }}
           />
         </Stack>
+        <Text c="dimmed" fz="sm" ta="center">
+          Don&apos;t have an account?
+          {' '}
+          <AnchorLink
+            to="/register"
+            search={() => ({ redirect: redirectPath })}
+          >
+            Create one
+          </AnchorLink>
+        </Text>
       </Paper>
     </Stack>
   );

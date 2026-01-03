@@ -80,6 +80,7 @@ function SessionProvider({ children }: SessionProviderProps) {
     if (error) throw error;
   }, []);
 
+
   const contextValue = useMemo<SessionContextValue>(
     () => ({
       user: session?.user ?? null,

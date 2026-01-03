@@ -855,6 +855,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/users:
+    get:
+      tags:
+        - Users
+      summary: Gets user
+      operationId: GetUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
 components:
   schemas:
     BookingCommandDTO:
@@ -960,9 +979,10 @@ components:
       type: string
     ClientCommandDTO:
       required:
-        - contacts
+        - email
         - firstName
         - lastName
+        - phoneNumber
       type: object
       properties:
         firstName:
@@ -973,8 +993,16 @@ components:
           minLength: 1
           type: string
           description: Last name
-        contacts:
-          $ref: '#/components/schemas/ContactInformation'
+        email:
+          minLength: 1
+          type: string
+          description: Email address
+          format: email
+        phoneNumber:
+          maxLength: 32
+          minLength: 1
+          type: string
+          description: Phone number
       additionalProperties: false
     ClientDTO:
       required:
@@ -1005,16 +1033,6 @@ components:
           minLength: 1
           type: string
           description: Phone number
-      additionalProperties: false
-    ContactInformation:
-      type: object
-      properties:
-        email:
-          type: string
-          nullable: true
-        phoneNumber:
-          type: string
-          nullable: true
       additionalProperties: false
     CreateBookingRequest:
       allOf:
@@ -1288,6 +1306,19 @@ components:
                 $ref: '#/components/schemas/MasterAvailabilitySlotDTO'
               nullable: true
           additionalProperties: false
+    GetUserResponse:
+      type: object
+      properties:
+        role:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        fullName:
+          type: string
+          nullable: true
+      additionalProperties: false
     JobCommandDTO:
       required:
         - category

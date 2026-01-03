@@ -6,6 +6,10 @@ namespace BeautifyBaltics.Persistence.Repositories.Master;
 
 public class MasterRepository(IQuerySession session) : QueryRepository<Projections.Master, MasterSearchDTO>(session), IMasterRepository
 {
+    public Task<Projections.Master?> GetBySupabaseUserIdAsync(string supabaseUserId, CancellationToken cancellationToken = default) =>
+        _session.Query<Projections.Master>()
+            .FirstOrDefaultAsync(x => x.SupabaseUserId == supabaseUserId, cancellationToken);
+
     public override Task<IPagedList<Projections.Master>> GetPagedListAsync(MasterSearchDTO search, CancellationToken cancellationToken = default) =>
         BuildSearchQuery(search)
             .SortBy(search.SortBy, search.Ascending)

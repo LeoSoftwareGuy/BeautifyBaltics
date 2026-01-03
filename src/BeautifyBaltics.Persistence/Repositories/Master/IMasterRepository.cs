@@ -3,4 +3,7 @@ using BeautifyBaltics.Persistence.Repositories.SeedWork;
 
 namespace BeautifyBaltics.Persistence.Repositories.Master;
 
-public interface IMasterRepository : IQueryRepository<Projections.Master, MasterSearchDTO>;
+public interface IMasterRepository : IQueryRepository<Projections.Master, MasterSearchDTO>
+{
+    Task<Projections.Master?> GetBySupabaseUserIdAsync(string supabaseUserId, CancellationToken cancellationToken = default);
+}

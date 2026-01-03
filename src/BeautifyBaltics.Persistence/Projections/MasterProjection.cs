@@ -30,8 +30,6 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             SupabaseUserId = @event.Data.SupabaseUserId,
             FirstName = @event.Data.FirstName,
             LastName = @event.Data.LastName,
-            Age = @event.Data.Age,
-            Gender = @event.Data.Gender,
             Email = @event.Data.Contacts.Email,
             PhoneNumber = @event.Data.Contacts.PhoneNumber,
         };

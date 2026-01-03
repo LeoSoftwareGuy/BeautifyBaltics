@@ -14,10 +14,9 @@ public class CreateMasterEventHandler(ICommandRepository commandRepository)
         var @event = new MasterCreated(
             request.FirstName,
             request.LastName,
-            request.Age,
-            request.Gender,
             contacts,
-            request.SupabaseUserId);
+            request.SupabaseUserId
+        );
        
         var id = commandRepository.StartStream<MasterAggregate>(@event);
 

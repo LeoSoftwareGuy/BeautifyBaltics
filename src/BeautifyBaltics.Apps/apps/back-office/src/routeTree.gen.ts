@@ -14,6 +14,7 @@ import { Route as RegisterIndexRouteRouteImport } from './routes/register/index.
 import { Route as LoginIndexRouteRouteImport } from './routes/login/index.route'
 import { Route as HomeIndexRouteRouteImport } from './routes/home/index.route'
 import { Route as ExploreIndexRouteRouteImport } from './routes/explore/index.route'
+import { Route as DashboardIndexRouteRouteImport } from './routes/dashboard/index.route'
 import { Route as MasterMasterIdIndexRouteRouteImport } from './routes/master/$masterId/index.route'
 import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bookings/index.route'
 
@@ -42,6 +43,11 @@ const ExploreIndexRouteRoute = ExploreIndexRouteRouteImport.update({
   path: '/explore/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRouteRoute = DashboardIndexRouteRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterMasterIdIndexRouteRoute =
   MasterMasterIdIndexRouteRouteImport.update({
     id: '/master/$masterId/',
@@ -57,6 +63,7 @@ const ClientBookingsIndexRouteRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRouteRoute
+  '/dashboard': typeof DashboardIndexRouteRoute
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRouteRoute
+  '/dashboard': typeof DashboardIndexRouteRoute
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
@@ -76,6 +84,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRouteRoute
+  '/dashboard/': typeof DashboardIndexRouteRoute
   '/explore/': typeof ExploreIndexRouteRoute
   '/home/': typeof HomeIndexRouteRoute
   '/login/': typeof LoginIndexRouteRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/explore'
     | '/home'
     | '/login'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard'
     | '/explore'
     | '/home'
     | '/login'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/dashboard/'
     | '/explore/'
     | '/home/'
     | '/login/'
@@ -115,6 +127,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRouteRoute: typeof IndexRouteRoute
+  DashboardIndexRouteRoute: typeof DashboardIndexRouteRoute
   ExploreIndexRouteRoute: typeof ExploreIndexRouteRoute
   HomeIndexRouteRoute: typeof HomeIndexRouteRoute
   LoginIndexRouteRoute: typeof LoginIndexRouteRoute
@@ -160,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExploreIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/master/$masterId/': {
       id: '/master/$masterId/'
       path: '/master/$masterId'
@@ -179,6 +199,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRouteRoute: IndexRouteRoute,
+  DashboardIndexRouteRoute: DashboardIndexRouteRoute,
   ExploreIndexRouteRoute: ExploreIndexRouteRoute,
   HomeIndexRouteRoute: HomeIndexRouteRoute,
   LoginIndexRouteRoute: LoginIndexRouteRoute,

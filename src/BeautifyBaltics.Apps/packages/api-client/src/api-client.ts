@@ -11,6 +11,10 @@ import { StatusCodes } from './status-codes';
 import { ProblemDetails, ValidationProblemDetails } from './types';
 import utils from './utils';
 
+declare const __CORE_API_BASE_URL__: string | undefined;
+
+const ABSOLUTE_URL_REGEX = /^https?:\/\//i;
+
 export type ApiClientRequest = {
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -32,12 +36,17 @@ export const apiClient = async <T>({
 }: ApiClientRequest): Promise<T> => {
   const requestHeaders: HeadersInit = new Headers();
 
-  if (headers?.['Content-Type'] === 'application/json') {
-    requestHeaders.set('Content-Type', 'application/json');
+  if (headers) {
+    Object.entries(headers).forEach(([key, value]) => {
+      if (typeof value === 'undefined' || value === null) return;
+      requestHeaders.set(key, value);
+    });
   }
 
-  let requestURL = url;
-  if (params) requestURL = `${url}?${qs.stringify(params)}`;
+  const resolvedUrl = resolveUrl(url);
+
+  let requestURL = resolvedUrl;
+  if (params) requestURL = `${resolvedUrl}?${qs.stringify(params)}`;
 
   const response = await fetch(requestURL, {
     method,
@@ -65,3 +74,30 @@ export const apiClient = async <T>({
   if (text.length === 0) return {} as T;
   return utils.convertDates(JSON.parse(text)) as T;
 };
+
+function resolveUrl(url: string): string {
+  if (ABSOLUTE_URL_REGEX.test(url)) return url;
+
+  const baseUrl = getApiBaseUrl();
+  if (!baseUrl) return url;
+
+  try {
+    return new URL(
+      url.startsWith('/') ? url : `/${url}`,
+      baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`,
+    ).toString();
+  } catch {
+    return url;
+  }
+}
+
+function getApiBaseUrl() {
+  const definedBase = typeof __CORE_API_BASE_URL__ !== 'undefined' && __CORE_API_BASE_URL__;
+  if (definedBase) return definedBase;
+
+  if (typeof window !== 'undefined' && window.location) {
+    return window.location.origin;
+  }
+
+  return undefined;
+}

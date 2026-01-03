@@ -79,7 +79,17 @@ export type ClientCommandDTO = {
    * @minLength 1
    */
   lastName: string;
-  contacts: ContactInformation;
+  /**
+   * Email address
+   * @minLength 1
+   */
+  email: string;
+  /**
+   * Phone number
+   * @minLength 1
+   * @maxLength 32
+   */
+  phoneNumber: string;
 };
 
 export type ClientDTO = {
@@ -105,13 +115,6 @@ export type ClientDTO = {
    * @minLength 1
    */
   phoneNumber: string;
-};
-
-export type ContactInformation = {
-  /** @nullable */
-  email?: string | null;
-  /** @nullable */
-  phoneNumber?: string | null;
 };
 
 export type CreateBookingRequestAllOf = { [key: string]: unknown };
@@ -255,6 +258,15 @@ export type GetMasterByIdResponseAllOf = {
 };
 
 export type GetMasterByIdResponse = MasterDTO & GetMasterByIdResponseAllOf;
+
+export type GetUserResponse = {
+  /** @nullable */
+  role?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  fullName?: string | null;
+};
 
 export type JobCommandDTO = {
   /**

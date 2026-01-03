@@ -1,5 +1,5 @@
-import { apiClient } from '@beautify-baltics-apps/api-client';
 import type { ApiClientRequest } from '@beautify-baltics-apps/api-client';
+import { apiClient } from '@beautify-baltics-apps/api-client';
 
 import { supabase } from '@/integrations/supabase/client';
 

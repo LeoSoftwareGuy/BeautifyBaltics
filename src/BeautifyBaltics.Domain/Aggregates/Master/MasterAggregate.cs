@@ -22,20 +22,13 @@ public partial class MasterAggregate : Aggregate
 
     public MasterAggregate(MasterCreated @event) : this()
     {
-        Apply(@event);
-    }
-
-    public void Apply(MasterCreated @event)
-    {
         SupabaseUserId = @event.SupabaseUserId;
         FirstName = @event.FirstName;
         LastName = @event.LastName;
-        Age = @event.Age;
-        Gender = @event.Gender;
         Contacts = @event.Contacts;
     }
 
-    public void Apply(MasterProfileUpdated @event)
+    internal void Apply(MasterProfileUpdated @event)
     {
         FirstName = @event.FirstName;
         LastName = @event.LastName;
@@ -44,7 +37,7 @@ public partial class MasterAggregate : Aggregate
         Contacts = @event.Contacts;
     }
 
-    public void Apply(MasterJobCreated @event)
+    internal void Apply(MasterJobCreated @event)
     {
         this._jobs.Add(@event.MasterJobId,
             new MasterJob(
@@ -57,17 +50,17 @@ public partial class MasterAggregate : Aggregate
         );
     }
 
-    public void Apply(MasterJobUpdated @event)
+    internal void Apply(MasterJobUpdated @event)
     {
         this._jobs[@event.MasterJobId].Update(@event.JobId, @event.Price, @event.Duration, @event.Title);
     }
 
-    public void Apply(MasterJobDeleted @event)
+    internal void Apply(MasterJobDeleted @event)
     {
         this._jobs.Remove(@event.MasterJobId);
     }
 
-    public void Apply(MasterAvailabilitySlotCreated @event)
+    internal void Apply(MasterAvailabilitySlotCreated @event)
     {
         this._availabilities.Add(@event.MasterAvailabilityId,
             new MasterAvailabilitySlot(
@@ -79,12 +72,12 @@ public partial class MasterAggregate : Aggregate
         );
     }
 
-    public void Apply(MasterAvailabilitySlotUpdated @event)
+    internal void Apply(MasterAvailabilitySlotUpdated @event)
     {
         this._availabilities[@event.MasterAvailabilityId].Update(@event.MasterId, @event.StartAt, @event.EndAt);
     }
 
-    public void Apply(MasterAvailabilitySlotDeleted @event)
+    internal void Apply(MasterAvailabilitySlotDeleted @event)
     {
         this._availabilities.Remove(@event.MasterAvailabilitySlotId);
     }

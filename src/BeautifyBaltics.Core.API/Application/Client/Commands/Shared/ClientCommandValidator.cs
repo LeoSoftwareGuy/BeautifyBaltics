@@ -8,8 +8,14 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.Shared
         {
             RuleFor(v => v.FirstName).Length(3, 50);
             RuleFor(v => v.LastName).Length(3, 50);
-            RuleFor(v => v.Contacts.Email).EmailAddress();
-            RuleFor(v => v.Contacts.PhoneNumber).NotEmpty();
+            RuleFor(v => v.Email)
+                 .NotEmpty()
+                 .EmailAddress()
+                 .MaximumLength(256);
+
+            RuleFor(v => v.PhoneNumber)
+                .NotEmpty()
+                .MaximumLength(32);
         }
     }
 }

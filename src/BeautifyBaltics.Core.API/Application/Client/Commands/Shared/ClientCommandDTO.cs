@@ -1,5 +1,4 @@
-﻿using BeautifyBaltics.Domain.ValueObjects;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BeautifyBaltics.Core.API.Application.Client.Commands.Shared
 {
@@ -18,9 +17,17 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.Shared
         public required string LastName { get; init; }
 
         /// <summary>
-        /// Contacts containing phone and email
+        /// Email address
         /// </summary>
         [Required]
-        public required ContactInformation Contacts { get; init; }
+        [EmailAddress]
+        public required string Email { get; init; }
+
+        /// <summary>
+        /// Phone number
+        /// </summary>
+        [Required]
+        [MaxLength(32)]
+        public required string PhoneNumber { get; init; }
     }
 }

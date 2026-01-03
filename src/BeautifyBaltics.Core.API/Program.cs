@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Infrastructure;
 using BeautifyBaltics.Persistence;
@@ -9,10 +12,10 @@ using JasperFx.Resources;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
-using System.Text;
 using Wolverine;
 using Wolverine.Http;
 
@@ -34,6 +37,9 @@ builder.Logging.AddSimpleConsole(o =>
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<ISupabaseSigningKeysProvider, SupabaseSigningKeysProvider>();
 
 // Register Mapster in the IoC container
 builder.Services.AddMapster();
@@ -67,41 +73,47 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-//if (!builder.Environment.IsIntegrationTesting())
-//{
-    // Configure CritterStack defaults
-    builder.Services.CritterStackDefaults(x =>
-    {
-        x.ApplicationAssembly = typeof(Program).Assembly;
-
-        x.Production.GeneratedCodeMode = TypeLoadMode.Auto; // TODO: switch to Static if codegen write issues are resolved
-        x.Production.ResourceAutoCreate = AutoCreate.None;
-        x.Production.SourceCodeWritingEnabled = false;
-    });
-//}
-
-var jwtSecret = builder.Configuration["Authentication:JwtSecret"];
-if (string.IsNullOrWhiteSpace(jwtSecret))
+builder.Services.CritterStackDefaults(x =>
 {
-    throw new InvalidOperationException("Authentication:JwtSecret configuration value is missing.");
-}
+    x.ApplicationAssembly = typeof(Program).Assembly;
+
+    x.Production.GeneratedCodeMode = TypeLoadMode.Auto; // TODO: switch to Static if codegen write issues are resolved
+    x.Production.ResourceAutoCreate = AutoCreate.None;
+    x.Production.SourceCodeWritingEnabled = false;
+});
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer();
+
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<ISupabaseSigningKeysProvider, IConfiguration>((options, signingKeysProvider, configuration) =>
     {
-        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-        options.SaveToken = true;
+        var issuer = configuration["Authentication:ValidIssuer"];
+        if (string.IsNullOrWhiteSpace(issuer))
+        {
+            throw new InvalidOperationException("Missing Authentication:ValidIssuer configuration value.");
+        }
+
+        var audience = configuration["Authentication:ValidAudience"];
+        if (string.IsNullOrWhiteSpace(audience))
+        {
+            throw new InvalidOperationException("Missing Authentication:ValidAudience configuration value.");
+        }
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["Authentication:ValidIssuer"],
             ValidateAudience = true,
-            ValidAudience = builder.Configuration["Authentication:ValidAudience"],
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1),
+            ValidAudience = audience,
+            ValidIssuer = issuer,
+            IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
+            {
+                var keys = signingKeysProvider.GetSigningKeysAsync().GetAwaiter().GetResult();
+                return keys;
+            }
         };
     });
 
@@ -112,6 +124,20 @@ builder.AddDefaultHealthChecks()
     .AddAzureBlobStorage(name: "azureblobstorage");
 
 // Register controllers in the IoC container
+const string CorsPolicy = "frontend";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CorsPolicy, configurePolicy: policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4300")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddApiControllers(o =>
 {
     o.Groups.Add(new ApiGroup
@@ -160,6 +186,7 @@ app.UseStatusCodePages();
 app.MapDefaultEndpoints();
 app.UseRouting();
 
+app.UseCors(CorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -52,6 +52,12 @@ export default function UserMenu() {
             </Stack>
           </Group>
         </Menu.Item>
+        <Menu.Item onClick={() => navigate({ to: '/dashboard' })}>
+          <Stack gap={2}>
+            <Text fw={600} fz="sm">My Dashboard</Text>
+            <Text fz="xs" c="dimmed">{displayEmail}</Text>
+          </Stack>
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item disabled leftSection={<IconSettings size={16} />}>Settings</Menu.Item>
         <Menu.Item disabled leftSection={<IconBell size={16} />}>Notifications</Menu.Item>

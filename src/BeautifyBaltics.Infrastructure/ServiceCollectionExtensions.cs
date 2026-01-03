@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Wolverine;
 using Wolverine.ErrorHandling;
 using Wolverine.FluentValidation;
+using Wolverine.Marten;
 
 namespace BeautifyBaltics.Infrastructure;
 
@@ -55,7 +56,7 @@ public static class ServiceCollectionExtensions
          Action<StoreOptions>? configure
      )
     {
-        var connectionString = configurationManager.GetConnectionString("postgres") ?? throw new ArgumentException("Postgres connection string is required", nameof(configurationManager));
+        var connectionString = configurationManager.GetConnectionString("Postgres") ?? throw new ArgumentException("Postgres connection string is required", nameof(configurationManager));
         const string databaseName = "beautify_baltics_db";
 
         return services.AddMarten(options =>
@@ -63,6 +64,7 @@ public static class ServiceCollectionExtensions
                 options.UseSystemTextJsonForSerialization(casing: Casing.CamelCase);
 
                 options.Connection($"{connectionString};Database={databaseName}");
+
                 options.DatabaseSchemaName = "app";
                 options.Events.DatabaseSchemaName = "event";
                 // Turn on Otel tracing for connection activity, and
@@ -106,6 +108,14 @@ public static class ServiceCollectionExtensions
 
                 configure?.Invoke(options);
             })
+             .IntegrateWithWolverine(cfg =>
+              {
+                  cfg.MessageStorageSchemaName = "message";
+                  cfg.MasterDatabaseConnectionString = $"{connectionString};Database={databaseName}";
+
+                  // https://martendb.io/tutorials/advanced-considerations
+                  // cfg.UseWolverineManagedEventSubscriptionDistribution = true;
+              })
             .UseNpgsqlDataSource()
             .UseLightweightSessions()
             .AddAsyncDaemon(environment.IsDevelopment() ? DaemonMode.Solo : DaemonMode.HotCold)

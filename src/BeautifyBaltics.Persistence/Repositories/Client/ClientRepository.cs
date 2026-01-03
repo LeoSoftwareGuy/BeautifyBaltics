@@ -5,6 +5,10 @@ namespace BeautifyBaltics.Persistence.Repositories.Client;
 
 public class ClientRepository(IQuerySession session) : QueryRepository<Projections.Client, ClientSearchDTO>(session), IClientRepository
 {
+    public Task<Projections.Client?> GetBySupabaseUserIdAsync(string supabaseUserId, CancellationToken cancellationToken = default) =>
+        _session.Query<Projections.Client>()
+            .FirstOrDefaultAsync(x => x.SupabaseUserId == supabaseUserId, cancellationToken);
+
     public override Task<IPagedList<Projections.Client>> GetPagedListAsync(ClientSearchDTO search, CancellationToken cancellationToken = default) =>
         BuildSearchQuery(search)
             .SortBy(search.SortBy, search.Ascending)

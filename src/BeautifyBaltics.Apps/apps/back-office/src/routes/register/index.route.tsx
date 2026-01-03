@@ -1,14 +1,6 @@
-import {
-  Paper,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 
-import { supabase } from '@/integrations/supabase/client';
+import { RegisterForm } from '@/features/auth';
 import type { FileRouteTypes } from '@/routeTree.gen';
 import { normalizeRoutePath, redirectIfAuthenticated } from '@/utils/auth';
 
@@ -32,38 +24,24 @@ export const Route = createFileRoute('/register/')({
 
 function RegisterView() {
   const search = Route.useSearch();
+  const router = useRouter();
   const redirectPath = search.redirect || '/home';
-  const redirectTo = typeof window !== 'undefined'
-    ? `${window.location.origin}${redirectPath === '/' ? '' : redirectPath}`
-    : undefined;
+  const handleEmailVerificationRequired = () => {
+    router.navigate({
+      to: '/login',
+      search: { redirect: redirectPath, registered: true },
+      replace: true,
+    });
+  };
+
+  const handleRegistrationComplete = () => {
+    router.navigate({ to: redirectPath, replace: true });
+  };
 
   return (
-    <Stack align="center" justify="center" mih="calc(100vh - 120px)">
-      <Paper withBorder p="xl" radius="lg" miw={360}>
-        <Stack>
-          <div>
-            <Title order={3}>Create an account</Title>
-            <Text c="dimmed" fz="sm">
-              Register to access Beautify Baltics.
-            </Text>
-          </div>
-          <Auth
-            supabaseClient={supabase}
-            view="sign_up"
-            redirectTo={redirectTo}
-            providers={[]}
-            appearance={{ theme: ThemeSupa }}
-            localization={{
-              variables: {
-                sign_up: {
-                  email_label: 'Email address',
-                  password_label: 'Password',
-                },
-              },
-            }}
-          />
-        </Stack>
-      </Paper>
-    </Stack>
+    <RegisterForm
+      onRequireEmailVerification={handleEmailVerificationRequired}
+      onRegistrationComplete={handleRegistrationComplete}
+    />
   );
 }
