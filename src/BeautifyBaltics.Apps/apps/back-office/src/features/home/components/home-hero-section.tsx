@@ -12,7 +12,6 @@ import { useNavigate } from '@tanstack/react-router';
 import { MapPin, Search, Sparkles } from 'lucide-react';
 
 const BACKGROUND_PATTERN = "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI0NCwxNjQsMTgwLDAuMSkiLz48L2c+PC9zdmc+')";
-
 const HIGHLIGHTS = ['Verified Professionals', 'Instant Booking', 'Secure Payments'] as const;
 
 function HeroSection() {
@@ -22,11 +21,11 @@ function HeroSection() {
     <Box
       component="section"
       pos="relative"
-      mih="calc(100vh - 120px)"
-      py={{ base: 64, md: 96 }}
-      bg="var(--mantine-color-body)"
+      h="calc(100vh - 120px)"
       style={{
         backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.4), rgba(250,240,255,0.6))',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
       <Box
@@ -37,56 +36,69 @@ function HeroSection() {
           opacity: 0.35,
         }}
       />
-
       <Container size="lg" pos="relative" style={{ zIndex: 1 }}>
         <Stack gap="xl" align="center" ta="center">
           <Badge
             variant="light"
-            color="grape"
+            color="pink"
             radius="xl"
-            size="lg"
-            leftSection={<Sparkles size={16} />}
+            size="md"
+            leftSection={<Sparkles size={14} />}
+            styles={{
+              label: {
+                fontSize: '1.0rem',
+                paddingLeft: '0.5rem',
+                paddingRight: '0.5rem',
+                textTransform: 'capitalize',
+              },
+              root: {
+                paddingTop: '0.5rem',
+                paddingBottom: '0.5rem',
+                height: 'auto',
+              },
+            }}
           >
             Discover Beauty Professionals Near You
           </Badge>
-
-          <Stack gap="sm" ta="center">
-            <Title order={1} fw={800} size="clamp(40px, 6vw, 72px)">
+          <Stack gap="md" ta="center">
+            <Title order={1} fw={800} size="clamp(48px, 6vw, 68px)" lh={1.2}>
               Book Your Perfect
-              {' '}
-              <Text component="span" inherit c="grape.6">
+              <br />
+              <Text component="span" inherit c="pink.5">
                 Beauty Experience
               </Text>
             </Title>
-            <Text size="lg" maw={640} mx="auto" c="dimmed">
+            <Text size="md" maw={600} mx="auto" c="dimmed" lh={1.6}>
               Connect with talented barbers, tattoo artists, and beauty masters in your city.
               Browse portfolios, check availability, and book appointments seamlessly.
             </Text>
           </Stack>
-
           <Group gap="md" justify="center" wrap="wrap">
             <Button
-              size="lg"
-              radius="xl"
+              size="md"
+              radius="md"
+              color="pink"
               leftSection={<Search size={18} />}
               onClick={() => navigate({ to: '/explore' })}
+              px={24}
             >
               Explore Masters
             </Button>
             <Button
-              size="lg"
-              radius="xl"
+              size="md"
+              radius="md"
               variant="outline"
+              color="gray"
               leftSection={<MapPin size={18} />}
+              px={24}
             >
               View Map
             </Button>
           </Group>
-
           <Group gap="lg" justify="center" wrap="wrap">
             {HIGHLIGHTS.map((label) => (
               <Group key={label} gap={6}>
-                <Box w={8} h={8} bg="grape.5" style={{ borderRadius: 999 }} />
+                <Box w={8} h={8} bg="pink.5" style={{ borderRadius: 999 }} />
                 <Text size="sm" c="dimmed">
                   {label}
                 </Text>
@@ -95,7 +107,6 @@ function HeroSection() {
           </Group>
         </Stack>
       </Container>
-
       <Box
         pos="absolute"
         left={0}

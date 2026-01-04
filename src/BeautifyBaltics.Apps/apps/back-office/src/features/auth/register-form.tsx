@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import {
   Button,
+  Grid,
   Paper,
   PasswordInput,
-  Radio,
   Stack,
   Text,
   TextInput,
   Title,
+  UnstyledButton,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { IconScissors, IconUser } from '@tabler/icons-react';
 
 import { supabase } from '@/integrations/supabase/client';
 
@@ -125,65 +127,137 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
         withBorder
         p="xl"
         radius="lg"
-        miw={360}
+        w={500}
         component="form"
         onSubmit={handleSubmit}
       >
         <Stack gap="lg">
-          <div>
-            <Title order={3}>Create an account</Title>
-            <Text c="dimmed" fz="sm">
+          <Stack gap="xs" align="center">
+            <Title order={2}>Create an account</Title>
+            <Text c="dimmed" size="sm">
               Register to access Beautify Baltics.
             </Text>
-          </div>
-
-          <Stack gap="md">
-            <TextInput
-              label="First name"
-              placeholder="John"
-              withAsterisk
-              {...form.getInputProps('firstName')}
-            />
-            <TextInput
-              label="Last name"
-              placeholder="Doe"
-              withAsterisk
-              {...form.getInputProps('lastName')}
-            />
-            <TextInput
-              label="Email address"
-              type="email"
-              placeholder="you@example.com"
-              withAsterisk
-              {...form.getInputProps('email')}
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="••••••••"
-              withAsterisk
-              {...form.getInputProps('password')}
-            />
-            <TextInput
-              label="Phone number"
-              type="tel"
-              placeholder="+123456789"
-              withAsterisk
-              {...form.getInputProps('phoneNumber')}
-            />
           </Stack>
 
-          <Radio.Group
-            label="Account type"
-            description="Choose how you want to use Beautify Baltics"
-            {...form.getInputProps('role')}
-          >
-            <Stack gap={10} mt="sm">
-              <Radio value="client" label="Client" />
-              <Radio value="master" label="Master" />
+          <Stack gap="md">
+            <Stack gap={4}>
+              <Text size="sm" fw={500}>
+                First name
+                {' '}
+                <Text component="span" c="red">*</Text>
+              </Text>
+              <TextInput
+                placeholder="John"
+                radius="md"
+                {...form.getInputProps('firstName')}
+              />
             </Stack>
-          </Radio.Group>
+            <Stack gap={4}>
+              <Text size="sm" fw={500}>
+                Last name
+                {' '}
+                <Text component="span" c="red">*</Text>
+              </Text>
+              <TextInput
+                placeholder="Doe"
+                radius="md"
+                {...form.getInputProps('lastName')}
+              />
+            </Stack>
+            <Stack gap={4}>
+              <Text size="sm" fw={500}>
+                Email address
+                {' '}
+                <Text component="span" c="red">*</Text>
+              </Text>
+              <TextInput
+                type="email"
+                placeholder="you@example.com"
+                radius="md"
+                {...form.getInputProps('email')}
+              />
+            </Stack>
+            <Stack gap={4}>
+              <Text size="sm" fw={500}>
+                Password
+                {' '}
+                <Text component="span" c="red">*</Text>
+              </Text>
+              <PasswordInput
+                placeholder="••••••••"
+                radius="md"
+                {...form.getInputProps('password')}
+              />
+            </Stack>
+            <Stack gap={4}>
+              <Text size="sm" fw={500}>
+                Phone number
+                {' '}
+                <Text component="span" c="red">*</Text>
+              </Text>
+              <TextInput
+                type="tel"
+                placeholder="+123456789"
+                radius="md"
+                {...form.getInputProps('phoneNumber')}
+              />
+            </Stack>
+          </Stack>
 
-          <Button type="submit" loading={submitting}>
+          <Stack gap="sm">
+            <Text size="sm" fw={500}>
+              Account type
+            </Text>
+            <Text size="xs" c="dimmed">
+              Choose how you want to use Beautify Baltics
+            </Text>
+            <Grid gutter="md">
+              <Grid.Col span={6}>
+                <UnstyledButton
+                  onClick={() => form.setFieldValue('role', 'client')}
+                  style={{
+                    width: '100%',
+                    padding: '20px',
+                    borderRadius: '8px',
+                    border: '2px solid',
+                    borderColor: form.values.role === 'client' ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-3)',
+                    backgroundColor: form.values.role === 'client' ? 'var(--mantine-color-pink-6)' : 'transparent',
+                    color: form.values.role === 'client' ? 'white' : 'var(--mantine-color-gray-7)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Stack gap="xs" align="center">
+                    <IconUser size={24} stroke={2} />
+                    <Text fw={600} size="sm">Client</Text>
+                  </Stack>
+                </UnstyledButton>
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <UnstyledButton
+                  onClick={() => form.setFieldValue('role', 'master')}
+                  style={{
+                    width: '100%',
+                    padding: '20px',
+                    borderRadius: '8px',
+                    border: '2px solid',
+                    borderColor: form.values.role === 'master' ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-3)',
+                    backgroundColor: form.values.role === 'master' ? 'var(--mantine-color-pink-6)' : 'transparent',
+                    color: form.values.role === 'master' ? 'white' : 'var(--mantine-color-gray-7)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <Stack gap="xs" align="center">
+                    <IconScissors size={24} stroke={2} />
+                    <Text fw={600} size="sm">Master</Text>
+                  </Stack>
+                </UnstyledButton>
+              </Grid.Col>
+            </Grid>
+          </Stack>
+
+          <Button type="submit" loading={submitting} size="md" color="pink">
             Create account
           </Button>
         </Stack>

@@ -1,37 +1,30 @@
-import React from 'react';
 import {
-  Card, Group, Skeleton, Stack, Text, ThemeIcon,
+  Card, Group, Stack, Text, ThemeIcon,
 } from '@mantine/core';
-import { IconUsers } from '@tabler/icons-react';
+import { TablerIconsProps } from '@tabler/icons-react';
 
 interface InsightCardProps {
   title: string;
-  icon: typeof IconUsers;
-  isLoading?: boolean;
+  icon: React.ComponentType<TablerIconsProps>;
+  iconColor?: string;
   children: React.ReactNode;
 }
 
 export default function InsightCard({
-  title,
-  icon,
-  isLoading = false,
-  children,
+  title, icon: Icon, iconColor = 'blue', children,
 }: InsightCardProps) {
-  const IconComponent = icon || IconUsers;
   return (
-    <Card withBorder>
-      <Group gap="sm" wrap="nowrap">
-        <ThemeIcon variant="default" size="lg">
-          <IconComponent />
-        </ThemeIcon>
-        <Stack gap={0}>
-          <Text fz="xs" c="gray" lineClamp={1}>{title}</Text>
-          {isLoading ? (
-            <Skeleton width={120}>
-              <Text fz="sm" fw={700}>Loading...</Text>
-            </Skeleton>
-          ) : <Text fz="sm" fw={700}>{children}</Text>}
+    <Card withBorder radius="md" p="lg">
+      <Group justify="space-between" align="flex-start" mb="xs">
+        <Stack gap={4}>
+          <Text size="sm" c="dimmed" fw={500}>
+            {title}
+          </Text>
+          {children}
         </Stack>
+        <ThemeIcon size="lg" variant="light" color={iconColor} radius="md">
+          <Icon size={20} stroke={1.5} />
+        </ThemeIcon>
       </Group>
     </Card>
   );

@@ -8,14 +8,14 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { DatePicker, DateValue } from '@mantine/dates';
+import { DatePicker } from '@mantine/dates';
 import { Calendar, Clock } from 'lucide-react';
 
 type BookingSectionProps = {
   availableSlots: string[];
   selectedDate: Date | null;
   selectedSlot: string | null;
-  onDateChange: (value: DateValue) => void;
+  onDateChange: (value: Date | null) => void;
   onSlotChange: (slot: string) => void;
   onBook: () => void;
 };
