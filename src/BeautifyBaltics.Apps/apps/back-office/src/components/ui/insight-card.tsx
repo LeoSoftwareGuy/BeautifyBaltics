@@ -1,11 +1,10 @@
 import {
   Card, Group, Stack, Text, ThemeIcon,
 } from '@mantine/core';
-import { TablerIconsProps } from '@tabler/icons-react';
 
 interface InsightCardProps {
   title: string;
-  icon: React.ComponentType<TablerIconsProps>;
+  icon: React.ComponentType<{ size?: number; stroke?: number }>;
   iconColor?: string;
   children: React.ReactNode;
 }

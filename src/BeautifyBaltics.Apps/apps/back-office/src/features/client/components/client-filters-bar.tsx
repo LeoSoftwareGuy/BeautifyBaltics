@@ -20,7 +20,7 @@ function ClientFiltersBar({
       <Tabs
         value={filter}
         onChange={(value) => onFilterChange((value ?? 'all') as BookingStatus | 'all')}
-        variant="pills"
+        variant="outline"
       >
         <Tabs.List>
           <Tabs.Tab value="all">All</Tabs.Tab>

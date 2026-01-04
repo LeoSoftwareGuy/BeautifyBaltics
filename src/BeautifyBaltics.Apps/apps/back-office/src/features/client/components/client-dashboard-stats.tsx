@@ -1,10 +1,11 @@
+import { Grid, Text } from '@mantine/core';
 import {
-  Card,
-  Group,
-  Stack,
-  Text,
-} from '@mantine/core';
-import { Calendar, Clock } from 'lucide-react';
+  IconCalendarEvent,
+  IconCircleCheck,
+  IconCurrencyDollar,
+} from '@tabler/icons-react';
+
+import InsightCard from '@/components/ui/insight-card';
 
 type DashboardStatsProps = {
   upcomingCount: number;
@@ -12,33 +13,42 @@ type DashboardStatsProps = {
   totalSpent: number;
 };
 
-function StatCard({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
-  return (
-    <Card withBorder radius="lg">
-      <Card.Section inheritPadding py="md">
-        <Group justify="space-between" align="center">
-          <Stack gap={4}>
-            <Text size="sm" c="dimmed">{label}</Text>
-            <Text size="xl" fw={700}>{value}</Text>
-          </Stack>
-          {icon}
-        </Group>
-      </Card.Section>
-    </Card>
-  );
-}
-
 function ClientDashboardStats({
   upcomingCount,
   completedCount,
   totalSpent,
 }: DashboardStatsProps) {
+  const stats = [
+    {
+      label: 'Upcoming',
+      value: String(upcomingCount),
+      icon: IconCalendarEvent,
+      color: 'blue',
+    },
+    {
+      label: 'Completed',
+      value: String(completedCount),
+      icon: IconCircleCheck,
+      color: 'green',
+    },
+    {
+      label: 'Total Spent',
+      value: `$${totalSpent}`,
+      icon: IconCurrencyDollar,
+      color: 'grape',
+    },
+  ];
+
   return (
-    <Group grow align="stretch">
-      <StatCard label="Upcoming" value={String(upcomingCount)} icon={<Calendar size={32} />} />
-      <StatCard label="Completed" value={String(completedCount)} icon={<Clock size={32} />} />
-      <StatCard label="Total Spent" value={`$${totalSpent}`} icon={<Text fw={600}>$</Text>} />
-    </Group>
+    <Grid>
+      {stats.map((stat) => (
+        <Grid.Col key={stat.label} span={{ base: 12, md: 4 }}>
+          <InsightCard title={stat.label} icon={stat.icon} iconColor={stat.color}>
+            <Text size="xl" fw={700} c={stat.color}>{stat.value}</Text>
+          </InsightCard>
+        </Grid.Col>
+      ))}
+    </Grid>
   );
 }
 
