@@ -16,9 +16,6 @@ import { IconScissors, IconUser } from '@tabler/icons-react';
 
 import { supabase } from '@/integrations/supabase/client';
 
-import { provisionUserProfile } from './provision-user';
-import { savePendingProvision } from './provisioning-storage';
-
 type RoleOption = 'client' | 'master';
 
 type RegisterFormProps = {
@@ -59,15 +56,24 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
   const handleSubmit = form.onSubmit(async (values) => {
     setSubmitting(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: values.email,
+      const trimmed = {
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        email: values.email.trim(),
         password: values.password,
+        phoneNumber: values.phoneNumber.trim(),
+        role: values.role,
+      };
+
+      const { data, error } = await supabase.auth.signUp({
+        email: trimmed.email,
+        password: trimmed.password,
         options: {
           data: {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            phoneNumber: values.phoneNumber,
-            role: values.role,
+            firstName: trimmed.firstName,
+            lastName: trimmed.lastName,
+            phoneNumber: trimmed.phoneNumber,
+            role: trimmed.role,
           },
         },
       });
@@ -83,24 +89,9 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
           message: 'Please confirm your email before signing in.',
           color: 'yellow',
         });
-        savePendingProvision({
-          firstName: values.firstName,
-          lastName: values.lastName,
-          email: values.email,
-          phoneNumber: values.phoneNumber,
-          role: values.role,
-        });
         onRequireEmailVerification?.();
         return;
       }
-
-      await provisionUserProfile({
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-        role: values.role,
-      });
 
       notifications.show({
         title: 'Account created',

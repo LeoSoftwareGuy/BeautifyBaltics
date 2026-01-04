@@ -1,3 +1,4 @@
+using BeautifyBaltics.Core.API.Application.Auth.Services;
 using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Infrastructure;
@@ -61,6 +62,7 @@ builder.Services.AddWolverineDefaults(o =>
 
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddScoped<IUserProvisioningService, UserProvisioningService>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -185,6 +187,7 @@ app.UseRouting();
 
 app.UseCors(CorsPolicy);
 app.UseAuthentication();
+app.UseMiddleware<UserProvisioningMiddleware>();
 app.UseAuthorization();
 
 app.UseRequestTimeouts();
