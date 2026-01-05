@@ -3,8 +3,8 @@ import {
   Card, Tabs,
 } from '@mantine/core';
 
+import { MasterTreatments } from './master-treatments/master-treatments';
 import { MasterBookingsPanel } from './master-bookings-panel';
-import { MasterPortfolioPanel } from './master-portfolio';
 import MasterProfileSettings from './master-profile-settings';
 import { MasterSchedulePanel } from './master-schedule-panel';
 
@@ -66,7 +66,7 @@ export function MasterTabs({
       </Tabs.Panel>
 
       <Tabs.Panel value="portfolio" pt="xl">
-        <MasterPortfolioPanel />
+        <MasterTreatments />
       </Tabs.Panel>
 
       <Tabs.Panel value="profile" pt="xl">
