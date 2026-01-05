@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BeautifyBaltics.Core.API.Application.SeedWork;
+using System.ComponentModel.DataAnnotations;
 
 namespace BeautifyBaltics.Core.API.Application.Client.Queries.Shared
 {
@@ -33,5 +34,10 @@ namespace BeautifyBaltics.Core.API.Application.Client.Queries.Shared
         /// </summary>
         [Required]
         public required string PhoneNumber { get; init; }
+
+        /// <summary>
+        /// Profile image metadata
+        /// </summary>
+        public FileMetadataDTO? ProfileImage { get; init; }
     }
 }

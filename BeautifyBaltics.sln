@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11304.174 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}"
 EndProject
@@ -20,6 +20,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautifyBaltics.AppHost", "src\BeautifyBaltics.AppHost\BeautifyBaltics.AppHost.csproj", "{15B6C046-616E-47CB-BE01-EC5BFD3BBFF3}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "BeautifyBaltics.Apps", "src\BeautifyBaltics.Apps\BeautifyBaltics.Apps.esproj", "{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeautifyBaltics.Integrations.BlobStorage", "src\Integrations\BeautifyBaltics.Integrations.BlobStorage\BeautifyBaltics.Integrations.BlobStorage.csproj", "{23710360-E8D6-20E0-76DF-696E5795D37E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{DBBFC44E-91DE-41EC-94D7-50FA9016C2CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +63,10 @@ Global
 		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23710360-E8D6-20E0-76DF-696E5795D37E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23710360-E8D6-20E0-76DF-696E5795D37E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23710360-E8D6-20E0-76DF-696E5795D37E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23710360-E8D6-20E0-76DF-696E5795D37E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,5 +80,10 @@ Global
 		{0ACECF0B-B1BE-4BA9-B048-5611FBD575BB} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
 		{15B6C046-616E-47CB-BE01-EC5BFD3BBFF3} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
 		{E5DE55B2-70BD-4CD3-8F4C-F96522132D8F} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
+		{23710360-E8D6-20E0-76DF-696E5795D37E} = {DBBFC44E-91DE-41EC-94D7-50FA9016C2CA}
+		{DBBFC44E-91DE-41EC-94D7-50FA9016C2CA} = {1FD5EA08-41F2-4138-A6CC-42DDA20B4A06}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5A5185AD-F561-42C0-99EA-507701951DA1}
 	EndGlobalSection
 EndGlobal

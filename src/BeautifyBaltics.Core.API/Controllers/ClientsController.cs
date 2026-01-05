@@ -1,6 +1,7 @@
 using BeautifyBaltics.Core.API.Application.Booking.Queries.FindBookings;
 using BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient;
 using BeautifyBaltics.Core.API.Application.Client.Commands.UpdateClientProfile;
+using BeautifyBaltics.Core.API.Application.Client.Commands.UploadClientProfileImage;
 using BeautifyBaltics.Core.API.Application.Client.Queries.FindClients;
 using BeautifyBaltics.Core.API.Application.Client.Queries.GetClientById;
 using BeautifyBaltics.Core.API.Application.SeedWork;
@@ -21,9 +22,9 @@ public class ClientsController(IMessageBus bus) : ApiController
     [HttpGet(Name = "FindClients")]
     [ProducesResponseType(typeof(PagedResponse<FindClientsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult<PagedResponse<FindBookingsResponse>>> Find([FromQuery] FindBookingsRequest request)
+    public async Task<ActionResult<PagedResponse<FindClientsResponse>>> Find([FromQuery] FindClientsRequest request)
     {
-        var response = await bus.InvokeAsync<PagedResponse<FindBookingsResponse>>(request);
+        var response = await bus.InvokeAsync<PagedResponse<FindClientsResponse>>(request);
         return Ok(response);
     }
 
@@ -73,6 +74,22 @@ public class ClientsController(IMessageBus bus) : ApiController
     public async Task<ActionResult> Update([FromRoute] Guid id, UpdateClientProfileRequest request)
     {
         var response = await bus.InvokeAsync<UpdateClientProfileResponse>(request with { ClientID = id });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Upload client profile image
+    /// </summary>
+    [HttpPost("{id:guid}/profile-image", Name = "UploadClientProfileImage")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50MB limit for total request
+    [ProducesResponseType(typeof(UploadClientProfileImageResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> UploadProfileImage([FromRoute] Guid id, [FromForm] UploadClientProfileImageRequest request, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<UploadClientProfileImageResponse>(request with { ClientId = id }, cancellationToken);
         return Ok(response);
     }
 }

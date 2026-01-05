@@ -8,6 +8,7 @@ public partial class MasterAggregate : Aggregate
 {
     private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = [];
     private readonly Dictionary<Guid, MasterJob> _jobs = [];
+    private readonly Dictionary<Guid, MasterPortfolioImage> _portfolioImages = [];
 
     public string SupabaseUserId { get; private set; } = string.Empty;
     public string FirstName { get; private set; } = string.Empty;
@@ -15,8 +16,10 @@ public partial class MasterAggregate : Aggregate
     public int? Age { get; private set; }
     public string? Gender { get; private set; }
     public ContactInformation Contacts { get; private set; } = new(string.Empty, string.Empty);
+    public MasterProfileImage? ProfileImage { get; private set; }
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
     public IReadOnlyCollection<MasterAvailabilitySlot> Availability => _availabilities.Values.ToList();
+    public IReadOnlyCollection<MasterPortfolioImage> Portfolio => _portfolioImages.Values.ToList();
 
     public MasterAggregate() { }
 
@@ -35,6 +38,17 @@ public partial class MasterAggregate : Aggregate
         Age = @event.Age;
         Gender = @event.Gender;
         Contacts = @event.Contacts;
+    }
+
+    internal void Apply(MasterProfileImageUploaded @event)
+    {
+        ProfileImage = new MasterProfileImage(
+            @event.MasterProfileImageId,
+            @event.BlobName,
+            @event.FileName,
+            @event.FileMimeType,
+            @event.FileSize
+        );
     }
 
     internal void Apply(MasterJobCreated @event)
@@ -80,5 +94,18 @@ public partial class MasterAggregate : Aggregate
     internal void Apply(MasterAvailabilitySlotDeleted @event)
     {
         this._availabilities.Remove(@event.MasterAvailabilitySlotId);
+    }
+
+    internal void Apply(MasterPortfolioImageUploaded @event)
+    {
+        var portfolioImage = new MasterPortfolioImage(
+            @event.MasterPortfolioImageId,
+            @event.BlobName,
+            @event.FileName,
+            @event.FileMimeType,
+            @event.FileSize
+        );
+
+        this._portfolioImages[@event.MasterPortfolioImageId] = portfolioImage;
     }
 }

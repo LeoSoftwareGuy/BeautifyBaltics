@@ -2,6 +2,9 @@ using BeautifyBaltics.Core.API.Application.Master.Commands.AddMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.CreateMaster;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DefineAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterProfile;
+using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterPortfolioImages;
+using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterProfileImage;
+using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterPortfolioFiles;
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasters;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
 using BeautifyBaltics.Core.API.Application.SeedWork;
@@ -88,6 +91,55 @@ public class MastersController(IMessageBus bus) : ApiController
     public async Task<ActionResult> CreateMasterAvailability([FromRoute] Guid id, [FromBody] CreateMasterAvailabilityRequest request, CancellationToken cancellationToken)
     {
         var response = await bus.InvokeAsync<CreateMasterAvailabilityResponse>(request with { MasterId = id }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Upload master profile image
+    /// </summary>
+    [HttpPost("{id:guid}/profile-image", Name = "UploadMasterProfileImage")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50MB limit for total request
+    [ProducesResponseType(typeof(UploadMasterProfileImageResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> UploadProfileImage([FromRoute] Guid id, [FromForm] UploadMasterProfileImageRequest request, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<UploadMasterProfileImageResponse>(request with { MasterId = id }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Find master images
+    /// </summary>
+    /// <param name="masterId">Master id</param>
+    /// <param name="request">Find fund files request</param>
+    /// <returns>Paged master images</returns>
+    [HttpGet("{id:guid}/portfolio/images", Name = "FindMasterPortfolioImages")]
+    [ProducesResponseType(typeof(PagedResponse<FindMasterPortfolioFilesResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<PagedResponse<FindMasterPortfolioFilesResponse>>> FindFundFiles([FromRoute] Guid masterId,
+        [FromQuery] FindMasterPortfolioFilesRequest request)
+    {
+        var response = await bus.InvokeAsync<PagedResponse<FindMasterPortfolioFilesResponse>>(request with { MasterId = masterId });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Upload master portfolio images
+    /// </summary>
+    [HttpPost("{id:guid}/portfolio/images", Name = "UploadMasterPortfolioImages")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50MB limit for total request
+    [ProducesResponseType(typeof(UploadMasterPortfolioImagesResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> UploadPortfolioImages([FromRoute] Guid id, [FromForm] UploadMasterPortfolioImagesRequest request, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<UploadMasterPortfolioImagesResponse>(request with { MasterId = id }, cancellationToken);
         return Ok(response);
     }
 }

@@ -13,6 +13,10 @@ public record Client(Guid Id) : Projection
     public string LastName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
+    public string? ProfileImageBlobName { get; init; }
+    public string? ProfileImageFileName { get; init; }
+    public string? ProfileImageMimeType { get; init; }
+    public long? ProfileImageSize { get; init; }
 }
 
 public class ClientProjection : SingleStreamProjection<Client, Guid>
@@ -37,6 +41,17 @@ public class ClientProjection : SingleStreamProjection<Client, Guid>
             LastName = @event.LastName,
             Email = @event.Contacts.Email,
             PhoneNumber = @event.Contacts.PhoneNumber,
+        };
+    }
+
+    public static Client Apply(ClientProfileImageUploaded @event, Client current)
+    {
+        return current with
+        {
+            ProfileImageBlobName = @event.BlobName,
+            ProfileImageFileName = @event.FileName,
+            ProfileImageMimeType = @event.FileMimeType,
+            ProfileImageSize = @event.FileSize
         };
     }
 }

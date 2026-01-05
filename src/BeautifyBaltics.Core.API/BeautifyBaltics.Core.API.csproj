@@ -30,6 +30,7 @@
     <ProjectReference Include="..\BeautifyBaltics.Infrastructure\BeautifyBaltics.Infrastructure.csproj" />
     <ProjectReference Include="..\BeautifyBaltics.Persistence\BeautifyBaltics.Persistence.csproj" />
     <ProjectReference Include="..\BeautifyBaltics.ServiceDefaults\BeautifyBaltics.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Integrations\BeautifyBaltics.Integrations.BlobStorage\BeautifyBaltics.Integrations.BlobStorage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

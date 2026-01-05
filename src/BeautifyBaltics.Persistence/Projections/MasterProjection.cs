@@ -19,6 +19,10 @@ public record Master(Guid Id) : Projection
     public double? Latitude { get; init; }
     public double? Longitude { get; init; }
     public string? City { get; init; }
+    public string? ProfileImageBlobName { get; init; }
+    public string? ProfileImageFileName { get; init; }
+    public string? ProfileImageMimeType { get; init; }
+    public long? ProfileImageSize { get; init; }
 }
 
 public class MasterProjection : SingleStreamProjection<Master, Guid>
@@ -45,6 +49,17 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             Gender = @event.Gender,
             Email = @event.Contacts.Email,
             PhoneNumber = @event.Contacts.PhoneNumber,
+        };
+    }
+
+    public static Master Apply(MasterProfileImageUploaded @event, Master current)
+    {
+        return current with
+        {
+            ProfileImageBlobName = @event.BlobName,
+            ProfileImageFileName = @event.FileName,
+            ProfileImageMimeType = @event.FileMimeType,
+            ProfileImageSize = @event.FileSize
         };
     }
 }

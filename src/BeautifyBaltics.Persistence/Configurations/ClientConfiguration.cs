@@ -23,5 +23,6 @@ public class ClientConfiguration : IConfigureMarten
 
         options.Events.AddEventType(typeof(ClientCreated));
         options.Events.AddEventType(typeof(ClientProfileUpdated));
+        options.Events.AddEventType(typeof(ClientProfileImageUploaded));
     }
 }

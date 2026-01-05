@@ -1,4 +1,6 @@
-﻿namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared
+﻿using BeautifyBaltics.Core.API.Application.SeedWork;
+
+namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared
 {
     public record MasterDTO
     {
@@ -13,5 +15,6 @@
         public double? Latitude { get; init; }
         public double? Longitude { get; init; }
         public string? City { get; init; }
+        public FileMetadataDTO? ProfileImage { get; init; }
     }
 }

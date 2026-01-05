@@ -21,8 +21,6 @@ public class MasterConfiguration : IConfigureMarten
 
         options.Events.AddEventType(typeof(MasterCreated));
         options.Events.AddEventType(typeof(MasterProfileUpdated));
-        options.Events.AddEventType(typeof(MasterJobCreated));
-        options.Events.AddEventType(typeof(MasterJobUpdated));
-        options.Events.AddEventType(typeof(MasterJobDeleted));
+        options.Events.AddEventType(typeof(MasterProfileImageUploaded));
     }
 }
