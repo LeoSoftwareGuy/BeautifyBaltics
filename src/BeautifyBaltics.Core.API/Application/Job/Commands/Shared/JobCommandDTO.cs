@@ -11,10 +11,10 @@ public record JobCommandDTO
     public required string Name { get; init; }
 
     /// <summary>
-    /// Category
+    /// Category identifier
     /// </summary>
     [Required]
-    public required string Category { get; init; }
+    public Guid CategoryId { get; init; }
 
     /// <summary>
     /// Desciption
@@ -27,9 +27,4 @@ public record JobCommandDTO
     [Required]
     [Range(1, 24 * 60)]
     public int DurationMinutes { get; init; }
-
-    /// <summary>
-    /// Images
-    /// </summary>
-    public IReadOnlyCollection<string> Images { get; init; } = [];
 }

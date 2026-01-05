@@ -3,15 +3,14 @@ using Marten;
 
 namespace BeautifyBaltics.Persistence.Configurations
 {
-    public class JobConfiguration : IConfigureMarten
+    public class JobCategoryConfiguration : IConfigureMarten
     {
         public void Configure(IServiceProvider services, StoreOptions options)
         {
-            options.Schema.For<Job>()
+            options.Schema.For<JobCategory>()
                 .UniqueIndex(x => x.Name)
                 .FullTextIndex(x => x.Name)
-                .ForeignKey<JobCategory>(x => x.CategoryId)
-                .DocumentAlias("job");
+                .DocumentAlias("job_category");
         }
     }
 }

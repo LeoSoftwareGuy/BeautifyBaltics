@@ -1,3 +1,4 @@
+using BeautifyBaltics.Persistence.Repositories.Job.DTOs;
 using Marten;
 using Marten.Pagination;
 
@@ -19,16 +20,11 @@ public class JobRepository(IQuerySession session) : QueryRepository<Domain.Docum
     {
         var query = _session.Query<Domain.Documents.Job>().AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(search.Text))
-        {
-            var text = search.Text.Trim();
-            query = query.Where(x => x.Name.Contains(text) || x.Description.Contains(text));
-        }
+        if (search.Name is not null) query = query.Where(x => x.Name.NgramSearch(search.Name));
 
-        if (!string.IsNullOrWhiteSpace(search.Category))
+        if (search.CategoryId.HasValue)
         {
-            var category = search.Category.Trim();
-            query = query.Where(x => x.Category == category);
+            query = query.Where(x => x.CategoryId == search.CategoryId.Value);
         }
 
         return query;

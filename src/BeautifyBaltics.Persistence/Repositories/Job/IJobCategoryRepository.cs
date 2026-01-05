@@ -3,4 +3,6 @@ using BeautifyBaltics.Persistence.Repositories.SeedWork;
 
 namespace BeautifyBaltics.Persistence.Repositories.Job;
 
-public interface IJobRepository : IQueryRepository<Domain.Documents.Job, JobSearchDTO>;
+public interface IJobCategoryRepository : IQueryRepository<Domain.Documents.JobCategory, JobCategorySearchDTO>
+{
+}

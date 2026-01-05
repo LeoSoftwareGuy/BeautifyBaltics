@@ -1,5 +1,6 @@
 ﻿using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Persistence.Repositories.Job;
+using BeautifyBaltics.Persistence.Repositories.Job.DTOs;
 using Mapster;
 
 namespace BeautifyBaltics.Core.API.Application.Job.Queries.FindJobs;

@@ -4,19 +4,22 @@ using Marten;
 
 namespace BeautifyBaltics.Core.API.Application.Job.Commands.UpdateJob
 {
-    public class UpdateJobEventHandler(IJobRepository jobRepository, IDocumentSession documentSession)
+    public class UpdateJobEventHandler(IJobRepository jobRepository, IJobCategoryRepository jobCategoryRepository, IDocumentSession documentSession)
     {
         public async Task<UpdateJobResponse> Handle(UpdateJobRequest request, CancellationToken cancellationToken)
         {
             var job = await jobRepository.GetByIdAsync(request.JobId, cancellationToken) ??
                 throw NotFoundException.For<Domain.Documents.Job>(request.JobId);
 
+            var category = await jobCategoryRepository.GetByIdAsync(request.CategoryId, cancellationToken)
+                ?? throw NotFoundException.For<Domain.Documents.JobCategory>(request.CategoryId);
+
             job.Update(
                 name: request.Name,
-                category: request.Category,
+                categoryId: category.Id,
+                categoryName: category.Name,
                 duration: TimeSpan.FromMinutes(request.DurationMinutes),
-                description: request.Description,
-                images: request.Images
+                description: request.Description
             );
 
             documentSession.Update(job);

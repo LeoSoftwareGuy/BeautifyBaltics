@@ -11,12 +11,14 @@ public record JobDTO
     public required string Name { get; init; }
 
     [Required]
-    public required string Category { get; init; }
+    public required Guid CategoryId { get; init; }
 
+    [Required]
+    public required string CategoryName { get; init; }
+
+    [Required]
     public required string Description { get; init; }
 
     [Range(1, 24 * 60)]
     public required int DurationMinutes { get; init; }
-
-    public IReadOnlyCollection<string> Images { get; init; } = [];
 }

@@ -1,8 +1,7 @@
+import { beautify } from '@beautify-baltics-apps/theme';
 import dayjs from 'dayjs';
 
-import { swedbank } from '@beautify-baltics-apps/theme';
-
-const { date, dateTime } = swedbank.locale.dateTime.formats;
+const { date, dateTime } = beautify.locale.dateTime.formats;
 const TIME_INPUT_FORMAT = 5; // HH:mm
 
 const formatDate = (input: Date | string | undefined | null) => {
@@ -37,7 +36,7 @@ const formatTime = (input?: string | null) => {
 const formatDateISO = (value: dayjs.ConfigType | dayjs.Dayjs) => dayjs(value).format('YYYY-MM-DD');
 
 const datetime = {
-  formatDate, formatDateTime, toTimeInputValue, toApiTimeValue, formatTime, isWeekend, getNextBusinessDay, formatDateISO,
+  formatDate, formatDateTime, toTimeInputValue, toApiTimeValue, formatTime, formatDateISO,
 };
 
 export default datetime;

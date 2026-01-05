@@ -1,11 +1,13 @@
 using BeautifyBaltics.Core.API.Application.Job.Commands.CreateJob;
 using BeautifyBaltics.Core.API.Application.Job.Commands.UpdateJob;
 using BeautifyBaltics.Core.API.Application.Job.Queries.FindJobs;
+using BeautifyBaltics.Core.API.Application.Job.Queries.GetJobCategories;
 using BeautifyBaltics.Core.API.Application.Job.Queries.GetJobById;
 using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
+using BeautifyBaltics.Core.API.Application.Job.Queries.FindJobCategories;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -23,6 +25,18 @@ public class JobsController(IMessageBus bus) : ApiController
     public async Task<ActionResult<PagedResponse<FindJobsResponse>>> Find([FromQuery] FindJobsRequest request)
     {
         var response = await bus.InvokeAsync<PagedResponse<FindJobsResponse>>(request);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Find job categories
+    /// </summary>
+    [HttpGet("categories", Name = "FindJobCategories")]
+    [ProducesResponseType(typeof(PagedResponse<FindJobCategoriesResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<PagedResponse<FindJobCategoriesResponse>>> FindCategories([FromQuery] FindJobCategoriesRequest request)
+    {
+        var response = await bus.InvokeAsync<PagedResponse<FindJobCategoriesResponse>>(request);
         return Ok(response);
     }
 

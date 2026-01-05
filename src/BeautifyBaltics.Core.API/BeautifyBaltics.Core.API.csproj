@@ -33,8 +33,4 @@
     <ProjectReference Include="..\Integrations\BeautifyBaltics.Integrations.BlobStorage\BeautifyBaltics.Integrations.BlobStorage.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\Job\Queries\" />
-  </ItemGroup>
-
 </Project>

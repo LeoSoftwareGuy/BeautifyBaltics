@@ -10,16 +10,12 @@ namespace BeautifyBaltics.Core.API.Application.Job.Commands.Shared
                  .NotEmpty()
                  .MaximumLength(256);
 
-            RuleFor(v => v.Category)
-                .NotEmpty()
-                .MaximumLength(128);
+            RuleFor(v => v.CategoryId)
+                .NotEqual(Guid.Empty);
 
             RuleFor(v => v.Description)
                 .NotEmpty()
                 .MaximumLength(500);
-
-            RuleFor(v => v.Images)
-                .NotEmpty();
 
             RuleFor(v => v.DurationMinutes)
                 .GreaterThan(0)

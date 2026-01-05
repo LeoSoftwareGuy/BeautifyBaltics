@@ -7,34 +7,33 @@ public class Job : Document<Guid>
     public Job() { }
 
     public string Name { get; private set; } = string.Empty;
-    public string Category { get; private set; } = string.Empty;
+    public Guid CategoryId { get; private set; }
+    public string CategoryName { get; private set; } = string.Empty;
     public TimeSpan Duration { get; private set; }
     public string Description { get; private set; } = string.Empty;
-    public IReadOnlyCollection<string> Images { get; private set; } = [];
 
-    public Job(Guid id, string name, string category, TimeSpan duration, string description, IReadOnlyCollection<string> images)
+    public Job(Guid id, string name, Guid categoryId, string categoryName, TimeSpan duration, string description)
         : base(id)
     {
         Name = name.Trim();
-        Category = category.Trim();
+        CategoryId = categoryId;
+        CategoryName = categoryName.Trim();
         Duration = duration;
         Description = description.Trim();
-        Images = [.. images];
     }
 
-    public void Update(string name, string category, TimeSpan duration, string description, IReadOnlyCollection<string> images)
+    public void Update(string name, Guid categoryId, string categoryName, TimeSpan duration, string description)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
         Name = name.Trim();
 
-        if (string.IsNullOrWhiteSpace(category)) throw new ArgumentNullException(nameof(category));
-        Category = category.Trim();
+        if (string.IsNullOrWhiteSpace(categoryName)) throw new ArgumentNullException(nameof(categoryName));
+        CategoryId = categoryId;
+        CategoryName = categoryName.Trim();
 
         Duration = duration;
 
         if (string.IsNullOrWhiteSpace(description)) throw new ArgumentNullException(nameof(description));
         Description = description;
-
-        Images = images;
     }
 }

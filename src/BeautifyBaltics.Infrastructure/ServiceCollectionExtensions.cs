@@ -1,4 +1,5 @@
-﻿using JasperFx;
+﻿using BeautifyBaltics.Persistence.Seeds;
+using JasperFx;
 using JasperFx.Events;
 using JasperFx.Events.Daemon;
 using Marten;
@@ -119,7 +120,8 @@ public static class ServiceCollectionExtensions
             .UseNpgsqlDataSource()
             .UseLightweightSessions()
             .AddAsyncDaemon(environment.IsDevelopment() ? DaemonMode.Solo : DaemonMode.HotCold)
-            .ApplyAllDatabaseChangesOnStartup();
+            .ApplyAllDatabaseChangesOnStartup()
+            .InitializeWith<SampleDataSeeder>();
     }
 
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)

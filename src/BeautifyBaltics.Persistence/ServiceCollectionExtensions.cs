@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigureMarten, MasterAvailabilitySlotConfiguration>();
         services.AddSingleton<IConfigureMarten, MasterPortfolioImageConfiguration>();
         services.AddSingleton<IConfigureMarten, JobConfiguration>();
+        services.AddSingleton<IConfigureMarten, JobCategoryConfiguration>();
 
         return services;
     }
@@ -37,6 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<IJobRepository, JobRepository>();
+        services.AddScoped<IJobCategoryRepository, JobCategoryRepository>();
 
         return services;
     }
