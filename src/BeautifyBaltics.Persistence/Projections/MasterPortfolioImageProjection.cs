@@ -5,7 +5,10 @@ using Marten.Events.Aggregation;
 
 namespace BeautifyBaltics.Persistence.Projections;
 
-public record MasterPortfolioImage(Guid MasterId, Guid MasterPortfolioImageId) : FileProjection;
+public record MasterPortfolioImage(Guid MasterId, Guid MasterPortfolioImageId) : FileProjection
+{
+    public Guid Id { get; init; } = MasterPortfolioImageId;
+}
 
 public class MasterPortfolioImageProjection : SingleStreamProjection<MasterPortfolioImage, Guid>
 {
@@ -13,6 +16,7 @@ public class MasterPortfolioImageProjection : SingleStreamProjection<MasterPortf
     {
         return new MasterPortfolioImage(@event.Data.MasterId, @event.Data.MasterPortfolioImageId)
         {
+            Id = @event.Data.MasterPortfolioImageId,
             BlobName = @event.Data.BlobName,
             FileName = @event.Data.FileName,
             FileMimeType = @event.Data.FileMimeType,
