@@ -2,11 +2,11 @@ using BeautifyBaltics.Core.API.Application.Master.Commands.AddMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.CreateMaster;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DefineAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterProfile;
-using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterPortfolioImages;
+using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterProfileImage;
-using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterPortfolioFiles;
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasters;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
+using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterJobImage;
 using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
@@ -111,35 +111,35 @@ public class MastersController(IMessageBus bus) : ApiController
     }
 
     /// <summary>
-    /// Find master images
+    /// Upload an image for a master job
     /// </summary>
-    /// <param name="masterId">Master id</param>
-    /// <param name="request">Find fund files request</param>
-    /// <returns>Paged master images</returns>
-    [HttpGet("{id:guid}/portfolio/images", Name = "FindMasterPortfolioImages")]
-    [ProducesResponseType(typeof(PagedResponse<FindMasterPortfolioFilesResponse>), StatusCodes.Status200OK)]
+    [HttpPost("{masterId:guid}/jobs/{jobId:guid}/images", Name = "UploadMasterJobImage")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(50 * 1024 * 1024)]
+    [ProducesResponseType(typeof(UploadMasterJobImageResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult<PagedResponse<FindMasterPortfolioFilesResponse>>> FindFundFiles([FromRoute] Guid masterId,
-        [FromQuery] FindMasterPortfolioFilesRequest request)
+    public async Task<ActionResult> UploadMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromForm] UploadMasterJobImageRequest request, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeAsync<PagedResponse<FindMasterPortfolioFilesResponse>>(request with { MasterId = masterId });
+        var response = await bus.InvokeAsync<UploadMasterJobImageResponse>(request with { MasterId = masterId, MasterJobId = jobId }, cancellationToken);
         return Ok(response);
     }
 
     /// <summary>
-    /// Upload master portfolio images
+    /// Download a master job image
     /// </summary>
-    [HttpPost("{id:guid}/portfolio/images", Name = "UploadMasterPortfolioImages")]
-    [Consumes("multipart/form-data")]
-    [RequestSizeLimit(50 * 1024 * 1024)] // 50MB limit for total request
-    [ProducesResponseType(typeof(UploadMasterPortfolioImagesResponse), StatusCodes.Status201Created)]
+    [HttpGet("{masterId:guid}/jobs/{jobId:guid}/images/{imageId:guid}", Name = "GetMasterJobImageById")]
+    [ProducesResponseType(typeof(GetMasterJobImageByIdResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> UploadPortfolioImages([FromRoute] Guid id, [FromForm] UploadMasterPortfolioImagesRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetMasterJobImageByIdResponse>> GetMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromRoute] Guid imageId, CancellationToken cancellationToken)
     {
-        var response = await bus.InvokeAsync<UploadMasterPortfolioImagesResponse>(request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<GetMasterJobImageByIdResponse>(new GetMasterJobImageByIdRequest
+        {
+            MasterId = masterId,
+            MasterJobId = jobId,
+            MasterJobImageId = imageId
+        }, cancellationToken);
         return Ok(response);
     }
 }

@@ -5,18 +5,21 @@ using BeautifyBaltics.Integrations.BlobStorage;
 using Wolverine;
 using Wolverine.Marten;
 
-namespace BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterPortfolioImages;
+namespace BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterJobImage;
 
-public class UploadMasterPortfolioImagesEventHandler(IBlobStorageService<MasterAggregate.MasterPortfolioImage> blobStorageService)
+public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterJobImage> blobStorageService)
 {
     [AggregateHandler]
     public async Task<(Events, OutgoingMessages)> Handle(
-        UploadMasterPortfolioImagesRequest request,
+        UploadMasterJobImageRequest request,
         MasterAggregate master,
         CancellationToken cancellationToken
     )
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
+
+        var job = master.Jobs.SingleOrDefault(j => j.MasterJobId == request.MasterJobId) ??
+                  throw DomainException.WithMessage($"Master job {request.MasterJobId} not found.");
 
         var events = new Events();
 
@@ -26,8 +29,9 @@ public class UploadMasterPortfolioImagesEventHandler(IBlobStorageService<MasterA
 
             var blobName = await blobStorageService.UploadAsync(master.Id, blobFile, cancellationToken);
 
-            events.Add(new MasterPortfolioImageUploaded(
+            events.Add(new MasterJobImageUploaded(
                 MasterId: master.Id,
+                MasterJobId: job.MasterJobId,
                 BlobName: blobName,
                 FileName: file.FileName,
                 FileMimeType: file.ContentType,
@@ -35,6 +39,6 @@ public class UploadMasterPortfolioImagesEventHandler(IBlobStorageService<MasterA
             ));
         }
 
-        return (events, [new UploadMasterPortfolioImagesResponse(master.Id)]);
+        return (events, [new UploadMasterJobImageResponse(master.Id, job.JobId)]);
     }
 }

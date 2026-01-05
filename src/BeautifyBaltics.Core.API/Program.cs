@@ -52,7 +52,7 @@ internal class Program
         builder.Services.AddBlobStorageIntegration(c =>
         {
             c.Configure<MasterAggregate.MasterProfileImage>(opt => opt.ContainerName = "master-profile-images");
-            c.Configure<MasterAggregate.MasterPortfolioImage>(opt => opt.ContainerName = "master-portfolio-images");
+            c.Configure<MasterJobImage>(opt => opt.ContainerName = "master-job-images");
             c.Configure<ClientAggregate.ClientProfileImage>(opt => opt.ContainerName = "client-profile-images");
         });
 

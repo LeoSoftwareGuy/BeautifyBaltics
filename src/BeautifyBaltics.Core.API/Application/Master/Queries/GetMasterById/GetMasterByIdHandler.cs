@@ -8,8 +8,7 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
 public class GetMasterByIdHandler(
     IMasterRepository masterRepository,
     IMasterJobRepository jobRepository,
-    IMasterAvailabilitySlotRepository availabilityRepository,
-    IMasterPortfolioImageRepository portfolioRepository
+    IMasterAvailabilitySlotRepository availabilityRepository
 )
 {
     public async Task<GetMasterByIdResponse> Handle(GetMasterByIdRequest request, CancellationToken cancellationToken)
@@ -19,7 +18,6 @@ public class GetMasterByIdHandler(
 
         var jobs = await jobRepository.GetListByAsync(j => j.MasterId == request.Id, cancellationToken);
         var slots = await availabilityRepository.GetListByAsync(s => s.MasterId == request.Id, cancellationToken);
-        var portfolio = await portfolioRepository.GetListByAsync(p => p.MasterId == request.Id, cancellationToken);
 
         return new GetMasterByIdResponse
         {
@@ -48,20 +46,20 @@ public class GetMasterByIdHandler(
                 JobId = job.JobId,
                 Title = job.Title,
                 Price = job.Price,
-                DurationMinutes = (int)job.Duration.TotalMinutes
+                DurationMinutes = (int)job.Duration.TotalMinutes,
+                Images = job.Images?.Select(image => new MasterJobImageDTO
+                {
+                    Id = image.Id,
+                    FileName = image.FileName,
+                    FileMimeType = image.FileMimeType,
+                    FileSize = image.FileSize
+                }).ToArray() ?? Array.Empty<MasterJobImageDTO>()
             })],
             Availability = [.. slots.Select(slot => new MasterAvailabilitySlotDTO
             {
                 Id = slot.Id,
                 StartAt = slot.StartAt,
                 EndAt = slot.EndAt
-            })],
-            Portfolio = [.. portfolio.Select(image => new MasterPortfolioFileDTO
-            {
-                MasterPortfolioImageId = image.MasterPortfolioImageId,
-                FileName = image.FileName,
-                FileMimeType = image.FileMimeType,
-                FileSize = image.FileSize
             })]
         };
     }

@@ -6,9 +6,8 @@ namespace BeautifyBaltics.Domain.Aggregates.Master;
 
 public partial class MasterAggregate : Aggregate
 {
-    private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = [];
-    private readonly Dictionary<Guid, MasterJob> _jobs = [];
-    private readonly Dictionary<Guid, MasterPortfolioImage> _portfolioImages = [];
+    private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = new();
+    private readonly Dictionary<Guid, MasterJob> _jobs = new();
 
     public string SupabaseUserId { get; private set; } = string.Empty;
     public string FirstName { get; private set; } = string.Empty;
@@ -19,7 +18,6 @@ public partial class MasterAggregate : Aggregate
     public MasterProfileImage? ProfileImage { get; private set; }
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
     public IReadOnlyCollection<MasterAvailabilitySlot> Availability => _availabilities.Values.ToList();
-    public IReadOnlyCollection<MasterPortfolioImage> Portfolio => _portfolioImages.Values.ToList();
 
     public MasterAggregate() { }
 
@@ -96,16 +94,18 @@ public partial class MasterAggregate : Aggregate
         this._availabilities.Remove(@event.MasterAvailabilitySlotId);
     }
 
-    internal void Apply(MasterPortfolioImageUploaded @event)
+    internal void Apply(MasterJobImageUploaded @event)
     {
-        var portfolioImage = new MasterPortfolioImage(
-            @event.MasterPortfolioImageId,
+        if (!_jobs.TryGetValue(@event.MasterJobId, out var job)) return;
+
+        var image = new MasterJobImage(
+            @event.MasterJobImageId,
             @event.BlobName,
             @event.FileName,
             @event.FileMimeType,
             @event.FileSize
         );
 
-        this._portfolioImages[@event.MasterPortfolioImageId] = portfolioImage;
+        job.AddImage(image);
     }
 }
