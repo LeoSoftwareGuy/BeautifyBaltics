@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Box, Container, Stack } from '@mantine/core';
 
+import { BookingStatus } from '@/state/endpoints/api.schemas';
+
 import ClientBookingCard from './components/client-booking-card';
 import ClientDashboardHeader from './components/client-dashboard-header';
 import ClientDashboardStats from './components/client-dashboard-stats';
 import ClientFiltersBar from './components/client-filters-bar';
-import { type BookingStatus, MOCK_BOOKINGS } from './data';
+import { MOCK_BOOKINGS } from './data';
 
 function ClientDashboardPage() {
   const [filter, setFilter] = useState<BookingStatus | 'all'>('all');
@@ -20,11 +22,11 @@ function ClientDashboardPage() {
       return b.price - a.price;
     }), [filter, sortBy]);
 
-  const upcomingCount = useMemo(() => MOCK_BOOKINGS.filter((b) => b.status === 'upcoming').length, []);
-  const completedCount = useMemo(() => MOCK_BOOKINGS.filter((b) => b.status === 'completed').length, []);
+  const upcomingCount = useMemo(() => MOCK_BOOKINGS.filter((b) => b.status === BookingStatus.Requested).length, []);
+  const completedCount = useMemo(() => MOCK_BOOKINGS.filter((b) => b.status === BookingStatus.Completed).length, []);
   const totalSpent = useMemo(
     () => MOCK_BOOKINGS
-      .filter((b) => b.status === 'completed')
+      .filter((b) => b.status === BookingStatus.Completed)
       .reduce((sum, b) => sum + b.price, 0),
     [],
   );

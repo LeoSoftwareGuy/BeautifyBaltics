@@ -45,6 +45,8 @@ import type {
   ProblemDetails,
   UpdateClientProfileRequest,
   UpdateClientProfileResponse,
+  UploadClientProfileImageBody,
+  UploadClientProfileImageResponse,
   ValidationProblemDetails,
 } from './api.schemas';
 
@@ -458,6 +460,67 @@ export const useUpdateClientProfile = <TError = ProblemDetails | ProblemDetails 
   TContext
   > => {
   const mutationOptions = getUpdateClientProfileMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Upload client profile image
+ */
+export const uploadClientProfileImage = (
+  id: string,
+  uploadClientProfileImageBody: UploadClientProfileImageBody,
+  signal?: AbortSignal,
+) => {
+  const formData = new FormData();
+  formData.append('clientId', uploadClientProfileImageBody.clientId);
+  uploadClientProfileImageBody.files.forEach((value) => formData.append('files', value));
+
+  return customClient<UploadClientProfileImageResponse>(
+    {
+      url: `/api/v1/clients/${id}/profile-image`,
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      data: formData,
+      signal,
+    },
+  );
+};
+
+export const getUploadClientProfileImageMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadClientProfileImage>>, TError, { id: string;data: UploadClientProfileImageBody }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof uploadClientProfileImage>>, TError, { id: string;data: UploadClientProfileImageBody }, TContext> => {
+  const mutationKey = ['uploadClientProfileImage'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadClientProfileImage>>, { id: string;data: UploadClientProfileImageBody }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return uploadClientProfileImage(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UploadClientProfileImageMutationResult = NonNullable<Awaited<ReturnType<typeof uploadClientProfileImage>>>;
+export type UploadClientProfileImageMutationBody = UploadClientProfileImageBody;
+export type UploadClientProfileImageMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Upload client profile image
+ */
+export const useUploadClientProfileImage = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadClientProfileImage>>, TError, { id: string;data: UploadClientProfileImageBody }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof uploadClientProfileImage>>,
+  TError,
+  { id: string;data: UploadClientProfileImageBody },
+  TContext
+  > => {
+  const mutationOptions = getUploadClientProfileImageMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

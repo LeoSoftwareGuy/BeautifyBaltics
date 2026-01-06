@@ -273,35 +273,21 @@ paths:
       summary: Find clients
       operationId: FindClients
       parameters:
-        - name: masterId
+        - name: firstName
           in: query
-          description: Filter by master id
+          description: Filter by first name
           schema:
             type: string
-            format: uuid
-        - name: clientId
+        - name: lastName
           in: query
-          description: Filter by client id
+          description: Filter by last name
           schema:
             type: string
-            format: uuid
-        - name: status
+        - name: email
           in: query
-          description: Filter by status
-          schema:
-            $ref: '#/components/schemas/BookingStatus'
-        - name: from
-          in: query
-          description: Filter by from
+          description: Filter by email address
           schema:
             type: string
-            format: date-time
-        - name: to
-          in: query
-          description: Filter by to
-          schema:
-            type: string
-            format: date-time
         - name: page
           in: query
           description: Page number
@@ -454,6 +440,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/clients/{id}/profile-image':
+    post:
+      tags:
+        - Clients
+      summary: Upload client profile image
+      operationId: UploadClientProfileImage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - clientId
+                - files
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  description: Client id
+                  format: uuid
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: File uploads
+            encoding:
+              clientId:
+                style: form
+              files:
+                style: form
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadClientProfileImageResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   /api/v1/jobs:
     get:
       tags:
@@ -466,11 +514,12 @@ paths:
           description: Filter by text
           schema:
             type: string
-        - name: category
+        - name: categoryId
           in: query
           description: Filter by category
           schema:
             type: string
+            format: uuid
         - name: page
           in: query
           description: Page number
@@ -538,6 +587,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/jobs/categories:
+    get:
+      tags:
+        - Jobs
+      summary: Find job categories
+      operationId: FindJobCategories
+      parameters:
+        - name: name
+          in: query
+          description: Filter by name
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindJobCategoriesResponsePagedResponse'
         '422':
           description: Unprocessable Content
           content:
@@ -855,6 +956,181 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/profile-image':
+    post:
+      tags:
+        - Masters
+      summary: Upload master profile image
+      operationId: UploadMasterProfileImage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - files
+                - masterId
+              type: object
+              properties:
+                masterId:
+                  type: string
+                  description: Master id
+                  format: uuid
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: File uploads
+            encoding:
+              masterId:
+                style: form
+              files:
+                style: form
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadMasterProfileImageResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{masterId}/jobs/{jobId}/images':
+    post:
+      tags:
+        - Masters
+      summary: Upload an image for a master job
+      operationId: UploadMasterJobImage
+      parameters:
+        - name: masterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - files
+                - masterId
+                - masterJobId
+              type: object
+              properties:
+                masterId:
+                  type: string
+                  description: Master id
+                  format: uuid
+                masterJobId:
+                  type: string
+                  description: Master job id
+                  format: uuid
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: File uploads
+            encoding:
+              masterId:
+                style: form
+              masterJobId:
+                style: form
+              files:
+                style: form
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadMasterJobImageResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{masterId}/jobs/{jobId}/images/{imageId}':
+    get:
+      tags:
+        - Masters
+      summary: Download a master job image
+      operationId: GetMasterJobImageById
+      parameters:
+        - name: masterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMasterJobImageByIdResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/users:
     get:
       tags:
@@ -1033,6 +1309,8 @@ components:
           minLength: 1
           type: string
           description: Phone number
+        profileImage:
+          $ref: '#/components/schemas/FileMetadataDTO'
       additionalProperties: false
     CreateBookingRequest:
       allOf:
@@ -1131,6 +1409,38 @@ components:
           type: string
           format: uuid
       additionalProperties: false
+    FileContentDTO:
+      allOf:
+        - $ref: '#/components/schemas/FileMetadataDTO'
+        - required:
+            - data
+          type: object
+          properties:
+            data:
+              type: string
+              description: Data of generated file
+              format: byte
+          additionalProperties: false
+    FileMetadataDTO:
+      required:
+        - fileMimeType
+        - fileName
+        - fileSize
+      type: object
+      properties:
+        fileName:
+          minLength: 1
+          type: string
+          description: File name
+        fileMimeType:
+          minLength: 1
+          type: string
+          description: File mime type
+        fileSize:
+          type: integer
+          description: File size
+          format: int64
+      additionalProperties: false
     FindBookingsResponse:
       allOf:
         - $ref: '#/components/schemas/BookingDTO'
@@ -1201,6 +1511,42 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FindClientsResponse'
+          description: Items
+      additionalProperties: false
+    FindJobCategoriesResponse:
+      allOf:
+        - $ref: '#/components/schemas/JobCategoryDTO'
+        - type: object
+          additionalProperties: false
+    FindJobCategoriesResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindJobCategoriesResponse'
           description: Items
       additionalProperties: false
     FindJobsResponse:
@@ -1306,12 +1652,16 @@ components:
                 $ref: '#/components/schemas/MasterAvailabilitySlotDTO'
               nullable: true
           additionalProperties: false
+    GetMasterJobImageByIdResponse:
+      allOf:
+        - $ref: '#/components/schemas/FileContentDTO'
+        - type: object
+          additionalProperties: false
     GetUserResponse:
       type: object
       properties:
         role:
-          type: string
-          nullable: true
+          $ref: '#/components/schemas/UserRole'
         email:
           type: string
           nullable: true
@@ -1319,9 +1669,21 @@ components:
           type: string
           nullable: true
       additionalProperties: false
+    JobCategoryDTO:
+      required:
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+      additionalProperties: false
     JobCommandDTO:
       required:
-        - category
+        - categoryId
         - durationMinutes
         - name
       type: object
@@ -1330,10 +1692,10 @@ components:
           minLength: 1
           type: string
           description: Name
-        category:
-          minLength: 1
+        categoryId:
           type: string
-          description: Category
+          description: Category identifier
+          format: uuid
         description:
           type: string
           description: Desciption
@@ -1344,16 +1706,11 @@ components:
           type: integer
           description: Duration in minutes
           format: int32
-        images:
-          type: array
-          items:
-            type: string
-          description: Images
-          nullable: true
       additionalProperties: false
     JobDTO:
       required:
-        - category
+        - categoryId
+        - categoryName
         - description
         - durationMinutes
         - id
@@ -1366,22 +1723,20 @@ components:
         name:
           minLength: 1
           type: string
-        category:
+        categoryId:
+          type: string
+          format: uuid
+        categoryName:
           minLength: 1
           type: string
         description:
+          minLength: 1
           type: string
-          nullable: true
         durationMinutes:
           maximum: 1440
           minimum: 1
           type: integer
           format: int32
-        images:
-          type: array
-          items:
-            type: string
-          nullable: true
       additionalProperties: false
     MasterAvailabilitySlotCommandDTO:
       required:
@@ -1448,6 +1803,8 @@ components:
         city:
           type: string
           nullable: true
+        profileImage:
+          $ref: '#/components/schemas/FileMetadataDTO'
       additionalProperties: false
     MasterJobDTO:
       type: object
@@ -1467,6 +1824,30 @@ components:
         durationMinutes:
           type: integer
           format: int32
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/MasterJobImageDTO'
+          nullable: true
+      additionalProperties: false
+    MasterJobImageDTO:
+      required:
+        - fileMimeType
+        - fileName
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fileName:
+          type: string
+          nullable: true
+        fileMimeType:
+          type: string
+          nullable: true
+        fileSize:
+          type: integer
+          format: int64
       additionalProperties: false
     MasterJobOfferingCommandDTO:
       required:
@@ -1659,6 +2040,41 @@ components:
           type: string
           format: uuid
       additionalProperties: false
+    UploadClientProfileImageResponse:
+      required:
+        - clientId
+      type: object
+      properties:
+        clientId:
+          type: string
+          description: Client id
+          format: uuid
+      additionalProperties: false
+    UploadMasterJobImageResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    UploadMasterProfileImageResponse:
+      required:
+        - masterId
+      type: object
+      properties:
+        masterId:
+          type: string
+          description: Master id
+          format: uuid
+      additionalProperties: false
+    UserRole:
+      enum:
+        - Client
+        - Master
+      type: string
     ValidationProblemDetails:
       type: object
       properties:

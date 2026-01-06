@@ -13,9 +13,8 @@ namespace BeautifyBaltics.Core.API.Application.Users.Queries.GetUser
             var client = await clientRepository.GetBySupabaseUserIdAsync(request.UserId, cancellationToken);
             if (client is not null)
             {
-                var role = UserRole.Client.ToString().ToLowerInvariant();
                 return new GetUserResponse(
-                    Role: role,
+                    Role: UserRole.Client,
                     Email: client.Email,
                     FullName: $"{client.FirstName} {client.LastName}".Trim()
                 );
@@ -24,9 +23,8 @@ namespace BeautifyBaltics.Core.API.Application.Users.Queries.GetUser
             var master = await masterRepository.GetBySupabaseUserIdAsync(request.UserId, cancellationToken);
             if (master is not null)
             {
-                var role = UserRole.Master.ToString().ToLowerInvariant();
                 return new GetUserResponse(
-                    Role: role,
+                    Role: UserRole.Master,
                     Email: master.Email,
                     FullName: $"{master.FirstName} {master.LastName}".Trim()
                 );

@@ -1,6 +1,6 @@
 import { Group, Select, Tabs } from '@mantine/core';
 
-import type { BookingStatus } from '../data';
+import { BookingStatus } from '@/state/endpoints/api.schemas';
 
 type FiltersBarProps = {
   filter: BookingStatus | 'all';

@@ -115,6 +115,7 @@ export type ClientDTO = {
    * @minLength 1
    */
   phoneNumber: string;
+  profileImage?: FileMetadataDTO;
 };
 
 export type CreateBookingRequestAllOf = { [key: string]: unknown };
@@ -170,6 +171,28 @@ export type CreateMasterResponse = {
   id?: string;
 };
 
+export type FileContentDTOAllOf = {
+  /** Data of generated file */
+  data: string;
+};
+
+export type FileContentDTO = FileMetadataDTO & FileContentDTOAllOf;
+
+export type FileMetadataDTO = {
+  /**
+   * File name
+   * @minLength 1
+   */
+  fileName: string;
+  /**
+   * File mime type
+   * @minLength 1
+   */
+  fileMimeType: string;
+  /** File size */
+  fileSize: number;
+};
+
 export type FindBookingsResponseAllOf = { [key: string]: unknown };
 
 export type FindBookingsResponse = BookingDTO & FindBookingsResponseAllOf;
@@ -202,6 +225,23 @@ export type FindClientsResponsePagedResponse = {
   totalItemCount: number;
   /** Items */
   items: FindClientsResponse[];
+};
+
+export type FindJobCategoriesResponseAllOf = { [key: string]: unknown };
+
+export type FindJobCategoriesResponse = JobCategoryDTO & FindJobCategoriesResponseAllOf;
+
+export type FindJobCategoriesResponsePagedResponse = {
+  /** Current page number */
+  page: number;
+  /** Page size */
+  pageSize: number;
+  /** Total pages count */
+  pageCount: number;
+  /** Total items count */
+  totalItemCount: number;
+  /** Items */
+  items: FindJobCategoriesResponse[];
 };
 
 export type FindJobsResponseAllOf = { [key: string]: unknown };
@@ -259,13 +299,22 @@ export type GetMasterByIdResponseAllOf = {
 
 export type GetMasterByIdResponse = MasterDTO & GetMasterByIdResponseAllOf;
 
+export type GetMasterJobImageByIdResponseAllOf = { [key: string]: unknown };
+
+export type GetMasterJobImageByIdResponse = FileContentDTO & GetMasterJobImageByIdResponseAllOf;
+
 export type GetUserResponse = {
-  /** @nullable */
-  role?: string | null;
+  role?: UserRole;
   /** @nullable */
   email?: string | null;
   /** @nullable */
   fullName?: string | null;
+};
+
+export type JobCategoryDTO = {
+  id?: string;
+  /** @nullable */
+  name: string | null;
 };
 
 export type JobCommandDTO = {
@@ -274,11 +323,8 @@ export type JobCommandDTO = {
    * @minLength 1
    */
   name: string;
-  /**
-   * Category
-   * @minLength 1
-   */
-  category: string;
+  /** Category identifier */
+  categoryId: string;
   /**
    * Desciption
    * @nullable
@@ -290,28 +336,22 @@ export type JobCommandDTO = {
    * @maximum 1440
    */
   durationMinutes: number;
-  /**
-   * Images
-   * @nullable
-   */
-  images?: string[] | null;
 };
 
 export type JobDTO = {
   id: string;
   /** @minLength 1 */
   name: string;
+  categoryId: string;
   /** @minLength 1 */
-  category: string;
-  /** @nullable */
-  description: string | null;
+  categoryName: string;
+  /** @minLength 1 */
+  description: string;
   /**
    * @minimum 1
    * @maximum 1440
    */
   durationMinutes: number;
-  /** @nullable */
-  images?: string[] | null;
 };
 
 export type MasterAvailabilitySlotCommandDTO = {
@@ -346,6 +386,7 @@ export type MasterDTO = {
   longitude?: number | null;
   /** @nullable */
   city?: string | null;
+  profileImage?: FileMetadataDTO;
 };
 
 export type MasterJobDTO = {
@@ -355,6 +396,17 @@ export type MasterJobDTO = {
   title?: string | null;
   price?: number;
   durationMinutes?: number;
+  /** @nullable */
+  images?: MasterJobImageDTO[] | null;
+};
+
+export type MasterJobImageDTO = {
+  id?: string;
+  /** @nullable */
+  fileName: string | null;
+  /** @nullable */
+  fileMimeType: string | null;
+  fileSize?: number;
 };
 
 export type MasterJobOfferingCommandDTO = {
@@ -477,6 +529,26 @@ export type UpdateMasterProfileResponse = {
   masterId?: string;
 };
 
+export type UploadClientProfileImageResponse = {
+  /** Client id */
+  clientId: string;
+};
+
+export type UploadMasterJobImageResponse = {
+  masterId?: string;
+  masterJobId?: string;
+};
+
+export type UploadMasterProfileImageResponse = {
+  /** Master id */
+  masterId: string;
+};
+
+export enum UserRole {
+  Client = 'Client',
+  Master = 'Master',
+
+}
 /**
  * @nullable
  */
@@ -550,25 +622,17 @@ export type GetBookingByIdParams = {
 
 export type FindClientsParams = {
 /**
- * Filter by master id
+ * Filter by first name
  */
-  masterId?: string;
+  firstName?: string;
   /**
- * Filter by client id
+ * Filter by last name
  */
-  clientId?: string;
+  lastName?: string;
   /**
- * Filter by status
+ * Filter by email address
  */
-  status?: BookingStatus;
-  /**
- * Filter by from
- */
-  from?: Date;
-  /**
- * Filter by to
- */
-  to?: Date;
+  email?: string;
   /**
  * Page number
  */
@@ -595,6 +659,13 @@ export type GetClientByIdParams = {
   id?: string;
 };
 
+export type UploadClientProfileImageBody = {
+  /** Client id */
+  clientId: string;
+  /** File uploads */
+  files: Blob[];
+};
+
 export type FindJobsParams = {
 /**
  * Filter by text
@@ -603,7 +674,34 @@ export type FindJobsParams = {
   /**
  * Filter by category
  */
-  category?: string;
+  categoryId?: string;
+  /**
+ * Page number
+ */
+  page?: number;
+  /**
+ * Items per page
+ */
+  pageSize?: number;
+  /**
+ * Sort by column
+ */
+  sortBy?: string;
+  /**
+ * Is sorting order ascending or descending, defaults to false (descending)
+ */
+  ascending?: boolean;
+  /**
+ * Retrieve all items
+ */
+  all?: boolean;
+};
+
+export type FindJobCategoriesParams = {
+/**
+ * Filter by name
+ */
+  name?: string;
   /**
  * Page number
  */
@@ -657,4 +755,20 @@ export type FindMastersParams = {
 
 export type GetMasterByIdParams = {
   id: string;
+};
+
+export type UploadMasterProfileImageBody = {
+  /** Master id */
+  masterId: string;
+  /** File uploads */
+  files: Blob[];
+};
+
+export type UploadMasterJobImageBody = {
+  /** Master id */
+  masterId: string;
+  /** Master job id */
+  masterJobId: string;
+  /** File uploads */
+  files: Blob[];
 };

@@ -3,6 +3,7 @@ import {
 } from '@mantine/core';
 
 import { ClientDashboardPage } from '@/features/client';
+import { UserRole } from '@/state/endpoints/api.schemas';
 import { useGetUser } from '@/state/endpoints/users';
 
 import MasterDashboardPage from '../master/master-dashboard-page';
@@ -33,7 +34,7 @@ function DashboardPage() {
     );
   }
 
-  if (data.role === 'master') {
+  if (data.role === UserRole.Master) {
     return <MasterDashboardPage />;
   }
 

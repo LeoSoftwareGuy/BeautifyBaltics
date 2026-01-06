@@ -38,6 +38,8 @@ import { customClient } from '../mutator/custom-client';
 import type {
   CreateJobRequest,
   CreateJobResponse,
+  FindJobCategoriesParams,
+  FindJobCategoriesResponsePagedResponse,
   FindJobsParams,
   FindJobsResponsePagedResponse,
   GetJobByIdParams,
@@ -275,6 +277,123 @@ export const useCreateJob = <TError = ProblemDetails | ValidationProblemDetails,
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary Find job categories
+ */
+export const findJobCategories = (
+  params?: FindJobCategoriesParams,
+  signal?: AbortSignal,
+) => customClient<FindJobCategoriesResponsePagedResponse>(
+  {
+    url: '/api/v1/jobs/categories',
+    method: 'GET',
+    params,
+    signal,
+  },
+);
+
+export const getFindJobCategoriesQueryKey = (params?: FindJobCategoriesParams) => ['/api/v1/jobs/categories', ...(params ? [params] : [])] as const;
+
+export const getFindJobCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(params?: FindJobCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindJobCategoriesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findJobCategories>>> = ({ signal }) => findJobCategories(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindJobCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof findJobCategories>>>;
+export type FindJobCategoriesQueryError = ValidationProblemDetails;
+
+export function useFindJobCategories<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params: undefined | FindJobCategoriesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findJobCategories>>,
+  TError,
+  Awaited<ReturnType<typeof findJobCategories>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindJobCategories<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findJobCategories>>,
+  TError,
+  Awaited<ReturnType<typeof findJobCategories>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindJobCategories<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find job categories
+ */
+
+export function useFindJobCategories<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindJobCategoriesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getFindJobCategoriesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(params?: FindJobCategoriesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindJobCategoriesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findJobCategories>>> = ({ signal }) => findJobCategories(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindJobCategoriesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findJobCategories>>>;
+export type FindJobCategoriesSuspenseQueryError = ValidationProblemDetails;
+
+export function useFindJobCategoriesSuspense<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params: undefined | FindJobCategoriesParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindJobCategoriesSuspense<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindJobCategoriesSuspense<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find job categories
+ */
+
+export function useFindJobCategoriesSuspense<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindJobCategoriesSuspenseQueryOptions(params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * @summary Get job by id
  */

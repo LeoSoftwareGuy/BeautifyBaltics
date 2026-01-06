@@ -8,8 +8,8 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 
 import CategoryFilters from './components/explore-category-filters';
-import ExploreHeader from './components/explore-header';
 import FiltersDrawer from './components/explore-filters-drawer';
+import ExploreHeader from './components/explore-header';
 import MapPlaceholder from './components/explore-map-placeholder';
 import MasterCard from './components/explore-master-card';
 import { CATEGORIES, type MasterCategory, SAMPLE_MASTERS } from './types';

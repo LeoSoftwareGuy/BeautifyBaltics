@@ -1,4 +1,4 @@
-export type BookingStatus = 'upcoming' | 'completed' | 'cancelled';
+import { BookingStatus } from '@/state/endpoints/api.schemas';
 
 export type Booking = {
   id: string;
@@ -22,7 +22,7 @@ export const MOCK_BOOKINGS: Booking[] = [
     time: '14:00',
     location: '123 Beauty Ave, Downtown',
     price: 85,
-    status: 'upcoming',
+    status: BookingStatus.Requested,
   },
   {
     id: '2',
@@ -33,7 +33,7 @@ export const MOCK_BOOKINGS: Booking[] = [
     time: '10:00',
     location: '456 Art Studio, Midtown',
     price: 250,
-    status: 'upcoming',
+    status: BookingStatus.Requested,
   },
   {
     id: '3',
@@ -44,7 +44,7 @@ export const MOCK_BOOKINGS: Booking[] = [
     time: '16:00',
     location: '789 Nail Salon, Eastside',
     price: 65,
-    status: 'completed',
+    status: BookingStatus.Completed,
   },
   {
     id: '4',
@@ -55,7 +55,7 @@ export const MOCK_BOOKINGS: Booking[] = [
     time: '11:00',
     location: '321 Barber Shop, Westend',
     price: 35,
-    status: 'completed',
+    status: BookingStatus.Cancelled,
   },
   {
     id: '5',
@@ -66,6 +66,6 @@ export const MOCK_BOOKINGS: Booking[] = [
     time: '09:00',
     location: '555 Color Studio, Central',
     price: 150,
-    status: 'cancelled',
+    status: BookingStatus.Cancelled,
   },
 ];

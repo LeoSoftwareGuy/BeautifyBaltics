@@ -46,9 +46,14 @@ import type {
   FindMastersResponsePagedResponse,
   GetMasterByIdParams,
   GetMasterByIdResponse,
+  GetMasterJobImageByIdResponse,
   ProblemDetails,
   UpdateMasterProfileRequest,
   UpdateMasterProfileResponse,
+  UploadMasterJobImageBody,
+  UploadMasterJobImageResponse,
+  UploadMasterProfileImageBody,
+  UploadMasterProfileImageResponse,
   ValidationProblemDetails,
 } from './api.schemas';
 
@@ -575,3 +580,266 @@ export const useCreateMasterAvailability = <TError = ProblemDetails | Validation
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary Upload master profile image
+ */
+export const uploadMasterProfileImage = (
+  id: string,
+  uploadMasterProfileImageBody: UploadMasterProfileImageBody,
+  signal?: AbortSignal,
+) => {
+  const formData = new FormData();
+  formData.append('masterId', uploadMasterProfileImageBody.masterId);
+  uploadMasterProfileImageBody.files.forEach((value) => formData.append('files', value));
+
+  return customClient<UploadMasterProfileImageResponse>(
+    {
+      url: `/api/v1/masters/${id}/profile-image`,
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      data: formData,
+      signal,
+    },
+  );
+};
+
+export const getUploadMasterProfileImageMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMasterProfileImage>>, TError, { id: string;data: UploadMasterProfileImageBody }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof uploadMasterProfileImage>>, TError, { id: string;data: UploadMasterProfileImageBody }, TContext> => {
+  const mutationKey = ['uploadMasterProfileImage'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadMasterProfileImage>>, { id: string;data: UploadMasterProfileImageBody }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return uploadMasterProfileImage(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UploadMasterProfileImageMutationResult = NonNullable<Awaited<ReturnType<typeof uploadMasterProfileImage>>>;
+export type UploadMasterProfileImageMutationBody = UploadMasterProfileImageBody;
+export type UploadMasterProfileImageMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Upload master profile image
+ */
+export const useUploadMasterProfileImage = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMasterProfileImage>>, TError, { id: string;data: UploadMasterProfileImageBody }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof uploadMasterProfileImage>>,
+  TError,
+  { id: string;data: UploadMasterProfileImageBody },
+  TContext
+  > => {
+  const mutationOptions = getUploadMasterProfileImageMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Upload an image for a master job
+ */
+export const uploadMasterJobImage = (
+  masterId: string,
+  jobId: string,
+  uploadMasterJobImageBody: UploadMasterJobImageBody,
+  signal?: AbortSignal,
+) => {
+  const formData = new FormData();
+  formData.append('masterId', uploadMasterJobImageBody.masterId);
+  formData.append('masterJobId', uploadMasterJobImageBody.masterJobId);
+  uploadMasterJobImageBody.files.forEach((value) => formData.append('files', value));
+
+  return customClient<UploadMasterJobImageResponse>(
+    {
+      url: `/api/v1/masters/${masterId}/jobs/${jobId}/images`,
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      data: formData,
+      signal,
+    },
+  );
+};
+
+export const getUploadMasterJobImageMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMasterJobImage>>, TError, { masterId: string;jobId: string;data: UploadMasterJobImageBody }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof uploadMasterJobImage>>, TError, { masterId: string;jobId: string;data: UploadMasterJobImageBody }, TContext> => {
+  const mutationKey = ['uploadMasterJobImage'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadMasterJobImage>>, { masterId: string;jobId: string;data: UploadMasterJobImageBody }> = (props) => {
+    const { masterId, jobId, data } = props ?? {};
+
+    return uploadMasterJobImage(masterId, jobId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UploadMasterJobImageMutationResult = NonNullable<Awaited<ReturnType<typeof uploadMasterJobImage>>>;
+export type UploadMasterJobImageMutationBody = UploadMasterJobImageBody;
+export type UploadMasterJobImageMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Upload an image for a master job
+ */
+export const useUploadMasterJobImage = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadMasterJobImage>>, TError, { masterId: string;jobId: string;data: UploadMasterJobImageBody }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof uploadMasterJobImage>>,
+  TError,
+  { masterId: string;jobId: string;data: UploadMasterJobImageBody },
+  TContext
+  > => {
+  const mutationOptions = getUploadMasterJobImageMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Download a master job image
+ */
+export const getMasterJobImageById = (
+  masterId: string,
+  jobId: string,
+  imageId: string,
+  signal?: AbortSignal,
+) => customClient<GetMasterJobImageByIdResponse>(
+  { url: `/api/v1/masters/${masterId}/jobs/${jobId}/images/${imageId}`, method: 'GET', signal },
+);
+
+export const getGetMasterJobImageByIdQueryKey = (
+  masterId?: string,
+  jobId?: string,
+  imageId?: string,
+) => [`/api/v1/masters/${masterId}/jobs/${jobId}/images/${imageId}`] as const;
+
+export const getGetMasterJobImageByIdQueryOptions = <TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(masterId: string,
+  jobId: string,
+  imageId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMasterJobImageByIdQueryKey(masterId, jobId, imageId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMasterJobImageById>>> = ({ signal }) => getMasterJobImageById(masterId, jobId, imageId, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(masterId && jobId && imageId), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetMasterJobImageByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getMasterJobImageById>>>;
+export type GetMasterJobImageByIdQueryError = ProblemDetails;
+
+export function useGetMasterJobImageById<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getMasterJobImageById>>,
+  TError,
+  Awaited<ReturnType<typeof getMasterJobImageById>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterJobImageById<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getMasterJobImageById>>,
+  TError,
+  Awaited<ReturnType<typeof getMasterJobImageById>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterJobImageById<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Download a master job image
+ */
+
+export function useGetMasterJobImageById<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetMasterJobImageByIdQueryOptions(masterId, jobId, imageId, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetMasterJobImageByIdSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(masterId: string,
+  jobId: string,
+  imageId: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMasterJobImageByIdQueryKey(masterId, jobId, imageId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMasterJobImageById>>> = ({ signal }) => getMasterJobImageById(masterId, jobId, imageId, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetMasterJobImageByIdSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getMasterJobImageById>>>;
+export type GetMasterJobImageByIdSuspenseQueryError = ProblemDetails;
+
+export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Download a master job image
+ */
+
+export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
+  masterId: string,
+  jobId: string,
+  imageId: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterJobImageById>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetMasterJobImageByIdSuspenseQueryOptions(masterId, jobId, imageId, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
