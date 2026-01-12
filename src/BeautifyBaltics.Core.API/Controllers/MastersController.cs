@@ -7,6 +7,7 @@ using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterProfileIm
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasters;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterJobImage;
+using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterProfileImage;
 using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
@@ -108,6 +109,18 @@ public class MastersController(IMessageBus bus) : ApiController
     {
         var response = await bus.InvokeAsync<UploadMasterProfileImageResponse>(request with { MasterId = id }, cancellationToken);
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Get master profile image
+    /// </summary>
+    [HttpGet("{id:guid}/profile-image", Name = "GetMasterProfileImage")]
+    [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetProfileImage([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<GetMasterProfileImageResponse>(new GetMasterProfileImageRequest { MasterId = id }, cancellationToken);
+        return File(response.Data, response.FileMimeType, response.FileName);
     }
 
     /// <summary>

@@ -35,10 +35,13 @@ export const apiClient = async <T>({
   signal,
 }: ApiClientRequest): Promise<T> => {
   const requestHeaders: HeadersInit = new Headers();
+  const isFormData = data instanceof FormData;
 
   if (headers) {
     Object.entries(headers).forEach(([key, value]) => {
       if (typeof value === 'undefined' || value === null) return;
+      // Don't set Content-Type for FormData - browser sets it with boundary
+      if (isFormData && key.toLowerCase() === 'content-type') return;
       requestHeaders.set(key, value);
     });
   }

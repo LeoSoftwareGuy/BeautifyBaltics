@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BeautifyBaltics.Domain.Enumerations;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Commands.Shared;
 
@@ -15,8 +16,10 @@ public record MasterProfileCommandDTO
     [Range(18, 120)]
     public int? Age { get; init; }
 
-    [MaxLength(64)]
-    public string? Gender { get; init; }
+    public Gender? Gender { get; init; }
+
+    [MaxLength(1000)]
+    public string? Description { get; init; }
 
     [Required]
     [EmailAddress]

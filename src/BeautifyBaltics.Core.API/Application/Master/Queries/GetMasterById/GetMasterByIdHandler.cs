@@ -26,6 +26,7 @@ public class GetMasterByIdHandler(
             LastName = master.LastName,
             Age = master.Age,
             Gender = master.Gender,
+            Description = master.Description,
             Email = master.Email,
             PhoneNumber = master.PhoneNumber,
             Rating = master.Rating,

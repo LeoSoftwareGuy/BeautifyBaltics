@@ -13,9 +13,6 @@ public class MasterProfileCommandValidator : AbstractValidator<MasterProfileComm
             .InclusiveBetween(5, 120)
             .When(v => v.Age.HasValue);
 
-        RuleFor(v => v.Gender)
-            .MaximumLength(64);
-
         RuleFor(v => v.Email)
             .NotEmpty()
             .EmailAddress()

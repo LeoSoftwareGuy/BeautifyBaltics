@@ -1,4 +1,5 @@
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
 using JasperFx.Events;
 
@@ -12,7 +13,8 @@ public record Master(Guid Id) : Projection
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
     public int? Age { get; init; }
-    public string? Gender { get; init; }
+    public Gender? Gender { get; init; }
+    public string? Description { get; init; }
     public string Email { get; init; } = string.Empty;
     public string PhoneNumber { get; init; } = string.Empty;
     public decimal Rating { get; init; }
@@ -47,6 +49,7 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             LastName = @event.LastName,
             Age = @event.Age,
             Gender = @event.Gender,
+            Description = @event.Description,
             Email = @event.Contacts.Email,
             PhoneNumber = @event.Contacts.PhoneNumber,
         };

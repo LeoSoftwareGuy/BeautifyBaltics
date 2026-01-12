@@ -1,4 +1,5 @@
-﻿using BeautifyBaltics.Domain.ValueObjects;
+using BeautifyBaltics.Domain.Enumerations;
+using BeautifyBaltics.Domain.ValueObjects;
 
 namespace BeautifyBaltics.Domain.Aggregates.Master.Events;
 
@@ -7,6 +8,7 @@ public record MasterProfileUpdated(
     string FirstName,
     string LastName,
     int? Age,
-    string? Gender,
+    Gender? Gender,
+    string? Description,
     ContactInformation Contacts
 );

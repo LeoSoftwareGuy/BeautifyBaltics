@@ -14,6 +14,7 @@ namespace BeautifyBaltics.Core.API.Application.Users.Queries.GetUser
             if (client is not null)
             {
                 return new GetUserResponse(
+                    Id: client.Id,
                     Role: UserRole.Client,
                     Email: client.Email,
                     FullName: $"{client.FirstName} {client.LastName}".Trim()
@@ -24,6 +25,7 @@ namespace BeautifyBaltics.Core.API.Application.Users.Queries.GetUser
             if (master is not null)
             {
                 return new GetUserResponse(
+                    Id: master.Id,
                     Role: UserRole.Master,
                     Email: master.Email,
                     FullName: $"{master.FirstName} {master.LastName}".Trim()

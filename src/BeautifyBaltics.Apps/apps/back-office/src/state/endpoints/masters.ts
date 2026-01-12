@@ -642,6 +642,125 @@ export const useUploadMasterProfileImage = <TError = ProblemDetails | ProblemDet
   return useMutation(mutationOptions, queryClient);
 };
 /**
+ * @summary Get master profile image
+ */
+export const getMasterProfileImage = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<Blob>(
+  {
+    url: `/api/v1/masters/${id}/profile-image`,
+    method: 'GET',
+    responseType: 'blob',
+    signal,
+  },
+);
+
+export const getGetMasterProfileImageQueryKey = (id?: string) => [`/api/v1/masters/${id}/profile-image`] as const;
+
+export const getGetMasterProfileImageQueryOptions = <TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMasterProfileImageQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMasterProfileImage>>> = ({ signal }) => getMasterProfileImage(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetMasterProfileImageQueryResult = NonNullable<Awaited<ReturnType<typeof getMasterProfileImage>>>;
+export type GetMasterProfileImageQueryError = ProblemDetails;
+
+export function useGetMasterProfileImage<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getMasterProfileImage>>,
+  TError,
+  Awaited<ReturnType<typeof getMasterProfileImage>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterProfileImage<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getMasterProfileImage>>,
+  TError,
+  Awaited<ReturnType<typeof getMasterProfileImage>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterProfileImage<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get master profile image
+ */
+
+export function useGetMasterProfileImage<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetMasterProfileImageQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetMasterProfileImageSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMasterProfileImageQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMasterProfileImage>>> = ({ signal }) => getMasterProfileImage(id, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetMasterProfileImageSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getMasterProfileImage>>>;
+export type GetMasterProfileImageSuspenseQueryError = ProblemDetails;
+
+export function useGetMasterProfileImageSuspense<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterProfileImageSuspense<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterProfileImageSuspense<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get master profile image
+ */
+
+export function useGetMasterProfileImageSuspense<TData = Awaited<ReturnType<typeof getMasterProfileImage>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterProfileImage>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetMasterProfileImageSuspenseQueryOptions(id, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
  * @summary Upload an image for a master job
  */
 export const uploadMasterJobImage = (

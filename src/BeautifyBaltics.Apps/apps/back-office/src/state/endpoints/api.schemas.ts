@@ -278,6 +278,12 @@ export type FindMastersResponsePagedResponse = {
   items: FindMastersResponse[];
 };
 
+export enum Gender {
+  Male = 'Male',
+  Female = 'Female',
+  Other = 'Other',
+
+}
 export type GetBookingByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetBookingByIdResponse = BookingDTO & GetBookingByIdResponseAllOf;
@@ -303,7 +309,12 @@ export type GetMasterJobImageByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetMasterJobImageByIdResponse = FileContentDTO & GetMasterJobImageByIdResponseAllOf;
 
+export type GetMasterProfileImageResponseAllOf = { [key: string]: unknown };
+
+export type GetMasterProfileImageResponse = FileContentDTO & GetMasterProfileImageResponseAllOf;
+
 export type GetUserResponse = {
+  id?: string;
   role?: UserRole;
   /** @nullable */
   email?: string | null;
@@ -373,8 +384,9 @@ export type MasterDTO = {
   lastName?: string | null;
   /** @nullable */
   age?: number | null;
+  gender?: Gender;
   /** @nullable */
-  gender?: string | null;
+  description?: string | null;
   /** @nullable */
   email?: string | null;
   /** @nullable */
@@ -447,11 +459,12 @@ export type MasterProfileCommandDTO = {
    * @nullable
    */
   age?: number | null;
+  gender?: Gender;
   /**
-   * @maxLength 64
+   * @maxLength 1000
    * @nullable
    */
-  gender?: string | null;
+  description?: string | null;
   /** @minLength 1 */
   email: string;
   /**

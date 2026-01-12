@@ -20,6 +20,7 @@ public class UpdateMasterProfileEventHandler
             request.LastName,
             request.Age,
             request.Gender,
+            request.Description,
             new ContactInformation(request.Email, request.PhoneNumber)
         );
 

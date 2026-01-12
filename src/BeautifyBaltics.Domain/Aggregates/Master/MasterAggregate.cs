@@ -1,4 +1,5 @@
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.SeedWork;
 using BeautifyBaltics.Domain.ValueObjects;
 
@@ -13,7 +14,8 @@ public partial class MasterAggregate : Aggregate
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public int? Age { get; private set; }
-    public string? Gender { get; private set; }
+    public Gender? Gender { get; private set; }
+    public string? Description { get; private set; }
     public ContactInformation Contacts { get; private set; } = new(string.Empty, string.Empty);
     public MasterProfileImage? ProfileImage { get; private set; }
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
@@ -35,6 +37,7 @@ public partial class MasterAggregate : Aggregate
         LastName = @event.LastName;
         Age = @event.Age;
         Gender = @event.Gender;
+        Description = @event.Description;
         Contacts = @event.Contacts;
     }
 

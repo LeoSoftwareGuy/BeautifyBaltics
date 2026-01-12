@@ -3,6 +3,7 @@ using BeautifyBaltics.Domain.Aggregates.Client.Events;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Documents;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.ValueObjects;
 using BeautifyBaltics.Persistence.Projections;
 using Marten;
@@ -61,7 +62,7 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
             var events = new List<object>
             {
                 new MasterCreated(master.FirstName, master.LastName, new ContactInformation(master.Email, master.PhoneNumber), master.SupabaseUserId),
-                new MasterProfileUpdated(master.Id, master.FirstName, master.LastName, master.Age, master.Gender, new ContactInformation(master.Email, master.PhoneNumber))
+                new MasterProfileUpdated(master.Id, master.FirstName, master.LastName, master.Age, master.Gender, master.Description, new ContactInformation(master.Email, master.PhoneNumber))
             };
 
             foreach (var offering in master.JobOfferings)
@@ -133,56 +134,76 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
 
     private readonly MasterSeed[] _masters =
     {
-        MasterSeed.Create("Eliis", "Kuusk", "eliis.kuusk@beautifybaltics.com", "+372 5550 1001", "female", 30, new[]
-        {
-            new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
-            new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), 165m, TimeSpan.FromMinutes(130), "Color Dimension")
-        }),
-        MasterSeed.Create("Markus", "Lepik", "markus.lepik@beautifybaltics.com", "+372 5550 1002", "male", 34, new[]
-        {
-            new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), 58m, null, "Gentleman's Cut"),
-            new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"))
-        }),
-        MasterSeed.Create("Anette", "Laur", "anette.laur@beautifybaltics.com", "+372 5550 1003", "female", 29, new[]
-        {
-            new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6")),
-            new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"))
-        }),
-        MasterSeed.Create("Rasmus", "Hallik", "rasmus.hallik@beautifybaltics.com", "+372 5550 1004", "male", 31, new[]
-        {
-            new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2")),
-            new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"))
-        }),
-        MasterSeed.Create("Greta", "Pärn", "greta.parn@beautifybaltics.com", "+372 5550 1005", "female", 35, new[]
-        {
-            new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 72m, TimeSpan.FromMinutes(80), "Editorial Nails"),
-            new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 48m)
-        }),
-        MasterSeed.Create("Karl", "Nurmsalu", "karl.nurmsalu@beautifybaltics.com", "+372 5550 1006", "male", 27, new[]
-        {
-            new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
-            new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), 45m, null, "Hot Towel Beard Ritual")
-        }),
-        MasterSeed.Create("Merilin", "Jõe", "merilin.joe@beautifybaltics.com", "+372 5550 1007", "female", 33, new[]
-        {
-            new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b")),
-            new JobOffering(Guid.Parse("f35a5782-0c7c-4fcd-9a6d-87c78f701911"))
-        }),
-        MasterSeed.Create("Sander", "Mets", "sander.mets@beautifybaltics.com", "+372 5550 1008", "male", 28, new[]
-        {
-            new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), 290m),
-            new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"))
-        }),
-        MasterSeed.Create("Johanna", "Sild", "johanna.sild@beautifybaltics.com", "+372 5550 1009", "female", 26, new[]
-        {
-            new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 50m, null, "Precision Brow Lift"),
-            new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 60m)
-        }),
-        MasterSeed.Create("Tanel", "Visnapuu", "tanel.visnapuu@beautifybaltics.com", "+372 5550 1010", "male", 32, new[]
-        {
-            new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
-            new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"))
-        })
+        MasterSeed.Create("Eliis", "Kuusk", "eliis.kuusk@beautifybaltics.com", "+372 5550 1001", Gender.Female, 30,
+            "Award-winning colorist with 8 years of experience specializing in balayage and creative color techniques.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
+                new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), 165m, TimeSpan.FromMinutes(130), "Color Dimension")
+            }),
+        MasterSeed.Create("Markus", "Lepik", "markus.lepik@beautifybaltics.com", "+372 5550 1002", Gender.Male, 34,
+            "Classic barbering meets modern style. Specializing in men's cuts and traditional hot towel shaves.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), 58m, null, "Gentleman's Cut"),
+                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"))
+            }),
+        MasterSeed.Create("Anette", "Laur", "anette.laur@beautifybaltics.com", "+372 5550 1003", Gender.Female, 29,
+            "Certified brow artist and nail technician. Creating perfectly shaped brows and stunning nail designs.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6")),
+                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"))
+            }),
+        MasterSeed.Create("Rasmus", "Hallik", "rasmus.hallik@beautifybaltics.com", "+372 5550 1004", Gender.Male, 31,
+            "Professional tattoo artist with a passion for fine line and minimalist designs. 10+ years experience.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2")),
+                new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"))
+            }),
+        MasterSeed.Create("Greta", "Pärn", "greta.parn@beautifybaltics.com", "+372 5550 1005", Gender.Female, 35,
+            "Editorial nail artist featured in top fashion magazines. Specializing in intricate hand-painted designs.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 72m, TimeSpan.FromMinutes(80), "Editorial Nails"),
+                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 48m)
+            }),
+        MasterSeed.Create("Karl", "Nurmsalu", "karl.nurmsalu@beautifybaltics.com", "+372 5550 1006", Gender.Male, 27,
+            "Young talent specializing in modern men's styling. Known for precision fades and beard grooming.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
+                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), 45m, null, "Hot Towel Beard Ritual")
+            }),
+        MasterSeed.Create("Merilin", "Jõe", "merilin.joe@beautifybaltics.com", "+372 5550 1007", Gender.Female, 33,
+            "Color correction specialist with expertise in transformative hair makeovers and vivid fashion colors.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b")),
+                new JobOffering(Guid.Parse("f35a5782-0c7c-4fcd-9a6d-87c78f701911"))
+            }),
+        MasterSeed.Create("Sander", "Mets", "sander.mets@beautifybaltics.com", "+372 5550 1008", Gender.Male, 28,
+            "Tattoo artist specializing in geometric and blackwork designs. Clean lines and bold statements.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), 290m),
+                new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"))
+            }),
+        MasterSeed.Create("Johanna", "Sild", "johanna.sild@beautifybaltics.com", "+372 5550 1009", Gender.Female, 26,
+            "Brow and lash expert trained in microblading and lamination techniques. Natural beauty enhancement.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 50m, null, "Precision Brow Lift"),
+                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 60m)
+            }),
+        MasterSeed.Create("Tanel", "Visnapuu", "tanel.visnapuu@beautifybaltics.com", "+372 5550 1010", Gender.Male, 32,
+            "Versatile barber with a loyal clientele. Expert in both classic and contemporary men's styling.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
+                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"))
+            })
     };
 
     private readonly ClientSeed _client = new(
@@ -207,10 +228,10 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
         public JobCategory ToDocument() => new(Id, Name);
     }
 
-    private sealed record MasterSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, string SupabaseUserId, int Age, string Gender, IReadOnlyList<JobOffering> JobOfferings)
+    private sealed record MasterSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, string SupabaseUserId, int Age, Domain.Enumerations.Gender Gender, string? Description, IReadOnlyList<JobOffering> JobOfferings)
     {
-        public static MasterSeed Create(string firstName, string lastName, string email, string phoneNumber, string gender, int age, IReadOnlyList<JobOffering> jobOfferings) =>
-            new(Guid.NewGuid(), firstName, lastName, email, phoneNumber, Guid.NewGuid().ToString(), age, gender, jobOfferings);
+        public static MasterSeed Create(string firstName, string lastName, string email, string phoneNumber, Domain.Enumerations.Gender gender, int age, string? description, IReadOnlyList<JobOffering> jobOfferings) =>
+            new(Guid.NewGuid(), firstName, lastName, email, phoneNumber, Guid.NewGuid().ToString(), age, gender, description, jobOfferings);
     }
 
     private sealed record JobOffering(Guid JobId, decimal? Price = null, TimeSpan? Duration = null, string? Title = null);
