@@ -24,7 +24,7 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
         await SeedCategoriesAsync(session, cancellation);
         await SeedJobsAsync(session, cancellation);
         await SeedMastersAsync(session);
-      //  await SeedClientAsync(session, cancellation);
+        //  await SeedClientAsync(session, cancellation);
 
         await session.SaveChangesAsync(cancellation);
     }
@@ -73,7 +73,10 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
                     offering.JobId,
                     offering.Price ?? jobDefinition.DefaultPrice,
                     offering.Duration ?? jobDefinition.DefaultDuration,
-                    offering.Title ?? jobDefinition.Name
+                    offering.Title ?? jobDefinition.Name,
+                    jobDefinition.CategoryId,
+                    jobDefinition.CategoryName,
+                    jobDefinition.Name
                 ));
             }
 
@@ -112,22 +115,20 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
 
     private readonly JobSeed[] _jobs =
     {
-        new(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), "Signature Haircut", Guid.Parse("3f2d35b0-84dc-4e0c-85a1-31c60f7ce62e"), 45,
+        new(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), "Signature Haircut", Guid.Parse("3f2d35b0-84dc-4e0c-85a1-31c60f7ce62e"),"Haircut", 45,
             "Tailored haircut with styling finish.", 55m),
-        new(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), "Precision Beard Trim", Guid.Parse("512308de-bf64-44a4-ae69-08b4d782e0ae"), 30,
+        new(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), "Precision Beard Trim", Guid.Parse("512308de-bf64-44a4-ae69-08b4d782e0ae"),"Grooming", 30,
             "Beard shaping, conditioning, and styling.", 40m),
-        new(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), "Creative Hair Color", Guid.Parse("8ecb25bf-6e2d-4cb3-b818-1c03f2b4b92e"), 120,
+        new(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), "Creative Hair Color", Guid.Parse("8ecb25bf-6e2d-4cb3-b818-1c03f2b4b92e"),"Color", 120,
             "Custom color work including toning and finish.", 150m),
-        new(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), "Hand-painted Nail Art", Guid.Parse("efec4bf5-05af-4621-b8d7-08d132128187"), 75,
+        new(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), "Hand-painted Nail Art", Guid.Parse("efec4bf5-05af-4621-b8d7-08d132128187"),"Nails", 75,
             "Detailed gel manicure with custom art.", 65m),
-        new(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), "Brow Sculpt & Tint", Guid.Parse("0db7e1a1-92bf-4c13-9f33-862ea1b9ed07"), 40,
+        new(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), "Brow Sculpt & Tint", Guid.Parse("0db7e1a1-92bf-4c13-9f33-862ea1b9ed07"),"Brows", 40,
             "Brow mapping, waxing, and tinting for definition.", 45m),
-        new(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), "Fine Line Tattoo", Guid.Parse("b59f3cb2-326c-42a7-9d5f-4c7344a5c5b8"), 180,
+        new(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), "Fine Line Tattoo", Guid.Parse("b59f3cb2-326c-42a7-9d5f-4c7344a5c5b8"),"Tattoo", 180,
             "Custom fine line tattoo session with consultation.", 320m),
-        new(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"), "Professional Piercing", Guid.Parse("7e5f2b4f-97b9-4a55-8985-7f99dc8df908"), 35,
-            "Sterile piercing service with jewelry.", 70m),
-        new(Guid.Parse("f35a5782-0c7c-4fcd-9a6d-87c78f701911"), "Bridal Styling Session", Guid.Parse("3f2d35b0-84dc-4e0c-85a1-31c60f7ce62e"), 90,
-            "Trial and final bridal styling with accessories.", 180m)
+        new(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"), "Professional Piercing", Guid.Parse("7e5f2b4f-97b9-4a55-8985-7f99dc8df908"),"Piercing", 35,
+            "Sterile piercing service with jewelry.", 70m)
     };
 
     private readonly MasterSeed[] _masters =
@@ -194,7 +195,7 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
 
     #endregion
 
-    private sealed record JobSeed(Guid Id, string Name, Guid CategoryId, int DurationMinutes, string Description, decimal DefaultPrice)
+    private sealed record JobSeed(Guid Id, string Name, Guid CategoryId, string CategoryName, int DurationMinutes, string Description, decimal DefaultPrice)
     {
         public TimeSpan DefaultDuration => TimeSpan.FromMinutes(DurationMinutes);
 

@@ -739,6 +739,11 @@ paths:
           in: query
           schema:
             type: string
+        - name: jobCategoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
         - name: page
           in: query
           description: Page number
@@ -1815,6 +1820,15 @@ components:
         jobId:
           type: string
           format: uuid
+        jobCategoryId:
+          type: string
+          format: uuid
+        jobCategoryName:
+          type: string
+          nullable: true
+        jobName:
+          type: string
+          nullable: true
         title:
           type: string
           nullable: true

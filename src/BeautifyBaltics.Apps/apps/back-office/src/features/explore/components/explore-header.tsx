@@ -9,10 +9,12 @@ import {
 import { Filter, Search } from 'lucide-react';
 
 type ExploreHeaderProps = {
+  searchValue: string;
+  onSearchChange: (value: string) => void;
   onOpenFilters: () => void;
 };
 
-function ExploreHeader({ onOpenFilters }: ExploreHeaderProps) {
+function ExploreHeader({ onOpenFilters, onSearchChange, searchValue }: ExploreHeaderProps) {
   return (
     <Box
       component="header"
@@ -29,6 +31,8 @@ function ExploreHeader({ onOpenFilters }: ExploreHeaderProps) {
             leftSection={<Search size={16} />}
             radius="xl"
             flex={1}
+            value={searchValue}
+            onChange={(event) => onSearchChange(event.currentTarget.value)}
           />
           <ActionIcon
             variant="outline"

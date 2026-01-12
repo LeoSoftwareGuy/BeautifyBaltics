@@ -392,6 +392,11 @@ export type MasterDTO = {
 export type MasterJobDTO = {
   id?: string;
   jobId?: string;
+  jobCategoryId?: string;
+  /** @nullable */
+  jobCategoryName?: string | null;
+  /** @nullable */
+  jobName?: string | null;
   /** @nullable */
   title?: string | null;
   price?: number;
@@ -731,6 +736,7 @@ export type GetJobByIdParams = {
 export type FindMastersParams = {
   text?: string;
   city?: string;
+  jobCategoryId?: string;
   /**
  * Page number
  */

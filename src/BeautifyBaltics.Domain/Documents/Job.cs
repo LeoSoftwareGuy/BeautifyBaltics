@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using BeautifyBaltics.Domain.SeedWork;
 
 namespace BeautifyBaltics.Domain.Documents;
@@ -6,10 +7,15 @@ public class Job : Document<Guid>
 {
     public Job() { }
 
+    [JsonInclude]
     public string Name { get; private set; } = string.Empty;
+    [JsonInclude]
     public Guid CategoryId { get; private set; }
+    [JsonInclude]
     public string CategoryName { get; private set; } = string.Empty;
+    [JsonInclude]
     public TimeSpan Duration { get; private set; }
+    [JsonInclude]
     public string Description { get; private set; } = string.Empty;
 
     public Job(Guid id, string name, Guid categoryId, string categoryName, TimeSpan duration, string description)

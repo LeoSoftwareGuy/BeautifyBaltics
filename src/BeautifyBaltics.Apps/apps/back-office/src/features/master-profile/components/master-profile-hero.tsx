@@ -12,20 +12,27 @@ import {
   Mail, MapPin, Phone, Star,
 } from 'lucide-react';
 
-import type { MasterProfile } from '../data';
+import type { GetMasterByIdResponse } from '@/state/endpoints/api.schemas';
 
 type ProfileHeroProps = {
-  profile: MasterProfile;
+  master: GetMasterByIdResponse;
 };
 
-function ProfileHero({ profile }: ProfileHeroProps) {
+function ProfileHero({ master }: ProfileHeroProps) {
+  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || 'Unnamed master';
+  const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
+  const phone = master.phoneNumber ?? undefined;
+  const email = master.email ?? undefined;
+  const city = master.city ?? 'Location not provided';
+  const heroImage = undefined;
+
   return (
     <Grid gutter="xl">
       <Grid.Col span={{ base: 12, md: 6 }}>
         <Image
-          src={profile.image}
+          src={heroImage}
           radius="xl"
-          alt={profile.name}
+          alt={fullName}
           mah={420}
           fit="cover"
           fallbackSrc="https://placehold.co/800x600?text=Master"
@@ -34,43 +41,48 @@ function ProfileHero({ profile }: ProfileHeroProps) {
       <Grid.Col span={{ base: 12, md: 6 }}>
         <Stack gap="lg">
           <Group gap="sm">
-            <Badge variant="light">{profile.category}</Badge>
-            <Badge variant="outline">{profile.priceLabel}</Badge>
+            {master.gender ? <Badge variant="light">{master.gender}</Badge> : null}
+            {master.city ? <Badge variant="outline">{master.city}</Badge> : null}
           </Group>
           <Title order={1} fw={800} size="clamp(28px, 4vw, 48px)">
-            {profile.name}
+            {fullName}
           </Title>
           <Group gap="md" c="dimmed">
             <Group gap={6}>
               <Star size={18} fill="currentColor" />
               <Text fw={600} c="var(--mantine-color-text)">
-                {profile.rating.toFixed(1)}
+                {ratingValue ?? 'New'}
               </Text>
               <Text>
                 (
-                {profile.reviews}
-                {' '}
-                reviews)
+                {ratingValue ? 'Rating' : 'Awaiting reviews'}
+                )
               </Text>
             </Group>
           </Group>
           <Text c="dimmed" lh={1.7}>
-            {profile.bio}
+            This master has not provided a bio yet. Check back later for more details.
           </Text>
 
           <Card withBorder radius="lg">
             <Stack gap="sm">
               <Group gap="sm">
                 <MapPin size={18} />
-                <Text>{profile.address}</Text>
+                <Text>{city}</Text>
               </Group>
-              <Group gap="sm">
+              <Group gap="sm" wrap="nowrap">
                 <Phone size={18} />
-                <ButtonLink href={`tel:${profile.phone}`} label={profile.phone} />
+                <ButtonLink
+                  href={phone ? `tel:${phone}` : undefined}
+                  label={phone ?? 'Phone not provided'}
+                />
               </Group>
-              <Group gap="sm">
+              <Group gap="sm" wrap="nowrap">
                 <Mail size={18} />
-                <ButtonLink href={`mailto:${profile.email}`} label={profile.email} />
+                <ButtonLink
+                  href={email ? `mailto:${email}` : undefined}
+                  label={email ?? 'Email not provided'}
+                />
               </Group>
             </Stack>
           </Card>
@@ -81,15 +93,18 @@ function ProfileHero({ profile }: ProfileHeroProps) {
 }
 
 type ButtonLinkProps = {
-  href: string;
+  href?: string;
   label: string;
 };
 
 function ButtonLink({ href, label }: ButtonLinkProps) {
+  const textProps = href
+    ? { component: 'a' as const, href }
+    : { component: 'span' as const };
+
   return (
     <Text
-      component="a"
-      href={href}
+      {...textProps}
       variant="link"
       c="grape.6"
       style={{ textDecoration: 'none', fontWeight: 600 }}

@@ -10,6 +10,9 @@ public record MasterJobImage(Guid Id, Guid MasterJobId, string FileName, string 
 public record MasterJob(Guid Id, Guid MasterId) : Projection
 {
     public Guid JobId { get; init; }
+    public string JobName { get; init; } = string.Empty;
+    public Guid JobCategoryId { get; init; }
+    public string JobCategoryName { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public TimeSpan Duration { get; init; }
@@ -28,6 +31,9 @@ public class MasterJobProjection : SingleStreamProjection<MasterJob, Guid>
         return new MasterJob(@event.StreamId, @event.Data.MasterId)
         {
             JobId = @event.Data.JobId,
+            JobName = @event.Data.JobName,
+            JobCategoryId = @event.Data.JobCategoryId,
+            JobCategoryName = @event.Data.JobCategoryName,
             Title = @event.Data.Title,
             Price = @event.Data.Price,
             Duration = @event.Data.Duration
@@ -35,7 +41,17 @@ public class MasterJobProjection : SingleStreamProjection<MasterJob, Guid>
     }
 
     public static MasterJob Apply(MasterJobUpdated @event, MasterJob current) =>
-        current with { MasterId = @event.MasterId, JobId = @event.JobId, Title = @event.Title, Price = @event.Price, Duration = @event.Duration };
+        current with
+        {
+            MasterId = @event.MasterId,
+            JobId = @event.JobId,
+            JobName = @event.JobName,
+            JobCategoryId = @event.JobCategoryId,
+            JobCategoryName = @event.JobCategoryName,
+            Title = @event.Title,
+            Price = @event.Price,
+            Duration = @event.Duration
+        };
 
     public static MasterJob Apply(MasterJobImageUploaded @event, MasterJob current)
     {

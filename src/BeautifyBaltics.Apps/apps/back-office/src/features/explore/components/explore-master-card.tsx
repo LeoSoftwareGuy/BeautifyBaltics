@@ -1,5 +1,4 @@
 import {
-  Badge,
   Card,
   Group,
   Image,
@@ -8,15 +7,24 @@ import {
 } from '@mantine/core';
 import { MapPin, Star } from 'lucide-react';
 
-import type { Master } from '../types';
+import type { FindMastersResponse } from '@/state/endpoints/api.schemas';
 
 type MasterCardProps = {
-  master: Master;
+  master: FindMastersResponse;
   selected: boolean;
-  onSelect: (id: number) => void;
+  onSelect: (id: string) => void;
 };
 
 function MasterCard({ master, selected, onSelect }: MasterCardProps) {
+  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || 'Unnamed master';
+  const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
+  const address = master.city ?? 'Location not specified';
+  const handleSelect = () => {
+    if (master.id) {
+      onSelect(master.id);
+    }
+  };
+
   return (
     <Card
       padding="md"
@@ -35,12 +43,12 @@ function MasterCard({ master, selected, onSelect }: MasterCardProps) {
         const target = event.currentTarget;
         target.style.transform = 'none';
       }}
-      onClick={() => onSelect(master.id)}
+      onClick={handleSelect}
     >
       <Group gap="md" align="flex-start">
         <Image
-          src={master.image}
-          alt={master.name}
+          src={undefined}
+          alt={fullName}
           radius="md"
           w={96}
           h={96}
@@ -50,26 +58,21 @@ function MasterCard({ master, selected, onSelect }: MasterCardProps) {
         <Stack gap={4} flex={1}>
           <Group justify="space-between" align="center" gap="xs">
             <Text fw={600} truncate="end">
-              {master.name}
+              {fullName}
             </Text>
-            <Badge variant="light">{master.priceLabel}</Badge>
           </Group>
           <Group gap="xs" c="dimmed" fz="sm">
             <Group gap={4}>
               <Star size={16} fill="currentColor" />
               <Text fw={600} c="var(--mantine-color-text)">
-                {master.rating.toFixed(1)}
+                {ratingValue ?? 'New'}
               </Text>
-              <Text>
-                (
-                {master.reviews}
-                )
-              </Text>
+              <Text>{ratingValue ? 'Rating' : 'Awaiting reviews'}</Text>
             </Group>
           </Group>
           <Group gap={6} c="dimmed" fz="sm">
             <MapPin size={16} />
-            <Text>{master.address}</Text>
+            <Text>{address}</Text>
           </Group>
         </Stack>
       </Group>

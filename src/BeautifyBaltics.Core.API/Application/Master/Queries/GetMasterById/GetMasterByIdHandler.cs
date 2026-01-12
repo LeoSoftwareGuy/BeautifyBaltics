@@ -44,6 +44,9 @@ public class GetMasterByIdHandler(
             {
                 Id = job.Id,
                 JobId = job.JobId,
+                JobCategoryId = job.JobCategoryId,
+                JobCategoryName = job.JobCategoryName,
+                JobName = job.JobName,
                 Title = job.Title,
                 Price = job.Price,
                 DurationMinutes = (int)job.Duration.TotalMinutes,

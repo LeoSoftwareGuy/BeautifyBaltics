@@ -6,5 +6,8 @@ public record MasterJobUpdated(
     Guid JobId,
     decimal Price,
     TimeSpan Duration,
-    string Title
+    string Title,
+    Guid JobCategoryId,
+    string JobCategoryName,
+    string JobName
 );

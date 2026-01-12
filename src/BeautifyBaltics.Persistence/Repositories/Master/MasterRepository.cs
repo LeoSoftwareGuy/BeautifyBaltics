@@ -1,3 +1,4 @@
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.Master.DTOs;
 using Marten;
 using Marten.Pagination;
@@ -33,6 +34,17 @@ public class MasterRepository(IQuerySession session) : QueryRepository<Projectio
         if (!string.IsNullOrWhiteSpace(search.City))
         {
             query = query.Where(x => x.City == search.City);
+        }
+
+        if (search.JobCategoryId.HasValue)
+        {
+            var jobCategoryId = search.JobCategoryId.Value;
+            var masterIds = _session.Query<MasterJob>()
+                .Where(job => job.JobCategoryId == jobCategoryId)
+                .Select(job => job.MasterId)
+                .ToList();
+
+            query = query.Where(x => masterIds.Contains(x.Id));
         }
 
         return query;

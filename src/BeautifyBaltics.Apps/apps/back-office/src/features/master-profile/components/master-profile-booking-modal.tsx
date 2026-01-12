@@ -16,8 +16,8 @@ type BookingModalProps = {
   opened: boolean;
   date: Date | null;
   slot: string | null;
-  address: string;
-  phone: string;
+  address?: string | null;
+  phone?: string | null;
   onClose: () => void;
 };
 
@@ -47,11 +47,11 @@ function BookingModal({
         </Group>
         <Group gap="sm">
           <MapPin size={18} />
-          <Text>{address}</Text>
+          <Text>{address ?? 'Address not provided'}</Text>
         </Group>
         <Group gap="sm">
           <Phone size={18} />
-          <Text>{phone}</Text>
+          <Text>{phone ?? 'Phone not provided'}</Text>
         </Group>
         <Group gap="sm">
           <Button variant="default" onClick={onClose} fullWidth>

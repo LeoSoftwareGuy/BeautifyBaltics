@@ -57,14 +57,25 @@ public partial class MasterAggregate : Aggregate
                 @event.JobId,
                 @event.Price,
                 @event.Duration,
-                @event.Title
+                @event.Title,
+                @event.JobCategoryId,
+                @event.JobCategoryName,
+                @event.JobName
             )
         );
     }
 
     internal void Apply(MasterJobUpdated @event)
     {
-        this._jobs[@event.MasterJobId].Update(@event.JobId, @event.Price, @event.Duration, @event.Title);
+        this._jobs[@event.MasterJobId].Update(
+            @event.JobId,
+            @event.Price,
+            @event.Duration,
+            @event.Title,
+            @event.JobCategoryId,
+            @event.JobCategoryName,
+            @event.JobName
+        );
     }
 
     internal void Apply(MasterJobDeleted @event)
