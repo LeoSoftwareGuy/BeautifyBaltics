@@ -42,12 +42,17 @@ import type {
   CreateMasterJobResponse,
   CreateMasterRequest,
   CreateMasterResponse,
+  DeleteMasterJobImageResponse,
+  DeleteMasterJobResponse,
+  FindMasterJobsResponse,
   FindMastersParams,
   FindMastersResponsePagedResponse,
   GetMasterByIdParams,
   GetMasterByIdResponse,
   GetMasterJobImageByIdResponse,
   ProblemDetails,
+  UpdateMasterJobRequest,
+  UpdateMasterJobResponse,
   UpdateMasterProfileRequest,
   UpdateMasterProfileResponse,
   UploadMasterJobImageBody,
@@ -526,6 +531,222 @@ export const useCreateMasterJob = <TError = ProblemDetails | ValidationProblemDe
   return useMutation(mutationOptions, queryClient);
 };
 /**
+ * @summary Find master jobs
+ */
+export const findMasterJobs = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<FindMasterJobsResponse>(
+  { url: `/api/v1/masters/${id}/jobs`, method: 'GET', signal },
+);
+
+export const getFindMasterJobsQueryKey = (id?: string) => [`/api/v1/masters/${id}/jobs`] as const;
+
+export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterJobsQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
+export type FindMasterJobsQueryError = ProblemDetails;
+
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobs>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobs>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobs>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobs>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find master jobs
+ */
+
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterJobsQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getFindMasterJobsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterJobsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
+export type FindMasterJobsSuspenseQueryError = ProblemDetails;
+
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find master jobs
+ */
+
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterJobsSuspenseQueryOptions(id, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Delete a master job
+ */
+export const deleteMasterJob = (
+  id: string,
+  jobId: string,
+) => customClient<DeleteMasterJobResponse>(
+  { url: `/api/v1/masters/${id}/jobs/${jobId}`, method: 'DELETE' },
+);
+
+export const getDeleteMasterJobMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJob>>, TError, { id: string;jobId: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJob>>, TError, { id: string;jobId: string }, TContext> => {
+  const mutationKey = ['deleteMasterJob'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMasterJob>>, { id: string;jobId: string }> = (props) => {
+    const { id, jobId } = props ?? {};
+
+    return deleteMasterJob(id, jobId);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteMasterJobMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMasterJob>>>;
+
+export type DeleteMasterJobMutationError = ProblemDetails;
+
+/**
+ * @summary Delete a master job
+ */
+export const useDeleteMasterJob = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJob>>, TError, { id: string;jobId: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMasterJob>>,
+  TError,
+  { id: string;jobId: string },
+  TContext
+  > => {
+  const mutationOptions = getDeleteMasterJobMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Update a master job
+ */
+export const updateMasterJob = (
+  id: string,
+  jobId: string,
+  updateMasterJobRequest: UpdateMasterJobRequest,
+) => customClient<UpdateMasterJobResponse>(
+  {
+    url: `/api/v1/masters/${id}/jobs/${jobId}`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateMasterJobRequest,
+  },
+);
+
+export const getUpdateMasterJobMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterJob>>, TError, { id: string;jobId: string;data: UpdateMasterJobRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof updateMasterJob>>, TError, { id: string;jobId: string;data: UpdateMasterJobRequest }, TContext> => {
+  const mutationKey = ['updateMasterJob'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMasterJob>>, { id: string;jobId: string;data: UpdateMasterJobRequest }> = (props) => {
+    const { id, jobId, data } = props ?? {};
+
+    return updateMasterJob(id, jobId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateMasterJobMutationResult = NonNullable<Awaited<ReturnType<typeof updateMasterJob>>>;
+export type UpdateMasterJobMutationBody = UpdateMasterJobRequest;
+export type UpdateMasterJobMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Update a master job
+ */
+export const useUpdateMasterJob = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterJob>>, TError, { id: string;jobId: string;data: UpdateMasterJobRequest }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof updateMasterJob>>,
+  TError,
+  { id: string;jobId: string;data: UpdateMasterJobRequest },
+  TContext
+  > => {
+  const mutationOptions = getUpdateMasterJobMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * @summary Define master availability slots
  */
 export const createMasterAvailability = (
@@ -962,3 +1183,53 @@ export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<type
 
   return query;
 }
+
+/**
+ * @summary Delete a master job image
+ */
+export const deleteMasterJobImage = (
+  masterId: string,
+  jobId: string,
+  imageId: string,
+) => customClient<DeleteMasterJobImageResponse>(
+  { url: `/api/v1/masters/${masterId}/jobs/${jobId}/images/${imageId}`, method: 'DELETE' },
+);
+
+export const getDeleteMasterJobImageMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJobImage>>, TError, { masterId: string;jobId: string;imageId: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJobImage>>, TError, { masterId: string;jobId: string;imageId: string }, TContext> => {
+  const mutationKey = ['deleteMasterJobImage'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMasterJobImage>>, { masterId: string;jobId: string;imageId: string }> = (props) => {
+    const { masterId, jobId, imageId } = props ?? {};
+
+    return deleteMasterJobImage(masterId, jobId, imageId);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteMasterJobImageMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMasterJobImage>>>;
+
+export type DeleteMasterJobImageMutationError = ProblemDetails;
+
+/**
+ * @summary Delete a master job image
+ */
+export const useDeleteMasterJobImage = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJobImage>>, TError, { masterId: string;jobId: string;imageId: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMasterJobImage>>,
+  TError,
+  { masterId: string;jobId: string;imageId: string },
+  TContext
+  > => {
+  const mutationOptions = getDeleteMasterJobImageMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};

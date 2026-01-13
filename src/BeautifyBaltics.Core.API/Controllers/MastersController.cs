@@ -1,4 +1,7 @@
 using BeautifyBaltics.Core.API.Application.Master.Commands.AddMasterJob;
+using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJob;
+using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJobImage;
+using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.CreateMaster;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DefineAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterProfile;
@@ -6,6 +9,7 @@ using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterProfileImage;
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasters;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
+using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobs;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterProfileImage;
 using BeautifyBaltics.Core.API.Application.SeedWork;
@@ -83,6 +87,43 @@ public class MastersController(IMessageBus bus) : ApiController
     }
 
     /// <summary>
+    /// Find master jobs
+    /// </summary>
+    [HttpGet("{id:guid}/jobs", Name = "FindMasterJobs")]
+    [ProducesResponseType(typeof(FindMasterJobsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FindMasterJobsResponse>> FindMasterJobs([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<FindMasterJobsResponse>(new FindMasterJobsRequest { MasterId = id }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete a master job
+    /// </summary>
+    [HttpDelete("{id:guid}/jobs/{jobId:guid}", Name = "DeleteMasterJob")]
+    [ProducesResponseType(typeof(DeleteMasterJobResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteMasterJob([FromRoute] Guid id, [FromRoute] Guid jobId, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<DeleteMasterJobResponse>(new DeleteMasterJobRequest { MasterId = id, MasterJobId = jobId }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Update a master job
+    /// </summary>
+    [HttpPut("{id:guid}/jobs/{jobId:guid}", Name = "UpdateMasterJob")]
+    [ProducesResponseType(typeof(UpdateMasterJobResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> UpdateMasterJob([FromRoute] Guid id, [FromRoute] Guid jobId, [FromBody] UpdateMasterJobRequest request, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<UpdateMasterJobResponse>(request with { MasterId = id, MasterJobId = jobId }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Define master availability slots
     /// </summary>
     [HttpPost("{id:guid}/availability", Name = "CreateMasterAvailability")]
@@ -148,6 +189,23 @@ public class MastersController(IMessageBus bus) : ApiController
     public async Task<ActionResult<GetMasterJobImageByIdResponse>> GetMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromRoute] Guid imageId, CancellationToken cancellationToken)
     {
         var response = await bus.InvokeAsync<GetMasterJobImageByIdResponse>(new GetMasterJobImageByIdRequest
+        {
+            MasterId = masterId,
+            MasterJobId = jobId,
+            MasterJobImageId = imageId
+        }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete a master job image
+    /// </summary>
+    [HttpDelete("{masterId:guid}/jobs/{jobId:guid}/images/{imageId:guid}", Name = "DeleteMasterJobImage")]
+    [ProducesResponseType(typeof(DeleteMasterJobImageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromRoute] Guid imageId, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<DeleteMasterJobImageResponse>(new DeleteMasterJobImageRequest
         {
             MasterId = masterId,
             MasterJobId = jobId,

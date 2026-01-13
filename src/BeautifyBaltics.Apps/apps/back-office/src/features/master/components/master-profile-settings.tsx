@@ -21,7 +21,9 @@ import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconDeviceFloppy, IconPhotoUp } from '@tabler/icons-react';
 
 import { Gender, UpdateMasterProfileRequest } from '@/state/endpoints/api.schemas';
-import { useGetMasterById, useGetMasterProfileImage, useUpdateMasterProfile, useUploadMasterProfileImage } from '@/state/endpoints/masters';
+import {
+  useGetMasterById, useGetMasterProfileImage, useUpdateMasterProfile, useUploadMasterProfileImage,
+} from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
 const validate = {
@@ -45,19 +47,17 @@ function MasterProfileSettings() {
     query: { enabled: !!masterId },
   });
 
-  const { data: profileImageBlob, dataUpdatedAt: imageUpdatedAt, refetch: refetchImage } = useGetMasterProfileImage(masterId, {
+  const { data: profileImageBlob, refetch: refetchImage } = useGetMasterProfileImage(masterId, {
     query: { enabled: !!masterId && !!masterData?.profileImage },
   });
 
   const profileImageUrl = useMemo(() => {
     if (!profileImageBlob) return null;
     return URL.createObjectURL(profileImageBlob);
-  }, [profileImageBlob, imageUpdatedAt]);
+  }, [profileImageBlob]);
 
-  useEffect(() => {
-    return () => {
-      if (profileImageUrl) URL.revokeObjectURL(profileImageUrl);
-    };
+  useEffect(() => () => {
+    if (profileImageUrl) URL.revokeObjectURL(profileImageUrl);
   }, [profileImageUrl]);
 
   const form = useForm<UpdateMasterProfileRequest>({

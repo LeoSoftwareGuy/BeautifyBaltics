@@ -1,33 +1,70 @@
 import {
-  ActionIcon,
   Box,
   Button,
   FileButton,
   Image,
   Modal,
   SimpleGrid,
+  Skeleton,
   Stack,
   Text,
 } from '@mantine/core';
-import { IconTrash, IconUpload } from '@tabler/icons-react';
+import { IconUpload } from '@tabler/icons-react';
 
-import type { Treatment } from './master-treatments.types';
+import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
+import { useGetMasterJobImageById } from '@/state/endpoints/masters';
+
+type MasterJobImageProps = {
+  masterId: string;
+  jobId: string;
+  imageId: string;
+  alt: string;
+};
+
+function MasterJobImage({
+  masterId, jobId, imageId, alt,
+}: MasterJobImageProps) {
+  const { data: imageData, isLoading } = useGetMasterJobImageById(masterId, jobId, imageId);
+
+  if (isLoading) {
+    return <Skeleton h={120} radius="md" />;
+  }
+
+  const imageUrl = imageData
+    ? `data:${imageData.fileMimeType};base64,${imageData.data}`
+    : null;
+
+  return (
+    <Image
+      src={imageUrl}
+      alt={alt}
+      radius="md"
+      h={120}
+      fit="cover"
+    />
+  );
+}
 
 type MasterTreatmentsUploadModalProps = {
   opened: boolean;
   onClose: () => void;
-  treatment: Treatment | null;
+  masterId: string;
+  treatment: MasterJobDTO | null;
   onUpload: (files: File[] | null) => void;
-  onRemoveImage: (treatmentId: string, imageIndex: number) => void;
+  isUploading?: boolean;
 };
 
 export function MasterTreatmentsUploadModal({
   opened,
   onClose,
+  masterId,
   treatment,
   onUpload,
-  onRemoveImage,
+  isUploading,
 }: MasterTreatmentsUploadModalProps) {
+  const images = treatment?.images ?? [];
+  const treatmentName = treatment?.title ?? treatment?.jobName ?? '';
+
   return (
     <Modal
       opened={opened}
@@ -39,7 +76,7 @@ export function MasterTreatmentsUploadModal({
       <Stack gap="md">
         <Text c="dimmed" size="sm">
           {treatment
-            ? `Add images for "${treatment.name}"`
+            ? `Add images for "${treatmentName}"`
             : 'Select a treatment to upload media'}
         </Text>
         <Stack
@@ -58,17 +95,17 @@ export function MasterTreatmentsUploadModal({
           </Text>
           <FileButton onChange={onUpload} accept="image/*" multiple>
             {(props) => (
-              <Button variant="outline" {...props}>
+              <Button variant="outline" loading={isUploading} {...props}>
                 Select images
               </Button>
             )}
           </FileButton>
         </Stack>
-        {treatment && treatment.images.length > 0 && (
+        {treatment && images.length > 0 && (
           <Stack gap="sm">
             <Text size="sm" fw={500}>
               Uploaded Images (
-              {treatment.images.length}
+              {images.length}
               )
             </Text>
             <SimpleGrid
@@ -77,24 +114,14 @@ export function MasterTreatmentsUploadModal({
               }}
               spacing="sm"
             >
-              {treatment.images.map((image, index) => (
-                <Box key={image} pos="relative">
-                  <Image
-                    src={image}
-                    alt={`Work sample ${index + 1}`}
-                    radius="md"
-                    h={120}
-                    fit="cover"
+              {images.map((image, index) => (
+                <Box key={image.id}>
+                  <MasterJobImage
+                    masterId={masterId}
+                    jobId={treatment.id}
+                    imageId={image.id}
+                    alt={image.fileName ?? `Work sample ${index + 1}`}
                   />
-                  <ActionIcon
-                    variant="filled"
-                    size="sm"
-                    color="red"
-                    style={{ position: 'absolute', top: 8, right: 8 }}
-                    onClick={() => onRemoveImage(treatment.id, index)}
-                  >
-                    <IconTrash size={14} />
-                  </ActionIcon>
                 </Box>
               ))}
             </SimpleGrid>

@@ -921,6 +921,108 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+    get:
+      tags:
+        - Masters
+      summary: Find master jobs
+      operationId: FindMasterJobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindMasterJobsResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/jobs/{jobId}':
+    delete:
+      tags:
+        - Masters
+      summary: Delete a master job
+      operationId: DeleteMasterJob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMasterJobResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    put:
+      tags:
+        - Masters
+      summary: Update a master job
+      operationId: UpdateMasterJob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterJobRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterJobRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMasterJobResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   '/api/v1/masters/{id}/availability':
     post:
       tags:
@@ -1156,6 +1258,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetMasterJobImageByIdResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      tags:
+        - Masters
+      summary: Delete a master job image
+      operationId: DeleteMasterJobImage
+      parameters:
+        - name: masterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMasterJobImageResponse'
         '404':
           description: Not Found
           content:
@@ -1440,6 +1579,29 @@ components:
           type: string
           format: uuid
       additionalProperties: false
+    DeleteMasterJobImageResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
+        masterJobImageId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    DeleteMasterJobResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
+      additionalProperties: false
     FileContentDTO:
       allOf:
         - $ref: '#/components/schemas/FileMetadataDTO'
@@ -1615,6 +1777,15 @@ components:
           items:
             $ref: '#/components/schemas/FindJobsResponse'
           description: Items
+      additionalProperties: false
+    FindMasterJobsResponse:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MasterJobDTO'
+          nullable: true
       additionalProperties: false
     FindMastersResponse:
       allOf:
@@ -1854,55 +2025,79 @@ components:
           $ref: '#/components/schemas/FileMetadataDTO'
       additionalProperties: false
     MasterJobDTO:
+      required:
+        - durationMinutes
+        - id
+        - images
+        - jobCategoryId
+        - jobCategoryName
+        - jobId
+        - jobName
+        - price
+        - title
       type: object
       properties:
         id:
           type: string
+          description: Master job identifier
           format: uuid
         jobId:
           type: string
+          description: Job identifier
           format: uuid
         jobCategoryId:
           type: string
+          description: Job category identifier
           format: uuid
         jobCategoryName:
+          minLength: 1
           type: string
-          nullable: true
+          description: Job category name
         jobName:
+          minLength: 1
           type: string
-          nullable: true
+          description: Job name
         title:
+          minLength: 1
           type: string
-          nullable: true
+          description: Job title
         price:
           type: number
+          description: Job price
           format: double
         durationMinutes:
           type: integer
+          description: Job duration in minutes
           format: int32
         images:
           type: array
           items:
             $ref: '#/components/schemas/MasterJobImageDTO'
-          nullable: true
+          description: Job images
       additionalProperties: false
     MasterJobImageDTO:
       required:
         - fileMimeType
         - fileName
+        - fileSize
+        - id
       type: object
       properties:
         id:
           type: string
+          description: Image identifier
           format: uuid
         fileName:
+          minLength: 1
           type: string
-          nullable: true
+          description: Image file name
         fileMimeType:
+          minLength: 1
           type: string
-          nullable: true
+          description: Image file mime type
         fileSize:
           type: integer
+          description: Image file size
           format: int64
       additionalProperties: false
     MasterJobOfferingCommandDTO:
@@ -2077,6 +2272,32 @@ components:
       type: object
       properties:
         jobId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    UpdateMasterJobRequest:
+      required:
+        - job
+        - masterId
+        - masterJobId
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
+        job:
+          $ref: '#/components/schemas/MasterJobOfferingCommandDTO'
+      additionalProperties: false
+    UpdateMasterJobResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
           type: string
           format: uuid
       additionalProperties: false

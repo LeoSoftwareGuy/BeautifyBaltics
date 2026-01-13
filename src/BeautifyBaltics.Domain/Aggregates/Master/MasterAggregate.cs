@@ -122,4 +122,11 @@ public partial class MasterAggregate : Aggregate
 
         job.AddImage(image);
     }
+
+    internal void Apply(MasterJobImageDeleted @event)
+    {
+        if (!_jobs.TryGetValue(@event.MasterJobId, out var job)) return;
+
+        job.RemoveImage(@event.MasterJobImageId);
+    }
 }

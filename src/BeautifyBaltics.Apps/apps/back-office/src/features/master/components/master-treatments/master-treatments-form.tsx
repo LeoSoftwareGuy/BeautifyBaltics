@@ -6,46 +6,91 @@ import {
   NumberInput,
   Select,
   SimpleGrid,
+  Skeleton,
   Stack,
   Text,
   TextInput,
   Title,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { IconPlus } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 
-import type { TreatmentCategory, TreatmentFormValues } from './master-treatments.types';
+import { useFindJobs } from '@/state/endpoints/jobs';
+import { getFindMasterJobsQueryKey, useCreateMasterJob } from '@/state/endpoints/masters';
 
 type MasterTreatmentsFormProps = {
-  categories: readonly TreatmentCategory[];
-  onAdd: (values: TreatmentFormValues) => void;
+  masterId: string;
 };
 
-export function MasterTreatmentsForm({ categories, onAdd }: MasterTreatmentsFormProps) {
-  const [category, setCategory] = useState<string | null>(null);
-  const [name, setName] = useState('');
+export function MasterTreatmentsForm({ masterId }: MasterTreatmentsFormProps) {
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [title, setTitle] = useState('');
   const [price, setPrice] = useState<number | ''>('');
   const [duration, setDuration] = useState<number | ''>('');
 
-  const canSubmit = !!category && !!name.trim() && price !== '' && duration !== '';
+  const queryClient = useQueryClient();
+
+  const { data: jobsData, isLoading: isJobsLoading } = useFindJobs({ pageSize: 100 });
+  const jobs = jobsData?.items ?? [];
+
+  const { mutateAsync: createJob, isPending: isCreating } = useCreateMasterJob({
+    mutation: {
+      onSuccess: async () => {
+        resetForm();
+        await queryClient.invalidateQueries({ queryKey: getFindMasterJobsQueryKey(masterId) });
+        notifications.show({
+          title: 'Treatment added',
+          message: 'Your treatment has been added successfully.',
+          color: 'green',
+        });
+      },
+      onError: (error) => {
+        notifications.show({
+          title: 'Failed to add treatment',
+          message: error.detail,
+          color: 'red',
+        });
+      },
+    },
+  });
+
+  const canSubmit = !!selectedJobId && !!title.trim() && price !== '' && duration !== '';
 
   const resetForm = () => {
-    setCategory(null);
-    setName('');
+    setSelectedJobId(null);
+    setTitle('');
     setPrice('');
     setDuration('');
   };
 
-  const handleAdd = () => {
-    if (!canSubmit) {
+  const handleJobChange = (jobId: string | null) => {
+    setSelectedJobId(jobId);
+    if (jobId) {
+      const job = jobs.find((j) => j.id === jobId);
+      if (job) {
+        setTitle(job.name);
+        setDuration(job.durationMinutes);
+      }
+    }
+  };
+
+  const handleAdd = async () => {
+    if (!canSubmit || !selectedJobId) {
       return;
     }
-    onAdd({
-      categoryId: category,
-      name: name.trim(),
-      price: typeof price === 'number' ? price : parseFloat(price),
-      duration: typeof duration === 'number' ? duration : parseInt(duration, 10),
+    await createJob({
+      id: masterId,
+      data: {
+        masterId,
+        job: {
+          jobId: selectedJobId,
+          title: title.trim(),
+          price: typeof price === 'number' ? price : parseFloat(String(price)),
+          durationMinutes: typeof duration === 'number' ? duration : parseInt(String(duration), 10),
+        },
+      },
     });
-    resetForm();
   };
 
   const handlePriceChange = (value: string | number) => {
@@ -71,22 +116,26 @@ export function MasterTreatmentsForm({ categories, onAdd }: MasterTreatmentsForm
           }}
           spacing="md"
         >
-          <Select
-            label="Treatment Category"
-            placeholder="Select category"
-            searchable
-            data={categories.map((categoryOption) => ({
-              value: categoryOption.id,
-              label: categoryOption.name,
-            }))}
-            value={category}
-            onChange={setCategory}
-          />
+          {isJobsLoading ? (
+            <Skeleton height={36} radius="sm" />
+          ) : (
+            <Select
+              label="Treatment"
+              placeholder="Select treatment"
+              searchable
+              data={jobs.map((job) => ({
+                value: job.id,
+                label: `${job.name} (${job.categoryName})`,
+              }))}
+              value={selectedJobId}
+              onChange={handleJobChange}
+            />
+          )}
           <TextInput
-            label="Service Name"
+            label="Service Title"
             placeholder="e.g., Classic Haircut"
-            value={name}
-            onChange={(event) => setName(event.currentTarget.value)}
+            value={title}
+            onChange={(event) => setTitle(event.currentTarget.value)}
           />
           <NumberInput
             label="Price (€)"
@@ -109,6 +158,7 @@ export function MasterTreatmentsForm({ categories, onAdd }: MasterTreatmentsForm
               fullWidth
               leftSection={<IconPlus size={16} />}
               disabled={!canSubmit}
+              loading={isCreating}
               onClick={handleAdd}
               color="pink"
             >

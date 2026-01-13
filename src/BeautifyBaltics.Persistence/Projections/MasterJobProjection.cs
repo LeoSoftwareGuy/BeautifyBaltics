@@ -1,7 +1,6 @@
 ﻿using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
-using JasperFx.Events;
-using Marten.Events.Aggregation;
+using Marten.Events.Projections;
 
 namespace BeautifyBaltics.Persistence.Projections;
 
@@ -19,24 +18,30 @@ public record MasterJob(Guid Id, Guid MasterId) : Projection
     public IReadOnlyCollection<MasterJobImage> Images { get; init; } = [];
 }
 
-public class MasterJobProjection : SingleStreamProjection<MasterJob, Guid>
+public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
 {
     public MasterJobProjection()
     {
+        Identity<MasterJobCreated>(e => e.MasterJobId);
+        Identity<MasterJobUpdated>(e => e.MasterJobId);
+        Identity<MasterJobDeleted>(e => e.MasterJobId);
+        Identity<MasterJobImageUploaded>(e => e.MasterJobId);
+        Identity<MasterJobImageDeleted>(e => e.MasterJobId);
+
         DeleteEvent<MasterJobDeleted>();
     }
 
-    public static MasterJob Create(IEvent<MasterJobCreated> @event)
+    public static MasterJob Create(MasterJobCreated @event)
     {
-        return new MasterJob(@event.StreamId, @event.Data.MasterId)
+        return new MasterJob(@event.MasterJobId, @event.MasterId)
         {
-            JobId = @event.Data.JobId,
-            JobName = @event.Data.JobName,
-            JobCategoryId = @event.Data.JobCategoryId,
-            JobCategoryName = @event.Data.JobCategoryName,
-            Title = @event.Data.Title,
-            Price = @event.Data.Price,
-            Duration = @event.Data.Duration
+            JobId = @event.JobId,
+            JobName = @event.JobName,
+            JobCategoryId = @event.JobCategoryId,
+            JobCategoryName = @event.JobCategoryName,
+            Title = @event.Title,
+            Price = @event.Price,
+            Duration = @event.Duration
         };
     }
 
@@ -67,6 +72,15 @@ public class MasterJobProjection : SingleStreamProjection<MasterJob, Guid>
             @event.FileSize,
             @event.BlobName)
         );
+
+        return current with { Images = images };
+    }
+
+    public static MasterJob Apply(MasterJobImageDeleted @event, MasterJob current)
+    {
+        var images = current.Images?.ToList() ?? [];
+
+        images.RemoveAll(i => i.Id == @event.MasterJobImageId);
 
         return current with { Images = images };
     }

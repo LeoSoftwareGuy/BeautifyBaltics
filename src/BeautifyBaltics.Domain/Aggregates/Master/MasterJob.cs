@@ -40,5 +40,10 @@ public partial class MasterAggregate
         {
             _images[image.MasterJobImageId] = image;
         }
+
+        public void RemoveImage(Guid masterJobImageId)
+        {
+            _images.Remove(masterJobImageId);
+        }
     }
 }

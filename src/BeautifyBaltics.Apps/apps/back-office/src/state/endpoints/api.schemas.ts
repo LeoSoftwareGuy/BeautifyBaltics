@@ -171,6 +171,17 @@ export type CreateMasterResponse = {
   id?: string;
 };
 
+export type DeleteMasterJobImageResponse = {
+  masterId?: string;
+  masterJobId?: string;
+  masterJobImageId?: string;
+};
+
+export type DeleteMasterJobResponse = {
+  masterId?: string;
+  masterJobId?: string;
+};
+
 export type FileContentDTOAllOf = {
   /** Data of generated file */
   data: string;
@@ -259,6 +270,11 @@ export type FindJobsResponsePagedResponse = {
   totalItemCount: number;
   /** Items */
   items: FindJobsResponse[];
+};
+
+export type FindMasterJobsResponse = {
+  /** @nullable */
+  jobs?: MasterJobDTO[] | null;
 };
 
 export type FindMastersResponseAllOf = { [key: string]: unknown };
@@ -402,28 +418,50 @@ export type MasterDTO = {
 };
 
 export type MasterJobDTO = {
-  id?: string;
-  jobId?: string;
-  jobCategoryId?: string;
-  /** @nullable */
-  jobCategoryName?: string | null;
-  /** @nullable */
-  jobName?: string | null;
-  /** @nullable */
-  title?: string | null;
-  price?: number;
-  durationMinutes?: number;
-  /** @nullable */
-  images?: MasterJobImageDTO[] | null;
+  /** Master job identifier */
+  id: string;
+  /** Job identifier */
+  jobId: string;
+  /** Job category identifier */
+  jobCategoryId: string;
+  /**
+   * Job category name
+   * @minLength 1
+   */
+  jobCategoryName: string;
+  /**
+   * Job name
+   * @minLength 1
+   */
+  jobName: string;
+  /**
+   * Job title
+   * @minLength 1
+   */
+  title: string;
+  /** Job price */
+  price: number;
+  /** Job duration in minutes */
+  durationMinutes: number;
+  /** Job images */
+  images: MasterJobImageDTO[];
 };
 
 export type MasterJobImageDTO = {
-  id?: string;
-  /** @nullable */
-  fileName: string | null;
-  /** @nullable */
-  fileMimeType: string | null;
-  fileSize?: number;
+  /** Image identifier */
+  id: string;
+  /**
+   * Image file name
+   * @minLength 1
+   */
+  fileName: string;
+  /**
+   * Image file mime type
+   * @minLength 1
+   */
+  fileMimeType: string;
+  /** Image file size */
+  fileSize: number;
 };
 
 export type MasterJobOfferingCommandDTO = {
@@ -535,6 +573,17 @@ export type UpdateJobRequest = JobCommandDTO & UpdateJobRequestAllOf;
 
 export type UpdateJobResponse = {
   jobId: string;
+};
+
+export type UpdateMasterJobRequest = {
+  masterId: string;
+  masterJobId: string;
+  job: MasterJobOfferingCommandDTO;
+};
+
+export type UpdateMasterJobResponse = {
+  masterId?: string;
+  masterJobId?: string;
 };
 
 export type UpdateMasterProfileRequestAllOf = {
