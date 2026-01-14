@@ -1,12 +1,10 @@
 ﻿using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
-using JasperFx.Events;
 using Marten;
-using Marten.Events.Aggregation;
+using Marten.Events.Projections;
 
 namespace BeautifyBaltics.Persistence.Projections
 {
-
     public record MasterAvailabilitySlot(Guid Id, Guid MasterId) : Projection
     {
         public DateTime StartAt { get; init; }
@@ -16,25 +14,36 @@ namespace BeautifyBaltics.Persistence.Projections
         public DateTime EndAt { get; init; }
     }
 
-    public class MasterAvailabilitySlotProjection : SingleStreamProjection<MasterAvailabilitySlot, Guid>
+    public class MasterAvailabilitySlotProjection : MultiStreamProjection<MasterAvailabilitySlot, Guid>
     {
         public MasterAvailabilitySlotProjection()
         {
+            Identity<MasterAvailabilitySlotCreated>(e => e.MasterAvailabilityId);
+            Identity<MasterAvailabilitySlotUpdated>(e => e.MasterAvailabilityId);
+
             DeleteEvent<MasterAvailabilitySlotDeleted>();
         }
 
-        public static async Task<MasterAvailabilitySlot> Create(IEvent<MasterAvailabilitySlotCreated> @event, IQuerySession session,
-        CancellationToken cancellationToken)
+        public static async Task<MasterAvailabilitySlot> Create(MasterAvailabilitySlotCreated @event, IQuerySession session,
+           CancellationToken cancellationToken
+        )
         {
-            var master = await session.LoadAsync<Master>(@event.Data.MasterId, cancellationToken);
-            if (master == null) throw new InvalidOperationException($"Master with ID'{@event.Data.MasterId}' not found.");
+            var master = await session.LoadAsync<Master>(@event.MasterId, cancellationToken)
+                ?? throw new InvalidOperationException($"Master with ID'{@event.MasterId}' not found.");
 
-            return new MasterAvailabilitySlot(@event.Data.MasterAvailabilityId, @event.Data.MasterId)
+            return new MasterAvailabilitySlot(@event.MasterAvailabilityId, @event.MasterId)
             {
                 MasterName = master.FirstName,
-                StartAt = @event.Data.StartAt,
-                EndAt = @event.Data.EndAt,
+                StartAt = @event.StartAt,
+                EndAt = @event.EndAt,
             };
         }
+
+        public static MasterAvailabilitySlot Apply(MasterAvailabilitySlotUpdated @event, MasterAvailabilitySlot current) =>
+            current with
+            {
+                StartAt = @event.StartAt,
+                EndAt = @event.EndAt,
+            };
     }
 }

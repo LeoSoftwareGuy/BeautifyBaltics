@@ -62,6 +62,7 @@ public class GetMasterByIdHandler(
             Availability = [.. slots.Select(slot => new MasterAvailabilitySlotDTO
             {
                 Id = slot.Id,
+                MasterName = slot.MasterName,
                 StartAt = slot.StartAt,
                 EndAt = slot.EndAt
             })]

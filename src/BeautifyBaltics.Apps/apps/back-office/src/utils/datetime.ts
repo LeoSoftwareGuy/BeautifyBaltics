@@ -35,8 +35,27 @@ const formatTime = (input?: string | null) => {
 
 const formatDateISO = (value: dayjs.ConfigType | dayjs.Dayjs) => dayjs(value).format('YYYY-MM-DD');
 
+const formatTimeFromDate = (input: Date | string): string => dayjs(input).format('HH:mm');
+
+const createDateTimeFromDateAndTime = (dateS: Date, time: string): Date => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return dayjs(dateS).hour(hours).minute(minutes).second(0)
+    .millisecond(0)
+    .toDate();
+};
+
+const isSameDay = (date1: Date | string, date2: Date): boolean => dayjs(date1).isSame(dayjs(date2), 'day');
+
 const datetime = {
-  formatDate, formatDateTime, toTimeInputValue, toApiTimeValue, formatTime, formatDateISO,
+  formatDate,
+  formatDateTime,
+  toTimeInputValue,
+  toApiTimeValue,
+  formatTime,
+  formatDateISO,
+  formatTimeFromDate,
+  createDateTimeFromDateAndTime,
+  isSameDay,
 };
 
 export default datetime;

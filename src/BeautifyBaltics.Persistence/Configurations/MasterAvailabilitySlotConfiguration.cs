@@ -1,5 +1,4 @@
-﻿using BeautifyBaltics.Domain.Aggregates.Master.Events;
-using BeautifyBaltics.Persistence.Configurations.Extensions;
+﻿using BeautifyBaltics.Persistence.Configurations.Extensions;
 using BeautifyBaltics.Persistence.Projections;
 using JasperFx.Events.Projections;
 using Marten;
@@ -16,10 +15,6 @@ namespace BeautifyBaltics.Persistence.Configurations
                 .MapProjectionMetadata();
 
             options.Projections.Add<MasterAvailabilitySlotProjection>(ProjectionLifecycle.Inline);
-
-            options.Events.AddEventType(typeof(MasterAvailabilitySlotCreated));
-            options.Events.AddEventType(typeof(MasterAvailabilitySlotUpdated));
-            options.Events.AddEventType(typeof(MasterAvailabilitySlotDeleted));
         }
     }
 }

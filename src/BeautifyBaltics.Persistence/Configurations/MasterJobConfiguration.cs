@@ -16,10 +16,5 @@ public class MasterJobConfiguration : IConfigureMarten
             .MapProjectionMetadata();
 
         options.Projections.Add<MasterJobProjection>(ProjectionLifecycle.Inline);
-
-        options.Events.AddEventType(typeof(MasterJobCreated));
-        options.Events.AddEventType(typeof(MasterJobUpdated));
-        options.Events.AddEventType(typeof(MasterJobDeleted));
-        options.Events.AddEventType(typeof(MasterJobImageUploaded));
     }
 }

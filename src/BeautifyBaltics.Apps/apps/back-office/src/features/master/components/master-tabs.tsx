@@ -6,7 +6,7 @@ import {
 import { MasterTreatments } from './master-treatments/master-treatments';
 import { MasterBookingsPanel } from './master-bookings-panel';
 import MasterProfileSettings from './master-profile-settings';
-import { MasterSchedulePanel } from './master-schedule-panel';
+import { MasterSchedule } from './master-schedule';
 
 export type Booking = {
   id: number;
@@ -19,24 +19,10 @@ export type Booking = {
 
 interface MasterTabsProps {
   bookings: Booking[];
-  selectedDate: Date | null;
-  onDateChange: (value: Date | null) => void;
-  slotInput: string;
-  onSlotInputChange: (value: string) => void;
-  slots: string[];
-  onAddSlot: () => void;
-  onRemoveSlot: (time: string) => void;
 }
 
 export function MasterTabs({
   bookings,
-  selectedDate,
-  onDateChange,
-  slotInput,
-  onSlotInputChange,
-  slots,
-  onAddSlot,
-  onRemoveSlot,
 }: MasterTabsProps) {
   const [activeTab, setActiveTab] = useState<string | null>('bookings');
 
@@ -54,15 +40,7 @@ export function MasterTabs({
       </Tabs.Panel>
 
       <Tabs.Panel value="schedule" pt="xl">
-        <MasterSchedulePanel
-          selectedDate={selectedDate}
-          onDateChange={onDateChange}
-          slotInput={slotInput}
-          onSlotInputChange={onSlotInputChange}
-          slots={slots}
-          onAddSlot={onAddSlot}
-          onRemoveSlot={onRemoveSlot}
-        />
+        <MasterSchedule />
       </Tabs.Panel>
 
       <Tabs.Panel value="portfolio" pt="xl">

@@ -1063,6 +1063,142 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+    get:
+      tags:
+        - Masters
+      summary: Find master availabilities
+      operationId: FindMasterAvailabilities
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindMasterAvailabilitiesResponsePagedResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/availability/{availabilityId}':
+    put:
+      tags:
+        - Masters
+      summary: Update master availability
+      operationId: UpdateMasterAvailability
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: availabilityId
+          in: path
+          description: Availability id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update master availability request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterAvailabilityRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterAvailabilityRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMasterAvailabilityResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    get:
+      tags:
+        - Masters
+      summary: Get master availability by id
+      operationId: GetMasterAvailability
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: availabilityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMasterAvailabilityResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      tags:
+        - Masters
+      summary: Delete a master availability
+      operationId: DeleteMasterAvailability
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: availabilityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMasterAvailabilityResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   '/api/v1/masters/{id}/profile-image':
     post:
       tags:
@@ -1532,17 +1668,22 @@ components:
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
         availability:
           type: array
           items:
             $ref: '#/components/schemas/MasterAvailabilitySlotCommandDTO'
+          description: Availability slots
       additionalProperties: false
     CreateMasterAvailabilityResponse:
+      required:
+        - masterId
       type: object
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
       additionalProperties: false
     CreateMasterJobRequest:
@@ -1576,6 +1717,16 @@ components:
       type: object
       properties:
         id:
+          type: string
+          format: uuid
+      additionalProperties: false
+    DeleteMasterAvailabilityResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterAvailabilityId:
           type: string
           format: uuid
       additionalProperties: false
@@ -1778,6 +1929,42 @@ components:
             $ref: '#/components/schemas/FindJobsResponse'
           description: Items
       additionalProperties: false
+    FindMasterAvailabilitiesResponse:
+      allOf:
+        - $ref: '#/components/schemas/MasterAvailabilitySlotDTO'
+        - type: object
+          additionalProperties: false
+    FindMasterAvailabilitiesResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindMasterAvailabilitiesResponse'
+          description: Items
+      additionalProperties: false
     FindMasterJobsResponse:
       type: object
       properties:
@@ -1842,6 +2029,11 @@ components:
     GetJobByIdResponse:
       allOf:
         - $ref: '#/components/schemas/JobDTO'
+        - type: object
+          additionalProperties: false
+    GetMasterAvailabilityResponse:
+      allOf:
+        - $ref: '#/components/schemas/MasterAvailabilitySlotDTO'
         - type: object
           additionalProperties: false
     GetMasterByIdResponse:
@@ -1962,22 +2154,41 @@ components:
       properties:
         start:
           type: string
+          description: Slot starts at
           format: date-time
         end:
           type: string
+          description: Slot ends at
           format: date-time
       additionalProperties: false
     MasterAvailabilitySlotDTO:
+      required:
+        - endAt
+        - id
+        - masterId
+        - masterName
+        - startAt
       type: object
       properties:
         id:
           type: string
+          description: Identifier
           format: uuid
+        masterId:
+          type: string
+          description: Master identifer
+          format: uuid
+        masterName:
+          minLength: 1
+          type: string
+          description: Master name
         startAt:
           type: string
+          description: Starts at
           format: date-time
         endAt:
           type: string
+          description: Ends at
           format: date-time
       additionalProperties: false
     MasterDTO:
@@ -2273,6 +2484,39 @@ components:
       properties:
         jobId:
           type: string
+          format: uuid
+      additionalProperties: false
+    UpdateMasterAvailabilityRequest:
+      required:
+        - availability
+        - masterAvailabilityId
+        - masterId
+      type: object
+      properties:
+        masterId:
+          type: string
+          description: Master identifier
+          format: uuid
+        masterAvailabilityId:
+          type: string
+          description: Master availability identifier
+          format: uuid
+        availability:
+          $ref: '#/components/schemas/MasterAvailabilitySlotCommandDTO'
+      additionalProperties: false
+    UpdateMasterAvailabilityResponse:
+      required:
+        - masterAvailabilityId
+        - masterId
+      type: object
+      properties:
+        masterId:
+          type: string
+          description: Master identifer
+          format: uuid
+        masterAvailabilityId:
+          type: string
+          description: Master availability identifier
           format: uuid
       additionalProperties: false
     UpdateMasterJobRequest:

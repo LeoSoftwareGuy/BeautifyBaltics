@@ -19,7 +19,7 @@ public partial class MasterAggregate : Aggregate
     public ContactInformation Contacts { get; private set; } = new(string.Empty, string.Empty);
     public MasterProfileImage? ProfileImage { get; private set; }
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
-    public IReadOnlyCollection<MasterAvailabilitySlot> Availability => _availabilities.Values.ToList();
+    public IReadOnlyCollection<MasterAvailabilitySlot> Availabilities => _availabilities.Values.ToList();
 
     public MasterAggregate() { }
 
@@ -128,5 +128,11 @@ public partial class MasterAggregate : Aggregate
         if (!_jobs.TryGetValue(@event.MasterJobId, out var job)) return;
 
         job.RemoveImage(@event.MasterJobImageId);
+    }
+
+    public bool IsAvailable(DateTime startAt, DateTime endAt)
+    {
+        return !_availabilities.Any(v =>
+            v.Value.StartAt < endAt && v.Value.EndAt > startAt);
     }
 }

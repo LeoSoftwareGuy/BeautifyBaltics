@@ -2,10 +2,12 @@ import * as path from 'node:path';
 import { defineConfig } from 'orval';
 
 const infiniteOperationNames = [
-  "FindBookings",
-  "FindClients",
-  "FindJobs",
-  "FindMasters"
+  'FindBookings',
+  'FindClients',
+  'FindJobs',
+  'FindMasters',
+  'FindMasterAvailabilities',
+  'FindMasterJobs',
 ];
 
 export default defineConfig({

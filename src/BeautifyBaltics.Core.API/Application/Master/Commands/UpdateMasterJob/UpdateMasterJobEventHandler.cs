@@ -15,22 +15,22 @@ public class UpdateMasterJobEventHandler(IJobRepository jobRepository)
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        var job = master.Jobs.FirstOrDefault(j => j.MasterJobId == request.MasterJobId)
+        var job = master.Jobs.SingleOrDefault(j => j.MasterJobId == request.MasterJobId)
             ?? throw NotFoundException.For<MasterJob>(request.MasterJobId);
 
         var jobDefinition = await jobRepository.GetByIdAsync(request.Job.JobId, cancellationToken)
                             ?? throw NotFoundException.For<Domain.Documents.Job>(request.Job.JobId);
 
         var @event = new MasterJobUpdated(
-            request.MasterJobId,
-            request.MasterId,
-            request.Job.JobId,
-            request.Job.Price,
-            TimeSpan.FromMinutes(request.Job.DurationMinutes),
-            request.Job.Title,
-            jobDefinition.CategoryId,
-            jobDefinition.CategoryName,
-            jobDefinition.Name
+            MasterJobId: request.MasterJobId,
+            MasterId: request.MasterId,
+            JobId: request.Job.JobId,
+            Price: request.Job.Price,
+            Duration: TimeSpan.FromMinutes(request.Job.DurationMinutes),
+            Title: request.Job.Title,
+            JobCategoryId: jobDefinition.CategoryId,
+            JobCategoryName: jobDefinition.CategoryName,
+            JobName: jobDefinition.Name
         );
 
         return ([@event], [new UpdateMasterJobResponse(request.MasterId, request.MasterJobId)]);

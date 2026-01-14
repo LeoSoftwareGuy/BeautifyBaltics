@@ -20,6 +20,7 @@ interface MasterSchedulePanelProps {
   slots: string[];
   onAddSlot: () => void;
   onRemoveSlot: (time: string) => void;
+  isLoading?: boolean;
 }
 
 export function MasterSchedulePanel({
@@ -30,6 +31,7 @@ export function MasterSchedulePanel({
   slots,
   onAddSlot,
   onRemoveSlot,
+  isLoading = false,
 }: MasterSchedulePanelProps) {
   return (
     <Grid gutter="lg">
@@ -104,7 +106,8 @@ export function MasterSchedulePanel({
                 />
                 <Button
                   onClick={onAddSlot}
-                  disabled={!slotInput || !selectedDate}
+                  disabled={!slotInput || !selectedDate || isLoading}
+                  loading={isLoading}
                   color="pink"
                 >
                   Add
@@ -151,6 +154,7 @@ export function MasterSchedulePanel({
                         color="red"
                         leftSection={<IconTrash size={14} />}
                         onClick={() => onRemoveSlot(slot)}
+                        disabled={isLoading}
                       >
                         Remove
                       </Button>

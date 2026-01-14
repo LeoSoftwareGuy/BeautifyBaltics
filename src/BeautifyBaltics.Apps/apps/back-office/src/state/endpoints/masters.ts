@@ -42,15 +42,20 @@ import type {
   CreateMasterJobResponse,
   CreateMasterRequest,
   CreateMasterResponse,
+  DeleteMasterAvailabilityResponse,
   DeleteMasterJobImageResponse,
   DeleteMasterJobResponse,
+  FindMasterAvailabilitiesResponsePagedResponse,
   FindMasterJobsResponse,
   FindMastersParams,
   FindMastersResponsePagedResponse,
+  GetMasterAvailabilityResponse,
   GetMasterByIdParams,
   GetMasterByIdResponse,
   GetMasterJobImageByIdResponse,
   ProblemDetails,
+  UpdateMasterAvailabilityRequest,
+  UpdateMasterAvailabilityResponse,
   UpdateMasterJobRequest,
   UpdateMasterJobResponse,
   UpdateMasterProfileRequest,
@@ -542,6 +547,64 @@ export const findMasterJobs = (
 
 export const getFindMasterJobsQueryKey = (id?: string) => [`/api/v1/masters/${id}/jobs`] as const;
 
+export const getFindMasterJobsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterJobsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
+export type FindMasterJobsInfiniteQueryError = ProblemDetails;
+
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobs>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobs>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobs>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobs>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find master jobs
+ */
+
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterJobsInfiniteQueryOptions(id, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
@@ -798,6 +861,408 @@ export const useCreateMasterAvailability = <TError = ProblemDetails | Validation
   TContext
   > => {
   const mutationOptions = getCreateMasterAvailabilityMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Find master availabilities
+ */
+export const findMasterAvailabilities = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<FindMasterAvailabilitiesResponsePagedResponse>(
+  { url: `/api/v1/masters/${id}/availability`, method: 'GET', signal },
+);
+
+export const getFindMasterAvailabilitiesQueryKey = (id?: string) => [`/api/v1/masters/${id}/availability`] as const;
+
+export const getFindMasterAvailabilitiesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterAvailabilitiesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterAvailabilities>>>;
+export type FindMasterAvailabilitiesInfiniteQueryError = ProblemDetails;
+
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterAvailabilities>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterAvailabilities>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterAvailabilities>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterAvailabilities>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find master availabilities
+ */
+
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterAvailabilitiesInfiniteQueryOptions(id, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getFindMasterAvailabilitiesQueryOptions = <TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterAvailabilitiesQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterAvailabilities>>>;
+export type FindMasterAvailabilitiesQueryError = ProblemDetails;
+
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterAvailabilities>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterAvailabilities>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterAvailabilities>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterAvailabilities>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find master availabilities
+ */
+
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterAvailabilitiesQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getFindMasterAvailabilitiesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterAvailabilitiesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterAvailabilities>>>;
+export type FindMasterAvailabilitiesSuspenseQueryError = ProblemDetails;
+
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find master availabilities
+ */
+
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterAvailabilitiesSuspenseQueryOptions(id, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Update master availability
+ */
+export const updateMasterAvailability = (
+  id: string,
+  availabilityId: string,
+  updateMasterAvailabilityRequest: UpdateMasterAvailabilityRequest,
+) => customClient<UpdateMasterAvailabilityResponse>(
+  {
+    url: `/api/v1/masters/${id}/availability/${availabilityId}`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateMasterAvailabilityRequest,
+  },
+);
+
+export const getUpdateMasterAvailabilityMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterAvailability>>, TError, { id: string;availabilityId: string;data: UpdateMasterAvailabilityRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof updateMasterAvailability>>, TError, { id: string;availabilityId: string;data: UpdateMasterAvailabilityRequest }, TContext> => {
+  const mutationKey = ['updateMasterAvailability'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMasterAvailability>>, { id: string;availabilityId: string;data: UpdateMasterAvailabilityRequest }> = (props) => {
+    const { id, availabilityId, data } = props ?? {};
+
+    return updateMasterAvailability(id, availabilityId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateMasterAvailabilityMutationResult = NonNullable<Awaited<ReturnType<typeof updateMasterAvailability>>>;
+export type UpdateMasterAvailabilityMutationBody = UpdateMasterAvailabilityRequest;
+export type UpdateMasterAvailabilityMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Update master availability
+ */
+export const useUpdateMasterAvailability = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterAvailability>>, TError, { id: string;availabilityId: string;data: UpdateMasterAvailabilityRequest }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof updateMasterAvailability>>,
+  TError,
+  { id: string;availabilityId: string;data: UpdateMasterAvailabilityRequest },
+  TContext
+  > => {
+  const mutationOptions = getUpdateMasterAvailabilityMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Get master availability by id
+ */
+export const getMasterAvailability = (
+  id: string,
+  availabilityId: string,
+  signal?: AbortSignal,
+) => customClient<GetMasterAvailabilityResponse>(
+  { url: `/api/v1/masters/${id}/availability/${availabilityId}`, method: 'GET', signal },
+);
+
+export const getGetMasterAvailabilityQueryKey = (
+  id?: string,
+  availabilityId?: string,
+) => [`/api/v1/masters/${id}/availability/${availabilityId}`] as const;
+
+export const getGetMasterAvailabilityQueryOptions = <TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(id: string,
+  availabilityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMasterAvailabilityQueryKey(id, availabilityId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMasterAvailability>>> = ({ signal }) => getMasterAvailability(id, availabilityId, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id && availabilityId), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetMasterAvailabilityQueryResult = NonNullable<Awaited<ReturnType<typeof getMasterAvailability>>>;
+export type GetMasterAvailabilityQueryError = ProblemDetails;
+
+export function useGetMasterAvailability<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getMasterAvailability>>,
+  TError,
+  Awaited<ReturnType<typeof getMasterAvailability>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterAvailability<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getMasterAvailability>>,
+  TError,
+  Awaited<ReturnType<typeof getMasterAvailability>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterAvailability<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get master availability by id
+ */
+
+export function useGetMasterAvailability<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetMasterAvailabilityQueryOptions(id, availabilityId, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetMasterAvailabilitySuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(id: string,
+  availabilityId: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMasterAvailabilityQueryKey(id, availabilityId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMasterAvailability>>> = ({ signal }) => getMasterAvailability(id, availabilityId, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetMasterAvailabilitySuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getMasterAvailability>>>;
+export type GetMasterAvailabilitySuspenseQueryError = ProblemDetails;
+
+export function useGetMasterAvailabilitySuspense<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterAvailabilitySuspense<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetMasterAvailabilitySuspense<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get master availability by id
+ */
+
+export function useGetMasterAvailabilitySuspense<TData = Awaited<ReturnType<typeof getMasterAvailability>>, TError = ProblemDetails>(
+  id: string,
+  availabilityId: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getMasterAvailability>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetMasterAvailabilitySuspenseQueryOptions(id, availabilityId, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Delete a master availability
+ */
+export const deleteMasterAvailability = (
+  id: string,
+  availabilityId: string,
+) => customClient<DeleteMasterAvailabilityResponse>(
+  { url: `/api/v1/masters/${id}/availability/${availabilityId}`, method: 'DELETE' },
+);
+
+export const getDeleteMasterAvailabilityMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterAvailability>>, TError, { id: string;availabilityId: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof deleteMasterAvailability>>, TError, { id: string;availabilityId: string }, TContext> => {
+  const mutationKey = ['deleteMasterAvailability'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMasterAvailability>>, { id: string;availabilityId: string }> = (props) => {
+    const { id, availabilityId } = props ?? {};
+
+    return deleteMasterAvailability(id, availabilityId);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteMasterAvailabilityMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMasterAvailability>>>;
+
+export type DeleteMasterAvailabilityMutationError = ProblemDetails;
+
+/**
+ * @summary Delete a master availability
+ */
+export const useDeleteMasterAvailability = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterAvailability>>, TError, { id: string;availabilityId: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMasterAvailability>>,
+  TError,
+  { id: string;availabilityId: string },
+  TContext
+  > => {
+  const mutationOptions = getDeleteMasterAvailabilityMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

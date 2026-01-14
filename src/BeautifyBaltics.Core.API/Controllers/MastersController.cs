@@ -1,4 +1,5 @@
 using BeautifyBaltics.Core.API.Application.Master.Commands.AddMasterJob;
+using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterJob;
@@ -7,7 +8,9 @@ using BeautifyBaltics.Core.API.Application.Master.Commands.DefineAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterProfile;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterProfileImage;
+using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterAvailabilities;
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasters;
+using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobs;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterJobImage;
@@ -16,6 +19,7 @@ using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
+using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterAvailability;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -133,6 +137,61 @@ public class MastersController(IMessageBus bus) : ApiController
     public async Task<ActionResult> CreateMasterAvailability([FromRoute] Guid id, [FromBody] CreateMasterAvailabilityRequest request, CancellationToken cancellationToken)
     {
         var response = await bus.InvokeAsync<CreateMasterAvailabilityResponse>(request with { MasterId = id }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Update master availability
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="availabilityId">Availability id</param>
+    /// <param name="request">Update master availability request</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Updated master availability</returns>
+    [HttpPut("{id:guid}/availability/{availabilityId:guid}", Name = "UpdateMasterAvailability")]
+    [ProducesResponseType(typeof(UpdateMasterAvailabilityResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> UpdateMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId, [FromBody] UpdateMasterAvailabilityRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<UpdateMasterAvailabilityResponse>(request with { MasterId = id, MasterAvailabilityId = availabilityId }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Find master availabilities
+    /// </summary>
+    [HttpGet("{id:guid}/availability", Name = "FindMasterAvailabilities")]
+    [ProducesResponseType(typeof(PagedResponse<FindMasterAvailabilitiesResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PagedResponse<FindMasterAvailabilitiesResponse>>> FindMasterAvailabilities([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<PagedResponse<FindMasterAvailabilitiesResponse>>(new FindMasterAvailabilitiesRequest { MasterId = id }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get master availability by id
+    /// </summary>
+    [HttpGet("{id:guid}/availability/{availabilityId:guid}", Name = "GetMasterAvailability")]
+    [ProducesResponseType(typeof(GetMasterAvailabilityResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetMasterAvailabilityResponse>> GetMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<GetMasterAvailabilityResponse>(new GetMasterAvailabilityRequest { MasterId = id, MasterAvailabilityId = availabilityId }, cancellationToken);
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Delete a master availability
+    /// </summary>
+    [HttpDelete("{id:guid}/availability/{availabilityId:guid}", Name = "DeleteMasterAvailability")]
+    [ProducesResponseType(typeof(DeleteMasterAvailabilityResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId, CancellationToken cancellationToken)
+    {
+        var response = await bus.InvokeAsync<DeleteMasterAvailabilityResponse>(new DeleteMasterAvailabilityRequest { MasterId = id, MasterAvailabilityId = availabilityId }, cancellationToken);
         return Ok(response);
     }
 

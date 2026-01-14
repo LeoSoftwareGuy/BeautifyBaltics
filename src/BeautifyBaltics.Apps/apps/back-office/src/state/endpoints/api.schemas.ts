@@ -145,12 +145,15 @@ export type CreateJobResponse = {
 };
 
 export type CreateMasterAvailabilityRequest = {
+  /** Master identifier */
   masterId: string;
+  /** Availability slots */
   availability: MasterAvailabilitySlotCommandDTO[];
 };
 
 export type CreateMasterAvailabilityResponse = {
-  masterId?: string;
+  /** Master identifier */
+  masterId: string;
 };
 
 export type CreateMasterJobRequest = {
@@ -169,6 +172,11 @@ export type CreateMasterRequest = MasterProfileCommandDTO & CreateMasterRequestA
 
 export type CreateMasterResponse = {
   id?: string;
+};
+
+export type DeleteMasterAvailabilityResponse = {
+  masterId?: string;
+  masterAvailabilityId?: string;
 };
 
 export type DeleteMasterJobImageResponse = {
@@ -272,6 +280,23 @@ export type FindJobsResponsePagedResponse = {
   items: FindJobsResponse[];
 };
 
+export type FindMasterAvailabilitiesResponseAllOf = { [key: string]: unknown };
+
+export type FindMasterAvailabilitiesResponse = MasterAvailabilitySlotDTO & FindMasterAvailabilitiesResponseAllOf;
+
+export type FindMasterAvailabilitiesResponsePagedResponse = {
+  /** Current page number */
+  page: number;
+  /** Page size */
+  pageSize: number;
+  /** Total pages count */
+  pageCount: number;
+  /** Total items count */
+  totalItemCount: number;
+  /** Items */
+  items: FindMasterAvailabilitiesResponse[];
+};
+
 export type FindMasterJobsResponse = {
   /** @nullable */
   jobs?: MasterJobDTO[] | null;
@@ -311,6 +336,10 @@ export type GetClientByIdResponse = ClientDTO & GetClientByIdResponseAllOf;
 export type GetJobByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetJobByIdResponse = JobDTO & GetJobByIdResponseAllOf;
+
+export type GetMasterAvailabilityResponseAllOf = { [key: string]: unknown };
+
+export type GetMasterAvailabilityResponse = MasterAvailabilitySlotDTO & GetMasterAvailabilityResponseAllOf;
 
 export type GetMasterByIdResponseAllOf = {
   /** @nullable */
@@ -382,14 +411,26 @@ export type JobDTO = {
 };
 
 export type MasterAvailabilitySlotCommandDTO = {
+  /** Slot starts at */
   start: Date;
+  /** Slot ends at */
   end: Date;
 };
 
 export type MasterAvailabilitySlotDTO = {
-  id?: string;
-  startAt?: Date;
-  endAt?: Date;
+  /** Identifier */
+  id: string;
+  /** Master identifer */
+  masterId: string;
+  /**
+   * Master name
+   * @minLength 1
+   */
+  masterName: string;
+  /** Starts at */
+  startAt: Date;
+  /** Ends at */
+  endAt: Date;
 };
 
 export type MasterDTO = {
@@ -573,6 +614,21 @@ export type UpdateJobRequest = JobCommandDTO & UpdateJobRequestAllOf;
 
 export type UpdateJobResponse = {
   jobId: string;
+};
+
+export type UpdateMasterAvailabilityRequest = {
+  /** Master identifier */
+  masterId: string;
+  /** Master availability identifier */
+  masterAvailabilityId: string;
+  availability: MasterAvailabilitySlotCommandDTO;
+};
+
+export type UpdateMasterAvailabilityResponse = {
+  /** Master identifer */
+  masterId: string;
+  /** Master availability identifier */
+  masterAvailabilityId: string;
 };
 
 export type UpdateMasterJobRequest = {
