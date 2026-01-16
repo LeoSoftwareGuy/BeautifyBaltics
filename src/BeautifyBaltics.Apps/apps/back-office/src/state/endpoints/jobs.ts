@@ -51,7 +51,7 @@ import type {
 } from './api.schemas';
 
 /**
- * @summary Find jobs
+ * @summary Find paged jobs
  */
 export const findJobs = (
   params?: FindJobsParams,
@@ -106,7 +106,7 @@ export function useFindJobsInfinite<TData = InfiniteData<Awaited<ReturnType<type
   , queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Find jobs
+ * @summary Find paged jobs
  */
 
 export function useFindJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findJobs>>, FindJobsParams['page']>, TError = ValidationProblemDetails>(
@@ -162,7 +162,7 @@ export function useFindJobs<TData = Awaited<ReturnType<typeof findJobs>>, TError
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Find jobs
+ * @summary Find paged jobs
  */
 
 export function useFindJobs<TData = Awaited<ReturnType<typeof findJobs>>, TError = ValidationProblemDetails>(
@@ -206,7 +206,7 @@ export function useFindJobsSuspense<TData = Awaited<ReturnType<typeof findJobs>>
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Find jobs
+ * @summary Find paged jobs
  */
 
 export function useFindJobsSuspense<TData = Awaited<ReturnType<typeof findJobs>>, TError = ValidationProblemDetails>(
@@ -278,7 +278,7 @@ export const useCreateJob = <TError = ProblemDetails | ValidationProblemDetails,
   return useMutation(mutationOptions, queryClient);
 };
 /**
- * @summary Find job categories
+ * @summary Find paged job categories
  */
 export const findJobCategories = (
   params?: FindJobCategoriesParams,
@@ -333,7 +333,7 @@ export function useFindJobCategories<TData = Awaited<ReturnType<typeof findJobCa
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Find job categories
+ * @summary Find paged job categories
  */
 
 export function useFindJobCategories<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(
@@ -377,7 +377,7 @@ export function useFindJobCategoriesSuspense<TData = Awaited<ReturnType<typeof f
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Find job categories
+ * @summary Find paged job categories
  */
 
 export function useFindJobCategoriesSuspense<TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(

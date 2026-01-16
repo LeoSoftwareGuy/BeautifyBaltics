@@ -3,6 +3,7 @@ import {
   Alert, Loader, Stack, Text,
 } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
+import dayjs from 'dayjs';
 
 import {
   useCreateMasterAvailability,
@@ -19,16 +20,27 @@ export function MasterSchedule() {
   const masterId = user?.id ?? '';
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [slotInput, setSlotInput] = useState('');
+  const [startTimeInput, setStartTimeInput] = useState('');
+  const [endTimeInput, setEndTimeInput] = useState('');
+
+  const dateParams = useMemo(() => {
+    if (!selectedDate) return { startAt: undefined, endAt: undefined };
+    return {
+      startAt: dayjs(selectedDate).startOf('day').toDate(),
+      endAt: dayjs(selectedDate).endOf('day').toDate(),
+    };
+  }, [selectedDate]);
 
   const {
     data: availabilityData,
     isLoading: isAvailabilityLoading,
     isError: isAvailabilityError,
     refetch,
-  } = useFindMasterAvailabilities(masterId, {
-    query: { enabled: !!masterId },
-  });
+  } = useFindMasterAvailabilities(
+    masterId,
+    { masterId, ...dateParams },
+    { query: { enabled: !!masterId && !!selectedDate } },
+  );
 
   const createAvailability = useCreateMasterAvailability({
     mutation: {
@@ -46,37 +58,22 @@ export function MasterSchedule() {
     },
   });
 
-  const allSlots = useMemo(() => {
+  const slots = useMemo(() => {
     const items = availabilityData?.items ?? [];
-    return items;
-  }, [availabilityData]);
-
-  const slotsForSelectedDate = useMemo(() => {
-    if (!selectedDate) return [];
-    const filtered = allSlots
-      .filter((slot) => {
-        const matches = datetime.isSameDay(slot.startAt, selectedDate);
-        return matches;
-      })
+    return items
       .map((slot) => ({
         id: slot.id,
-        time: datetime.formatTimeFromDate(slot.startAt),
+        startTime: datetime.formatTimeFromDate(slot.startAt),
+        endTime: datetime.formatTimeFromDate(slot.endAt),
       }))
-      .sort((a, b) => a.time.localeCompare(b.time));
-    return filtered;
-  }, [allSlots, selectedDate]);
-
-  const slotTimes = useMemo(
-    () => slotsForSelectedDate.map((s) => s.time),
-    [slotsForSelectedDate],
-  );
+      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  }, [availabilityData]);
 
   const handleAddSlot = async () => {
-    if (!selectedDate || !slotInput || !masterId) return;
+    if (!selectedDate || !startTimeInput || !endTimeInput || !masterId) return;
 
-    const startAt = datetime.createDateTimeFromDateAndTime(selectedDate, slotInput);
-    const endAt = new Date(startAt);
-    endAt.setHours(endAt.getHours() + 1);
+    const startAt = datetime.createDateTimeFromDateAndTime(selectedDate, startTimeInput);
+    const endAt = datetime.createDateTimeFromDateAndTime(selectedDate, endTimeInput);
 
     await createAvailability.mutateAsync({
       id: masterId,
@@ -86,18 +83,16 @@ export function MasterSchedule() {
       },
     });
 
-    setSlotInput('');
+    setStartTimeInput('');
+    setEndTimeInput('');
   };
 
-  const handleRemoveSlot = async (time: string) => {
+  const handleRemoveSlot = async (slotId: string) => {
     if (!masterId) return;
-
-    const slotToRemove = slotsForSelectedDate.find((s) => s.time === time);
-    if (!slotToRemove) return;
 
     await deleteAvailability.mutateAsync({
       id: masterId,
-      availabilityId: slotToRemove.id,
+      availabilityId: slotId,
     });
   };
 
@@ -122,9 +117,11 @@ export function MasterSchedule() {
     <MasterSchedulePanel
       selectedDate={selectedDate}
       onDateChange={setSelectedDate}
-      slotInput={slotInput}
-      onSlotInputChange={setSlotInput}
-      slots={slotTimes}
+      startTimeInput={startTimeInput}
+      onStartTimeInputChange={setStartTimeInput}
+      endTimeInput={endTimeInput}
+      onEndTimeInputChange={setEndTimeInput}
+      slots={slots}
       onAddSlot={handleAddSlot}
       onRemoveSlot={handleRemoveSlot}
       isLoading={createAvailability.isPending || deleteAvailability.isPending}

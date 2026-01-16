@@ -1,4 +1,3 @@
-using BeautifyBaltics.Core.API.Application.Booking.Queries.FindBookings;
 using BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient;
 using BeautifyBaltics.Core.API.Application.Client.Commands.UpdateClientProfile;
 using BeautifyBaltics.Core.API.Application.Client.Commands.UploadClientProfileImage;
@@ -47,16 +46,14 @@ public class ClientsController(IMessageBus bus) : ApiController
     /// Create client
     /// </summary>
     /// <param name="request">Create client request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Created client</returns>
     [HttpPost(Name = "CreateClient")]
     [ProducesResponseType(typeof(CreateClientResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<CreatedAtActionResult> Create([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
+    public async Task<CreatedAtActionResult> Create([FromBody] CreateClientRequest request)
     {
-        var response = await bus.InvokeAsync<CreateClientResponse>(
-            request with { SupabaseUserId = UserId },
-            cancellationToken);
+        var response = await bus.InvokeAsync<CreateClientResponse>(request with { SupabaseUserId = UserId });
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
@@ -87,9 +84,9 @@ public class ClientsController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> UploadProfileImage([FromRoute] Guid id, [FromForm] UploadClientProfileImageRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> UploadProfileImage([FromRoute] Guid id, [FromForm] UploadClientProfileImageRequest request)
     {
-        var response = await bus.InvokeAsync<UploadClientProfileImageResponse>(request with { ClientId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<UploadClientProfileImageResponse>(request with { ClientId = id });
         return Ok(response);
     }
 }

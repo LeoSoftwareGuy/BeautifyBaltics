@@ -17,6 +17,12 @@ public class CreateMasterAvailabilityEventHandler
 
         foreach (var availability in request.Availability)
         {
+            if (master.HasOverlappingAvailability(availability.Start, availability.End))
+            {
+                throw DomainException.WithMessage(
+                    $"Time slot {availability.Start:HH:mm} - {availability.End:HH:mm} overlaps with an existing availability slot.");
+            }
+
             events.Add(new MasterAvailabilitySlotCreated(request.MasterId, availability.Start, availability.End));
         }
 

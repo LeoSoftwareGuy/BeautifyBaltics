@@ -15,7 +15,7 @@ namespace BeautifyBaltics.Core.API.Controllers;
 public class JobsController(IMessageBus bus) : ApiController
 {
     /// <summary>
-    /// Find jobs
+    /// Find paged jobs
     /// </summary>
     /// <param name="request">Find jobs request</param>
     /// <returns>Paged response of jobs</returns>
@@ -29,8 +29,10 @@ public class JobsController(IMessageBus bus) : ApiController
     }
 
     /// <summary>
-    /// Find job categories
+    /// Find paged job categories
     /// </summary>
+    /// <param name="request">Find categories request</param>
+    /// <returns>Paged response of categories</returns>
     [HttpGet("categories", Name = "FindJobCategories")]
     [ProducesResponseType(typeof(PagedResponse<FindJobCategoriesResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
@@ -59,14 +61,14 @@ public class JobsController(IMessageBus bus) : ApiController
     /// Create a job
     /// </summary>
     /// <param name="request">Create job request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Created job</returns>
     [HttpPost(Name = "CreateJob")]
     [ProducesResponseType(typeof(CreateJobResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<CreatedAtActionResult> Create([FromBody] CreateJobRequest request, CancellationToken cancellationToken)
+    public async Task<CreatedAtActionResult> Create([FromBody] CreateJobRequest request)
     {
-        var response = await bus.InvokeAsync<CreateJobResponse>(request, cancellationToken);
+        var response = await bus.InvokeAsync<CreateJobResponse>(request);
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 

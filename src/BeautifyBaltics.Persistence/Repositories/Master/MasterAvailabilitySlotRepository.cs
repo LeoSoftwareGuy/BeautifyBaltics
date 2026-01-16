@@ -24,8 +24,17 @@ namespace BeautifyBaltics.Persistence.Repositories.Master
 
             query = query.Where(x => x.MasterId == search.MasterId);
 
-            if (search.StartAt is not null) query = query.Where(x => x.StartAt >= search.StartAt);
-            if (search.EndAt is not null) query = query.Where(x => x.EndAt <= search.EndAt);
+            if (search.StartAt is not null)
+            {
+                var startAt = DateTime.SpecifyKind(search.StartAt.Value, DateTimeKind.Unspecified);
+                query = query.Where(x => x.StartAt >= startAt);
+            }
+
+            if (search.EndAt is not null)
+            {
+                var endAt = DateTime.SpecifyKind(search.EndAt.Value, DateTimeKind.Unspecified);
+                query = query.Where(x => x.EndAt <= endAt);
+            }
 
             return query;
         }

@@ -12,22 +12,32 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { IconClock, IconTrash } from '@tabler/icons-react';
 
+type SlotDisplay = {
+  id: string;
+  startTime: string;
+  endTime: string;
+};
+
 interface MasterSchedulePanelProps {
   selectedDate: Date | null;
   onDateChange: (value: Date | null) => void;
-  slotInput: string;
-  onSlotInputChange: (value: string) => void;
-  slots: string[];
+  startTimeInput: string;
+  onStartTimeInputChange: (value: string) => void;
+  endTimeInput: string;
+  onEndTimeInputChange: (value: string) => void;
+  slots: SlotDisplay[];
   onAddSlot: () => void;
-  onRemoveSlot: (time: string) => void;
+  onRemoveSlot: (id: string) => void;
   isLoading?: boolean;
 }
 
 export function MasterSchedulePanel({
   selectedDate,
   onDateChange,
-  slotInput,
-  onSlotInputChange,
+  startTimeInput,
+  onStartTimeInputChange,
+  endTimeInput,
+  onEndTimeInputChange,
   slots,
   onAddSlot,
   onRemoveSlot,
@@ -95,18 +105,28 @@ export function MasterSchedulePanel({
               <Text size="sm" fw={500} mb="xs">
                 Add Time Slot
               </Text>
-              <Group gap="sm">
+              <Group gap="sm" align="flex-end">
                 <TextInput
                   type="time"
-                  value={slotInput}
-                  onChange={(event) => onSlotInputChange(event.currentTarget.value)}
+                  label="Start"
+                  value={startTimeInput}
+                  onChange={(event) => onStartTimeInputChange(event.currentTarget.value)}
+                  placeholder="--:--"
+                  rightSection={<IconClock size={16} />}
+                  style={{ flex: 1 }}
+                />
+                <TextInput
+                  type="time"
+                  label="End"
+                  value={endTimeInput}
+                  onChange={(event) => onEndTimeInputChange(event.currentTarget.value)}
                   placeholder="--:--"
                   rightSection={<IconClock size={16} />}
                   style={{ flex: 1 }}
                 />
                 <Button
                   onClick={onAddSlot}
-                  disabled={!slotInput || !selectedDate || isLoading}
+                  disabled={!startTimeInput || !endTimeInput || !selectedDate || isLoading}
                   loading={isLoading}
                   color="pink"
                 >
@@ -133,7 +153,7 @@ export function MasterSchedulePanel({
                 ) : (
                   slots.map((slot) => (
                     <Group
-                      key={slot}
+                      key={slot.id}
                       justify="space-between"
                       p="md"
                       bg="gray.0"
@@ -146,14 +166,20 @@ export function MasterSchedulePanel({
                         <ThemeIcon size="sm" variant="light" color="gray">
                           <IconClock size={14} />
                         </ThemeIcon>
-                        <Text fw={500}>{slot}</Text>
+                        <Text fw={500}>
+                          {slot.startTime}
+                          {' '}
+                          -
+                          {' '}
+                          {slot.endTime}
+                        </Text>
                       </Group>
                       <Button
                         size="xs"
                         variant="subtle"
                         color="red"
                         leftSection={<IconTrash size={14} />}
-                        onClick={() => onRemoveSlot(slot)}
+                        onClick={() => onRemoveSlot(slot.id)}
                         disabled={isLoading}
                       >
                         Remove

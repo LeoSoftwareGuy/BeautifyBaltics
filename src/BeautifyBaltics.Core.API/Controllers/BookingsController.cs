@@ -79,10 +79,9 @@ public class BookingsController(IMessageBus bus) : ApiController
     /// </summary>
     /// <param name="id">Booking id</param>
     /// <param name="request">Update status booking request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Updated booking id</returns>
     [HttpPost("{id:guid}/status")]
-    public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] UpdateBookingRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] UpdateBookingRequest request)
     {
         var response = await bus.InvokeAsync<UpdateBookingResponse>(request with { BookingId = id });
         return Ok(response);
@@ -93,16 +92,15 @@ public class BookingsController(IMessageBus bus) : ApiController
     /// </summary>
     /// <param name="id">Booking id</param>
     /// <param name="request">Reschedule booking request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Rescheduled booking id</returns>
     [HttpPost("{id:guid}/reschedule")]
     [ProducesResponseType(typeof(RescheduleBookingResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> Reschedule(Guid id, [FromBody] RescheduleBookingRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Reschedule(Guid id, [FromBody] RescheduleBookingRequest request)
     {
-        var response = await bus.InvokeAsync<RescheduleBookingResponse>(request with { BookingId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<RescheduleBookingResponse>(request with { BookingId = id });
         return Ok(response);
     }
 }

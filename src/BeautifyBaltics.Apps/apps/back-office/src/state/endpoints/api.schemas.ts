@@ -174,22 +174,6 @@ export type CreateMasterResponse = {
   id?: string;
 };
 
-export type DeleteMasterAvailabilityResponse = {
-  masterId?: string;
-  masterAvailabilityId?: string;
-};
-
-export type DeleteMasterJobImageResponse = {
-  masterId?: string;
-  masterJobId?: string;
-  masterJobImageId?: string;
-};
-
-export type DeleteMasterJobResponse = {
-  masterId?: string;
-  masterJobId?: string;
-};
-
 export type FileContentDTOAllOf = {
   /** Data of generated file */
   data: string;
@@ -879,6 +863,41 @@ export type FindMastersParams = {
 
 export type GetMasterByIdParams = {
   id: string;
+};
+
+export type FindMasterAvailabilitiesParams = {
+/**
+ * Master identifier
+ */
+  masterId: string;
+  /**
+ * Filter by start date (slots starting on or after this date)
+ */
+  startAt?: Date;
+  /**
+ * Filter by end date (slots ending on or before this date)
+ */
+  endAt?: Date;
+  /**
+ * Page number
+ */
+  page?: number;
+  /**
+ * Items per page
+ */
+  pageSize?: number;
+  /**
+ * Sort by column
+ */
+  sortBy?: string;
+  /**
+ * Is sorting order ascending or descending, defaults to false (descending)
+ */
+  ascending?: boolean;
+  /**
+ * Retrieve all items
+ */
+  all?: boolean;
 };
 
 export type UploadMasterProfileImageBody = {

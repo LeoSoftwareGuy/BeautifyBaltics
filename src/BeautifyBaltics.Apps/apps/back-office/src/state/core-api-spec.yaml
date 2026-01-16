@@ -506,7 +506,7 @@ paths:
     get:
       tags:
         - Jobs
-      summary: Find jobs
+      summary: Find paged jobs
       operationId: FindJobs
       parameters:
         - name: text
@@ -597,7 +597,7 @@ paths:
     get:
       tags:
         - Jobs
-      summary: Find job categories
+      summary: Find paged job categories
       operationId: FindJobCategories
       parameters:
         - name: name
@@ -778,6 +778,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FindMastersResponsePagedResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
         '422':
           description: Unprocessable Content
           content:
@@ -790,6 +796,7 @@ paths:
       summary: Create master
       operationId: CreateMaster
       requestBody:
+        description: Create master request
         content:
           application/json:
             schema:
@@ -804,6 +811,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateMasterResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
         '422':
           description: Unprocessable Content
           content:
@@ -814,11 +827,12 @@ paths:
     get:
       tags:
         - Masters
-      summary: Get master by id
+      summary: Get a master by id
       operationId: GetMasterById
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
@@ -850,11 +864,13 @@ paths:
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
       requestBody:
+        description: Update master request
         content:
           application/json:
             schema:
@@ -869,32 +885,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateMasterProfileResponse'
-        '422':
-          description: Unprocessable Content
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationProblemDetails'
         '404':
           description: Not Found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   '/api/v1/masters/{id}/jobs':
     post:
       tags:
         - Masters
-      summary: Add job to a master
+      summary: Create a master job
       operationId: CreateMasterJob
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
       requestBody:
+        description: Create master request
         content:
           application/json:
             schema:
@@ -929,6 +953,7 @@ paths:
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
@@ -940,27 +965,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FindMasterJobsResponse'
-        '404':
-          description: Not Found
+        '400':
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   '/api/v1/masters/{id}/jobs/{jobId}':
     delete:
       tags:
         - Masters
-      summary: Delete a master job
+      summary: Delete master job
       operationId: DeleteMasterJob
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
         - name: jobId
           in: path
+          description: Master job id
           required: true
           schema:
             type: string
@@ -968,35 +1001,46 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteMasterJobResponse'
         '404':
           description: Not Found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
     put:
       tags:
         - Masters
-      summary: Update a master job
+      summary: Update master job
       operationId: UpdateMasterJob
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
         - name: jobId
           in: path
+          description: Master job id
           required: true
           schema:
             type: string
             format: uuid
       requestBody:
+        description: Update master job request
         content:
           application/json:
             schema:
@@ -1027,16 +1071,18 @@ paths:
     post:
       tags:
         - Masters
-      summary: Define master availability slots
+      summary: Create master availability
       operationId: CreateMasterAvailability
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
       requestBody:
+        description: Create master request
         content:
           application/json:
             schema:
@@ -1071,10 +1117,57 @@ paths:
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
+        - name: masterId
+          in: query
+          description: Master identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startAt
+          in: query
+          description: Filter by start date (slots starting on or after this date)
+          schema:
+            type: string
+            format: date-time
+        - name: endAt
+          in: query
+          description: Filter by end date (slots ending on or before this date)
+          schema:
+            type: string
+            format: date-time
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -1082,12 +1175,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FindMasterAvailabilitiesResponsePagedResponse'
-        '404':
-          description: Not Found
+        '400':
+          description: Bad Request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   '/api/v1/masters/{id}/availability/{availabilityId}':
     put:
       tags:
@@ -1131,8 +1230,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
-        '404':
-          description: Not Found
+        '400':
+          description: Bad Request
           content:
             application/json:
               schema:
@@ -1145,12 +1244,14 @@ paths:
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
         - name: availabilityId
           in: path
+          description: Availability id
           required: true
           schema:
             type: string
@@ -1171,17 +1272,19 @@ paths:
     delete:
       tags:
         - Masters
-      summary: Delete a master availability
+      summary: Delete master availability
       operationId: DeleteMasterAvailability
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
         - name: availabilityId
           in: path
+          description: Availability id
           required: true
           schema:
             type: string
@@ -1189,16 +1292,24 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteMasterAvailabilityResponse'
         '404':
           description: Not Found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   '/api/v1/masters/{id}/profile-image':
     post:
       tags:
@@ -1208,6 +1319,7 @@ paths:
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
@@ -1269,6 +1381,7 @@ paths:
       parameters:
         - name: id
           in: path
+          description: Master id
           required: true
           schema:
             type: string
@@ -1296,12 +1409,14 @@ paths:
       parameters:
         - name: masterId
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
         - name: jobId
           in: path
+          description: Master Job id
           required: true
           schema:
             type: string
@@ -1366,23 +1481,26 @@ paths:
     get:
       tags:
         - Masters
-      summary: Download a master job image
+      summary: Get master job image
       operationId: GetMasterJobImageById
       parameters:
         - name: masterId
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
         - name: jobId
           in: path
+          description: Job id
           required: true
           schema:
             type: string
             format: uuid
         - name: imageId
           in: path
+          description: Image id
           required: true
           schema:
             type: string
@@ -1403,23 +1521,26 @@ paths:
     delete:
       tags:
         - Masters
-      summary: Delete a master job image
+      summary: Delete master job image
       operationId: DeleteMasterJobImage
       parameters:
         - name: masterId
           in: path
+          description: Master id
           required: true
           schema:
             type: string
             format: uuid
         - name: jobId
           in: path
+          description: Job id
           required: true
           schema:
             type: string
             format: uuid
         - name: imageId
           in: path
+          description: Image id
           required: true
           schema:
             type: string
@@ -1427,16 +1548,24 @@ paths:
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteMasterJobImageResponse'
         '404':
           description: Not Found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   /api/v1/users:
     get:
       tags:
@@ -1717,39 +1846,6 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-      additionalProperties: false
-    DeleteMasterAvailabilityResponse:
-      type: object
-      properties:
-        masterId:
-          type: string
-          format: uuid
-        masterAvailabilityId:
-          type: string
-          format: uuid
-      additionalProperties: false
-    DeleteMasterJobImageResponse:
-      type: object
-      properties:
-        masterId:
-          type: string
-          format: uuid
-        masterJobId:
-          type: string
-          format: uuid
-        masterJobImageId:
-          type: string
-          format: uuid
-      additionalProperties: false
-    DeleteMasterJobResponse:
-      type: object
-      properties:
-        masterId:
-          type: string
-          format: uuid
-        masterJobId:
           type: string
           format: uuid
       additionalProperties: false

@@ -29,8 +29,11 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <summary>
     /// Find masters
     /// </summary>
+    /// <param name="request">Find masters request</param>
+    /// <returns>Paged response of masters</returns>
     [HttpGet(Name = "FindMasters")]
     [ProducesResponseType(typeof(PagedResponse<FindMastersResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<PagedResponse<FindMastersResponse>>> Find([FromQuery] FindMastersRequest request)
     {
@@ -39,8 +42,11 @@ public class MastersController(IMessageBus bus) : ApiController
     }
 
     /// <summary>
-    /// Get master by id
+    /// Get a master by id
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Request paramters</param>
+    /// <returns>Master of 404 if not found</returns>
     [HttpGet("{id:guid}", Name = "GetMasterById")]
     [ProducesResponseType(typeof(GetMasterByIdResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,90 +59,111 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <summary>
     /// Create master
     /// </summary>
+    /// <param name="request">Create master request</param>
+    /// <returns>Create master</returns>
     [HttpPost(Name = "CreateMaster")]
     [ProducesResponseType(typeof(CreateMasterResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> Create([FromBody] CreateMasterRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> Create([FromBody] CreateMasterRequest request)
     {
-        var response = await bus.InvokeAsync<CreateMasterResponse>(
-            request with { SupabaseUserId = UserId },
-            cancellationToken);
+        var response = await bus.InvokeAsync<CreateMasterResponse>(request with { SupabaseUserId = UserId });
         return CreatedAtAction(nameof(Get), new { id = response.Id }, response);
     }
 
     /// <summary>
     /// Update master profile
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Update master request</param>
+    /// <returns>Updated master id</returns>
     [HttpPut("{id:guid}", Name = "UpdateMasterProfile")]
     [ProducesResponseType(typeof(UpdateMasterProfileResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> UpdateProfile([FromRoute] Guid id, [FromBody] UpdateMasterProfileRequest request, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> UpdateProfile([FromRoute] Guid id, [FromBody] UpdateMasterProfileRequest request)
     {
-        var response = await bus.InvokeAsync<UpdateMasterProfileResponse>(request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateMasterProfileResponse>(request with { MasterId = id });
         return Ok(response);
     }
 
     /// <summary>
-    /// Add job to a master
+    /// Create a master job
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Create master request</param>
+    /// <returns>Master id and newly create master job id</returns>
     [HttpPost("{id:guid}/jobs", Name = "CreateMasterJob")]
     [ProducesResponseType(typeof(CreateMasterJobResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> CreateMasterJob([FromRoute] Guid id, [FromBody] CreateMasterJobRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateMasterJob([FromRoute] Guid id, [FromBody] CreateMasterJobRequest request)
     {
-        var response = await bus.InvokeAsync<CreateMasterJobResponse>(request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<CreateMasterJobResponse>(request with { MasterId = id });
         return Ok(response);
     }
 
     /// <summary>
     /// Find master jobs
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <returns>Master jobs</returns>
     [HttpGet("{id:guid}/jobs", Name = "FindMasterJobs")]
     [ProducesResponseType(typeof(FindMasterJobsResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<FindMasterJobsResponse>> FindMasterJobs([FromRoute] Guid id, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<FindMasterJobsResponse>> FindMasterJobs([FromRoute] Guid id)
     {
-        var response = await bus.InvokeAsync<FindMasterJobsResponse>(new FindMasterJobsRequest { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<FindMasterJobsResponse>(new FindMasterJobsRequest { MasterId = id });
         return Ok(response);
     }
 
     /// <summary>
-    /// Delete a master job
+    /// Delete master job
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="jobId">Master job id</param>
     [HttpDelete("{id:guid}/jobs/{jobId:guid}", Name = "DeleteMasterJob")]
-    [ProducesResponseType(typeof(DeleteMasterJobResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeleteMasterJob([FromRoute] Guid id, [FromRoute] Guid jobId, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> DeleteMasterJob([FromRoute] Guid id, [FromRoute] Guid jobId)
     {
-        var response = await bus.InvokeAsync<DeleteMasterJobResponse>(new DeleteMasterJobRequest { MasterId = id, MasterJobId = jobId }, cancellationToken);
+        var response = await bus.InvokeAsync<DeleteMasterJobResponse>(new DeleteMasterJobRequest { MasterId = id, MasterJobId = jobId });
         return Ok(response);
     }
 
     /// <summary>
-    /// Update a master job
+    /// Update master job
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="jobId">Master job id</param>
+    /// <param name="request">Update master job request</param>
+    /// <returns>Updated master id and master job id</returns>
     [HttpPut("{id:guid}/jobs/{jobId:guid}", Name = "UpdateMasterJob")]
     [ProducesResponseType(typeof(UpdateMasterJobResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> UpdateMasterJob([FromRoute] Guid id, [FromRoute] Guid jobId, [FromBody] UpdateMasterJobRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> UpdateMasterJob([FromRoute] Guid id, [FromRoute] Guid jobId, [FromBody] UpdateMasterJobRequest request)
     {
-        var response = await bus.InvokeAsync<UpdateMasterJobResponse>(request with { MasterId = id, MasterJobId = jobId }, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateMasterJobResponse>(request with { MasterId = id, MasterJobId = jobId });
         return Ok(response);
     }
 
     /// <summary>
-    /// Define master availability slots
+    /// Create master availability
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Create master request</param>
     [HttpPost("{id:guid}/availability", Name = "CreateMasterAvailability")]
     [ProducesResponseType(typeof(CreateMasterAvailabilityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> CreateMasterAvailability([FromRoute] Guid id, [FromBody] CreateMasterAvailabilityRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateMasterAvailability([FromRoute] Guid id, [FromBody] CreateMasterAvailabilityRequest request)
     {
-        var response = await bus.InvokeAsync<CreateMasterAvailabilityResponse>(request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<CreateMasterAvailabilityResponse>(request with { MasterId = id });
         return Ok(response);
     }
 
@@ -146,58 +173,71 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="id">Master id</param>
     /// <param name="availabilityId">Availability id</param>
     /// <param name="request">Update master availability request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Updated master availability</returns>
     [HttpPut("{id:guid}/availability/{availabilityId:guid}", Name = "UpdateMasterAvailability")]
     [ProducesResponseType(typeof(UpdateMasterAvailabilityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> UpdateMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId, [FromBody] UpdateMasterAvailabilityRequest request,
-        CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> UpdateMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId, [FromBody] UpdateMasterAvailabilityRequest request)
     {
-        var response = await bus.InvokeAsync<UpdateMasterAvailabilityResponse>(request with { MasterId = id, MasterAvailabilityId = availabilityId }, cancellationToken);
+        var response = await bus.InvokeAsync<UpdateMasterAvailabilityResponse>(request with { MasterId = id, MasterAvailabilityId = availabilityId });
         return Ok(response);
     }
 
     /// <summary>
     /// Find master availabilities
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Find masters availability request params</param>
+    /// <returns>Paged master availabilities</returns>
     [HttpGet("{id:guid}/availability", Name = "FindMasterAvailabilities")]
     [ProducesResponseType(typeof(PagedResponse<FindMasterAvailabilitiesResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PagedResponse<FindMasterAvailabilitiesResponse>>> FindMasterAvailabilities([FromRoute] Guid id, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<PagedResponse<FindMasterAvailabilitiesResponse>>> FindMasterAvailabilities([FromRoute] Guid id, [FromQuery] FindMasterAvailabilitiesRequest request)
     {
-        var response = await bus.InvokeAsync<PagedResponse<FindMasterAvailabilitiesResponse>>(new FindMasterAvailabilitiesRequest { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<PagedResponse<FindMasterAvailabilitiesResponse>>(request with { MasterId = id });
         return Ok(response);
     }
 
     /// <summary>
     /// Get master availability by id
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="availabilityId">Availability id</param>
+    /// <returns>Master availability</returns>
     [HttpGet("{id:guid}/availability/{availabilityId:guid}", Name = "GetMasterAvailability")]
     [ProducesResponseType(typeof(GetMasterAvailabilityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GetMasterAvailabilityResponse>> GetMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetMasterAvailabilityResponse>> GetMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId)
     {
-        var response = await bus.InvokeAsync<GetMasterAvailabilityResponse>(new GetMasterAvailabilityRequest { MasterId = id, MasterAvailabilityId = availabilityId }, cancellationToken);
+        var response = await bus.InvokeAsync<GetMasterAvailabilityResponse>(new GetMasterAvailabilityRequest { MasterId = id, MasterAvailabilityId = availabilityId });
         return Ok(response);
     }
 
     /// <summary>
-    /// Delete a master availability
+    /// Delete master availability
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="availabilityId">Availability id</param>
     [HttpDelete("{id:guid}/availability/{availabilityId:guid}", Name = "DeleteMasterAvailability")]
     [ProducesResponseType(typeof(DeleteMasterAvailabilityResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeleteMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> DeleteMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId)
     {
-        var response = await bus.InvokeAsync<DeleteMasterAvailabilityResponse>(new DeleteMasterAvailabilityRequest { MasterId = id, MasterAvailabilityId = availabilityId }, cancellationToken);
+        var response = await bus.InvokeAsync<DeleteMasterAvailabilityResponse>(new DeleteMasterAvailabilityRequest { MasterId = id, MasterAvailabilityId = availabilityId });
         return Ok(response);
     }
 
     /// <summary>
     /// Upload master profile image
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Master profile image request</param>
+    /// <returns>Updater master id</returns>
     [HttpPost("{id:guid}/profile-image", Name = "UploadMasterProfileImage")]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(50 * 1024 * 1024)] // 50MB limit for total request
@@ -205,27 +245,33 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> UploadProfileImage([FromRoute] Guid id, [FromForm] UploadMasterProfileImageRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> UploadProfileImage([FromRoute] Guid id, [FromForm] UploadMasterProfileImageRequest request)
     {
-        var response = await bus.InvokeAsync<UploadMasterProfileImageResponse>(request with { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<UploadMasterProfileImageResponse>(request with { MasterId = id });
         return Ok(response);
     }
 
     /// <summary>
     /// Get master profile image
     /// </summary>
+    /// <param name="id">Master id</param>
+    /// <returns>Master profile image</returns>
     [HttpGet("{id:guid}/profile-image", Name = "GetMasterProfileImage")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetProfileImage([FromRoute] Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult> GetProfileImage([FromRoute] Guid id)
     {
-        var response = await bus.InvokeAsync<GetMasterProfileImageResponse>(new GetMasterProfileImageRequest { MasterId = id }, cancellationToken);
+        var response = await bus.InvokeAsync<GetMasterProfileImageResponse>(new GetMasterProfileImageRequest { MasterId = id });
         return File(response.Data, response.FileMimeType, response.FileName);
     }
 
     /// <summary>
     /// Upload an image for a master job
     /// </summary>
+    /// <param name="masterId">Master id</param>
+    /// <param name="jobId">Master Job id</param>
+    /// <param name="request">Upload master job request</param>
+    /// <returns>Master id and master job id</returns>
     [HttpPost("{masterId:guid}/jobs/{jobId:guid}/images", Name = "UploadMasterJobImage")]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(50 * 1024 * 1024)]
@@ -233,43 +279,53 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> UploadMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromForm] UploadMasterJobImageRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> UploadMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromForm] UploadMasterJobImageRequest request)
     {
-        var response = await bus.InvokeAsync<UploadMasterJobImageResponse>(request with { MasterId = masterId, MasterJobId = jobId }, cancellationToken);
+        var response = await bus.InvokeAsync<UploadMasterJobImageResponse>(request with { MasterId = masterId, MasterJobId = jobId });
         return Ok(response);
     }
 
     /// <summary>
-    /// Download a master job image
+    /// Get master job image
     /// </summary>
+    /// <param name="masterId">Master id</param>
+    /// <param name="jobId">Job id</param>
+    /// <param name="imageId">Image id</param>
+    /// <returns>Master job image as JSON with base64 encoded data</returns>
     [HttpGet("{masterId:guid}/jobs/{jobId:guid}/images/{imageId:guid}", Name = "GetMasterJobImageById")]
     [ProducesResponseType(typeof(GetMasterJobImageByIdResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GetMasterJobImageByIdResponse>> GetMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromRoute] Guid imageId, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetMasterJobImageByIdResponse>> GetMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromRoute] Guid imageId)
     {
         var response = await bus.InvokeAsync<GetMasterJobImageByIdResponse>(new GetMasterJobImageByIdRequest
         {
             MasterId = masterId,
             MasterJobId = jobId,
             MasterJobImageId = imageId
-        }, cancellationToken);
+        });
         return Ok(response);
     }
 
     /// <summary>
-    /// Delete a master job image
+    /// Delete master job image
     /// </summary>
+    /// <param name="masterId">Master id</param>
+    /// <param name="jobId">Job id</param>
+    /// <param name="imageId">Image id</param>
     [HttpDelete("{masterId:guid}/jobs/{jobId:guid}/images/{imageId:guid}", Name = "DeleteMasterJobImage")]
     [ProducesResponseType(typeof(DeleteMasterJobImageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeleteMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromRoute] Guid imageId, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> DeleteMasterJobImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromRoute] Guid imageId)
     {
         var response = await bus.InvokeAsync<DeleteMasterJobImageResponse>(new DeleteMasterJobImageRequest
         {
             MasterId = masterId,
             MasterJobId = jobId,
             MasterJobImageId = imageId
-        }, cancellationToken);
+        });
         return Ok(response);
     }
 }

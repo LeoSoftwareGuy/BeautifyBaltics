@@ -12,12 +12,11 @@ public class UsersController(IMessageBus bus) : ApiController
     /// <summary>
     /// Gets user
     /// </summary>
-    /// <param name="cancellationToken"></param>
     /// <returns>Returns user</returns>
     [HttpGet(Name = "GetUser")]
     [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GetUserResponse>> Get(CancellationToken cancellationToken)
+    public async Task<ActionResult<GetUserResponse>> Get()
     {
         var response = await bus.InvokeAsync<GetUserResponse>(new GetUserRequest(UserId));
         return Ok(response);

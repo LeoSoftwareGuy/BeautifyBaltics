@@ -12,4 +12,14 @@ public record FindMasterAvailabilitiesRequest : PagedRequest
     [Required]
     [Identity]
     public Guid MasterId { get; init; }
+
+    /// <summary>
+    /// Filter by start date (slots starting on or after this date)
+    /// </summary>
+    public DateTime? StartAt { get; init; }
+
+    /// <summary>
+    /// Filter by end date (slots ending on or before this date)
+    /// </summary>
+    public DateTime? EndAt { get; init; }
 }

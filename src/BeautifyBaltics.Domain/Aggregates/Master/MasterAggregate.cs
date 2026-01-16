@@ -135,4 +135,10 @@ public partial class MasterAggregate : Aggregate
         return !_availabilities.Any(v =>
             v.Value.StartAt < endAt && v.Value.EndAt > startAt);
     }
+
+    public bool HasOverlappingAvailability(DateTime startAt, DateTime endAt)
+    {
+        return _availabilities.Values.Any(slot =>
+            slot.StartAt < endAt && slot.EndAt > startAt);
+    }
 }

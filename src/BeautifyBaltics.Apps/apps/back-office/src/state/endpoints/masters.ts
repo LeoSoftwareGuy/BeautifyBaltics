@@ -42,9 +42,7 @@ import type {
   CreateMasterJobResponse,
   CreateMasterRequest,
   CreateMasterResponse,
-  DeleteMasterAvailabilityResponse,
-  DeleteMasterJobImageResponse,
-  DeleteMasterJobResponse,
+  FindMasterAvailabilitiesParams,
   FindMasterAvailabilitiesResponsePagedResponse,
   FindMasterJobsResponse,
   FindMastersParams,
@@ -84,7 +82,7 @@ export const findMasters = (
 
 export const getFindMastersQueryKey = (params?: FindMastersParams) => ['/api/v1/masters', ...(params ? [params] : [])] as const;
 
-export const getFindMastersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ValidationProblemDetails>(params?: FindMastersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData, QueryKey, FindMastersParams['page']>>, },
+export const getFindMastersInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(params?: FindMastersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData, QueryKey, FindMastersParams['page']>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -96,9 +94,9 @@ export const getFindMastersInfiniteQueryOptions = <TData = InfiniteData<Awaited<
 };
 
 export type FindMastersInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasters>>>;
-export type FindMastersInfiniteQueryError = ValidationProblemDetails;
+export type FindMastersInfiniteQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ValidationProblemDetails>(
+export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
   params: undefined | FindMastersParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData, QueryKey, FindMastersParams['page']>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasters>>,
@@ -108,7 +106,7 @@ export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<t
   >, }
   , queryClient?: QueryClient
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ValidationProblemDetails>(
+export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData, QueryKey, FindMastersParams['page']>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasters>>,
@@ -118,7 +116,7 @@ export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<t
   >, }
   , queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ValidationProblemDetails>(
+export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData, QueryKey, FindMastersParams['page']>>, }
   , queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -126,7 +124,7 @@ export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<t
  * @summary Find masters
  */
 
-export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ValidationProblemDetails>(
+export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasters>>, FindMastersParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams,
   options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData, QueryKey, FindMastersParams['page']>>, },
   queryClient?: QueryClient,
@@ -140,7 +138,7 @@ export function useFindMastersInfinite<TData = InfiniteData<Awaited<ReturnType<t
   return query;
 }
 
-export const getFindMastersQueryOptions = <TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(params?: FindMastersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, },
+export const getFindMastersQueryOptions = <TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(params?: FindMastersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -152,9 +150,9 @@ export const getFindMastersQueryOptions = <TData = Awaited<ReturnType<typeof fin
 };
 
 export type FindMastersQueryResult = NonNullable<Awaited<ReturnType<typeof findMasters>>>;
-export type FindMastersQueryError = ValidationProblemDetails;
+export type FindMastersQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params: undefined | FindMastersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasters>>,
@@ -164,7 +162,7 @@ export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, 
   >, }
   , queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasters>>,
@@ -174,7 +172,7 @@ export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, 
   >, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -182,7 +180,7 @@ export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, 
  * @summary Find masters
  */
 
-export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams,
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, },
   queryClient?: QueryClient,
@@ -196,7 +194,7 @@ export function useFindMasters<TData = Awaited<ReturnType<typeof findMasters>>, 
   return query;
 }
 
-export const getFindMastersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(params?: FindMastersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, },
+export const getFindMastersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(params?: FindMastersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -208,17 +206,17 @@ export const getFindMastersSuspenseQueryOptions = <TData = Awaited<ReturnType<ty
 };
 
 export type FindMastersSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findMasters>>>;
-export type FindMastersSuspenseQueryError = ValidationProblemDetails;
+export type FindMastersSuspenseQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params: undefined | FindMastersParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -226,7 +224,7 @@ export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMas
  * @summary Find masters
  */
 
-export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ValidationProblemDetails>(
+export function useFindMastersSuspense<TData = Awaited<ReturnType<typeof findMasters>>, TError = ProblemDetails | ValidationProblemDetails>(
   params?: FindMastersParams,
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasters>>, TError, TData>>, },
   queryClient?: QueryClient,
@@ -256,7 +254,7 @@ export const createMaster = (
   },
 );
 
-export const getCreateMasterMutationOptions = <TError = ValidationProblemDetails,
+export const getCreateMasterMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaster>>, TError, { data: CreateMasterRequest }, TContext>, },
   ): UseMutationOptions<Awaited<ReturnType<typeof createMaster>>, TError, { data: CreateMasterRequest }, TContext> => {
   const mutationKey = ['createMaster'];
@@ -277,12 +275,12 @@ export const getCreateMasterMutationOptions = <TError = ValidationProblemDetails
 
 export type CreateMasterMutationResult = NonNullable<Awaited<ReturnType<typeof createMaster>>>;
 export type CreateMasterMutationBody = CreateMasterRequest;
-export type CreateMasterMutationError = ValidationProblemDetails;
+export type CreateMasterMutationError = ProblemDetails | ValidationProblemDetails;
 
 /**
  * @summary Create master
  */
-export const useCreateMaster = <TError = ValidationProblemDetails,
+export const useCreateMaster = <TError = ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaster>>, TError, { data: CreateMasterRequest }, TContext>, },
     queryClient?: QueryClient): UseMutationResult<
   Awaited<ReturnType<typeof createMaster>>,
@@ -295,7 +293,7 @@ export const useCreateMaster = <TError = ValidationProblemDetails,
   return useMutation(mutationOptions, queryClient);
 };
 /**
- * @summary Get master by id
+ * @summary Get a master by id
  */
 export const getMasterById = (
   id: string,
@@ -360,7 +358,7 @@ export function useGetMasterById<TData = Awaited<ReturnType<typeof getMasterById
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Get master by id
+ * @summary Get a master by id
  */
 
 export function useGetMasterById<TData = Awaited<ReturnType<typeof getMasterById>>, TError = ProblemDetails>(
@@ -409,7 +407,7 @@ export function useGetMasterByIdSuspense<TData = Awaited<ReturnType<typeof getMa
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Get master by id
+ * @summary Get a master by id
  */
 
 export function useGetMasterByIdSuspense<TData = Awaited<ReturnType<typeof getMasterById>>, TError = ProblemDetails>(
@@ -442,7 +440,7 @@ export const updateMasterProfile = (
   },
 );
 
-export const getUpdateMasterProfileMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+export const getUpdateMasterProfileMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterProfile>>, TError, { id: string;data: UpdateMasterProfileRequest }, TContext>, },
   ): UseMutationOptions<Awaited<ReturnType<typeof updateMasterProfile>>, TError, { id: string;data: UpdateMasterProfileRequest }, TContext> => {
   const mutationKey = ['updateMasterProfile'];
@@ -463,12 +461,12 @@ export const getUpdateMasterProfileMutationOptions = <TError = ProblemDetails | 
 
 export type UpdateMasterProfileMutationResult = NonNullable<Awaited<ReturnType<typeof updateMasterProfile>>>;
 export type UpdateMasterProfileMutationBody = UpdateMasterProfileRequest;
-export type UpdateMasterProfileMutationError = ProblemDetails | ValidationProblemDetails;
+export type UpdateMasterProfileMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
 
 /**
  * @summary Update master profile
  */
-export const useUpdateMasterProfile = <TError = ProblemDetails | ValidationProblemDetails,
+export const useUpdateMasterProfile = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterProfile>>, TError, { id: string;data: UpdateMasterProfileRequest }, TContext>, },
     queryClient?: QueryClient): UseMutationResult<
   Awaited<ReturnType<typeof updateMasterProfile>>,
@@ -481,7 +479,7 @@ export const useUpdateMasterProfile = <TError = ProblemDetails | ValidationProbl
   return useMutation(mutationOptions, queryClient);
 };
 /**
- * @summary Add job to a master
+ * @summary Create a master job
  */
 export const createMasterJob = (
   id: string,
@@ -521,7 +519,7 @@ export type CreateMasterJobMutationBody = CreateMasterJobRequest;
 export type CreateMasterJobMutationError = ProblemDetails | ValidationProblemDetails;
 
 /**
- * @summary Add job to a master
+ * @summary Create a master job
  */
 export const useCreateMasterJob = <TError = ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMasterJob>>, TError, { id: string;data: CreateMasterJobRequest }, TContext>, },
@@ -547,7 +545,7 @@ export const findMasterJobs = (
 
 export const getFindMasterJobsQueryKey = (id?: string) => [`/api/v1/masters/${id}/jobs`] as const;
 
-export const getFindMasterJobsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+export const getFindMasterJobsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -561,9 +559,9 @@ export const getFindMasterJobsInfiniteQueryOptions = <TData = InfiniteData<Await
 };
 
 export type FindMasterJobsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
-export type FindMasterJobsInfiniteQueryError = ProblemDetails;
+export type FindMasterJobsInfiniteQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
@@ -573,7 +571,7 @@ export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnTyp
   >, }
   , queryClient?: QueryClient
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
@@ -583,7 +581,7 @@ export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnTyp
   >, }
   , queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -591,7 +589,7 @@ export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnTyp
  * @summary Find master jobs
  */
 
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails>(
+export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
   options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
   queryClient?: QueryClient,
@@ -605,7 +603,7 @@ export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnTyp
   return query;
 }
 
-export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -619,9 +617,9 @@ export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof 
 };
 
 export type FindMasterJobsQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
-export type FindMasterJobsQueryError = ProblemDetails;
+export type FindMasterJobsQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
@@ -631,7 +629,7 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   >, }
   , queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
@@ -641,7 +639,7 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   >, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -649,7 +647,7 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
  * @summary Find master jobs
  */
 
-export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
   queryClient?: QueryClient,
@@ -663,7 +661,7 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   return query;
 }
 
-export const getFindMasterJobsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+export const getFindMasterJobsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
@@ -675,17 +673,17 @@ export const getFindMasterJobsSuspenseQueryOptions = <TData = Awaited<ReturnType
 };
 
 export type FindMasterJobsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
-export type FindMasterJobsSuspenseQueryError = ProblemDetails;
+export type FindMasterJobsSuspenseQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
@@ -693,7 +691,7 @@ export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof find
  * @summary Find master jobs
  */
 
-export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails>(
+export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
   queryClient?: QueryClient,
@@ -708,16 +706,16 @@ export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof find
 }
 
 /**
- * @summary Delete a master job
+ * @summary Delete master job
  */
 export const deleteMasterJob = (
   id: string,
   jobId: string,
-) => customClient<DeleteMasterJobResponse>(
+) => customClient<void>(
   { url: `/api/v1/masters/${id}/jobs/${jobId}`, method: 'DELETE' },
 );
 
-export const getDeleteMasterJobMutationOptions = <TError = ProblemDetails,
+export const getDeleteMasterJobMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJob>>, TError, { id: string;jobId: string }, TContext>, },
   ): UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJob>>, TError, { id: string;jobId: string }, TContext> => {
   const mutationKey = ['deleteMasterJob'];
@@ -738,12 +736,12 @@ export const getDeleteMasterJobMutationOptions = <TError = ProblemDetails,
 
 export type DeleteMasterJobMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMasterJob>>>;
 
-export type DeleteMasterJobMutationError = ProblemDetails;
+export type DeleteMasterJobMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
 
 /**
- * @summary Delete a master job
+ * @summary Delete master job
  */
-export const useDeleteMasterJob = <TError = ProblemDetails,
+export const useDeleteMasterJob = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJob>>, TError, { id: string;jobId: string }, TContext>, },
     queryClient?: QueryClient): UseMutationResult<
   Awaited<ReturnType<typeof deleteMasterJob>>,
@@ -756,7 +754,7 @@ export const useDeleteMasterJob = <TError = ProblemDetails,
   return useMutation(mutationOptions, queryClient);
 };
 /**
- * @summary Update a master job
+ * @summary Update master job
  */
 export const updateMasterJob = (
   id: string,
@@ -795,7 +793,7 @@ export type UpdateMasterJobMutationBody = UpdateMasterJobRequest;
 export type UpdateMasterJobMutationError = ProblemDetails | ValidationProblemDetails;
 
 /**
- * @summary Update a master job
+ * @summary Update master job
  */
 export const useUpdateMasterJob = <TError = ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterJob>>, TError, { id: string;jobId: string;data: UpdateMasterJobRequest }, TContext>, },
@@ -810,7 +808,7 @@ export const useUpdateMasterJob = <TError = ProblemDetails | ValidationProblemDe
   return useMutation(mutationOptions, queryClient);
 };
 /**
- * @summary Define master availability slots
+ * @summary Create master availability
  */
 export const createMasterAvailability = (
   id: string,
@@ -850,7 +848,7 @@ export type CreateMasterAvailabilityMutationBody = CreateMasterAvailabilityReque
 export type CreateMasterAvailabilityMutationError = ProblemDetails | ValidationProblemDetails;
 
 /**
- * @summary Define master availability slots
+ * @summary Create master availability
  */
 export const useCreateMasterAvailability = <TError = ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMasterAvailability>>, TError, { id: string;data: CreateMasterAvailabilityRequest }, TContext>, },
@@ -869,63 +867,77 @@ export const useCreateMasterAvailability = <TError = ProblemDetails | Validation
  */
 export const findMasterAvailabilities = (
   id: string,
+  params: FindMasterAvailabilitiesParams,
   signal?: AbortSignal,
 ) => customClient<FindMasterAvailabilitiesResponsePagedResponse>(
-  { url: `/api/v1/masters/${id}/availability`, method: 'GET', signal },
+  {
+    url: `/api/v1/masters/${id}/availability`,
+    method: 'GET',
+    params,
+    signal,
+  },
 );
 
-export const getFindMasterAvailabilitiesQueryKey = (id?: string) => [`/api/v1/masters/${id}/availability`] as const;
+export const getFindMasterAvailabilitiesQueryKey = (
+  id?: string,
+  params?: FindMasterAvailabilitiesParams,
+) => [`/api/v1/masters/${id}/availability`, ...(params ? [params] : [])] as const;
 
-export const getFindMasterAvailabilitiesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+export const getFindMasterAvailabilitiesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>, FindMasterAvailabilitiesParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData, QueryKey, FindMasterAvailabilitiesParams['page']>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>, QueryKey, FindMasterAvailabilitiesParams['page']> = ({ signal, pageParam }) => findMasterAvailabilities(id, { ...params, page: pageParam || params?.page }, signal);
 
   return {
     queryKey, queryFn, enabled: !!(id), ...queryOptions,
-  } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+  } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData, QueryKey, FindMasterAvailabilitiesParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type FindMasterAvailabilitiesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterAvailabilities>>>;
-export type FindMasterAvailabilitiesInfiniteQueryError = ProblemDetails;
+export type FindMasterAvailabilitiesInfiniteQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
-  id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>, FindMasterAvailabilitiesParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData, QueryKey, FindMasterAvailabilitiesParams['page']>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterAvailabilities>>,
   TError,
-  Awaited<ReturnType<typeof findMasterAvailabilities>>
+  Awaited<ReturnType<typeof findMasterAvailabilities>>, QueryKey
   >, 'initialData'
   >, }
   , queryClient?: QueryClient
 ): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
-  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>, FindMasterAvailabilitiesParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData, QueryKey, FindMasterAvailabilitiesParams['page']>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterAvailabilities>>,
   TError,
-  Awaited<ReturnType<typeof findMasterAvailabilities>>
+  Awaited<ReturnType<typeof findMasterAvailabilities>>, QueryKey
   >, 'initialData'
   >, }
   , queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
-  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>, FindMasterAvailabilitiesParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData, QueryKey, FindMasterAvailabilitiesParams['page']>>, }
   , queryClient?: QueryClient
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * @summary Find master availabilities
  */
 
-export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>>, TError = ProblemDetails>(
+export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterAvailabilities>>, FindMasterAvailabilitiesParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
-  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+  params: FindMasterAvailabilitiesParams,
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData, QueryKey, FindMasterAvailabilitiesParams['page']>>, },
   queryClient?: QueryClient,
 ): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterAvailabilitiesInfiniteQueryOptions(id, options);
+  const queryOptions = getFindMasterAvailabilitiesInfiniteQueryOptions(id, params, options);
 
   const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -934,13 +946,14 @@ export function useFindMasterAvailabilitiesInfinite<TData = InfiniteData<Awaited
   return query;
 }
 
-export const getFindMasterAvailabilitiesQueryOptions = <TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+export const getFindMasterAvailabilitiesQueryOptions = <TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, params, signal);
 
   return {
     queryKey, queryFn, enabled: !!(id), ...queryOptions,
@@ -948,10 +961,11 @@ export const getFindMasterAvailabilitiesQueryOptions = <TData = Awaited<ReturnTy
 };
 
 export type FindMasterAvailabilitiesQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterAvailabilities>>>;
-export type FindMasterAvailabilitiesQueryError = ProblemDetails;
+export type FindMasterAvailabilitiesQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
-  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterAvailabilities>>,
   TError,
@@ -960,8 +974,9 @@ export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof fi
   >, }
   , queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
-  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterAvailabilities>>,
   TError,
@@ -970,20 +985,22 @@ export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof fi
   >, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
-  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * @summary Find master availabilities
  */
 
-export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
+  params: FindMasterAvailabilitiesParams,
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterAvailabilitiesQueryOptions(id, options);
+  const queryOptions = getFindMasterAvailabilitiesQueryOptions(id, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -992,42 +1009,47 @@ export function useFindMasterAvailabilities<TData = Awaited<ReturnType<typeof fi
   return query;
 }
 
-export const getFindMasterAvailabilitiesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
+export const getFindMasterAvailabilitiesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getFindMasterAvailabilitiesQueryKey(id, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterAvailabilities>>> = ({ signal }) => findMasterAvailabilities(id, params, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type FindMasterAvailabilitiesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterAvailabilities>>>;
-export type FindMasterAvailabilitiesSuspenseQueryError = ProblemDetails;
+export type FindMasterAvailabilitiesSuspenseQueryError = ProblemDetails | ValidationProblemDetails;
 
-export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
-  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
-  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
-  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: FindMasterAvailabilitiesParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * @summary Find master availabilities
  */
 
-export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails>(
+export function useFindMasterAvailabilitiesSuspense<TData = Awaited<ReturnType<typeof findMasterAvailabilities>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
+  params: FindMasterAvailabilitiesParams,
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterAvailabilities>>, TError, TData>>, },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterAvailabilitiesSuspenseQueryOptions(id, options);
+  const queryOptions = getFindMasterAvailabilitiesSuspenseQueryOptions(id, params, options);
 
   const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1219,16 +1241,16 @@ export function useGetMasterAvailabilitySuspense<TData = Awaited<ReturnType<type
 }
 
 /**
- * @summary Delete a master availability
+ * @summary Delete master availability
  */
 export const deleteMasterAvailability = (
   id: string,
   availabilityId: string,
-) => customClient<DeleteMasterAvailabilityResponse>(
+) => customClient<void>(
   { url: `/api/v1/masters/${id}/availability/${availabilityId}`, method: 'DELETE' },
 );
 
-export const getDeleteMasterAvailabilityMutationOptions = <TError = ProblemDetails,
+export const getDeleteMasterAvailabilityMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterAvailability>>, TError, { id: string;availabilityId: string }, TContext>, },
   ): UseMutationOptions<Awaited<ReturnType<typeof deleteMasterAvailability>>, TError, { id: string;availabilityId: string }, TContext> => {
   const mutationKey = ['deleteMasterAvailability'];
@@ -1249,12 +1271,12 @@ export const getDeleteMasterAvailabilityMutationOptions = <TError = ProblemDetai
 
 export type DeleteMasterAvailabilityMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMasterAvailability>>>;
 
-export type DeleteMasterAvailabilityMutationError = ProblemDetails;
+export type DeleteMasterAvailabilityMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
 
 /**
- * @summary Delete a master availability
+ * @summary Delete master availability
  */
-export const useDeleteMasterAvailability = <TError = ProblemDetails,
+export const useDeleteMasterAvailability = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterAvailability>>, TError, { id: string;availabilityId: string }, TContext>, },
     queryClient?: QueryClient): UseMutationResult<
   Awaited<ReturnType<typeof deleteMasterAvailability>>,
@@ -1510,7 +1532,7 @@ export const useUploadMasterJobImage = <TError = ProblemDetails | ProblemDetails
   return useMutation(mutationOptions, queryClient);
 };
 /**
- * @summary Download a master job image
+ * @summary Get master job image
  */
 export const getMasterJobImageById = (
   masterId: string,
@@ -1576,7 +1598,7 @@ export function useGetMasterJobImageById<TData = Awaited<ReturnType<typeof getMa
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Download a master job image
+ * @summary Get master job image
  */
 
 export function useGetMasterJobImageById<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
@@ -1630,7 +1652,7 @@ export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<type
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Download a master job image
+ * @summary Get master job image
  */
 
 export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<typeof getMasterJobImageById>>, TError = ProblemDetails>(
@@ -1650,17 +1672,17 @@ export function useGetMasterJobImageByIdSuspense<TData = Awaited<ReturnType<type
 }
 
 /**
- * @summary Delete a master job image
+ * @summary Delete master job image
  */
 export const deleteMasterJobImage = (
   masterId: string,
   jobId: string,
   imageId: string,
-) => customClient<DeleteMasterJobImageResponse>(
+) => customClient<void>(
   { url: `/api/v1/masters/${masterId}/jobs/${jobId}/images/${imageId}`, method: 'DELETE' },
 );
 
-export const getDeleteMasterJobImageMutationOptions = <TError = ProblemDetails,
+export const getDeleteMasterJobImageMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJobImage>>, TError, { masterId: string;jobId: string;imageId: string }, TContext>, },
   ): UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJobImage>>, TError, { masterId: string;jobId: string;imageId: string }, TContext> => {
   const mutationKey = ['deleteMasterJobImage'];
@@ -1681,12 +1703,12 @@ export const getDeleteMasterJobImageMutationOptions = <TError = ProblemDetails,
 
 export type DeleteMasterJobImageMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMasterJobImage>>>;
 
-export type DeleteMasterJobImageMutationError = ProblemDetails;
+export type DeleteMasterJobImageMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
 
 /**
- * @summary Delete a master job image
+ * @summary Delete master job image
  */
-export const useDeleteMasterJobImage = <TError = ProblemDetails,
+export const useDeleteMasterJobImage = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMasterJobImage>>, TError, { masterId: string;jobId: string;imageId: string }, TContext>, },
     queryClient?: QueryClient): UseMutationResult<
   Awaited<ReturnType<typeof deleteMasterJobImage>>,
