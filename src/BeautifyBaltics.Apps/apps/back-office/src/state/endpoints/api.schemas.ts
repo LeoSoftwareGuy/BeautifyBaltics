@@ -115,7 +115,11 @@ export type ClientDTO = {
    * @minLength 1
    */
   phoneNumber: string;
-  profileImage?: FileMetadataDTO;
+  /**
+   * Profile image URL
+   * @nullable
+   */
+  profileImageUrl?: string | null;
 };
 
 export type CreateBookingRequestAllOf = { [key: string]: unknown };
@@ -172,28 +176,6 @@ export type CreateMasterRequest = MasterProfileCommandDTO & CreateMasterRequestA
 
 export type CreateMasterResponse = {
   id?: string;
-};
-
-export type FileContentDTOAllOf = {
-  /** Data of generated file */
-  data: string;
-};
-
-export type FileContentDTO = FileMetadataDTO & FileContentDTOAllOf;
-
-export type FileMetadataDTO = {
-  /**
-   * File name
-   * @minLength 1
-   */
-  fileName: string;
-  /**
-   * File mime type
-   * @minLength 1
-   */
-  fileMimeType: string;
-  /** File size */
-  fileSize: number;
 };
 
 export type FindBookingsResponseAllOf = { [key: string]: unknown };
@@ -283,7 +265,7 @@ export type FindMasterAvailabilitiesResponsePagedResponse = {
 
 export type FindMasterJobImagesResponse = {
   /** @nullable */
-  images?: MasterJobImageWithDataDTO[] | null;
+  images?: MasterJobImageWithUrlDTO[] | null;
 };
 
 export type FindMasterJobsResponse = {
@@ -330,22 +312,29 @@ export type GetMasterAvailabilityResponseAllOf = { [key: string]: unknown };
 
 export type GetMasterAvailabilityResponse = MasterAvailabilitySlotDTO & GetMasterAvailabilityResponseAllOf;
 
-export type GetMasterByIdResponseAllOf = {
-  /** @nullable */
-  jobs?: MasterJobDTO[] | null;
-  /** @nullable */
-  availability?: MasterAvailabilitySlotDTO[] | null;
-};
+export type GetMasterByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetMasterByIdResponse = MasterDTO & GetMasterByIdResponseAllOf;
 
-export type GetMasterJobImageByIdResponseAllOf = { [key: string]: unknown };
-
-export type GetMasterJobImageByIdResponse = FileContentDTO & GetMasterJobImageByIdResponseAllOf;
-
-export type GetMasterProfileImageResponseAllOf = { [key: string]: unknown };
-
-export type GetMasterProfileImageResponse = FileContentDTO & GetMasterProfileImageResponseAllOf;
+export type GetMasterJobImageByIdResponse = {
+  /**
+   * Image file name
+   * @minLength 1
+   */
+  fileName: string;
+  /**
+   * Image file mime type
+   * @minLength 1
+   */
+  fileMimeType: string;
+  /** Image file size */
+  fileSize: number;
+  /**
+   * Direct URL to the image in blob storage
+   * @minLength 1
+   */
+  url: string;
+};
 
 export type GetUserResponse = {
   id?: string;
@@ -444,7 +433,8 @@ export type MasterDTO = {
   longitude?: number | null;
   /** @nullable */
   city?: string | null;
-  profileImage?: FileMetadataDTO;
+  /** @nullable */
+  profileImageUrl?: string | null;
 };
 
 export type MasterJobDTO = {
@@ -492,9 +482,14 @@ export type MasterJobImageDTO = {
   fileMimeType: string;
   /** Image file size */
   fileSize: number;
+  /**
+   * Direct URL to the image in blob storage
+   * @minLength 1
+   */
+  url: string;
 };
 
-export type MasterJobImageWithDataDTO = {
+export type MasterJobImageWithUrlDTO = {
   /** Image identifier */
   id: string;
   /** Master job identifier */
@@ -512,10 +507,10 @@ export type MasterJobImageWithDataDTO = {
   /** Image file size */
   fileSize: number;
   /**
-   * Base64 encoded image data
+   * Direct URL to the image in blob storage
    * @minLength 1
    */
-  data: string;
+  url: string;
 };
 
 export type MasterJobOfferingCommandDTO = {

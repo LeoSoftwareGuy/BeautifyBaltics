@@ -36,5 +36,13 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>>True if the file was successfully deleted; otherwise, false.</returns>
         Task<bool> DeleteAsync(string blobName, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Gets a URL for accessing the blob directly. Returns a SAS URL with read permissions.
+        /// </summary>
+        /// <param name="blobName">Name of the blob.</param>
+        /// <param name="expiresIn">How long the URL should be valid. Defaults to 1 hour.</param>
+        /// <returns>A URL that can be used to access the blob directly.</returns>
+        string? GetBlobUrl(string? blobName, TimeSpan? expiresIn = null);
     }
 }

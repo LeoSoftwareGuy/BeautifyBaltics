@@ -1,4 +1,3 @@
-using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Domain.Enumerations;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared
@@ -17,6 +16,6 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared
         public double? Latitude { get; init; }
         public double? Longitude { get; init; }
         public string? City { get; init; }
-        public FileMetadataDTO? ProfileImage { get; init; }
+        public string? ProfileImageUrl { get; init; }
     }
 }

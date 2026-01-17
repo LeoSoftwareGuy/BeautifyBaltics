@@ -1771,8 +1771,10 @@ components:
           minLength: 1
           type: string
           description: Phone number
-        profileImage:
-          $ref: '#/components/schemas/FileMetadataDTO'
+        profileImageUrl:
+          type: string
+          description: Profile image URL
+          nullable: true
       additionalProperties: false
     CreateBookingRequest:
       allOf:
@@ -1875,38 +1877,6 @@ components:
         id:
           type: string
           format: uuid
-      additionalProperties: false
-    FileContentDTO:
-      allOf:
-        - $ref: '#/components/schemas/FileMetadataDTO'
-        - required:
-            - data
-          type: object
-          properties:
-            data:
-              type: string
-              description: Data of generated file
-              format: byte
-          additionalProperties: false
-    FileMetadataDTO:
-      required:
-        - fileMimeType
-        - fileName
-        - fileSize
-      type: object
-      properties:
-        fileName:
-          minLength: 1
-          type: string
-          description: File name
-        fileMimeType:
-          minLength: 1
-          type: string
-          description: File mime type
-        fileSize:
-          type: integer
-          description: File size
-          format: int64
       additionalProperties: false
     FindBookingsResponse:
       allOf:
@@ -2094,7 +2064,7 @@ components:
         images:
           type: array
           items:
-            $ref: '#/components/schemas/MasterJobImageWithDataDTO'
+            $ref: '#/components/schemas/MasterJobImageWithUrlDTO'
           nullable: true
       additionalProperties: false
     FindMasterJobsResponse:
@@ -2172,28 +2142,32 @@ components:
       allOf:
         - $ref: '#/components/schemas/MasterDTO'
         - type: object
-          properties:
-            jobs:
-              type: array
-              items:
-                $ref: '#/components/schemas/MasterJobDTO'
-              nullable: true
-            availability:
-              type: array
-              items:
-                $ref: '#/components/schemas/MasterAvailabilitySlotDTO'
-              nullable: true
           additionalProperties: false
     GetMasterJobImageByIdResponse:
-      allOf:
-        - $ref: '#/components/schemas/FileContentDTO'
-        - type: object
-          additionalProperties: false
-    GetMasterProfileImageResponse:
-      allOf:
-        - $ref: '#/components/schemas/FileContentDTO'
-        - type: object
-          additionalProperties: false
+      required:
+        - fileMimeType
+        - fileName
+        - fileSize
+        - url
+      type: object
+      properties:
+        fileName:
+          minLength: 1
+          type: string
+          description: Image file name
+        fileMimeType:
+          minLength: 1
+          type: string
+          description: Image file mime type
+        fileSize:
+          type: integer
+          description: Image file size
+          format: int64
+        url:
+          minLength: 1
+          type: string
+          description: Direct URL to the image in blob storage
+      additionalProperties: false
     GetUserResponse:
       type: object
       properties:
@@ -2364,8 +2338,9 @@ components:
         city:
           type: string
           nullable: true
-        profileImage:
-          $ref: '#/components/schemas/FileMetadataDTO'
+        profileImageUrl:
+          type: string
+          nullable: true
       additionalProperties: false
     MasterJobDTO:
       required:
@@ -2424,6 +2399,7 @@ components:
         - fileName
         - fileSize
         - id
+        - url
       type: object
       properties:
         id:
@@ -2442,15 +2418,19 @@ components:
           type: integer
           description: Image file size
           format: int64
+        url:
+          minLength: 1
+          type: string
+          description: Direct URL to the image in blob storage
       additionalProperties: false
-    MasterJobImageWithDataDTO:
+    MasterJobImageWithUrlDTO:
       required:
-        - data
         - fileMimeType
         - fileName
         - fileSize
         - id
         - jobId
+        - url
       type: object
       properties:
         id:
@@ -2473,10 +2453,10 @@ components:
           type: integer
           description: Image file size
           format: int64
-        data:
+        url:
           minLength: 1
           type: string
-          description: Base64 encoded image data
+          description: Direct URL to the image in blob storage
       additionalProperties: false
     MasterJobOfferingCommandDTO:
       required:

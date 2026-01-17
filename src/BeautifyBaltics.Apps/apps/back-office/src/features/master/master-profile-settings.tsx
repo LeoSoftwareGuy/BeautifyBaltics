@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import {
   Alert,
   Avatar,
@@ -22,7 +22,7 @@ import { IconAlertCircle, IconDeviceFloppy, IconPhotoUp } from '@tabler/icons-re
 
 import { Gender, UpdateMasterProfileRequest } from '@/state/endpoints/api.schemas';
 import {
-  useGetMasterById, useGetMasterProfileImage, useUpdateMasterProfile, useUploadMasterProfileImage,
+  useGetMasterById, useUpdateMasterProfile, useUploadMasterProfileImage,
 } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
@@ -46,19 +46,6 @@ function MasterProfileSettings() {
   } = useGetMasterById(masterId, { id: masterId }, {
     query: { enabled: !!masterId },
   });
-
-  const { data: profileImageBlob, refetch: refetchImage } = useGetMasterProfileImage(masterId, {
-    query: { enabled: !!masterId && !!masterData?.profileImage },
-  });
-
-  const profileImageUrl = useMemo(() => {
-    if (!profileImageBlob) return null;
-    return URL.createObjectURL(profileImageBlob);
-  }, [profileImageBlob]);
-
-  useEffect(() => () => {
-    if (profileImageUrl) URL.revokeObjectURL(profileImageUrl);
-  }, [profileImageUrl]);
 
   const form = useForm<UpdateMasterProfileRequest>({
     mode: 'uncontrolled',
@@ -116,7 +103,6 @@ function MasterProfileSettings() {
     mutation: {
       onSuccess: async () => {
         await refetch();
-        await refetchImage();
         notifications.show({
           title: 'Photo uploaded',
           message: 'Your profile photo has been updated successfully.',
@@ -183,7 +169,7 @@ function MasterProfileSettings() {
               <Avatar
                 size={96}
                 radius="xl"
-                src={profileImageUrl}
+                src={masterData?.profileImageUrl}
               >
                 {(form.getValues().firstName?.[0] ?? '')}
                 {(form.getValues().lastName?.[0] ?? '')}

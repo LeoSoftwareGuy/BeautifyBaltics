@@ -13,35 +13,26 @@ public class FindMasterJobImagesHandler(
 {
     public async Task<FindMasterJobImagesResponse> Handle(FindMasterJobImagesRequest request, CancellationToken cancellationToken)
     {
-        if (!await masterRepository.ExistsByAsync(x => x.Id == request.MasterId, cancellationToken))
-            throw NotFoundException.For<Persistence.Projections.Master>(request.MasterId);
+        if (!await masterRepository.ExistsByAsync(x => x.Id == request.MasterId, cancellationToken)) throw NotFoundException.For<Persistence.Projections.Master>(request.MasterId);
 
         var jobs = await masterJobRepository.GetListByAsync(j => j.MasterId == request.MasterId, cancellationToken);
 
         var allImages = jobs
             .SelectMany(job => job.Images ?? [])
-            .ToList();
-
-        var imagesWithData = new List<MasterJobImageWithDataDTO>();
-
-        foreach (var image in allImages)
-        {
-            var data = await blobStorageService.DownloadAsync(image.BlobName, cancellationToken);
-
-            imagesWithData.Add(new MasterJobImageWithDataDTO
+            .Select(image => new MasterJobImageWithUrlDTO
             {
                 Id = image.Id,
                 JobId = image.MasterJobId,
                 FileName = image.FileName,
                 FileMimeType = image.FileMimeType,
                 FileSize = image.FileSize,
-                Data = Convert.ToBase64String(data)
-            });
-        }
+                Url = blobStorageService.GetBlobUrl(image.BlobName) ?? string.Empty
+            })
+            .ToList();
 
         return new FindMasterJobImagesResponse
         {
-            Images = imagesWithData
+            Images = allImages
         };
     }
 }

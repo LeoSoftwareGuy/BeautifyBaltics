@@ -9,7 +9,6 @@ import {
   Group,
   Image,
   Loader,
-  Skeleton,
   Stack,
   Text,
   Title,
@@ -23,7 +22,6 @@ import {
   useDeleteMasterJob,
   useDeleteMasterJobImage,
   useFindMasterJobs,
-  useGetMasterJobImageById,
   useUploadMasterJobImage,
 } from '@/state/endpoints/masters';
 
@@ -31,31 +29,19 @@ import { MasterTreatmentsEditModal } from './master-treatments-edit-modal';
 import { MasterTreatmentsUploadModal } from './master-treatments-upload-modal';
 
 type MasterJobImageProps = {
-  masterId: string;
-  jobId: string;
-  imageId: string;
+  url: string;
   alt: string;
   onDelete?: () => void;
   isDeleting?: boolean;
 };
 
 function MasterJobImage({
-  masterId, jobId, imageId, alt, onDelete, isDeleting,
+  url, alt, onDelete, isDeleting,
 }: MasterJobImageProps) {
-  const { data: imageData, isLoading } = useGetMasterJobImageById(masterId, jobId, imageId);
-
-  if (isLoading) {
-    return <Skeleton h={64} w={64} radius="md" />;
-  }
-
-  const imageUrl = imageData
-    ? `data:${imageData.fileMimeType};base64,${imageData.data}`
-    : null;
-
   return (
     <Box pos="relative" style={{ width: 64, height: 64 }}>
       <Image
-        src={imageUrl}
+        src={url}
         alt={alt}
         h={64}
         w={64}
@@ -302,9 +288,7 @@ export function MasterTreatmentsList({ masterId }: MasterTreatmentsListProps) {
                             {images.map((image) => (
                               <MasterJobImage
                                 key={image.id}
-                                masterId={masterId}
-                                jobId={treatment.id}
-                                imageId={image.id}
+                                url={image.url}
                                 alt={image.fileName ?? 'Work sample'}
                                 onDelete={() => handleDeleteImage(treatment.id, image.id)}
                                 isDeleting={isDeletingImage}

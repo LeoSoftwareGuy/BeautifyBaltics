@@ -1,4 +1,3 @@
-import { useEffect, useMemo } from 'react';
 import {
   Badge,
   Card,
@@ -14,33 +13,20 @@ import {
 } from 'lucide-react';
 
 import type { GetMasterByIdResponse } from '@/state/endpoints/api.schemas';
-import { useGetMasterProfileImage } from '@/state/endpoints/masters';
 
 type ProfileHeroProps = {
   master: GetMasterByIdResponse;
 };
 
 function MasterProfileHero({ master }: ProfileHeroProps) {
-  const { data: profileImage } = useGetMasterProfileImage(master.id ?? '', {
-    query: { enabled: !!master.id },
-  });
   const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || 'Unnamed master';
   const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
-
-  const profileImageUrl = useMemo(() => {
-    if (!profileImage) return null;
-    return URL.createObjectURL(profileImage);
-  }, [profileImage]);
-
-  useEffect(() => () => {
-    if (profileImageUrl) URL.revokeObjectURL(profileImageUrl);
-  }, [profileImageUrl]);
 
   return (
     <Grid gutter="xl">
       <Grid.Col span={{ base: 12, md: 6 }}>
         <Image
-          src={profileImageUrl}
+          src={master.profileImageUrl}
           radius="xl"
           alt={fullName}
           mah={420}

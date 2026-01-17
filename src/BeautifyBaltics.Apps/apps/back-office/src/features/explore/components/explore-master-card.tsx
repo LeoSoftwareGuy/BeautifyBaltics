@@ -47,7 +47,7 @@ function MasterCard({ master, selected, onSelect }: MasterCardProps) {
     >
       <Group gap="md" align="flex-start">
         <Image
-          src={undefined}
+          src={master.profileImageUrl}
           alt={fullName}
           radius="md"
           w={96}

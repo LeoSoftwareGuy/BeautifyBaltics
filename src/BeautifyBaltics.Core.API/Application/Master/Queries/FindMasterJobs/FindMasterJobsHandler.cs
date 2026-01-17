@@ -1,12 +1,15 @@
 using BeautifyBaltics.Core.API.Application.Master.Queries.Shared;
+using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Exceptions;
+using BeautifyBaltics.Integrations.BlobStorage;
 using BeautifyBaltics.Persistence.Repositories.Master;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobs;
 
 public class FindMasterJobsHandler(
     IMasterRepository masterRepository,
-    IMasterJobRepository masterJobRepository
+    IMasterJobRepository masterJobRepository,
+    IBlobStorageService<MasterJobImage> blobStorageService
 )
 {
     public async Task<FindMasterJobsResponse> Handle(FindMasterJobsRequest request, CancellationToken cancellationToken)
@@ -32,7 +35,8 @@ public class FindMasterJobsHandler(
                     Id = image.Id,
                     FileName = image.FileName,
                     FileMimeType = image.FileMimeType,
-                    FileSize = image.FileSize
+                    FileSize = image.FileSize,
+                    Url = blobStorageService.GetBlobUrl(image.BlobName) ?? string.Empty
                 }).ToArray() ?? []
             })]
         };

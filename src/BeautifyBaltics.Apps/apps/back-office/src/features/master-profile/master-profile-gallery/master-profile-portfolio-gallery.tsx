@@ -21,11 +21,13 @@ function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
   const items = useMemo(() => {
     if (!data?.images) return [];
 
-    return data.images.map((image) => ({
-      id: image.id,
-      url: `data:${image.fileMimeType};base64,${image.data}`,
-      alt: image.fileName,
-    }));
+    return data.images
+      .filter((image) => !!image)
+      .map((image) => ({
+        id: image.id,
+        url: image.url,
+        alt: image.fileName,
+      }));
   }, [data?.images]);
 
   if (isLoading) {

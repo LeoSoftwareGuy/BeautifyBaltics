@@ -20,14 +20,12 @@ public class GetMasterJobImageByIdHandler(
         var image = job.Images?.FirstOrDefault(i => i.Id == request.MasterJobImageId)
                     ?? throw NotFoundException.For<MasterJobImage>(request.MasterJobImageId);
 
-        var data = await blobStorageService.DownloadAsync(image.BlobName, cancellationToken);
-
         return new GetMasterJobImageByIdResponse
         {
             FileName = image.FileName,
             FileMimeType = image.FileMimeType,
             FileSize = image.FileSize,
-            Data = data
+            Url = blobStorageService.GetBlobUrl(image.BlobName) ?? string.Empty
         };
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -81,6 +82,39 @@ namespace BeautifyBaltics.Integrations.BlobStorage
             {
                 logger.LogError(ex, "Error deleting blob {BlobName} from container {ContainerName}", blobName, options.Value.ContainerName);
                 throw;
+            }
+        }
+
+        public string? GetBlobUrl(string? blobName, TimeSpan? expiresIn = null)
+        {
+            if (string.IsNullOrEmpty(blobName)) return null;
+
+            try
+            {
+                var containerClient = blobServiceClient.GetBlobContainerClient(options.Value.ContainerName);
+                var blobClient = containerClient.GetBlobClient(blobName);
+
+                if (!blobClient.CanGenerateSasUri)
+                {
+                    logger.LogWarning("Cannot generate SAS URI for blob {BlobName}. Ensure the BlobServiceClient is authenticated with account credentials.", blobName);
+                    return null;
+                }
+
+                var sasBuilder = new BlobSasBuilder
+                {
+                    BlobContainerName = options.Value.ContainerName,
+                    BlobName = blobName,
+                    Resource = "b",
+                    ExpiresOn = DateTimeOffset.UtcNow.Add(expiresIn ?? TimeSpan.FromHours(1))
+                };
+                sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+                return blobClient.GenerateSasUri(sasBuilder).ToString();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error generating SAS URL for blob {BlobName}", blobName);
+                return null;
             }
         }
 

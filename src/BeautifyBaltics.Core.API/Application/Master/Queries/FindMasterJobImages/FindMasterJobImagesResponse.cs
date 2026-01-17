@@ -4,10 +4,10 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobImage
 
 public record FindMasterJobImagesResponse
 {
-    public IEnumerable<MasterJobImageWithDataDTO> Images { get; init; } = [];
+    public IEnumerable<MasterJobImageWithUrlDTO> Images { get; init; } = [];
 }
 
-public record MasterJobImageWithDataDTO
+public record MasterJobImageWithUrlDTO
 {
     /// <summary>
     /// Image identifier
@@ -40,8 +40,8 @@ public record MasterJobImageWithDataDTO
     public long FileSize { get; init; }
 
     /// <summary>
-    /// Base64 encoded image data
+    /// Direct URL to the image in blob storage
     /// </summary>
     [Required]
-    public required string Data { get; init; }
+    public required string Url { get; init; }
 }

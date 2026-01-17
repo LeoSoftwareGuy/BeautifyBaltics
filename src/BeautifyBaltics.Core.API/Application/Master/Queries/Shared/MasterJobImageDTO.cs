@@ -27,4 +27,10 @@ public record MasterJobImageDTO
     /// </summary>
     [Required]
     public long FileSize { get; init; }
+
+    /// <summary>
+    /// Direct URL to the image in blob storage
+    /// </summary>
+    [Required]
+    public required string Url { get; init; }
 }
