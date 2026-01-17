@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Box,
@@ -12,18 +12,14 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 import { AlertCircle } from 'lucide-react';
 
-import type {
-  MasterAvailabilitySlotDTO,
-  MasterJobDTO,
-} from '@/state/endpoints/api.schemas';
 import { useGetMasterById } from '@/state/endpoints/masters';
 
 import BookingModal from './components/master-profile-booking-modal';
-import BookingSection from './components/master-profile-booking-section';
-import ProfileHeader from './components/master-profile-header';
-import MasterProfileHero from './components/master-profile-hero';
-import MasterPortfolioGallery from './components/master-profile-portfolio-gallery';
-import ServicesList from './components/master-profile-services-list';
+import MasterBookingSection from './master-profile-booking/master-profile-booking-section';
+import MasterPortfolioGallery from './master-profile-gallery/master-profile-portfolio-gallery';
+import ProfileHeader from './master-profile-header';
+import MasterProfileHero from './master-profile-hero';
+import MasterServicesList from './master-profile-services-list';
 
 type MasterProfilePageProps = {
   masterId: string;
@@ -38,23 +34,9 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
     refetch,
   } = useGetMasterById(masterId, { id: masterId });
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  const services = useMemo(() => mapServices(data?.jobs), [data?.jobs]);
-  const availableSlots = useMemo(() => mapAvailabilitySlots(data?.availability), [data?.availability]);
-
-  useEffect(() => {
-    if (!availableSlots.length) {
-      setSelectedSlot(null);
-      return;
-    }
-
-    if (!selectedSlot || !availableSlots.includes(selectedSlot)) {
-      setSelectedSlot(availableSlots[0]);
-    }
-  }, [availableSlots, selectedSlot]);
+  const [bookingDate, setBookingDate] = useState<Date | null>(null);
+  const [bookingSlot, setBookingSlot] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -88,10 +70,10 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
     );
   }
 
-  const handleBooking = () => {
-    if (selectedDate && selectedSlot) {
-      setModalOpen(true);
-    }
+  const handleBooking = (date: Date, slot: string) => {
+    setBookingDate(date);
+    setBookingSlot(slot);
+    setModalOpen(true);
   };
 
   return (
@@ -100,13 +82,9 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
       <Container size="lg" py="xl">
         <MasterProfileHero master={data} />
         <MasterPortfolioGallery masterId={masterId} />
-        <ServicesList services={services} />
-        <BookingSection
-          availableSlots={availableSlots}
-          selectedDate={selectedDate}
-          selectedSlot={selectedSlot}
-          onDateChange={(value) => setSelectedDate(value instanceof Date ? value : null)}
-          onSlotChange={(slot) => setSelectedSlot(slot)}
+        <MasterServicesList masterId={masterId} />
+        <MasterBookingSection
+          masterId={masterId}
           onBook={handleBooking}
         />
       </Container>
@@ -114,8 +92,8 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
       <BookingModal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        date={selectedDate}
-        slot={selectedSlot}
+        date={bookingDate}
+        slot={bookingSlot}
         address={data.city}
         phone={data.phoneNumber}
       />
@@ -124,35 +102,3 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
 }
 
 export default MasterProfilePage;
-
-function mapServices(jobs?: MasterJobDTO[] | null) {
-  if (!jobs) return [];
-
-  return jobs.map((job, index) => ({
-    id: job.id ?? `service-${index}`,
-    name: job.title ?? 'Untitled service',
-    duration: typeof job.durationMinutes === 'number' ? `${job.durationMinutes} min` : undefined,
-    price: job.price,
-  }));
-}
-
-function mapAvailabilitySlots(slots?: MasterAvailabilitySlotDTO[] | null) {
-  if (!slots) return [];
-
-  return slots
-    .map((slot) => formatSlot(slot))
-    .filter((slot): slot is string => Boolean(slot));
-}
-
-function formatSlot(slot: MasterAvailabilitySlotDTO) {
-  if (!slot.startAt) return null;
-  const start = new Date(slot.startAt);
-  const startLabel = start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  if (!slot.endAt) return startLabel;
-
-  const end = new Date(slot.endAt);
-  const endLabel = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  return `${startLabel} - ${endLabel}`;
-}

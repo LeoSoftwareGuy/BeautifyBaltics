@@ -1,9 +1,9 @@
+import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   Card,
   Grid,
   Group,
-  SimpleGrid,
   Stack,
   Text,
   Title,
@@ -11,23 +11,77 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { Calendar, Clock } from 'lucide-react';
 
-type BookingSectionProps = {
-  availableSlots: string[];
-  selectedDate: Date | null;
-  selectedSlot: string | null;
-  onDateChange: (value: Date | null) => void;
-  onSlotChange: (slot: string) => void;
-  onBook: () => void;
+import { UserRole } from '@/state/endpoints/api.schemas';
+import { useFindMasterAvailabilities } from '@/state/endpoints/masters';
+import { useGetUser } from '@/state/endpoints/users';
+import datetime from '@/utils/datetime';
+
+import MasterProfileTimeSlots from './master-profile-booking-time-slot';
+
+type MasterBookingSectionProps = {
+  masterId: string;
+  onBook: (date: Date, slot: string) => void;
 };
 
-function BookingSection({
-  availableSlots,
-  selectedDate,
-  selectedSlot,
-  onDateChange,
-  onSlotChange,
-  onBook,
-}: BookingSectionProps) {
+function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
+  const { data: user } = useGetUser();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+
+  const isOwnProfile = user?.role === UserRole.Master && user?.id === masterId;
+
+  const dateRange = useMemo(() => {
+    if (!selectedDate) return { startAt: undefined, endAt: undefined };
+
+    const startAt = new Date(selectedDate);
+    startAt.setHours(0, 0, 0, 0);
+
+    const endAt = new Date(selectedDate);
+    endAt.setHours(23, 59, 59, 999);
+
+    return { startAt, endAt };
+  }, [selectedDate]);
+
+  const { data: availabilityData, isLoading } = useFindMasterAvailabilities(
+    masterId,
+    {
+      masterId,
+      startAt: dateRange.startAt,
+      endAt: dateRange.endAt,
+      page: 1,
+      pageSize: 50,
+    },
+  );
+
+  const availableSlots = useMemo(() => {
+    if (!availabilityData?.items) return [];
+
+    return availabilityData.items
+      .map((slot) => datetime.formatTimeSlot(slot.startAt, slot.endAt))
+      .filter((slot): slot is string => Boolean(slot));
+  }, [availabilityData?.items]);
+
+  useEffect(() => {
+    if (!availableSlots.length) {
+      setSelectedSlot(null);
+      return;
+    }
+
+    if (!selectedSlot || !availableSlots.includes(selectedSlot)) {
+      setSelectedSlot(availableSlots[0]);
+    }
+  }, [availableSlots, selectedSlot]);
+
+  if (isOwnProfile) {
+    return null;
+  }
+
+  const handleBook = () => {
+    if (selectedDate && selectedSlot) {
+      onBook(selectedDate, selectedSlot);
+    }
+  };
+
   const isDisabled = !selectedDate || !selectedSlot;
 
   const formatDate = (date: Date | null) => {
@@ -71,9 +125,9 @@ function BookingSection({
                     value={selectedDate}
                     onChange={(value) => {
                       if (typeof value === 'string') {
-                        onDateChange(new Date(value));
+                        setSelectedDate(new Date(value));
                       } else {
-                        onDateChange(value);
+                        setSelectedDate(value);
                       }
                     }}
                     minDate={new Date()}
@@ -95,28 +149,16 @@ function BookingSection({
                   {selectedDate ? formatDate(selectedDate) : 'Select a date first'}
                 </Text>
               </Stack>
-              <SimpleGrid cols={2} spacing="sm">
-                {availableSlots.map((slot) => (
-                  <Button
-                    key={slot}
-                    variant={selectedSlot === slot ? 'filled' : 'outline'}
-                    color={selectedSlot === slot ? 'orange' : 'orange'}
-                    onClick={() => onSlotChange(slot)}
-                    radius="md"
-                    styles={{
-                      root: {
-                        fontWeight: selectedSlot === slot ? 700 : 500,
-                      },
-                    }}
-                  >
-                    {slot}
-                  </Button>
-                ))}
-              </SimpleGrid>
+              <MasterProfileTimeSlots
+                isLoading={isLoading}
+                availableSlots={availableSlots}
+                selectedSlot={selectedSlot}
+                onSlotSelect={setSelectedSlot}
+              />
               <Button
                 size="lg"
                 disabled={isDisabled}
-                onClick={onBook}
+                onClick={handleBook}
                 color="pink"
                 radius="md"
                 fullWidth
@@ -137,4 +179,4 @@ function BookingSection({
   );
 }
 
-export default BookingSection;
+export default MasterBookingSection;

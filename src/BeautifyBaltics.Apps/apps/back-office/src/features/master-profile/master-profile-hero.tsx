@@ -71,7 +71,7 @@ function MasterProfileHero({ master }: ProfileHeroProps) {
             </Group>
           </Group>
           <Text c="dimmed" lh={1.7}>
-            This master has not provided a bio yet. Check back later for more details.
+            {master.description ?? ' This master has not provided a bio yet. Check back later for more details.' }
           </Text>
 
           <Card withBorder radius="lg">

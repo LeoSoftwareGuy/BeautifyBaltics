@@ -46,6 +46,12 @@ const createDateTimeFromDateAndTime = (dateS: Date, time: string): Date => {
 
 const isSameDay = (date1: Date | string, date2: Date): boolean => dayjs(date1).isSame(dayjs(date2), 'day');
 
+const formatTimeSlot = (startAt: Date, endAt: Date): string => {
+  const startLabel = dayjs(startAt).format('HH:mm');
+  const endLabel = dayjs(endAt).format('HH:mm');
+  return `${startLabel} - ${endLabel}`;
+};
+
 const datetime = {
   formatDate,
   formatDateTime,
@@ -56,6 +62,7 @@ const datetime = {
   formatTimeFromDate,
   createDateTimeFromDateAndTime,
   isSameDay,
+  formatTimeSlot,
 };
 
 export default datetime;

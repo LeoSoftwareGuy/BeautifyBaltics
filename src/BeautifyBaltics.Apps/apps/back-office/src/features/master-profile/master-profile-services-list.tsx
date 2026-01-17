@@ -1,25 +1,48 @@
+import { useMemo } from 'react';
 import {
   Card,
   Group,
   SimpleGrid,
+  Skeleton,
   Stack,
   Text,
   Title,
 } from '@mantine/core';
 import { Clock } from 'lucide-react';
 
-type Service = {
-  id: string;
-  name: string;
-  duration?: string;
-  price?: number;
-};
+import { useFindMasterJobs } from '@/state/endpoints/masters';
 
 type ServicesListProps = {
-  services: Service[];
+  masterId: string;
 };
 
-function ServicesList({ services }: ServicesListProps) {
+function MasterServicesList({ masterId }: ServicesListProps) {
+  const { data, isLoading } = useFindMasterJobs(masterId);
+
+  const services = useMemo(() => {
+    if (!data?.jobs) return [];
+
+    return data.jobs.map((job) => ({
+      id: job.id,
+      name: job.title,
+      duration: `${job.durationMinutes} min`,
+      price: job.price,
+    }));
+  }, [data?.jobs]);
+
+  if (isLoading) {
+    return (
+      <Stack gap="lg" mt="xl">
+        <Title order={2}>Services & Pricing</Title>
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
+          {[1, 2].map((i) => (
+            <Skeleton key={i} height={80} radius="lg" />
+          ))}
+        </SimpleGrid>
+      </Stack>
+    );
+  }
+
   if (services.length === 0) {
     return (
       <Stack gap="lg" mt="xl">
@@ -44,7 +67,7 @@ function ServicesList({ services }: ServicesListProps) {
               </Group>
               <Group gap="xs" c="dimmed" fz="sm">
                 <Clock size={14} />
-                <Text>{service.duration ?? 'Duration not specified'}</Text>
+                <Text>{service.duration}</Text>
               </Group>
             </Stack>
           </Card>
@@ -54,4 +77,4 @@ function ServicesList({ services }: ServicesListProps) {
   );
 }
 
-export default ServicesList;
+export default MasterServicesList;
