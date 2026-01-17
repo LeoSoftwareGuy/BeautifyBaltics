@@ -22,8 +22,18 @@ public class BookingRepository(IQuerySession session) : QueryRepository<Projecti
         if (search.ClientId is not null) query = query.Where(x => x.ClientId == search.ClientId);
         if (search.MasterId is not null) query = query.Where(x => x.MasterId == search.MasterId);
         if (search.Status is not null) query = query.Where(x => x.Status == search.Status);
-        if (search.From is not null) query = query.Where(x => x.ScheduledAt >= search.From);
-        if (search.To is not null) query = query.Where(x => x.ScheduledAt <= search.To);
+
+        if (search.From is not null)
+        {
+            var from = DateTime.SpecifyKind(search.From.Value, DateTimeKind.Unspecified);
+            query = query.Where(x => x.ScheduledAt >= from);
+        }
+
+        if (search.To is not null)
+        {
+            var to = DateTime.SpecifyKind(search.To.Value, DateTimeKind.Unspecified);
+            query = query.Where(x => x.ScheduledAt <= to);
+        }
 
         return query.OrderBy(x => x.ScheduledAt);
     }

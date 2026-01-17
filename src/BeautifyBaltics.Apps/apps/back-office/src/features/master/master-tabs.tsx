@@ -4,26 +4,11 @@ import {
 } from '@mantine/core';
 
 import { MasterTreatments } from './master-treatments/master-treatments';
-import { MasterBookingsPanel } from './master-bookings-panel';
+import { MasterBookingsDataTable } from './master-bookings-data-table';
 import MasterProfileSettings from './master-profile-settings';
 import { MasterSchedule } from './master-schedule';
 
-export type Booking = {
-  id: number;
-  client: string;
-  service: string;
-  time: string;
-  date: string;
-  status: 'confirmed' | 'pending';
-};
-
-interface MasterTabsProps {
-  bookings: Booking[];
-}
-
-export function MasterTabs({
-  bookings,
-}: MasterTabsProps) {
+export function MasterTabs() {
   const [activeTab, setActiveTab] = useState<string | null>('bookings');
 
   return (
@@ -36,7 +21,7 @@ export function MasterTabs({
       </Tabs.List>
 
       <Tabs.Panel value="bookings" pt="xl">
-        <MasterBookingsPanel bookings={bookings} />
+        <MasterBookingsDataTable />
       </Tabs.Panel>
 
       <Tabs.Panel value="schedule" pt="xl">

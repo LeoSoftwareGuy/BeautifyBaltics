@@ -3,20 +3,8 @@ import {
 } from '@mantine/core';
 import { IconSettings } from '@tabler/icons-react';
 
-import { MasterStatsGrid } from './components/master-stats-grid';
-import { MasterTabs } from './components/master-tabs';
-
-const defaultBookings = [
-  {
-    id: 1, client: 'Sarah Johnson', service: 'Haircut', time: '10:00 AM', date: 'Today', status: 'confirmed',
-  },
-  {
-    id: 2, client: 'Mike Brown', service: 'Beard Trim', time: '2:00 PM', date: 'Today', status: 'confirmed',
-  },
-  {
-    id: 3, client: 'Emma Davis', service: 'Hair Color', time: '11:00 AM', date: 'Tomorrow', status: 'pending',
-  },
-];
+import { MasterStatsGrid } from './master-stats-grid';
+import { MasterTabs } from './master-tabs';
 
 function MasterDashboardPage() {
   return (
@@ -30,7 +18,7 @@ function MasterDashboardPage() {
 
       <Stack gap="xl" px="md" pb="xl">
         <MasterStatsGrid />
-        <MasterTabs bookings={defaultBookings} />
+        <MasterTabs />
       </Stack>
     </Box>
   );
