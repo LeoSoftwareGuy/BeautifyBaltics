@@ -13,6 +13,7 @@ using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasters;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobs;
+using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobImages;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterProfileImage;
 using BeautifyBaltics.Core.API.Application.SeedWork;
@@ -116,6 +117,20 @@ public class MastersController(IMessageBus bus) : ApiController
     public async Task<ActionResult<FindMasterJobsResponse>> FindMasterJobs([FromRoute] Guid id)
     {
         var response = await bus.InvokeAsync<FindMasterJobsResponse>(new FindMasterJobsRequest { MasterId = id });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Find all images for a master's jobs
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <returns>All images with base64 data for the master's jobs</returns>
+    [HttpGet("{id:guid}/images", Name = "FindMasterJobImages")]
+    [ProducesResponseType(typeof(FindMasterJobImagesResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FindMasterJobImagesResponse>> FindMasterJobImages([FromRoute] Guid id)
+    {
+        var response = await bus.InvokeAsync<FindMasterJobImagesResponse>(new FindMasterJobImagesRequest { MasterId = id });
         return Ok(response);
     }
 

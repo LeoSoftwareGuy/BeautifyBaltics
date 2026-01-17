@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Image,
   SimpleGrid,
+  Skeleton,
   Stack,
   Text,
   Title,
 } from '@mantine/core';
 
+import { useFindMasterJobImages } from '@/state/endpoints/masters';
+
 type PortfolioGalleryProps = {
-  items: Array<{ id: string; url: string; alt?: string }>;
+  masterId: string;
 };
 
 function PortfolioImage({ item }: { item: { id: string; url: string; alt?: string } }) {
@@ -33,7 +36,32 @@ function PortfolioImage({ item }: { item: { id: string; url: string; alt?: strin
   );
 }
 
-function PortfolioGallery({ items }: PortfolioGalleryProps) {
+function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
+  const { data, isLoading } = useFindMasterJobImages(masterId);
+
+  const items = useMemo(() => {
+    if (!data?.images) return [];
+
+    return data.images.map((image) => ({
+      id: image.id,
+      url: `data:${image.fileMimeType};base64,${image.data}`,
+      alt: image.fileName,
+    }));
+  }, [data?.images]);
+
+  if (isLoading) {
+    return (
+      <Stack gap="lg" mt="xl">
+        <Title order={2}>Portfolio</Title>
+        <SimpleGrid cols={{ base: 2, md: 3 }} spacing="md">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} height={200} radius="lg" />
+          ))}
+        </SimpleGrid>
+      </Stack>
+    );
+  }
+
   if (items.length === 0) {
     return (
       <Stack gap="lg" mt="xl">
@@ -55,4 +83,4 @@ function PortfolioGallery({ items }: PortfolioGalleryProps) {
   );
 }
 
-export default PortfolioGallery;
+export default MasterPortfolioGallery;

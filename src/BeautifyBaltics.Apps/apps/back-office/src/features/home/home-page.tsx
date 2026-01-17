@@ -1,7 +1,7 @@
 import { Stack } from '@mantine/core';
 
-import FeaturesSection from './components/home-features-section';
-import HeroSection from './components/home-hero-section';
+import FeaturesSection from './home-features-section';
+import HeroSection from './home-hero-section';
 
 function Index() {
   return (

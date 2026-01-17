@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from 'react';
 import {
   Badge,
   Card,
@@ -13,24 +14,33 @@ import {
 } from 'lucide-react';
 
 import type { GetMasterByIdResponse } from '@/state/endpoints/api.schemas';
+import { useGetMasterProfileImage } from '@/state/endpoints/masters';
 
 type ProfileHeroProps = {
   master: GetMasterByIdResponse;
 };
 
-function ProfileHero({ master }: ProfileHeroProps) {
+function MasterProfileHero({ master }: ProfileHeroProps) {
+  const { data: profileImage } = useGetMasterProfileImage(master.id ?? '', {
+    query: { enabled: !!master.id },
+  });
   const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || 'Unnamed master';
   const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
-  const phone = master.phoneNumber ?? undefined;
-  const email = master.email ?? undefined;
-  const city = master.city ?? 'Location not provided';
-  const heroImage = undefined;
+
+  const profileImageUrl = useMemo(() => {
+    if (!profileImage) return null;
+    return URL.createObjectURL(profileImage);
+  }, [profileImage]);
+
+  useEffect(() => () => {
+    if (profileImageUrl) URL.revokeObjectURL(profileImageUrl);
+  }, [profileImageUrl]);
 
   return (
     <Grid gutter="xl">
       <Grid.Col span={{ base: 12, md: 6 }}>
         <Image
-          src={heroImage}
+          src={profileImageUrl}
           radius="xl"
           alt={fullName}
           mah={420}
@@ -68,21 +78,27 @@ function ProfileHero({ master }: ProfileHeroProps) {
             <Stack gap="sm">
               <Group gap="sm">
                 <MapPin size={18} />
-                <Text>{city}</Text>
+                <Text>{master.city ?? 'Location not provided'}</Text>
               </Group>
               <Group gap="sm" wrap="nowrap">
                 <Phone size={18} />
-                <ButtonLink
-                  href={phone ? `tel:${phone}` : undefined}
-                  label={phone ?? 'Phone not provided'}
-                />
+                <Text
+                  variant="link"
+                  c="grape.6"
+                  style={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  {master.phoneNumber ?? 'Phone not provided'}
+                </Text>
               </Group>
               <Group gap="sm" wrap="nowrap">
                 <Mail size={18} />
-                <ButtonLink
-                  href={email ? `mailto:${email}` : undefined}
-                  label={email ?? 'Email not provided'}
-                />
+                <Text
+                  variant="link"
+                  c="grape.6"
+                  style={{ textDecoration: 'none', fontWeight: 600 }}
+                >
+                  {master.email ?? 'Email not provided'}
+                </Text>
               </Group>
             </Stack>
           </Card>
@@ -92,26 +108,4 @@ function ProfileHero({ master }: ProfileHeroProps) {
   );
 }
 
-type ButtonLinkProps = {
-  href?: string;
-  label: string;
-};
-
-function ButtonLink({ href, label }: ButtonLinkProps) {
-  const textProps = href
-    ? { component: 'a' as const, href }
-    : { component: 'span' as const };
-
-  return (
-    <Text
-      {...textProps}
-      variant="link"
-      c="grape.6"
-      style={{ textDecoration: 'none', fontWeight: 600 }}
-    >
-      {label}
-    </Text>
-  );
-}
-
-export default ProfileHero;
+export default MasterProfileHero;

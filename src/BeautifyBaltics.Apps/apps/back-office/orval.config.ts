@@ -6,6 +6,7 @@ const infiniteOperationNames = [
   'FindClients',
   'FindJobs',
   'FindMasters',
+  'FindMasterJobImages',
   'FindMasterAvailabilities',
   'FindMasterJobs',
 ];

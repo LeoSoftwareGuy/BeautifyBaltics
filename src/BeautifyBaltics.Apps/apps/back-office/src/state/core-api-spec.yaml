@@ -977,6 +977,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{id}/images':
+    get:
+      tags:
+        - Masters
+      summary: Find all images for a master's jobs
+      operationId: FindMasterJobImages
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindMasterJobImagesResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   '/api/v1/masters/{id}/jobs/{jobId}':
     delete:
       tags:
@@ -2061,6 +2088,15 @@ components:
             $ref: '#/components/schemas/FindMasterAvailabilitiesResponse'
           description: Items
       additionalProperties: false
+    FindMasterJobImagesResponse:
+      type: object
+      properties:
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/MasterJobImageWithDataDTO'
+          nullable: true
+      additionalProperties: false
     FindMasterJobsResponse:
       type: object
       properties:
@@ -2406,6 +2442,41 @@ components:
           type: integer
           description: Image file size
           format: int64
+      additionalProperties: false
+    MasterJobImageWithDataDTO:
+      required:
+        - data
+        - fileMimeType
+        - fileName
+        - fileSize
+        - id
+        - jobId
+      type: object
+      properties:
+        id:
+          type: string
+          description: Image identifier
+          format: uuid
+        jobId:
+          type: string
+          description: Master job identifier
+          format: uuid
+        fileName:
+          minLength: 1
+          type: string
+          description: Image file name
+        fileMimeType:
+          minLength: 1
+          type: string
+          description: Image file mime type
+        fileSize:
+          type: integer
+          description: Image file size
+          format: int64
+        data:
+          minLength: 1
+          type: string
+          description: Base64 encoded image data
       additionalProperties: false
     MasterJobOfferingCommandDTO:
       required:

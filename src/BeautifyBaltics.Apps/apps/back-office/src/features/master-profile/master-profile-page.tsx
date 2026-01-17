@@ -13,7 +13,6 @@ import { useNavigate } from '@tanstack/react-router';
 import { AlertCircle } from 'lucide-react';
 
 import type {
-  GetMasterByIdResponse,
   MasterAvailabilitySlotDTO,
   MasterJobDTO,
 } from '@/state/endpoints/api.schemas';
@@ -22,8 +21,8 @@ import { useGetMasterById } from '@/state/endpoints/masters';
 import BookingModal from './components/master-profile-booking-modal';
 import BookingSection from './components/master-profile-booking-section';
 import ProfileHeader from './components/master-profile-header';
-import ProfileHero from './components/master-profile-hero';
-import PortfolioGallery from './components/master-profile-portfolio-gallery';
+import MasterProfileHero from './components/master-profile-hero';
+import MasterPortfolioGallery from './components/master-profile-portfolio-gallery';
 import ServicesList from './components/master-profile-services-list';
 
 type MasterProfilePageProps = {
@@ -45,7 +44,6 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
 
   const services = useMemo(() => mapServices(data?.jobs), [data?.jobs]);
   const availableSlots = useMemo(() => mapAvailabilitySlots(data?.availability), [data?.availability]);
-  const portfolioItems = useMemo(() => mapPortfolioItems(data), [data]);
 
   useEffect(() => {
     if (!availableSlots.length) {
@@ -100,8 +98,8 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
     <Box bg="var(--mantine-color-body)" pb="xl">
       <ProfileHeader backTo="/explore" />
       <Container size="lg" py="xl">
-        <ProfileHero master={data} />
-        <PortfolioGallery items={portfolioItems} />
+        <MasterProfileHero master={data} />
+        <MasterPortfolioGallery masterId={masterId} />
         <ServicesList services={services} />
         <BookingSection
           availableSlots={availableSlots}
@@ -157,15 +155,4 @@ function formatSlot(slot: MasterAvailabilitySlotDTO) {
   const endLabel = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return `${startLabel} - ${endLabel}`;
-}
-
-function mapPortfolioItems(master?: GetMasterByIdResponse) {
-  if (!master?.jobs?.length) return [];
-
-  return master.jobs
-    .flatMap((job) => (job.images ?? []).map((image, index) => ({
-      id: image.id ?? `${job.id ?? 'job'}-${index}`,
-      url: 'https://placehold.co/400x300?text=Portfolio',
-      alt: image.fileName ?? 'Portfolio image',
-    })));
 }

@@ -281,6 +281,11 @@ export type FindMasterAvailabilitiesResponsePagedResponse = {
   items: FindMasterAvailabilitiesResponse[];
 };
 
+export type FindMasterJobImagesResponse = {
+  /** @nullable */
+  images?: MasterJobImageWithDataDTO[] | null;
+};
+
 export type FindMasterJobsResponse = {
   /** @nullable */
   jobs?: MasterJobDTO[] | null;
@@ -487,6 +492,30 @@ export type MasterJobImageDTO = {
   fileMimeType: string;
   /** Image file size */
   fileSize: number;
+};
+
+export type MasterJobImageWithDataDTO = {
+  /** Image identifier */
+  id: string;
+  /** Master job identifier */
+  jobId: string;
+  /**
+   * Image file name
+   * @minLength 1
+   */
+  fileName: string;
+  /**
+   * Image file mime type
+   * @minLength 1
+   */
+  fileMimeType: string;
+  /** Image file size */
+  fileSize: number;
+  /**
+   * Base64 encoded image data
+   * @minLength 1
+   */
+  data: string;
 };
 
 export type MasterJobOfferingCommandDTO = {

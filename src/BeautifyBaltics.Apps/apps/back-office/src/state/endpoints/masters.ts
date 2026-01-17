@@ -44,6 +44,7 @@ import type {
   CreateMasterResponse,
   FindMasterAvailabilitiesParams,
   FindMasterAvailabilitiesResponsePagedResponse,
+  FindMasterJobImagesResponse,
   FindMasterJobsResponse,
   FindMastersParams,
   FindMastersResponsePagedResponse,
@@ -697,6 +698,178 @@ export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof find
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getFindMasterJobsSuspenseQueryOptions(id, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Find all images for a master's jobs
+ */
+export const findMasterJobImages = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<FindMasterJobImagesResponse>(
+  { url: `/api/v1/masters/${id}/images`, method: 'GET', signal },
+);
+
+export const getFindMasterJobImagesQueryKey = (id?: string) => [`/api/v1/masters/${id}/images`] as const;
+
+export const getFindMasterJobImagesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobImages>>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobImagesQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobImages>>> = ({ signal }) => findMasterJobImages(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterJobImagesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobImages>>>;
+export type FindMasterJobImagesInfiniteQueryError = ProblemDetails;
+
+export function useFindMasterJobImagesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobImages>>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobImages>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobImages>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobImagesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobImages>>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobImages>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobImages>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobImagesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobImages>>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find all images for a master's jobs
+ */
+
+export function useFindMasterJobImagesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobImages>>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterJobImagesInfiniteQueryOptions(id, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getFindMasterJobImagesQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobImagesQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobImages>>> = ({ signal }) => findMasterJobImages(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterJobImagesQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobImages>>>;
+export type FindMasterJobImagesQueryError = ProblemDetails;
+
+export function useFindMasterJobImages<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobImages>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobImages>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobImages<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findMasterJobImages>>,
+  TError,
+  Awaited<ReturnType<typeof findMasterJobImages>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobImages<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find all images for a master's jobs
+ */
+
+export function useFindMasterJobImages<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterJobImagesQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getFindMasterJobImagesSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobImagesQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobImages>>> = ({ signal }) => findMasterJobImages(id, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindMasterJobImagesSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobImages>>>;
+export type FindMasterJobImagesSuspenseQueryError = ProblemDetails;
+
+export function useFindMasterJobImagesSuspense<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobImagesSuspense<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindMasterJobImagesSuspense<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find all images for a master's jobs
+ */
+
+export function useFindMasterJobImagesSuspense<TData = Awaited<ReturnType<typeof findMasterJobImages>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobImages>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindMasterJobImagesSuspenseQueryOptions(id, options);
 
   const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
