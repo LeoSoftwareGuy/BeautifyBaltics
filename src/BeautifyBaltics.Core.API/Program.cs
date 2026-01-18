@@ -1,4 +1,5 @@
 using BeautifyBaltics.Core.API.Application.Auth.Services;
+using BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Domain.Aggregates.Booking.Events;
@@ -83,6 +84,8 @@ internal class Program
         builder.Services.AddPersistenceServices();
         builder.Services.AddInfrastructureServices();
         builder.Services.AddScoped<IUserProvisioningService, UserProvisioningService>();
+
+        builder.Services.AddHostedService<BookingCompletionBackgroundService>();
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {

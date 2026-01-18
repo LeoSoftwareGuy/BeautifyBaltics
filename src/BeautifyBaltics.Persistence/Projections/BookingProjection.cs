@@ -55,19 +55,6 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
         };
     }
 
-    public static Booking Apply(BookingUpdated @event, Booking current)
-    {
-        return current with
-        {
-            MasterId = @event.MasterId,
-            ClientId = @event.ClientId,
-            MasterJobId = @event.MasterJobId,
-            ScheduledAt = @event.ScheduledAt,
-            Duration = @event.Duration,
-            Price = @event.Price
-        };
-    }
-
     public static Booking Apply(BookingRescheduled @event, Booking current)
     {
         return current with
@@ -77,8 +64,12 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
         };
     }
 
-    public static Booking Apply(BookingStatusChanged @event, Booking current)
-    {
-        return current with { Status = @event.Status };
-    }
+    public static Booking Apply(BookingConfirmed @event, Booking current) =>
+        current with { Status = BookingStatus.Confirmed };
+
+    public static Booking Apply(BookingCancelled @event, Booking current) =>
+        current with { Status = BookingStatus.Cancelled };
+
+    public static Booking Apply(BookingCompleted @event, Booking current) =>
+        current with { Status = BookingStatus.Completed };
 }

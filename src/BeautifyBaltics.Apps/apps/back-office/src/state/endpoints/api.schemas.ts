@@ -57,6 +57,25 @@ export enum BookingStatus {
   Cancelled = 'Cancelled',
 
 }
+export type CancelBookingRequest = {
+  /** Booking identifier */
+  bookingId: string;
+  /**
+   * Master identifier (if cancelled by master)
+   * @nullable
+   */
+  masterId?: string | null;
+  /**
+   * Client identifier (if cancelled by client)
+   * @nullable
+   */
+  clientId?: string | null;
+};
+
+export type CancelBookingResponse = {
+  bookingId?: string;
+};
+
 export type ClientCommandDTO = {
   /**
    * First name
@@ -109,6 +128,17 @@ export type ClientDTO = {
    * @nullable
    */
   profileImageUrl?: string | null;
+};
+
+export type ConfirmBookingRequest = {
+  /** Booking identifier */
+  bookingId: string;
+  /** Master identifier */
+  masterId: string;
+};
+
+export type ConfirmBookingResponse = {
+  bookingId?: string;
 };
 
 export type CreateBookingRequestAllOf = { [key: string]: unknown };
@@ -576,18 +606,6 @@ export type RescheduleBookingRequest = {
 export type RescheduleBookingResponse = {
   /** Id of created booking */
   id: string;
-};
-
-export type UpdateBookingRequestAllOf = {
-  /** Booking ID */
-  bookingId: string;
-};
-
-export type UpdateBookingRequest = BookingCommandDTO & UpdateBookingRequestAllOf;
-
-export type UpdateBookingResponse = {
-  /** ID of the updated booking */
-  bookingId: string;
 };
 
 export type UpdateClientProfileRequestAllOf = {

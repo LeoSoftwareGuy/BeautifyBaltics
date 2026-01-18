@@ -1,4 +1,7 @@
-import { Badge, Stack, Text } from '@mantine/core';
+import {
+  ActionIcon, Badge, Group, Stack, Text, Tooltip,
+} from '@mantine/core';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
@@ -49,5 +52,74 @@ export function renderStatus(booking: FindBookingsResponse) {
     <Badge color={getStatusColor(booking.status)} variant="light">
       {booking.status}
     </Badge>
+  );
+}
+
+function canCancelBooking(booking: FindBookingsResponse): boolean {
+  if (booking.status === BookingStatus.Cancelled || booking.status === BookingStatus.Completed) {
+    return false;
+  }
+  const scheduledAt = new Date(booking.scheduledAt);
+  const hoursUntilBooking = (scheduledAt.getTime() - Date.now()) / (1000 * 60 * 60);
+  return hoursUntilBooking >= 24;
+}
+
+function canConfirmBooking(booking: FindBookingsResponse): boolean {
+  return booking.status === BookingStatus.Requested;
+}
+
+type ActionsRendererProps = {
+  booking: FindBookingsResponse;
+  onConfirm: (bookingId: string) => void;
+  onCancel: (bookingId: string) => void;
+  isConfirming: boolean;
+  isCancelling: boolean;
+};
+
+export function ActionsRenderer({
+  booking,
+  onConfirm,
+  onCancel,
+  isConfirming,
+  isCancelling,
+}: ActionsRendererProps) {
+  const showConfirm = canConfirmBooking(booking);
+  const showCancel = canCancelBooking(booking);
+
+  if (!showConfirm && !showCancel) {
+    return <Text size="sm" c="dimmed">-</Text>;
+  }
+
+  return (
+    <Group gap="xs">
+      {showConfirm && (
+        <Tooltip label="Confirm booking">
+          <ActionIcon
+            variant="light"
+            color="green"
+            size="sm"
+            onClick={() => onConfirm(booking.id)}
+            loading={isConfirming}
+            disabled={isCancelling}
+          >
+            <IconCheck size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+      {showCancel && (
+        <Tooltip label="Cancel booking">
+          <ActionIcon
+            variant="light"
+            color="red"
+            size="sm"
+            onClick={() => onCancel(booking.id)}
+            loading={isCancelling}
+            disabled={isConfirming}
+          >
+            <IconX size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+    </Group>
   );
 }

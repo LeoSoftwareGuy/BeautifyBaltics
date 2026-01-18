@@ -3,6 +3,8 @@ import {
   Card, Stack, Text, Title,
 } from '@mantine/core';
 import { DatesRangeValue } from '@mantine/dates';
+import { notifications } from '@mantine/notifications';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
 import {
@@ -11,13 +13,21 @@ import {
   FindBookingsResponse,
   FindBookingsResponsePagedResponse,
 } from '@/state/endpoints/api.schemas';
-import { useFindBookings } from '@/state/endpoints/bookings';
+import {
+  getFindBookingsQueryKey,
+  useCancelBooking,
+  useFindBookings,
+} from '@/state/endpoints/bookings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
 import { ClientBookingsDataTableFilters } from './client-bookings-data-table-filters';
 import {
-  renderDuration, renderPrice, renderScheduledAt, renderStatus,
+  CancelActionRenderer,
+  renderDuration,
+  renderPrice,
+  renderScheduledAt,
+  renderStatus,
 } from './client-bookings-data-table-renderers';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -27,9 +37,11 @@ type BookingsQuery = FindBookingsParams;
 export function ClientBookingsDataTable() {
   const { data: user } = useGetUser();
   const clientId = user?.id ?? '';
+  const queryClient = useQueryClient();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
+  const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
 
   const {
     query,
@@ -64,6 +76,36 @@ export function ClientBookingsDataTable() {
       },
     },
   );
+
+  const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
+    mutation: {
+      onSuccess: () => {
+        notifications.show({
+          title: 'Booking cancelled',
+          message: 'Your booking has been cancelled successfully.',
+          color: 'green',
+        });
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+        setCancellingBookingId(null);
+      },
+      onError: (error: any) => {
+        notifications.show({
+          title: 'Failed to cancel booking',
+          message: error.message || 'An error occurred while confirming the booking.',
+          color: 'red',
+        });
+        setCancellingBookingId(null);
+      },
+    },
+  });
+
+  const handleCancel = (bookingId: string) => {
+    setCancellingBookingId(bookingId);
+    cancelBooking({
+      id: bookingId,
+      data: { bookingId, clientId },
+    });
+  };
 
   const handleDateRangeChange = (value: DatesRangeValue) => {
     setDateRange(value);
@@ -108,6 +150,17 @@ export function ClientBookingsDataTable() {
       title: 'Status',
       sortKey: 'status',
       render: renderStatus,
+    },
+    {
+      accessor: 'actions',
+      title: 'Actions',
+      render: (booking) => (
+        <CancelActionRenderer
+          booking={booking}
+          onCancel={handleCancel}
+          isCancelling={isCancelling && cancellingBookingId === booking.id}
+        />
+      ),
     },
   ];
 

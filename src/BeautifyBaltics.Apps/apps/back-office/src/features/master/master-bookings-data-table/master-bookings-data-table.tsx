@@ -3,6 +3,8 @@ import {
   Card, Stack, Text, Title,
 } from '@mantine/core';
 import { DatesRangeValue } from '@mantine/dates';
+import { notifications } from '@mantine/notifications';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
 import {
@@ -11,13 +13,22 @@ import {
   FindBookingsResponse,
   FindBookingsResponsePagedResponse,
 } from '@/state/endpoints/api.schemas';
-import { useFindBookings } from '@/state/endpoints/bookings';
+import {
+  getFindBookingsQueryKey,
+  useCancelBooking,
+  useConfirmBooking,
+  useFindBookings,
+} from '@/state/endpoints/bookings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
 import { BookingsFilters } from './master-bookings-data-table-filters';
 import {
-  renderDuration, renderPrice, renderScheduledAt, renderStatus,
+  ActionsRenderer,
+  renderDuration,
+  renderPrice,
+  renderScheduledAt,
+  renderStatus,
 } from './master-bookings-data-table-renderers';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -27,9 +38,11 @@ type BookingsQuery = FindBookingsParams;
 export function MasterBookingsDataTable() {
   const { data: user } = useGetUser();
   const masterId = user?.id ?? '';
+  const queryClient = useQueryClient();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
+  const [actionBookingId, setActionBookingId] = useState<string | null>(null);
 
   const {
     query,
@@ -64,6 +77,66 @@ export function MasterBookingsDataTable() {
       },
     },
   );
+
+  const { mutate: confirmBooking, isPending: isConfirming } = useConfirmBooking({
+    mutation: {
+      onSuccess: () => {
+        notifications.show({
+          title: 'Booking confirmed',
+          message: 'The booking has been confirmed successfully.',
+          color: 'green',
+        });
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+        setActionBookingId(null);
+      },
+      onError: (error: any) => {
+        notifications.show({
+          title: 'Failed to confirm booking',
+          message: error.message || 'An error occurred while confirming the booking.',
+          color: 'red',
+        });
+        setActionBookingId(null);
+      },
+    },
+  });
+
+  const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
+    mutation: {
+      onSuccess: () => {
+        notifications.show({
+          title: 'Booking cancelled',
+          message: 'The booking has been cancelled successfully.',
+          color: 'green',
+        });
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+        setActionBookingId(null);
+      },
+      onError: (error: any) => {
+        notifications.show({
+          title: 'Failed to cancel booking',
+          message: error.message || 'An error occurred while cancelling the booking.',
+          color: 'red',
+        });
+        setActionBookingId(null);
+      },
+    },
+  });
+
+  const handleConfirm = (bookingId: string) => {
+    setActionBookingId(bookingId);
+    confirmBooking({
+      id: bookingId,
+      data: { bookingId, masterId },
+    });
+  };
+
+  const handleCancel = (bookingId: string) => {
+    setActionBookingId(bookingId);
+    cancelBooking({
+      id: bookingId,
+      data: { bookingId, masterId },
+    });
+  };
 
   const handleDateRangeChange = (value: DatesRangeValue) => {
     setDateRange(value);
@@ -108,6 +181,19 @@ export function MasterBookingsDataTable() {
       title: 'Status',
       sortKey: 'status',
       render: renderStatus,
+    },
+    {
+      accessor: 'actions',
+      title: 'Actions',
+      render: (booking) => (
+        <ActionsRenderer
+          booking={booking}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+          isConfirming={isConfirming && actionBookingId === booking.id}
+          isCancelling={isCancelling && actionBookingId === booking.id}
+        />
+      ),
     },
   ];
 

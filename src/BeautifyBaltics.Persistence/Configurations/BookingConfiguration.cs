@@ -6,7 +6,6 @@ using JasperFx.Events.Projections;
 
 using Marten;
 using Marten.Schema;
-using Marten.Schema.Indexing.Unique;
 
 namespace BeautifyBaltics.Persistence.Configurations;
 
@@ -26,6 +25,7 @@ public class BookingConfiguration : IConfigureMarten
 
         options.Events.AddEventType(typeof(BookingCreated));
         options.Events.AddEventType(typeof(BookingRescheduled));
-        options.Events.AddEventType(typeof(BookingStatusChanged));
+        options.Events.AddEventType(typeof(BookingConfirmed));
+        options.Events.AddEventType(typeof(BookingCancelled));
     }
 }

@@ -147,78 +147,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-    put:
-      tags:
-        - Bookings
-      summary: Update booking
-      operationId: UpdateBooking
-      parameters:
-        - name: id
-          in: path
-          description: Booking id
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        description: Update booking request
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateBookingRequest'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdateBookingRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdateBookingResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetails'
-        '422':
-          description: Unprocessable Content
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationProblemDetails'
-  '/api/v1/bookings/{id}/status':
-    post:
-      tags:
-        - Bookings
-      summary: Update status of booking
-      parameters:
-        - name: id
-          in: path
-          description: Booking id
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        description: Update status booking request
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateBookingRequest'
-          application/*+json:
-            schema:
-              $ref: '#/components/schemas/UpdateBookingRequest'
-      responses:
-        '200':
-          description: OK
   '/api/v1/bookings/{id}/reschedule':
     post:
       tags:
@@ -248,6 +176,104 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RescheduleBookingResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/bookings/{id}/cancel':
+    post:
+      tags:
+        - Bookings
+      summary: Cancel booking
+      description: "Booking can be cancelled by either the master or the client.\r\nBooking cannot be cancelled if it's less than 24 hours before the scheduled time."
+      operationId: CancelBooking
+      parameters:
+        - name: id
+          in: path
+          description: Booking id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Cancel booking request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelBookingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CancelBookingRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelBookingResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/bookings/{id}/confirm':
+    post:
+      tags:
+        - Bookings
+      summary: Confirm booking
+      description: Only the master can confirm a booking.
+      operationId: ConfirmBooking
+      parameters:
+        - name: id
+          in: path
+          description: Booking id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Confirm booking request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmBookingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ConfirmBookingRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmBookingResponse'
         '404':
           description: Not Found
           content:
@@ -1704,6 +1730,33 @@ components:
         - Completed
         - Cancelled
       type: string
+    CancelBookingRequest:
+      required:
+        - bookingId
+      type: object
+      properties:
+        bookingId:
+          type: string
+          description: Booking identifier
+          format: uuid
+        masterId:
+          type: string
+          description: Master identifier (if cancelled by master)
+          format: uuid
+          nullable: true
+        clientId:
+          type: string
+          description: Client identifier (if cancelled by client)
+          format: uuid
+          nullable: true
+      additionalProperties: false
+    CancelBookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+      additionalProperties: false
     ClientCommandDTO:
       required:
         - email
@@ -1764,6 +1817,28 @@ components:
           type: string
           description: Profile image URL
           nullable: true
+      additionalProperties: false
+    ConfirmBookingRequest:
+      required:
+        - bookingId
+        - masterId
+      type: object
+      properties:
+        bookingId:
+          type: string
+          description: Booking identifier
+          format: uuid
+        masterId:
+          type: string
+          description: Master identifier
+          format: uuid
+      additionalProperties: false
+    ConfirmBookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: string
+          format: uuid
       additionalProperties: false
     CreateBookingRequest:
       allOf:
@@ -2555,28 +2630,6 @@ components:
         id:
           type: string
           description: Id of created booking
-          format: uuid
-      additionalProperties: false
-    UpdateBookingRequest:
-      allOf:
-        - $ref: '#/components/schemas/BookingCommandDTO'
-        - required:
-            - bookingId
-          type: object
-          properties:
-            bookingId:
-              type: string
-              description: Booking ID
-              format: uuid
-          additionalProperties: false
-    UpdateBookingResponse:
-      required:
-        - bookingId
-      type: object
-      properties:
-        bookingId:
-          type: string
-          description: ID of the updated booking
           format: uuid
       additionalProperties: false
     UpdateClientProfileRequest:

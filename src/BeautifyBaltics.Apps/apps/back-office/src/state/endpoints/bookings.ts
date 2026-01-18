@@ -36,6 +36,10 @@ import {
 import { customClient } from '../mutator/custom-client';
 
 import type {
+  CancelBookingRequest,
+  CancelBookingResponse,
+  ConfirmBookingRequest,
+  ConfirmBookingResponse,
   CreateBookingRequest,
   CreateBookingResponse,
   FindBookingsParams,
@@ -45,8 +49,6 @@ import type {
   ProblemDetails,
   RescheduleBookingRequest,
   RescheduleBookingResponse,
-  UpdateBookingRequest,
-  UpdateBookingResponse,
   ValidationProblemDetails,
 } from './api.schemas';
 
@@ -411,114 +413,6 @@ export function useGetBookingByIdSuspense<TData = Awaited<ReturnType<typeof getB
 }
 
 /**
- * @summary Update booking
- */
-export const updateBooking = (
-  id: string,
-  updateBookingRequest: UpdateBookingRequest,
-) => customClient<UpdateBookingResponse>(
-  {
-    url: `/api/v1/bookings/${id}`,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    data: updateBookingRequest,
-  },
-);
-
-export const getUpdateBookingMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBooking>>, TError, { id: string;data: UpdateBookingRequest }, TContext>, },
-  ): UseMutationOptions<Awaited<ReturnType<typeof updateBooking>>, TError, { id: string;data: UpdateBookingRequest }, TContext> => {
-  const mutationKey = ['updateBooking'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateBooking>>, { id: string;data: UpdateBookingRequest }> = (props) => {
-    const { id, data } = props ?? {};
-
-    return updateBooking(id, data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type UpdateBookingMutationResult = NonNullable<Awaited<ReturnType<typeof updateBooking>>>;
-export type UpdateBookingMutationBody = UpdateBookingRequest;
-export type UpdateBookingMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
-
-/**
- * @summary Update booking
- */
-export const useUpdateBooking = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateBooking>>, TError, { id: string;data: UpdateBookingRequest }, TContext>, },
-    queryClient?: QueryClient): UseMutationResult<
-  Awaited<ReturnType<typeof updateBooking>>,
-  TError,
-  { id: string;data: UpdateBookingRequest },
-  TContext
-  > => {
-  const mutationOptions = getUpdateBookingMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-/**
- * @summary Update status of booking
- */
-export const postApiV1BookingsIdStatus = (
-  id: string,
-  updateBookingRequest: UpdateBookingRequest,
-  signal?: AbortSignal,
-) => customClient<void>(
-  {
-    url: `/api/v1/bookings/${id}/status`,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: updateBookingRequest,
-    signal,
-  },
-);
-
-export const getPostApiV1BookingsIdStatusMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BookingsIdStatus>>, TError, { id: string;data: UpdateBookingRequest }, TContext>, },
-  ): UseMutationOptions<Awaited<ReturnType<typeof postApiV1BookingsIdStatus>>, TError, { id: string;data: UpdateBookingRequest }, TContext> => {
-  const mutationKey = ['postApiV1BookingsIdStatus'];
-  const { mutation: mutationOptions } = options
-    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey } };
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1BookingsIdStatus>>, { id: string;data: UpdateBookingRequest }> = (props) => {
-    const { id, data } = props ?? {};
-
-    return postApiV1BookingsIdStatus(id, data);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type PostApiV1BookingsIdStatusMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1BookingsIdStatus>>>;
-export type PostApiV1BookingsIdStatusMutationBody = UpdateBookingRequest;
-export type PostApiV1BookingsIdStatusMutationError = unknown;
-
-/**
- * @summary Update status of booking
- */
-export const usePostApiV1BookingsIdStatus = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1BookingsIdStatus>>, TError, { id: string;data: UpdateBookingRequest }, TContext>, },
-    queryClient?: QueryClient): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1BookingsIdStatus>>,
-  TError,
-  { id: string;data: UpdateBookingRequest },
-  TContext
-  > => {
-  const mutationOptions = getPostApiV1BookingsIdStatusMutationOptions(options);
-
-  return useMutation(mutationOptions, queryClient);
-};
-/**
  * @summary Reschedule booking
  */
 export const postApiV1BookingsIdReschedule = (
@@ -570,6 +464,119 @@ export const usePostApiV1BookingsIdReschedule = <TError = ProblemDetails | Probl
   TContext
   > => {
   const mutationOptions = getPostApiV1BookingsIdRescheduleMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * Booking can be cancelled by either the master or the client.
+Booking cannot be cancelled if it's less than 24 hours before the scheduled time.
+ * @summary Cancel booking
+ */
+export const cancelBooking = (
+  id: string,
+  cancelBookingRequest: CancelBookingRequest,
+  signal?: AbortSignal,
+) => customClient<CancelBookingResponse>(
+  {
+    url: `/api/v1/bookings/${id}/cancel`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: cancelBookingRequest,
+    signal,
+  },
+);
+
+export const getCancelBookingMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelBooking>>, TError, { id: string;data: CancelBookingRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof cancelBooking>>, TError, { id: string;data: CancelBookingRequest }, TContext> => {
+  const mutationKey = ['cancelBooking'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelBooking>>, { id: string;data: CancelBookingRequest }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return cancelBooking(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CancelBookingMutationResult = NonNullable<Awaited<ReturnType<typeof cancelBooking>>>;
+export type CancelBookingMutationBody = CancelBookingRequest;
+export type CancelBookingMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Cancel booking
+ */
+export const useCancelBooking = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelBooking>>, TError, { id: string;data: CancelBookingRequest }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof cancelBooking>>,
+  TError,
+  { id: string;data: CancelBookingRequest },
+  TContext
+  > => {
+  const mutationOptions = getCancelBookingMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * Only the master can confirm a booking.
+ * @summary Confirm booking
+ */
+export const confirmBooking = (
+  id: string,
+  confirmBookingRequest: ConfirmBookingRequest,
+  signal?: AbortSignal,
+) => customClient<ConfirmBookingResponse>(
+  {
+    url: `/api/v1/bookings/${id}/confirm`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: confirmBookingRequest,
+    signal,
+  },
+);
+
+export const getConfirmBookingMutationOptions = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmBooking>>, TError, { id: string;data: ConfirmBookingRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof confirmBooking>>, TError, { id: string;data: ConfirmBookingRequest }, TContext> => {
+  const mutationKey = ['confirmBooking'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmBooking>>, { id: string;data: ConfirmBookingRequest }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return confirmBooking(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ConfirmBookingMutationResult = NonNullable<Awaited<ReturnType<typeof confirmBooking>>>;
+export type ConfirmBookingMutationBody = ConfirmBookingRequest;
+export type ConfirmBookingMutationError = ProblemDetails | ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Confirm booking
+ */
+export const useConfirmBooking = <TError = ProblemDetails | ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmBooking>>, TError, { id: string;data: ConfirmBookingRequest }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof confirmBooking>>,
+  TError,
+  { id: string;data: ConfirmBookingRequest },
+  TContext
+  > => {
+  const mutationOptions = getConfirmBookingMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
