@@ -1,34 +1,46 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Box, Container, Stack } from '@mantine/core';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
+import { useFindBookings } from '@/state/endpoints/bookings';
+import { useGetUser } from '@/state/endpoints/users';
 
-import ClientBookingCard from './components/client-booking-card';
-import ClientDashboardHeader from './components/client-dashboard-header';
-import ClientDashboardStats from './components/client-dashboard-stats';
-import ClientFiltersBar from './components/client-filters-bar';
-import { MOCK_BOOKINGS } from './data';
+import { ClientBookingsDataTable } from './client-bookings-data-table/client-bookings-data-table';
+import ClientDashboardHeader from './client-dashboard-header';
+import ClientDashboardStats from './client-dashboard-stats';
 
 function ClientDashboardPage() {
-  const [filter, setFilter] = useState<BookingStatus | 'all'>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'price'>('date');
+  const { data: user } = useGetUser();
+  const clientId = user?.id ?? '';
 
-  const filteredBookings = useMemo(() => MOCK_BOOKINGS
-    .filter((booking) => filter === 'all' || booking.status === filter)
-    .sort((a, b) => {
-      if (sortBy === 'date') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      }
-      return b.price - a.price;
-    }), [filter, sortBy]);
+  const { data: allBookingsData } = useFindBookings(
+    {
+      clientId,
+      page: 1,
+      pageSize: 100,
+    },
+    {
+      query: {
+        enabled: !!clientId,
+      },
+    },
+  );
 
-  const upcomingCount = useMemo(() => MOCK_BOOKINGS.filter((b) => b.status === BookingStatus.Requested).length, []);
-  const completedCount = useMemo(() => MOCK_BOOKINGS.filter((b) => b.status === BookingStatus.Completed).length, []);
+  const upcomingCount = useMemo(
+    () => allBookingsData?.items.filter((b) => b.status === BookingStatus.Requested || b.status === BookingStatus.Confirmed).length,
+    [allBookingsData?.items],
+  );
+
+  const completedCount = useMemo(
+    () => allBookingsData?.items.filter((b) => b.status === BookingStatus.Completed).length,
+    [allBookingsData?.items],
+  );
+
   const totalSpent = useMemo(
-    () => MOCK_BOOKINGS
+    () => allBookingsData?.items
       .filter((b) => b.status === BookingStatus.Completed)
       .reduce((sum, b) => sum + b.price, 0),
-    [],
+    [allBookingsData?.items],
   );
 
   return (
@@ -37,21 +49,11 @@ function ClientDashboardPage() {
         <Stack gap="xl">
           <ClientDashboardHeader />
           <ClientDashboardStats
-            upcomingCount={upcomingCount}
-            completedCount={completedCount}
-            totalSpent={totalSpent}
+            upcomingCount={upcomingCount ?? 0}
+            completedCount={completedCount ?? 0}
+            totalSpent={totalSpent ?? 0}
           />
-          <ClientFiltersBar
-            filter={filter}
-            sortBy={sortBy}
-            onFilterChange={setFilter}
-            onSortChange={setSortBy}
-          />
-          <Stack gap="md">
-            {filteredBookings.map((booking) => (
-              <ClientBookingCard key={booking.id} booking={booking} />
-            ))}
-          </Stack>
+          <ClientBookingsDataTable />
         </Stack>
       </Container>
     </Box>

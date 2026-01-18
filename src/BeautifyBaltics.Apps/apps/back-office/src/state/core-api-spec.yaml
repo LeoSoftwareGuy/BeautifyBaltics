@@ -1617,9 +1617,9 @@ components:
     BookingCommandDTO:
       required:
         - clientId
+        - masterAvailabilityId
         - masterId
         - masterJobId
-        - scheduledAt
       type: object
       properties:
         masterId:
@@ -1632,23 +1632,12 @@ components:
           format: uuid
         masterJobId:
           type: string
-          description: Id of the job
+          description: Id of the master job
           format: uuid
-        scheduledAt:
+        masterAvailabilityId:
           type: string
-          description: Booking date and time
-          format: date-time
-        durationMinutes:
-          maximum: 1440
-          minimum: 1
-          type: string
-          description: Duration of the job
-          format: date-span
-        price:
-          minimum: 0
-          type: number
-          description: Price of the job
-          format: double
+          description: Id of the master availability slot
+          format: uuid
       additionalProperties: false
     BookingDTO:
       required:

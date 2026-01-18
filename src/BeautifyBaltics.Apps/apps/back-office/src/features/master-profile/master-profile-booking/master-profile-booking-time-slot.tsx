@@ -2,17 +2,22 @@ import {
   Button, SimpleGrid, Skeleton, Text,
 } from '@mantine/core';
 
+export type AvailabilitySlot = {
+  id: string;
+  label: string;
+};
+
 type MasterProfileTimeSlotsProps = {
   isLoading: boolean;
-  availableSlots: string[];
-  selectedSlot: string | null;
-  onSlotSelect: (slot: string) => void;
+  availableSlots: AvailabilitySlot[];
+  selectedSlotId: string | null;
+  onSlotSelect: (slotId: string) => void;
 };
 
 export default function MasterProfileTimeSlots({
   isLoading,
   availableSlots,
-  selectedSlot,
+  selectedSlotId,
   onSlotSelect,
 }: MasterProfileTimeSlotsProps) {
   if (isLoading) {
@@ -37,18 +42,18 @@ export default function MasterProfileTimeSlots({
     <SimpleGrid cols={2} spacing="sm">
       {availableSlots.map((slot) => (
         <Button
-          key={slot}
-          variant={selectedSlot === slot ? 'filled' : 'outline'}
+          key={slot.id}
+          variant={selectedSlotId === slot.id ? 'filled' : 'outline'}
           color="orange"
-          onClick={() => onSlotSelect(slot)}
+          onClick={() => onSlotSelect(slot.id)}
           radius="md"
           styles={{
             root: {
-              fontWeight: selectedSlot === slot ? 700 : 500,
+              fontWeight: selectedSlotId === slot.id ? 700 : 500,
             },
           }}
         >
-          {slot}
+          {slot.label}
         </Button>
       ))}
     </SimpleGrid>

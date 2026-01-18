@@ -23,6 +23,7 @@ namespace BeautifyBaltics.Persistence.Repositories.Master
             var query = _session.Query<MasterAvailabilitySlot>().AsQueryable();
 
             query = query.Where(x => x.MasterId == search.MasterId);
+            query = query.Where(x => !x.IsBooked);
 
             if (search.StartAt is not null)
             {

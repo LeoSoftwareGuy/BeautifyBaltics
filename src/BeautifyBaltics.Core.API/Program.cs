@@ -1,6 +1,7 @@
 using BeautifyBaltics.Core.API.Application.Auth.Services;
 using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
+using BeautifyBaltics.Domain.Aggregates.Booking.Events;
 using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Infrastructure;
@@ -19,6 +20,7 @@ using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Wolverine;
 using Wolverine.Http;
+using Wolverine.Marten;
 
 internal class Program
 {
@@ -59,7 +61,11 @@ internal class Program
         // Register exceptions handling
         builder.Services.AddDefaultExceptionHandler();
 
-        builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null);
+        builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null)
+            .ProcessEventsWithWolverineHandlersInStrictOrder("bookings", o =>
+            {
+                o.IncludeType<BookingCreated>();
+            });
 
         builder.Services.ConfigurePersistence();
 

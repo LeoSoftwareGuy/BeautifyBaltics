@@ -12,9 +12,10 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 import { AlertCircle } from 'lucide-react';
 
+import { MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { useGetMasterById } from '@/state/endpoints/masters';
 
-import BookingModal from './components/master-profile-booking-modal';
+import BookingModal from './master-profile-booking/master-profile-booking-modal';
 import MasterBookingSection from './master-profile-booking/master-profile-booking-section';
 import MasterPortfolioGallery from './master-profile-gallery/master-profile-portfolio-gallery';
 import ProfileHeader from './master-profile-header';
@@ -35,8 +36,8 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
   } = useGetMasterById(masterId, { id: masterId });
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [bookingDate, setBookingDate] = useState<Date | null>(null);
-  const [bookingSlot, setBookingSlot] = useState<string | null>(null);
+  const [bookingAvailabilityId, setBookingAvailabilityId] = useState<string | null>(null);
+  const [bookingJob, setBookingJob] = useState<MasterJobDTO | null>(null);
 
   if (isLoading) {
     return (
@@ -70,9 +71,9 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
     );
   }
 
-  const handleBooking = (date: Date, slot: string) => {
-    setBookingDate(date);
-    setBookingSlot(slot);
+  const handleBooking = ({ availabilityId, job }: { availabilityId: string; job: MasterJobDTO }) => {
+    setBookingAvailabilityId(availabilityId);
+    setBookingJob(job);
     setModalOpen(true);
   };
 
@@ -92,8 +93,9 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
       <BookingModal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        date={bookingDate}
-        slot={bookingSlot}
+        masterId={masterId}
+        availabilityId={bookingAvailabilityId}
+        job={bookingJob}
         address={data.city}
         phone={data.phoneNumber}
       />

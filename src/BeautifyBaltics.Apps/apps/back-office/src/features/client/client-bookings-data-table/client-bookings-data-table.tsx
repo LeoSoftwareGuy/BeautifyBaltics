@@ -15,18 +15,18 @@ import { useFindBookings } from '@/state/endpoints/bookings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
-import { BookingsFilters } from './master-bookings-data-table-filters';
+import { ClientBookingsDataTableFilters } from './client-bookings-data-table-filters';
 import {
   renderDuration, renderPrice, renderScheduledAt, renderStatus,
-} from './master-bookings-data-table-renderers';
+} from './client-bookings-data-table-renderers';
 
 const DEFAULT_PAGE_SIZE = 10;
 
 type BookingsQuery = FindBookingsParams;
 
-export function MasterBookingsDataTable() {
+export function ClientBookingsDataTable() {
   const { data: user } = useGetUser();
-  const masterId = user?.id ?? '';
+  const clientId = user?.id ?? '';
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
@@ -49,7 +49,7 @@ export function MasterBookingsDataTable() {
     isLoading,
   } = useFindBookings(
     {
-      masterId,
+      clientId,
       page: query.page,
       pageSize: query.pageSize,
       sortBy: query.sortBy,
@@ -60,7 +60,7 @@ export function MasterBookingsDataTable() {
     },
     {
       query: {
-        enabled: !!masterId,
+        enabled: !!clientId,
       },
     },
   );
@@ -77,9 +77,9 @@ export function MasterBookingsDataTable() {
 
   const columns: PagedDataTableColumn<FindBookingsResponse>[] = [
     {
-      accessor: 'clientName',
-      title: 'Client',
-      sortKey: 'clientName',
+      accessor: 'masterName',
+      title: 'Master',
+      sortKey: 'masterName',
     },
     {
       accessor: 'masterJobTitle',
@@ -116,10 +116,10 @@ export function MasterBookingsDataTable() {
       <Stack gap="md">
         <div>
           <Title order={3}>My Bookings</Title>
-          <Text c="dimmed" fz="sm">Manage your appointments and client bookings</Text>
+          <Text c="dimmed" fz="sm">View and manage your appointments</Text>
         </div>
 
-        <BookingsFilters
+        <ClientBookingsDataTableFilters
           dateRange={dateRange}
           onDateRangeChange={handleDateRangeChange}
           status={status}

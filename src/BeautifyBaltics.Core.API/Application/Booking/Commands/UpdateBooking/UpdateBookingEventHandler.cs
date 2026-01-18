@@ -3,29 +3,44 @@ using BeautifyBaltics.Domain.Aggregates.Booking.Events;
 using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Exceptions;
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.Master;
-using Marten;
 using Wolverine;
 using Wolverine.Marten;
 
 namespace BeautifyBaltics.Core.API.Application.Booking.Commands.UpdateBooking;
 
-public class UpdateBookingEventHandler(IDocumentSession session, IMasterJobRepository masterJobRepository)
+public class UpdateBookingEventHandler(IMasterAvailabilitySlotRepository masterAvailabilitySlotRepository, IMasterJobRepository masterJobRepository)
 {
     [AggregateHandler]
-    public async Task<(Events, OutgoingMessages)> Handle(UpdateBookingRequest request, BookingAggregate booking, CancellationToken cancellationToken)
+    public async Task<(Events, OutgoingMessages)> Handle(UpdateBookingRequest request,
+        [ReadAggregate(nameof(request.BookingId))]
+        BookingAggregate booking,
+        [ReadAggregate(nameof(request.ClientId))]
+        ClientAggregate? client,
+        [ReadAggregate(nameof(request.MasterId))]
+        MasterAggregate? master, 
+        CancellationToken cancellationToken
+    )
     {
         if (booking == null) throw NotFoundException.For<BookingAggregate>(request.BookingId);
+        if (client == null) throw NotFoundException.For<ClientAggregate>(request.ClientId);
+        if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        var master = await session.Events.AggregateStreamAsync<MasterAggregate>(request.MasterId, token: cancellationToken) ??
-                     throw NotFoundException.For<MasterAggregate>(request.MasterId);
+        var masterJob = await masterJobRepository.GetByIdAsync(request.MasterJobId, cancellationToken)
+                  ?? throw NotFoundException.For<MasterJob>(request.MasterJobId);
 
-        var client = await session.Events.AggregateStreamAsync<ClientAggregate>(request.ClientId, token: cancellationToken) ??
-                     throw NotFoundException.For<ClientAggregate>(request.ClientId);
-
-        if (!await masterJobRepository.ExistsByAsync(x => x.Id == request.MasterJobId, cancellationToken))
+        if (masterJob.MasterId != request.MasterId)
         {
-            throw DomainException.WithMessage($"Master job with ID {request.MasterJobId} is not found");
+            throw DomainException.WithMessage($"Master job with ID {request.MasterJobId} does not belong to master {request.MasterId}");
+        }
+
+        var availability = await masterAvailabilitySlotRepository.GetByIdAsync(request.MasterAvailabilityId, cancellationToken)
+            ?? throw NotFoundException.For<MasterAvailabilitySlot>(request.MasterAvailabilityId);
+
+        if (availability.MasterId != request.MasterId)
+        {
+            throw DomainException.WithMessage($"Availability slot with ID {request.MasterAvailabilityId} does not belong to master {request.MasterId}");
         }
 
         var bookingUpdatedEvent = new BookingUpdated(
@@ -33,9 +48,9 @@ public class UpdateBookingEventHandler(IDocumentSession session, IMasterJobRepos
             MasterId: master.Id,
             ClientId: client.Id,
             MasterJobId: request.MasterJobId,
-            ScheduledAt: request.ScheduledAt,
-            Duration: request.DurationMinutes,
-            Price: request.Price
+            ScheduledAt: availability.StartAt,
+            Duration: masterJob.Duration,
+            Price: masterJob.Price
         );
 
         return (

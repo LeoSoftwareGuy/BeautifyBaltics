@@ -52,6 +52,17 @@ const formatTimeSlot = (startAt: Date, endAt: Date): string => {
   return `${startLabel} - ${endLabel}`;
 };
 
+const toDate = (value: Date | string | null | undefined): Date | undefined => {
+  if (!value) return undefined;
+  return value instanceof Date ? value : new Date(value);
+};
+
+const minutesToTimeSpan = (minutes: number): string => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:00`;
+};
+
 const datetime = {
   formatDate,
   formatDateTime,
@@ -63,6 +74,8 @@ const datetime = {
   createDateTimeFromDateAndTime,
   isSameDay,
   formatTimeSlot,
+  toDate,
+  minutesToTimeSpan,
 };
 
 export default datetime;

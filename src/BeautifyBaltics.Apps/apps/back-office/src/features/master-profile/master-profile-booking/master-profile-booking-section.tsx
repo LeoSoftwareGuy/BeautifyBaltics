@@ -4,31 +4,58 @@ import {
   Card,
   Grid,
   Group,
+  Select,
   Stack,
   Text,
   Title,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { Calendar, Clock } from 'lucide-react';
+import { Briefcase, Calendar, Clock } from 'lucide-react';
 
-import { UserRole } from '@/state/endpoints/api.schemas';
-import { useFindMasterAvailabilities } from '@/state/endpoints/masters';
+import { MasterJobDTO, UserRole } from '@/state/endpoints/api.schemas';
+import { useFindMasterAvailabilities, useFindMasterJobs } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
 import MasterProfileTimeSlots from './master-profile-booking-time-slot';
 
+type BookingData = {
+  availabilityId: string;
+  job: MasterJobDTO;
+};
+
 type MasterBookingSectionProps = {
   masterId: string;
-  onBook: (date: Date, slot: string) => void;
+  onBook: (data: BookingData) => void;
 };
 
 function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
   const { data: user } = useGetUser();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   const isOwnProfile = user?.role === UserRole.Master && user?.id === masterId;
+
+  const { data: jobsData } = useFindMasterJobs(masterId);
+
+  const jobs = useMemo(() => jobsData?.jobs ?? [], [jobsData?.jobs]);
+
+  const jobOptions = useMemo(() => jobs.map((job) => ({
+    value: job.id,
+    label: `${job.title} - $${job.price} (${job.durationMinutes} min)`,
+  })), [jobs]);
+
+  const selectedJob = useMemo(
+    () => jobs.find((job) => job.id === selectedJobId),
+    [jobs, selectedJobId],
+  );
+
+  useEffect(() => {
+    if (jobs.length > 0 && !selectedJobId) {
+      setSelectedJobId(jobs[0].id);
+    }
+  }, [jobs, selectedJobId]);
 
   const dateRange = useMemo(() => {
     if (!selectedDate) return { startAt: undefined, endAt: undefined };
@@ -56,33 +83,38 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
   const availableSlots = useMemo(() => {
     if (!availabilityData?.items) return [];
 
-    return availabilityData.items
-      .map((slot) => datetime.formatTimeSlot(slot.startAt, slot.endAt))
-      .filter((slot): slot is string => Boolean(slot));
+    return availabilityData.items.map((slot) => ({
+      id: slot.id,
+      label: datetime.formatTimeSlot(slot.startAt, slot.endAt),
+    }));
   }, [availabilityData?.items]);
 
   useEffect(() => {
     if (!availableSlots.length) {
-      setSelectedSlot(null);
+      setSelectedSlotId(null);
       return;
     }
 
-    if (!selectedSlot || !availableSlots.includes(selectedSlot)) {
-      setSelectedSlot(availableSlots[0]);
+    const currentSlotExists = availableSlots.some((slot) => slot.id === selectedSlotId);
+    if (!selectedSlotId || !currentSlotExists) {
+      setSelectedSlotId(availableSlots[0].id);
     }
-  }, [availableSlots, selectedSlot]);
+  }, [availableSlots, selectedSlotId]);
 
   if (isOwnProfile) {
     return null;
   }
 
   const handleBook = () => {
-    if (selectedDate && selectedSlot) {
-      onBook(selectedDate, selectedSlot);
+    if (selectedSlotId && selectedJob) {
+      onBook({
+        availabilityId: selectedSlotId,
+        job: selectedJob,
+      });
     }
   };
 
-  const isDisabled = !selectedDate || !selectedSlot;
+  const isDisabled = !selectedDate || !selectedSlotId || !selectedJob;
 
   const formatDate = (date: Date | null) => {
     if (!date) return '';
@@ -101,6 +133,23 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
           <Card withBorder radius="lg" h="100%">
             <Stack gap="md">
               <Stack gap={4}>
+                <Group gap="xs">
+                  <Briefcase size={20} />
+                  <Text fw={600} size="lg">Select Service</Text>
+                </Group>
+                <Text size="sm" c="dimmed">
+                  Choose the service you want to book
+                </Text>
+              </Stack>
+              <Select
+                data={jobOptions}
+                value={selectedJobId}
+                onChange={setSelectedJobId}
+                placeholder="Select a service"
+                allowDeselect={false}
+              />
+
+              <Stack gap={4} mt="md">
                 <Group gap="xs">
                   <Calendar size={20} />
                   <Text fw={600} size="lg">Select Date</Text>
@@ -152,8 +201,8 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
               <MasterProfileTimeSlots
                 isLoading={isLoading}
                 availableSlots={availableSlots}
-                selectedSlot={selectedSlot}
-                onSlotSelect={setSelectedSlot}
+                selectedSlotId={selectedSlotId}
+                onSlotSelect={setSelectedSlotId}
               />
               <Button
                 size="lg"

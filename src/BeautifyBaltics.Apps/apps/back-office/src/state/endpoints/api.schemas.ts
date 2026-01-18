@@ -11,21 +11,10 @@ export type BookingCommandDTO = {
   masterId: string;
   /** Id of client */
   clientId: string;
-  /** Id of the job */
+  /** Id of the master job */
   masterJobId: string;
-  /** Booking date and time */
-  scheduledAt: Date;
-  /**
-   * Duration of the job
-   * @minimum 1
-   * @maximum 1440
-   */
-  durationMinutes?: string;
-  /**
-   * Price of the job
-   * @minimum 0
-   */
-  price?: number;
+  /** Id of the master availability slot */
+  masterAvailabilityId: string;
 };
 
 export type BookingDTO = {
