@@ -7,6 +7,7 @@ using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Infrastructure;
 using BeautifyBaltics.Integrations.BlobStorage;
+using BeautifyBaltics.Integrations.Notifications;
 using BeautifyBaltics.Persistence;
 using BeautifyBaltics.ServiceDefaults;
 using BeautifyBaltics.ServiceDefaults.Extensions;
@@ -59,6 +60,8 @@ internal class Program
             c.Configure<ClientAggregate.ClientProfileImage>(opt => opt.ContainerName = "client-profile-images");
         });
 
+        builder.Services.AddNotificationsIntegration(builder.Configuration);
+
         // Register exceptions handling
         builder.Services.AddDefaultExceptionHandler();
 
@@ -66,6 +69,8 @@ internal class Program
             .ProcessEventsWithWolverineHandlersInStrictOrder("bookings", o =>
             {
                 o.IncludeType<BookingCreated>();
+                o.IncludeType<BookingConfirmed>();
+                o.IncludeType<BookingCancelled>();
             });
 
         builder.Services.ConfigurePersistence();
