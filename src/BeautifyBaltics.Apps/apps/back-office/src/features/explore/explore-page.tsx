@@ -24,6 +24,8 @@ import ExploreHeader from './components/explore-header';
 import MapPlaceholder from './components/explore-map-placeholder';
 import MasterCard from './components/explore-master-card';
 
+const MAP_HEIGHT = 600;
+
 function ExplorePage() {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -114,7 +116,7 @@ function ExplorePage() {
             gap: 24,
           }}
         >
-          <ScrollArea h="calc(100vh - 280px)" type="always" offsetScrollbars>
+          <ScrollArea h={MAP_HEIGHT} type="always" offsetScrollbars>
             <Stack gap="md" pr="sm">
               {(isLoading && !data) ? (
                 <Center mih={240}>
@@ -155,7 +157,7 @@ function ExplorePage() {
             </Stack>
           </ScrollArea>
 
-          <MapPlaceholder />
+          <MapPlaceholder height={MAP_HEIGHT} />
         </Box>
       </Container>
 
