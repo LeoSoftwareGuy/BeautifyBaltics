@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BeautifyBaltics.Domain\BeautifyBaltics.Domain.csproj" />
+    <ProjectReference Include="..\Integrations\BeautifyBaltics.Integrations.BlobStorage\BeautifyBaltics.Integrations.BlobStorage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

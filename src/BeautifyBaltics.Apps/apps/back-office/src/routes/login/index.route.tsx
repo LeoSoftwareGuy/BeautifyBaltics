@@ -5,6 +5,7 @@ import {
   Stack,
   Text,
   Title,
+  useMantineTheme,
 } from '@mantine/core';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
@@ -46,6 +47,8 @@ function LoginView() {
   const search = Route.useSearch();
   const router = useRouter();
   const { isAuthenticated, loading } = useSession();
+  const theme = useMantineTheme();
+
   const redirectPath = search.redirect || '/home';
   const redirectTo = typeof window !== 'undefined'
     ? `${window.location.origin}${redirectPath === '/' ? '' : redirectPath}`
@@ -77,9 +80,23 @@ function LoginView() {
             view="sign_in"
             redirectTo={redirectTo}
             providers={[]}
-            appearance={{ theme: ThemeSupa }}
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#d05072',
+                    brandAccent: '#d05072',
+                    brandButtonText: theme.white,
+                  },
+                },
+              },
+            }}
             localization={{
               variables: {
+                sign_up: {
+                  link_text: '',
+                },
                 sign_in: {
                   email_label: 'Email address',
                   password_label: 'Password',

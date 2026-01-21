@@ -1,33 +1,90 @@
-using BeautifyBaltics.Domain.Aggregates.Client;
-using BeautifyBaltics.Domain.Aggregates.Client.Events;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Documents;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.ValueObjects;
 using BeautifyBaltics.Persistence.Projections;
+using BeautifyBaltics.Integrations.BlobStorage;
 using Marten;
 using Marten.Schema;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using MasterJobImage = BeautifyBaltics.Domain.Aggregates.Master.MasterJobImage;
 
 namespace BeautifyBaltics.Persistence.Seeds;
 
-public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
+public class SampleDataSeeder : IInitialData
 {
+    private readonly IHostEnvironment _environment;
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger<SampleDataSeeder> _logger;
+    private readonly string? _mediaRoot;
+    private readonly Dictionary<Guid, CategoryMediaAssets?> _categoryMediaCache = new();
+
+    private static readonly Dictionary<string, string> CategoryFolderOverrides = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Brows", "brows" },
+        { "Tattoo", "tatoo" },
+        { "Piercing", "piercing" },
+        { "Hair", "hair" },
+        { "Nails", "nails" },
+        { "Grooming", "grooming"},
+        { "Color", "color" }
+    };
+
+    public SampleDataSeeder(
+        IHostEnvironment environment,
+        IServiceScopeFactory scopeFactory,
+        ILogger<SampleDataSeeder> logger)
+    {
+        _environment = environment;
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+        _mediaRoot = ResolveMediaRoot();
+    }
+
     public async Task Populate(IDocumentStore store, CancellationToken cancellation)
     {
-        if (!environment.IsDevelopment()) return;
+        if (!_environment.IsDevelopment()) return;
 
-        await using var session = store.LightweightSession();
+        using var daemon = await store.BuildProjectionDaemonAsync();
+        await daemon.StartAllAsync();
 
-        if (await session.Query<Master>().AnyAsync(cancellation)) return;
+        try
+        {
+            await using var session = store.LightweightSession();
 
-        await SeedCategoriesAsync(session, cancellation);
-        await SeedJobsAsync(session, cancellation);
-        await SeedMastersAsync(session);
-        //  await SeedClientAsync(session, cancellation);
+            if (await session.Query<Master>().AnyAsync(cancellation)) return;
 
-        await session.SaveChangesAsync(cancellation);
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            var masterProfileBlobStorage = scope.ServiceProvider.GetRequiredService<IBlobStorageService<MasterAggregate.MasterProfileImage>>();
+            var masterJobImageBlobStorage = scope.ServiceProvider.GetRequiredService<IBlobStorageService<MasterJobImage>>();
+
+            await SeedCategoriesAsync(session, cancellation);
+            await SeedJobsAsync(session, cancellation);
+            var availabilityByMaster = await SeedMastersAsync(session, cancellation, masterProfileBlobStorage, masterJobImageBlobStorage);
+
+            await session.SaveChangesAsync(cancellation);
+
+            if (availabilityByMaster.Count > 0)
+            {
+                await using var availabilitySession = store.LightweightSession();
+
+                foreach (var (masterId, events) in availabilityByMaster)
+                {
+                    availabilitySession.Events.Append(masterId, events.ToArray());
+                }
+
+                await availabilitySession.SaveChangesAsync(cancellation);
+            }
+
+            await daemon.RebuildProjectionAsync<MasterAvailabilitySlotProjection>(cancellation);
+        }
+        finally
+        {
+            await daemon.StopAllAsync();
+        }
     }
 
     private async Task SeedCategoriesAsync(IDocumentSession session, CancellationToken cancellation)
@@ -53,9 +110,14 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
         }
     }
 
-    private Task SeedMastersAsync(IDocumentSession session)
+    private async Task<IReadOnlyDictionary<Guid, List<MasterAvailabilitySlotCreated>>> SeedMastersAsync(
+        IDocumentSession session,
+        CancellationToken cancellation,
+        IBlobStorageService<MasterAggregate.MasterProfileImage> masterProfileBlobStorage,
+        IBlobStorageService<MasterJobImage> masterJobImageBlobStorage)
     {
         var jobLookup = _jobs.ToDictionary(j => j.Id);
+        var availabilityEvents = new Dictionary<Guid, List<MasterAvailabilitySlotCreated>>();
 
         foreach (var master in _masters)
         {
@@ -65,11 +127,21 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
                 new MasterProfileUpdated(master.Id, master.FirstName, master.LastName, master.Age, master.Gender, master.Description, new ContactInformation(master.Email, master.PhoneNumber))
             };
 
+            var primaryJob = master.JobOfferings
+                .Select(offering => jobLookup.TryGetValue(offering.JobId, out var job) ? job : null)
+                .FirstOrDefault(job => job is not null);
+
+            var profileImageEvent = await TryCreateProfileImageEventAsync(master, primaryJob, masterProfileBlobStorage, cancellation);
+            if (profileImageEvent is not null)
+            {
+                events.Add(profileImageEvent);
+            }
+
             foreach (var offering in master.JobOfferings)
             {
                 if (!jobLookup.TryGetValue(offering.JobId, out var jobDefinition)) continue;
 
-                events.Add(new MasterJobCreated(
+                var masterJobCreated = new MasterJobCreated(
                     master.Id,
                     offering.JobId,
                     offering.Price ?? jobDefinition.DefaultPrice,
@@ -78,28 +150,213 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
                     jobDefinition.CategoryId,
                     jobDefinition.CategoryName,
                     jobDefinition.Name
-                ));
+                );
+
+                events.Add(masterJobCreated);
+
+                var jobImageEvents = await CreateJobImageEventsAsync(master, masterJobCreated, jobDefinition, masterJobImageBlobStorage, cancellation);
+                events.AddRange(jobImageEvents);
             }
+
+            availabilityEvents[master.Id] = CreateAvailabilityEvents(master.Id).ToList();
 
             session.Events.StartStream<MasterAggregate>(master.Id, events.ToArray());
         }
 
-        return Task.CompletedTask;
+        return availabilityEvents;
     }
 
-    private async Task SeedClientAsync(IDocumentSession session, CancellationToken cancellation)
+    private async Task<MasterProfileImageUploaded?> TryCreateProfileImageEventAsync(
+        MasterSeed master,
+        JobSeed? primaryJob,
+        IBlobStorageService<MasterAggregate.MasterProfileImage> masterProfileBlobStorage,
+        CancellationToken cancellation)
     {
-        if (await session.Query<Client>().AnyAsync(cancellation)) return;
+        if (primaryJob is null || _mediaRoot is null) return null;
 
-        var contacts = new ContactInformation(_client.Email, _client.PhoneNumber);
+        var assets = GetCategoryMediaAssets(primaryJob.CategoryId, primaryJob.CategoryName);
+        if (assets?.ProfileImagePath is null) return null;
 
-        session.Events.StartStream<ClientAggregate>(_client.Id, new ClientCreated(
-            _client.FirstName,
-            _client.LastName,
-            contacts,
-            _client.SupabaseUserId
-        ));
+        try
+        {
+            var blobFile = CreateBlobFileDto(assets.ProfileImagePath, out var fileSize);
+            var blobName = await masterProfileBlobStorage.UploadAsync(master.Id, blobFile, cancellation);
+
+            return new MasterProfileImageUploaded(
+                MasterId: master.Id,
+                BlobName: blobName,
+                FileName: Path.GetFileName(assets.ProfileImagePath),
+                FileMimeType: blobFile.ContentType,
+                FileSize: fileSize
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Unable to seed profile image for master {MasterEmail}", master.Email);
+            return null;
+        }
     }
+
+    private async Task<IReadOnlyCollection<MasterJobImageUploaded>> CreateJobImageEventsAsync(
+        MasterSeed master,
+        MasterJobCreated masterJobCreated,
+        JobSeed jobDefinition,
+        IBlobStorageService<MasterJobImage> masterJobImageBlobStorage,
+        CancellationToken cancellation)
+    {
+        if (_mediaRoot is null) return Array.Empty<MasterJobImageUploaded>();
+
+        var assets = GetCategoryMediaAssets(jobDefinition.CategoryId, jobDefinition.CategoryName);
+        if (assets is null || assets.JobImages.Count == 0) return Array.Empty<MasterJobImageUploaded>();
+
+        var events = new List<MasterJobImageUploaded>();
+
+        foreach (var imagePath in assets.JobImages)
+        {
+            try
+            {
+                var blobFile = CreateBlobFileDto(imagePath, out var fileSize);
+                var blobName = await masterJobImageBlobStorage.UploadAsync(master.Id, blobFile, cancellation);
+
+                events.Add(new MasterJobImageUploaded(
+                    MasterId: master.Id,
+                    MasterJobId: masterJobCreated.MasterJobId,
+                    BlobName: blobName,
+                    FileName: Path.GetFileName(imagePath),
+                    FileMimeType: blobFile.ContentType,
+                    FileSize: fileSize
+                ));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Unable to seed job image {ImagePath} for master {MasterEmail}", imagePath, master.Email);
+            }
+        }
+
+        return events;
+    }
+
+    private IEnumerable<MasterAvailabilitySlotCreated> CreateAvailabilityEvents(Guid masterId)
+    {
+        var baseDate = DateTime.SpecifyKind(DateTime.UtcNow.Date, DateTimeKind.Utc).AddDays(1);
+        var random = new Random(masterId.GetHashCode());
+
+        for (var day = 0; day < 4; day++)
+        {
+            var dayStart = baseDate.AddDays(day).AddHours(9 + random.Next(0, 2));
+
+            for (var slot = 0; slot < 3; slot++)
+            {
+                var slotStart = dayStart.AddHours(slot * 2).AddMinutes(random.Next(0, 20));
+                var slotEnd = slotStart.AddMinutes(60 + random.Next(0, 31));
+
+                yield return new MasterAvailabilitySlotCreated(masterId, slotStart, slotEnd);
+            }
+        }
+    }
+
+    private CategoryMediaAssets? GetCategoryMediaAssets(Guid categoryId, string categoryName)
+    {
+        if (_mediaRoot is null) return null;
+
+        if (_categoryMediaCache.TryGetValue(categoryId, out var cached))
+        {
+            return cached;
+        }
+
+        var folderPath = ResolveCategoryFolder(categoryName);
+        if (folderPath is null)
+        {
+            _categoryMediaCache[categoryId] = null;
+            return null;
+        }
+
+        var files = Directory.EnumerateFiles(folderPath).ToList();
+        var profile = files.FirstOrDefault(IsMasterImage);
+        var jobImages = files.Where(f => !IsMasterImage(f)).ToList();
+
+        var assets = new CategoryMediaAssets(profile, jobImages);
+        _categoryMediaCache[categoryId] = assets;
+        return assets;
+    }
+
+    private string? ResolveCategoryFolder(string categoryName)
+    {
+        if (_mediaRoot is null) return null;
+
+        var candidates = new List<string>();
+
+        if (CategoryFolderOverrides.TryGetValue(categoryName, out var overrideName))
+        {
+            candidates.Add(overrideName);
+        }
+
+        candidates.Add(categoryName);
+        candidates.Add(categoryName.Replace(" ", string.Empty));
+        candidates.Add(categoryName.ToLowerInvariant());
+        candidates.Add(categoryName.ToUpperInvariant());
+
+        foreach (var path in candidates
+                     .Select(name => Path.Combine(_mediaRoot, name))
+                     .Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (Directory.Exists(path))
+            {
+                return path;
+            }
+        }
+
+        _logger.LogDebug("No media directory found for category {CategoryName}", categoryName);
+        return null;
+    }
+
+    private string? ResolveMediaRoot()
+    {
+        var candidates = new[]
+        {
+            @"C:\Dev\Media",
+            "/mnt/c/Dev/Media"
+        };
+
+        foreach (var candidate in candidates)
+        {
+            if (!string.IsNullOrWhiteSpace(candidate) && Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        _logger.LogWarning("Media directory not found. Expected one of: {Candidates}", string.Join(", ", candidates));
+        return null;
+    }
+
+    private static bool IsMasterImage(string filePath) =>
+        string.Equals(Path.GetFileNameWithoutExtension(filePath), "Master", StringComparison.OrdinalIgnoreCase);
+
+    private static BlobFileDTO CreateBlobFileDto(string filePath, out long fileSize)
+    {
+        var fileInfo = new FileInfo(filePath);
+        fileSize = fileInfo.Length;
+
+        using var stream = fileInfo.OpenRead();
+        return new BlobFileDTO(fileInfo.Name, stream, GetContentType(fileInfo.Extension));
+    }
+
+    private static string GetContentType(string extension)
+    {
+        var normalized = extension.StartsWith('.') ? extension.ToLowerInvariant() : $".{extension.ToLowerInvariant()}";
+
+        return normalized switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".webp" => "image/webp",
+            _ => "application/octet-stream"
+        };
+    }
+
+    private sealed record CategoryMediaAssets(string? ProfileImagePath, IReadOnlyList<string> JobImages);
 
     #region Seed data
 
@@ -134,85 +391,49 @@ public class SampleDataSeeder(IHostEnvironment environment) : IInitialData
 
     private readonly MasterSeed[] _masters =
     {
-        MasterSeed.Create("Eliis", "Kuusk", "eliis.kuusk@beautifybaltics.com", "+372 5550 1001", Gender.Female, 30,
-            "Award-winning colorist with 8 years of experience specializing in balayage and creative color techniques.",
+        MasterSeed.Create("Karl", "Nurmsalu", "karl.nurmsalu@beautifybaltics.com", "+372 5550 1001", Gender.Male, 28,
+            "Contemporary hair artist focusing on precision fades and textured cuts for all hair types.",
             new[]
             {
-                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
-                new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), 165m, TimeSpan.FromMinutes(130), "Color Dimension")
+                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), 60m, TimeSpan.FromMinutes(50), "Tailored Signature Cut")
             }),
         MasterSeed.Create("Markus", "Lepik", "markus.lepik@beautifybaltics.com", "+372 5550 1002", Gender.Male, 34,
-            "Classic barbering meets modern style. Specializing in men's cuts and traditional hot towel shaves.",
+            "Classic barbering meets modern grooming. Known for meticulous beard sculpting and hot towel rituals.",
             new[]
             {
-                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), 58m, null, "Gentleman's Cut"),
-                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"))
+                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), 42m, TimeSpan.FromMinutes(35), "Precision Beard Ritual")
             }),
-        MasterSeed.Create("Anette", "Laur", "anette.laur@beautifybaltics.com", "+372 5550 1003", Gender.Female, 29,
-            "Certified brow artist and nail technician. Creating perfectly shaped brows and stunning nail designs.",
+        MasterSeed.Create("Eliis", "Kuusk", "eliis.kuusk@beautifybaltics.com", "+372 5550 1003", Gender.Female, 30,
+            "Award-winning colorist specializing in dimensional blonding and vivid transformations.",
             new[]
             {
-                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6")),
-                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"))
+                new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), 168m, TimeSpan.FromMinutes(135), "Couture Color Session")
             }),
-        MasterSeed.Create("Rasmus", "Hallik", "rasmus.hallik@beautifybaltics.com", "+372 5550 1004", Gender.Male, 31,
-            "Professional tattoo artist with a passion for fine line and minimalist designs. 10+ years experience.",
+        MasterSeed.Create("Greta", "Pärn", "greta.parn@beautifybaltics.com", "+372 5550 1004", Gender.Female, 35,
+            "Editorial nail artist bringing runway-inspired designs to everyday wear.",
             new[]
             {
-                new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2")),
-                new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"))
+                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 74m, TimeSpan.FromMinutes(85), "Art Studio Manicure")
             }),
-        MasterSeed.Create("Greta", "Pärn", "greta.parn@beautifybaltics.com", "+372 5550 1005", Gender.Female, 35,
-            "Editorial nail artist featured in top fashion magazines. Specializing in intricate hand-painted designs.",
+        MasterSeed.Create("Johanna", "Sild", "johanna.sild@beautifybaltics.com", "+372 5550 1005", Gender.Female, 26,
+            "Brow designer focusing on natural symmetry, lamination, and tint artistry.",
             new[]
             {
-                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 72m, TimeSpan.FromMinutes(80), "Editorial Nails"),
-                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 48m)
+                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 48m, TimeSpan.FromMinutes(45), "Brow Architecture")
             }),
-        MasterSeed.Create("Karl", "Nurmsalu", "karl.nurmsalu@beautifybaltics.com", "+372 5550 1006", Gender.Male, 27,
-            "Young talent specializing in modern men's styling. Known for precision fades and beard grooming.",
+        MasterSeed.Create("Rasmus", "Hallik", "rasmus.hallik@beautifybaltics.com", "+372 5550 1006", Gender.Male, 31,
+            "Fine-line tattoo specialist with a minimalist aesthetic and surgical precision.",
             new[]
             {
-                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
-                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), 45m, null, "Hot Towel Beard Ritual")
+                new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), 310m, TimeSpan.FromMinutes(195), "Fine Line Narrative")
             }),
-        MasterSeed.Create("Merilin", "Jõe", "merilin.joe@beautifybaltics.com", "+372 5550 1007", Gender.Female, 33,
-            "Color correction specialist with expertise in transformative hair makeovers and vivid fashion colors.",
+        MasterSeed.Create("Anette", "Laur", "anette.laur@beautifybaltics.com", "+372 5550 1007", Gender.Female, 29,
+            "Professional piercer prioritizing comfort, curated jewelry, and impeccable hygiene.",
             new[]
             {
-                new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b")),
-                new JobOffering(Guid.Parse("f35a5782-0c7c-4fcd-9a6d-87c78f701911"))
+                new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"), 75m, TimeSpan.FromMinutes(45), "Curated Piercing Experience")
             }),
-        MasterSeed.Create("Sander", "Mets", "sander.mets@beautifybaltics.com", "+372 5550 1008", Gender.Male, 28,
-            "Tattoo artist specializing in geometric and blackwork designs. Clean lines and bold statements.",
-            new[]
-            {
-                new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), 290m),
-                new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"))
-            }),
-        MasterSeed.Create("Johanna", "Sild", "johanna.sild@beautifybaltics.com", "+372 5550 1009", Gender.Female, 26,
-            "Brow and lash expert trained in microblading and lamination techniques. Natural beauty enhancement.",
-            new[]
-            {
-                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 50m, null, "Precision Brow Lift"),
-                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 60m)
-            }),
-        MasterSeed.Create("Tanel", "Visnapuu", "tanel.visnapuu@beautifybaltics.com", "+372 5550 1010", Gender.Male, 32,
-            "Versatile barber with a loyal clientele. Expert in both classic and contemporary men's styling.",
-            new[]
-            {
-                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730")),
-                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"))
-            })
     };
-
-    private readonly ClientSeed _client = new(
-        Guid.Parse("5fda9cbe-3560-4a5e-b020-902a0e1d312c"),
-        "Liisa",
-        "Õun",
-        "liisa.oun@beautifybaltics.com",
-        "+372 5550 2000",
-        Guid.NewGuid().ToString());
 
     #endregion
 
