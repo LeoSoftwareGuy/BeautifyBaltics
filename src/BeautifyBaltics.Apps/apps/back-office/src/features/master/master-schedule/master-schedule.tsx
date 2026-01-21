@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   Alert, Loader, Stack, Text,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 
@@ -74,6 +75,24 @@ export function MasterSchedule() {
 
     const startAt = datetime.createDateTimeFromDateAndTime(selectedDate, startTimeInput);
     const endAt = datetime.createDateTimeFromDateAndTime(selectedDate, endTimeInput);
+
+    if (!dayjs(endAt).isAfter(dayjs(startAt))) {
+      notifications.show({
+        title: 'Invalid time slot',
+        message: 'End time must be after the start time.',
+        color: 'red',
+      });
+      return;
+    }
+
+    if (dayjs(startAt).isBefore(dayjs())) {
+      notifications.show({
+        title: 'Invalid time slot',
+        message: 'Availability slots must start in the future.',
+        color: 'red',
+      });
+      return;
+    }
 
     await createAvailability.mutateAsync({
       id: masterId,

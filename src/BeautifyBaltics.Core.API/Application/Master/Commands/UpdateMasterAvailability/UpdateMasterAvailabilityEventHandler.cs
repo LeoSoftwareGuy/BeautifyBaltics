@@ -17,6 +17,16 @@ public class UpdateMasterAvailabilityEventHandler
         var availability = master.Availabilities.SingleOrDefault(a => a.Id == request.MasterAvailabilityId)
             ?? throw NotFoundException.For<MasterAvailabilitySlot>(request.MasterAvailabilityId);
 
+        if (request.Availability.End <= request.Availability.Start)
+        {
+            throw DomainException.WithMessage("Availability slot end time must be after the start time.");
+        }
+
+        if (request.Availability.Start <= DateTime.UtcNow)
+        {
+            throw DomainException.WithMessage("Availability slots must start in the future.");
+        }
+
         var @event = new MasterAvailabilitySlotUpdated(
             MasterAvailabilityId: availability.Id,
             MasterId: master.Id,

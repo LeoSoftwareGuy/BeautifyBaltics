@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Session as SupabaseSession, User } from '@supabase/supabase-js';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +30,7 @@ interface SessionProviderProps {
 function SessionProvider({ children }: SessionProviderProps) {
   const [session, setSession] = useState<SupabaseSession | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     let mounted = true;
@@ -55,6 +57,10 @@ function SessionProvider({ children }: SessionProviderProps) {
       authListener?.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    queryClient.clear();
+  }, [queryClient, session?.user?.id]);
 
   const login = useCallback(async ({ email, password }: { email: string; password: string }) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
