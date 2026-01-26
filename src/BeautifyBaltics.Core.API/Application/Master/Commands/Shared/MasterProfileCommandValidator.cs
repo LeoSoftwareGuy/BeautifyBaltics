@@ -21,5 +21,21 @@ public class MasterProfileCommandValidator : AbstractValidator<MasterProfileComm
         RuleFor(v => v.PhoneNumber)
             .NotEmpty()
             .MaximumLength(32);
+
+        RuleFor(v => v.Latitude)
+            .InclusiveBetween(-90, 90)
+            .When(v => v.Latitude.HasValue);
+
+        RuleFor(v => v.Longitude)
+            .InclusiveBetween(-180, 180)
+            .When(v => v.Longitude.HasValue);
+
+        RuleFor(v => v.City)
+            .MaximumLength(128)
+            .When(v => !string.IsNullOrEmpty(v.City));
+
+        RuleFor(v => v.Country)
+            .MaximumLength(128)
+            .When(v => !string.IsNullOrEmpty(v.Country));
     }
 }

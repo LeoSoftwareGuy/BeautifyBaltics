@@ -28,4 +28,16 @@ public record MasterProfileCommandDTO
     [Required]
     [MaxLength(32)]
     public required string PhoneNumber { get; init; }
+
+    [Range(-90, 90)]
+    public double? Latitude { get; init; }
+
+    [Range(-180, 180)]
+    public double? Longitude { get; init; }
+
+    [MaxLength(128)]
+    public string? City { get; init; }
+
+    [MaxLength(128)]
+    public string? Country { get; init; }
 }

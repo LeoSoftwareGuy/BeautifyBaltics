@@ -453,6 +453,8 @@ export type MasterDTO = {
   /** @nullable */
   city?: string | null;
   /** @nullable */
+  country?: string | null;
+  /** @nullable */
   profileImageUrl?: string | null;
 };
 
@@ -578,6 +580,28 @@ export type MasterProfileCommandDTO = {
    * @maxLength 32
    */
   phoneNumber: string;
+  /**
+   * @minimum -90
+   * @maximum 90
+   * @nullable
+   */
+  latitude?: number | null;
+  /**
+   * @minimum -180
+   * @maximum 180
+   * @nullable
+   */
+  longitude?: number | null;
+  /**
+   * @maxLength 128
+   * @nullable
+   */
+  city?: string | null;
+  /**
+   * @maxLength 128
+   * @nullable
+   */
+  country?: string | null;
 };
 
 export type ProblemDetails = {

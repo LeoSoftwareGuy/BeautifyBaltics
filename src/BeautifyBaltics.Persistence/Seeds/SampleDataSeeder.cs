@@ -124,7 +124,7 @@ public class SampleDataSeeder : IInitialData
             var events = new List<object>
             {
                 new MasterCreated(master.FirstName, master.LastName, new ContactInformation(master.Email, master.PhoneNumber), master.SupabaseUserId),
-                new MasterProfileUpdated(master.Id, master.FirstName, master.LastName, master.Age, master.Gender, master.Description, new ContactInformation(master.Email, master.PhoneNumber))
+                new MasterProfileUpdated(master.Id, master.FirstName, master.LastName, master.Age, master.Gender, master.Description, new ContactInformation(master.Email, master.PhoneNumber),null,null,null,null)
             };
 
             var primaryJob = master.JobOfferings

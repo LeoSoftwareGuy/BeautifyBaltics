@@ -21,6 +21,7 @@ public record Master(Guid Id) : Projection
     public double? Latitude { get; init; }
     public double? Longitude { get; init; }
     public string? City { get; init; }
+    public string? Country { get; init; }
     public string? ProfileImageBlobName { get; init; }
     public string? ProfileImageFileName { get; init; }
     public string? ProfileImageMimeType { get; init; }
@@ -52,6 +53,10 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             Description = @event.Description,
             Email = @event.Contacts.Email,
             PhoneNumber = @event.Contacts.PhoneNumber,
+            Latitude = @event.Latitude,
+            Longitude = @event.Longitude,
+            City = @event.City,
+            Country = @event.Country,
         };
     }
 

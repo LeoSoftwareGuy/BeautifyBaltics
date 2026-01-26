@@ -16,6 +16,7 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared
         public double? Latitude { get; init; }
         public double? Longitude { get; init; }
         public string? City { get; init; }
+        public string? Country { get; init; }
         public string? ProfileImageUrl { get; init; }
     }
 }

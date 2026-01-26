@@ -14,6 +14,7 @@ import { useDebouncedValue } from '@mantine/hooks';
 import { useNavigate } from '@tanstack/react-router';
 import { AlertCircle } from 'lucide-react';
 
+import { MastersMap } from '@/features/map';
 import type { FindMastersParams } from '@/state/endpoints/api.schemas';
 import { useFindJobCategories } from '@/state/endpoints/jobs';
 import { useFindMasters } from '@/state/endpoints/masters';
@@ -21,7 +22,6 @@ import { useFindMasters } from '@/state/endpoints/masters';
 import CategoryFilters from './components/explore-category-filters';
 import FiltersDrawer from './components/explore-filters-drawer';
 import ExploreHeader from './components/explore-header';
-import MapPlaceholder from './components/explore-map-placeholder';
 import MasterCard from './components/explore-master-card';
 
 const MAP_HEIGHT = 600;
@@ -157,7 +157,12 @@ function ExplorePage() {
             </Stack>
           </ScrollArea>
 
-          <MapPlaceholder height={MAP_HEIGHT} />
+          <MastersMap
+            masters={data?.items ?? []}
+            selectedMasterId={selectedMaster}
+            onSelectMaster={handleSelectMaster}
+            height={MAP_HEIGHT}
+          />
         </Box>
       </Container>
 

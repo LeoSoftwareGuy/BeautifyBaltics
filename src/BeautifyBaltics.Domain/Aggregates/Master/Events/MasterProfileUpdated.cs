@@ -10,5 +10,9 @@ public record MasterProfileUpdated(
     int? Age,
     Gender? Gender,
     string? Description,
-    ContactInformation Contacts
+    ContactInformation Contacts,
+    double? Latitude,
+    double? Longitude,
+    string? City,
+    string? Country
 );

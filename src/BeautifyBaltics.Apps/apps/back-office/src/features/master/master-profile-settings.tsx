@@ -20,6 +20,8 @@ import { hasLength, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconDeviceFloppy, IconPhotoUp } from '@tabler/icons-react';
 
+import type { LocationData } from '@/features/map';
+import { LocationPicker } from '@/features/map';
 import { Gender, UpdateMasterProfileRequest } from '@/state/endpoints/api.schemas';
 import {
   useGetMasterById, useUpdateMasterProfile, useUploadMasterProfileImage,
@@ -58,6 +60,10 @@ function MasterProfileSettings() {
       age: null,
       gender: undefined,
       description: null,
+      latitude: null,
+      longitude: null,
+      city: null,
+      country: null,
     },
     validate,
   });
@@ -73,6 +79,10 @@ function MasterProfileSettings() {
         age: masterData.age ?? null,
         gender: masterData.gender,
         description: masterData.description ?? null,
+        latitude: masterData.latitude ?? null,
+        longitude: masterData.longitude ?? null,
+        city: masterData.city ?? null,
+        country: masterData.country ?? null,
       });
       form.resetDirty();
     }
@@ -136,6 +146,15 @@ function MasterProfileSettings() {
       data: values,
     });
   });
+
+  const handleLocationChange = (location: LocationData) => {
+    form.setValues({
+      latitude: location.latitude,
+      longitude: location.longitude,
+      city: location.city,
+      country: location.country,
+    });
+  };
 
   const isLoading = isUserLoading || isMasterLoading;
 
@@ -254,6 +273,24 @@ function MasterProfileSettings() {
               maxLength={1000}
               key={form.key('description')}
               {...form.getInputProps('description')}
+            />
+          </Stack>
+        </Card>
+
+        <Card withBorder radius="md">
+          <Stack gap="xs">
+            <div>
+              <Title order={4}>Location</Title>
+              <Text c="dimmed" fz="sm">Set your work location so clients can find you on the map</Text>
+            </div>
+            <LocationPicker
+              value={{
+                latitude: form.getValues().latitude ?? undefined,
+                longitude: form.getValues().longitude ?? undefined,
+                city: form.getValues().city,
+                country: form.getValues().country,
+              }}
+              onChange={handleLocationChange}
             />
           </Stack>
         </Card>

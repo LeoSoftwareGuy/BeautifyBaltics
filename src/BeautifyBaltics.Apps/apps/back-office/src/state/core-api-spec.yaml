@@ -2402,6 +2402,9 @@ components:
         city:
           type: string
           nullable: true
+        country:
+          type: string
+          nullable: true
         profileImageUrl:
           type: string
           nullable: true
@@ -2581,6 +2584,26 @@ components:
           maxLength: 32
           minLength: 1
           type: string
+        latitude:
+          maximum: 90
+          minimum: -90
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          maximum: 180
+          minimum: -180
+          type: number
+          format: double
+          nullable: true
+        city:
+          maxLength: 128
+          type: string
+          nullable: true
+        country:
+          maxLength: 128
+          type: string
+          nullable: true
       additionalProperties: false
     ProblemDetails:
       type: object

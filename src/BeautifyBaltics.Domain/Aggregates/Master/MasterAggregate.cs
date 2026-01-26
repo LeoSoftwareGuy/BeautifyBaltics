@@ -18,6 +18,10 @@ public partial class MasterAggregate : Aggregate
     public string? Description { get; private set; }
     public ContactInformation Contacts { get; private set; } = new(string.Empty, string.Empty);
     public MasterProfileImage? ProfileImage { get; private set; }
+    public double? Latitude { get; private set; }
+    public double? Longitude { get; private set; }
+    public string? City { get; private set; }
+    public string? Country { get; private set; }
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
     public IReadOnlyCollection<MasterAvailabilitySlot> Availabilities => _availabilities.Values.ToList();
 
@@ -39,6 +43,10 @@ public partial class MasterAggregate : Aggregate
         Gender = @event.Gender;
         Description = @event.Description;
         Contacts = @event.Contacts;
+        Latitude = @event.Latitude;
+        Longitude = @event.Longitude;
+        City = @event.City;
+        Country = @event.Country;
     }
 
     internal void Apply(MasterProfileImageUploaded @event)

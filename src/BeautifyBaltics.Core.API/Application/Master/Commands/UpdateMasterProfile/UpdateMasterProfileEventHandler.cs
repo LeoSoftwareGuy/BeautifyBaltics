@@ -21,7 +21,11 @@ public class UpdateMasterProfileEventHandler
             request.Age,
             request.Gender,
             request.Description,
-            new ContactInformation(request.Email, request.PhoneNumber)
+            new ContactInformation(request.Email, request.PhoneNumber),
+            request.Latitude,
+            request.Longitude,
+            request.City,
+            request.Country
         );
 
         return Task.FromResult<(Events, OutgoingMessages)>(([updated], [new UpdateMasterProfileResponse(request.MasterId)]));
