@@ -1,4 +1,4 @@
-export { default as PagedDataTable } from './PagedDataTable';
-export type { PagedDataTableProps } from './PagedDataTable';
-export { default as usePagedTableQuery } from './usePagedTableQuery';
+export type { PagedDataTableProps } from './paged-data-table';
+export { default as PagedDataTable } from './paged-data-table';
 export * from './types';
+export { default as usePagedTableQuery } from './use-paged-data-table-query';

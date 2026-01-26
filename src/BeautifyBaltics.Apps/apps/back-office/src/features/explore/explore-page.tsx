@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Box,
@@ -16,7 +16,7 @@ import { AlertCircle } from 'lucide-react';
 
 import { MastersMap } from '@/features/map';
 import type { FindMastersParams } from '@/state/endpoints/api.schemas';
-import { useFindJobCategories } from '@/state/endpoints/jobs';
+import { useFindJobCategories, useGetJobById } from '@/state/endpoints/jobs';
 import { useFindMasters } from '@/state/endpoints/masters';
 
 import CategoryFilters from './components/explore-category-filters';
@@ -26,7 +26,11 @@ import MasterCard from './components/explore-master-card';
 
 const MAP_HEIGHT = 600;
 
-function ExplorePage() {
+interface ExplorePageProps {
+  initialProcedureId?: string;
+}
+
+function ExplorePage({ initialProcedureId }: ExplorePageProps = {}) {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedMaster, setSelectedMaster] = useState<string | null>(null);
@@ -34,6 +38,17 @@ function ExplorePage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200]);
   const [searchValue, setSearchValue] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchValue, 300);
+  const { data: procedureJob } = useGetJobById(initialProcedureId ?? '', undefined, {
+    query: {
+      enabled: Boolean(initialProcedureId),
+    },
+  });
+
+  useEffect(() => {
+    if (!initialProcedureId || !procedureJob) return;
+    setSelectedCategory(procedureJob.categoryId ?? null);
+    setSearchValue(procedureJob.name ?? '');
+  }, [initialProcedureId, procedureJob, procedureJob?.categoryId, procedureJob?.name]);
 
   const {
     data: jobCategories,

@@ -7,7 +7,6 @@ import {
   MainNavigation,
   NavigationBreadcrumbs,
   NavigationLoadingIndicator,
-  SecondaryNavigation,
 } from '@/components/navigation';
 import { MegaSearch } from '@/features/mega-search';
 import { UserMenu } from '@/features/users';
@@ -53,8 +52,8 @@ function Root() {
       navbar={{
         top: null,
         upperMiddle: <MainNavigation />,
-        lowerMiddle: <SecondaryNavigation />,
-        bottom: <UserMenu />,
+        lowerMiddle: <UserMenu />,
+        bottom: null,
       }}
       devtools={(
         <DevtoolsContainer>

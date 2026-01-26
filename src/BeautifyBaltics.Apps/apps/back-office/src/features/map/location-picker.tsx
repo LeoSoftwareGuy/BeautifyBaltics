@@ -108,10 +108,7 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
 
           return locations;
         })
-        .catch((error) => {
-          console.error('Geocoding error:', error);
-          return { city: null, country: null };
-        });
+        .catch(() => ({ city: null, country: null }));
     },
     [geocoder],
   );
@@ -164,8 +161,7 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
       (position) => {
         upsertLocation(position.coords.latitude, position.coords.longitude, true);
       },
-      (error) => {
-        console.error('Geolocation error:', error);
+      () => {
       },
     );
   }, [upsertLocation]);

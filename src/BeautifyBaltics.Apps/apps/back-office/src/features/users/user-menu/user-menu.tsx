@@ -2,7 +2,7 @@ import {
   Avatar, Group, Menu, Stack, Text,
 } from '@mantine/core';
 import {
-  IconBell, IconCookieMan, IconLogout, IconSettings,
+  IconLogout,
 } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -23,9 +23,7 @@ export default function UserMenu() {
     try {
       await logout();
       navigate({ to: '/login', search: { redirect: '/home', registered: false }, replace: true });
-    } catch (error) {
-      console.error('Failed to logout', error);
-    }
+    } catch (error) { /* empty */ }
   };
 
   if (!user) return null;
@@ -54,15 +52,6 @@ export default function UserMenu() {
             </Stack>
           </Group>
         </Menu.Item>
-        <Menu.Item
-          onClick={() => navigate({ to: '/dashboard' })}
-          leftSection={<IconCookieMan size={16} />}
-        >
-          My dashboard
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item disabled leftSection={<IconSettings size={16} />}>Settings</Menu.Item>
-        <Menu.Item disabled leftSection={<IconBell size={16} />}>Notifications</Menu.Item>
         <Menu.Divider />
         <Menu.Item component="a" leftSection={<IconLogout size={16} />} onClick={handleLogout}>
           Log out

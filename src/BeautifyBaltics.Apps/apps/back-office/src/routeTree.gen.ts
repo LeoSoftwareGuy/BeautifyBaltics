@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteRouteImport } from './routes/index.route'
+import { Route as TreatmentsIndexRouteRouteImport } from './routes/treatments/index.route'
 import { Route as RegisterIndexRouteRouteImport } from './routes/register/index.route'
 import { Route as LoginIndexRouteRouteImport } from './routes/login/index.route'
 import { Route as HomeIndexRouteRouteImport } from './routes/home/index.route'
@@ -21,6 +22,11 @@ import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bo
 const IndexRouteRoute = IndexRouteRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TreatmentsIndexRouteRoute = TreatmentsIndexRouteRouteImport.update({
+  id: '/treatments/',
+  path: '/treatments/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterIndexRouteRoute = RegisterIndexRouteRouteImport.update({
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
+  '/treatments': typeof TreatmentsIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/master/$masterId': typeof MasterMasterIdIndexRouteRoute
 }
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
+  '/treatments': typeof TreatmentsIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/master/$masterId': typeof MasterMasterIdIndexRouteRoute
 }
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/home/': typeof HomeIndexRouteRoute
   '/login/': typeof LoginIndexRouteRoute
   '/register/': typeof RegisterIndexRouteRoute
+  '/treatments/': typeof TreatmentsIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
   '/master/$masterId/': typeof MasterMasterIdIndexRouteRoute
 }
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/register'
+    | '/treatments'
     | '/client/bookings'
     | '/master/$masterId'
   fileRoutesByTo: FileRoutesByTo
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/register'
+    | '/treatments'
     | '/client/bookings'
     | '/master/$masterId'
   id:
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/home/'
     | '/login/'
     | '/register/'
+    | '/treatments/'
     | '/client/bookings/'
     | '/master/$masterId/'
   fileRoutesById: FileRoutesById
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   HomeIndexRouteRoute: typeof HomeIndexRouteRoute
   LoginIndexRouteRoute: typeof LoginIndexRouteRoute
   RegisterIndexRouteRoute: typeof RegisterIndexRouteRoute
+  TreatmentsIndexRouteRoute: typeof TreatmentsIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
   MasterMasterIdIndexRouteRoute: typeof MasterMasterIdIndexRouteRoute
 }
@@ -143,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/treatments/': {
+      id: '/treatments/'
+      path: '/treatments'
+      fullPath: '/treatments'
+      preLoaderRoute: typeof TreatmentsIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register/': {
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeIndexRouteRoute: HomeIndexRouteRoute,
   LoginIndexRouteRoute: LoginIndexRouteRoute,
   RegisterIndexRouteRoute: RegisterIndexRouteRoute,
+  TreatmentsIndexRouteRoute: TreatmentsIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,
   MasterMasterIdIndexRouteRoute: MasterMasterIdIndexRouteRoute,
 }

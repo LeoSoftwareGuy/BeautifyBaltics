@@ -9,7 +9,7 @@ import {
   Title,
 } from '@mantine/core';
 import { useNavigate } from '@tanstack/react-router';
-import { MapPin, Search, Sparkles } from 'lucide-react';
+import { Search, Sparkles } from 'lucide-react';
 
 const BACKGROUND_PATTERN = "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI0NCwxNjQsMTgwLDAuMSkiLz48L2c+PC9zdmc+')";
 const HIGHLIGHTS = ['Verified Professionals', 'Instant Booking', 'Secure Payments'] as const;
@@ -83,16 +83,6 @@ function HeroSection() {
               px={24}
             >
               Explore Masters
-            </Button>
-            <Button
-              size="md"
-              radius="md"
-              variant="outline"
-              color="gray"
-              leftSection={<MapPin size={18} />}
-              px={24}
-            >
-              View Map
             </Button>
           </Group>
           <Group gap="lg" justify="center" wrap="wrap">
