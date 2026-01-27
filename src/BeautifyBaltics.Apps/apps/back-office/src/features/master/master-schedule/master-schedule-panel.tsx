@@ -3,6 +3,7 @@ import {
   Card,
   Grid,
   Group,
+  NumberInput,
   Stack,
   Text,
   TextInput,
@@ -28,6 +29,15 @@ interface MasterSchedulePanelProps {
   slots: SlotDisplay[];
   onAddSlot: () => void;
   onRemoveSlot: (id: string) => void;
+  bulkStartTimeInput: string;
+  onBulkStartTimeInputChange: (value: string) => void;
+  bulkEndTimeInput: string;
+  onBulkEndTimeInputChange: (value: string) => void;
+  bulkSlotDuration: number;
+  onBulkSlotDurationChange: (value: number) => void;
+  bulkDayCount: number;
+  onBulkDayCountChange: (value: number) => void;
+  onGenerateBulkSlots: () => void;
   isLoading?: boolean;
 }
 
@@ -41,8 +51,27 @@ export function MasterSchedulePanel({
   slots,
   onAddSlot,
   onRemoveSlot,
+  bulkStartTimeInput,
+  onBulkStartTimeInputChange,
+  bulkEndTimeInput,
+  onBulkEndTimeInputChange,
+  bulkSlotDuration,
+  onBulkSlotDurationChange,
+  bulkDayCount,
+  onBulkDayCountChange,
+  onGenerateBulkSlots,
   isLoading = false,
 }: MasterSchedulePanelProps) {
+  const handleBulkDurationChange = (value: string | number) => {
+    const parsed = typeof value === 'number' ? value : Number(value);
+    onBulkSlotDurationChange(Number.isNaN(parsed) ? 0 : parsed);
+  };
+
+  const handleBulkDayCountChange = (value: string | number) => {
+    const parsed = typeof value === 'number' ? value : Number(value);
+    onBulkDayCountChange(Number.isNaN(parsed) ? 1 : parsed);
+  };
+
   return (
     <Grid gutter="lg">
       {/* Left Column - Calendar */}
@@ -134,6 +163,64 @@ export function MasterSchedulePanel({
                 </Button>
               </Group>
             </div>
+
+            <Stack gap="xs">
+              <Text size="sm" fw={500}>
+                Generate Daily Slots
+              </Text>
+              <Text size="xs" c="dimmed">
+                Define working hours, slot length, and the number of consecutive days to fill.
+              </Text>
+              <Group gap="sm" align="flex-end">
+                <TextInput
+                  type="time"
+                  label="Start"
+                  value={bulkStartTimeInput}
+                  onChange={(event) => onBulkStartTimeInputChange(event.currentTarget.value)}
+                  placeholder="--:--"
+                  rightSection={<IconClock size={16} />}
+                  style={{ flex: 1 }}
+                />
+                <TextInput
+                  type="time"
+                  label="End"
+                  value={bulkEndTimeInput}
+                  onChange={(event) => onBulkEndTimeInputChange(event.currentTarget.value)}
+                  placeholder="--:--"
+                  rightSection={<IconClock size={16} />}
+                  style={{ flex: 1 }}
+                />
+                <NumberInput
+                  label="Slot length (min)"
+                  min={15}
+                  step={15}
+                  value={bulkSlotDuration}
+                  onChange={handleBulkDurationChange}
+                  style={{ width: 180 }}
+                />
+                <NumberInput
+                  label="Days"
+                  min={1}
+                  max={30}
+                  value={bulkDayCount}
+                  onChange={handleBulkDayCountChange}
+                  style={{ width: 120 }}
+                />
+                <Button
+                  onClick={onGenerateBulkSlots}
+                  disabled={
+                    !selectedDate
+                    || !bulkStartTimeInput
+                    || !bulkEndTimeInput
+                    || isLoading
+                  }
+                  loading={isLoading}
+                  color="pink"
+                >
+                  Generate
+                </Button>
+              </Group>
+            </Stack>
 
             {/* Available Slots List */}
             <div style={{

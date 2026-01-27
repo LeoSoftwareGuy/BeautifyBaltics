@@ -19,9 +19,8 @@ import {
   Phone,
 } from 'lucide-react';
 
-import { MasterJobDTO } from '@/state/endpoints/api.schemas';
+import { FindMasterAvailabilitiesResponsePagedResponse, MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { getFindBookingsQueryKey, useCreateBooking } from '@/state/endpoints/bookings';
-import { getFindMasterAvailabilitiesQueryKey } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
 type BookingModalProps = {
@@ -50,6 +49,31 @@ function BookingModal({
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  const availabilityKeyPrefix = `/api/v1/masters/${masterId}/availability`;
+
+  const removeSlotFromCache = () => {
+    if (!availabilityId) return;
+
+    queryClient.setQueriesData<FindMasterAvailabilitiesResponsePagedResponse | undefined>(
+      {
+        predicate: (query) => Array.isArray(query.queryKey)
+          && query.queryKey.length > 0
+          && query.queryKey[0] === availabilityKeyPrefix,
+      },
+      (old) => {
+        if (!old?.items?.length) return old;
+        const filteredItems = old.items.filter((slot) => slot.id !== availabilityId);
+        if (filteredItems.length === old.items.length) return old;
+
+        return {
+          ...old,
+          items: filteredItems,
+          totalItemCount: Math.max(0, old.totalItemCount - (old.items.length - filteredItems.length)),
+        };
+      },
+    );
+  };
+
   const { mutate: createBooking, isPending } = useCreateBooking({
     mutation: {
       onSuccess: async () => {
@@ -60,8 +84,12 @@ function BookingModal({
           queryKey: getFindBookingsQueryKey(),
         });
 
+        removeSlotFromCache();
+
         await queryClient.invalidateQueries({
-          queryKey: getFindMasterAvailabilitiesQueryKey(masterId),
+          predicate: (query) => Array.isArray(query.queryKey)
+            && query.queryKey.length > 0
+            && query.queryKey[0] === availabilityKeyPrefix,
         });
 
         notifications.show({
