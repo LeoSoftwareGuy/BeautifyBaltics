@@ -13,6 +13,11 @@ public class CreateMasterAvailabilityEventHandler
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
+        if (!master.Latitude.HasValue || !master.Longitude.HasValue)
+        {
+            throw DomainException.WithMessage("Please set your location before creating availability slots.");
+        }
+
         var events = new Events();
         var now = DateTime.UtcNow;
         var earliestAllowedStart = now.AddHours(3);

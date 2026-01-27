@@ -6,6 +6,8 @@ import { IconCheck, IconX } from '@tabler/icons-react';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
 
+const isNonEmpty = (value?: string | null): value is string => !!value && value.trim().length > 0;
+
 export function getStatusColor(status: BookingStatus): string {
   switch (status) {
     case BookingStatus.Confirmed:
@@ -44,6 +46,30 @@ export function renderPrice(booking: FindBookingsResponse) {
       €
       {booking.price.toFixed(2)}
     </Text>
+  );
+}
+
+export function renderLocation(booking: FindBookingsResponse) {
+  const lineOne = [booking.locationAddressLine1, booking.locationAddressLine2]
+    .filter(isNonEmpty)
+    .join(', ');
+  const lineTwo = [booking.locationPostalCode, booking.locationCity, booking.locationCountry]
+    .filter(isNonEmpty)
+    .join(', ');
+
+  if (!lineOne && !lineTwo) {
+    return <Text size="sm" c="dimmed">Location not provided</Text>;
+  }
+
+  return (
+    <Stack gap={2}>
+      <Text size="sm">{lineOne || lineTwo}</Text>
+      {lineOne && lineTwo ? (
+        <Text size="xs" c="dimmed">
+          {lineTwo}
+        </Text>
+      ) : null}
+    </Stack>
   );
 }
 

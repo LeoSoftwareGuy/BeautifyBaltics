@@ -64,6 +64,9 @@ function MasterProfileSettings() {
       longitude: null,
       city: null,
       country: null,
+      addressLine1: null,
+      addressLine2: null,
+      postalCode: null,
     },
     validate,
   });
@@ -83,6 +86,9 @@ function MasterProfileSettings() {
         longitude: masterData.longitude ?? null,
         city: masterData.city ?? null,
         country: masterData.country ?? null,
+        addressLine1: masterData.addressLine1 ?? null,
+        addressLine2: masterData.addressLine2 ?? null,
+        postalCode: masterData.postalCode ?? null,
       });
       form.resetDirty();
     }
@@ -153,6 +159,9 @@ function MasterProfileSettings() {
       longitude: location.longitude,
       city: location.city,
       country: location.country,
+      addressLine1: location.addressLine1,
+      addressLine2: location.addressLine2,
+      postalCode: location.postalCode,
     });
   };
 
@@ -289,6 +298,9 @@ function MasterProfileSettings() {
                 longitude: form.getValues().longitude ?? undefined,
                 city: form.getValues().city,
                 country: form.getValues().country,
+                addressLine1: form.getValues().addressLine1,
+                addressLine2: form.getValues().addressLine2,
+                postalCode: form.getValues().postalCode,
               }}
               onChange={handleLocationChange}
             />

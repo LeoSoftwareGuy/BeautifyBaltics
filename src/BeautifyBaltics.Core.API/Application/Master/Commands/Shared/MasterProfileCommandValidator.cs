@@ -37,5 +37,17 @@ public class MasterProfileCommandValidator : AbstractValidator<MasterProfileComm
         RuleFor(v => v.Country)
             .MaximumLength(128)
             .When(v => !string.IsNullOrEmpty(v.Country));
+
+        RuleFor(v => v.AddressLine1)
+            .MaximumLength(256)
+            .When(v => !string.IsNullOrWhiteSpace(v.AddressLine1));
+
+        RuleFor(v => v.AddressLine2)
+            .MaximumLength(256)
+            .When(v => !string.IsNullOrWhiteSpace(v.AddressLine2));
+
+        RuleFor(v => v.PostalCode)
+            .MaximumLength(32)
+            .When(v => !string.IsNullOrWhiteSpace(v.PostalCode));
     }
 }

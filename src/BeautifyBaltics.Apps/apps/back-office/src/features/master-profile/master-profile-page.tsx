@@ -26,6 +26,8 @@ type MasterProfilePageProps = {
   masterId: string;
 };
 
+const isNonEmptyString = (value?: string | null): value is string => typeof value === 'string' && value.trim().length > 0;
+
 function MasterProfilePage({ masterId }: MasterProfilePageProps) {
   const navigate = useNavigate();
   const {
@@ -77,6 +79,15 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
     setModalOpen(true);
   };
 
+  const addressParts = [
+    data.addressLine1,
+    data.addressLine2,
+    data.postalCode,
+    data.city,
+    data.country,
+  ].filter(isNonEmptyString);
+  const bookingAddress = addressParts.length ? addressParts.join(', ') : data.city ?? null;
+
   return (
     <Box bg="var(--mantine-color-body)" pb="xl">
       <ProfileHeader backTo="/explore" />
@@ -96,7 +107,7 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
         masterId={masterId}
         availabilityId={bookingAvailabilityId}
         job={bookingJob}
-        address={data.city}
+        address={bookingAddress}
         phone={data.phoneNumber}
       />
     </Box>

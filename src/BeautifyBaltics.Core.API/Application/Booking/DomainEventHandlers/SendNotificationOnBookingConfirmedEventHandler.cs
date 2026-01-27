@@ -27,8 +27,8 @@ public class SendNotificationOnBookingConfirmedEventHandler(
             return;
         }
 
-        var master = await querySession.LoadAsync<BeautifyBaltics.Persistence.Projections.Master>(booking.MasterId, cancellationToken);
-        var client = await querySession.LoadAsync<BeautifyBaltics.Persistence.Projections.Client>(booking.ClientId, cancellationToken);
+        var master = await querySession.LoadAsync<Persistence.Projections.Master>(booking.MasterId, cancellationToken);
+        var client = await querySession.LoadAsync<Persistence.Projections.Client>(booking.ClientId, cancellationToken);
 
         if (master is null || client is null)
         {
@@ -41,17 +41,18 @@ public class SendNotificationOnBookingConfirmedEventHandler(
 
         var context = new BookingNotificationContext(
             BookingId: booking.Id,
-            ClientName: client.FirstName + " " + client.LastName,
+            ClientName: booking.ClientName,
             ClientEmail: client.Email,
             ClientPhone: client.PhoneNumber,
-            MasterName: master.FirstName + " " + master.LastName,
+            MasterName: booking.MasterName,
             MasterEmail: master.Email,
             MasterPhone: master.PhoneNumber,
             ServiceName: booking.MasterJobTitle,
             ScheduledAt: booking.ScheduledAt,
             Duration: booking.Duration,
             Price: booking.Price,
-            LocationName: master.City
+            LocationName: booking.LocationName,
+            LocationAddress: booking.LocationAddress
         );
 
         await notificationService.NotifyBookingConfirmedAsync(context, cancellationToken);

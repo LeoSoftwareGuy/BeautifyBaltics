@@ -26,6 +26,7 @@ import { BookingsFilters } from './master-bookings-data-table-filters';
 import {
   ActionsRenderer,
   renderDuration,
+  renderLocation,
   renderPrice,
   renderScheduledAt,
   renderStatus,
@@ -158,6 +159,11 @@ export function MasterBookingsDataTable() {
       accessor: 'masterJobTitle',
       title: 'Service',
       sortKey: 'masterJobTitle',
+    },
+    {
+      accessor: 'locationCity',
+      title: 'Location',
+      render: renderLocation,
     },
     {
       accessor: 'scheduledAt',

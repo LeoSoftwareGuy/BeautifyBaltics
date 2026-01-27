@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import {
   Box, Button, Card, Group, Loader, Stack, Text,
 } from '@mantine/core';
@@ -24,6 +26,9 @@ export interface LocationData {
   longitude: number;
   city: string | null;
   country: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  postalCode: string | null;
 }
 
 interface LocationPickerProps {
@@ -54,26 +59,54 @@ type Geocoder = {
   geocode: (request: { location: { lat: number; lng: number } }) => Promise<GeocoderResponse>;
 };
 
+type LocationDetails = {
+  city: string | null;
+  country: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  postalCode: string | null;
+};
+
+type SelectedLocation = LocationDetails & {
+  lat: number;
+  lng: number;
+};
+
+const isNonEmptyString = (value: string | null | undefined): value is string => (
+  typeof value === 'string' && value.trim().length > 0
+);
+
 function LocationPickerContent({ value, onChange }: LocationPickerContentProps) {
   const map = useMap();
   const geocodingLib = useMapsLibrary('geocoding');
   const [geocoder, setGeocoder] = useState<Geocoder | null>(null);
   const [isGeocoding, setIsGeocoding] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{
-    lat: number;
-    lng: number;
-    city: string | null;
-    country: string | null;
-  } | null>(
-    value?.latitude && value?.longitude
-      ? {
-        lat: value.latitude,
-        lng: value.longitude,
-        city: value.city ?? null,
-        country: value.country ?? null,
-      }
-      : null,
-  );
+  const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
+
+  useEffect(() => {
+    if (typeof value?.latitude !== 'number' || typeof value?.longitude !== 'number') {
+      setSelectedLocation(null);
+      return;
+    }
+
+    setSelectedLocation({
+      lat: value.latitude,
+      lng: value.longitude,
+      city: value.city ?? null,
+      country: value.country ?? null,
+      addressLine1: value.addressLine1 ?? null,
+      addressLine2: value.addressLine2 ?? null,
+      postalCode: value.postalCode ?? null,
+    });
+  }, [
+    value?.latitude,
+    value?.longitude,
+    value?.city,
+    value?.country,
+    value?.addressLine1,
+    value?.addressLine2,
+    value?.postalCode,
+  ]);
 
   useEffect(() => {
     if (geocodingLib) {
@@ -81,9 +114,71 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
     }
   }, [geocodingLib]);
 
+  const emptyDetails = useMemo<LocationDetails>(() => ({
+    city: null,
+    country: null,
+    addressLine1: null,
+    addressLine2: null,
+    postalCode: null,
+  }), []);
+
+  const parseLocationDetails = useCallback((components: GeocoderAddressComponent[]): LocationDetails => {
+    if (!components.length) {
+      return emptyDetails;
+    }
+
+    let city: string | null = null;
+    let country: string | null = null;
+    let postalCode: string | null = null;
+    let streetNumber: string | null = null;
+    let route: string | null = null;
+    let sublocality: string | null = null;
+    let neighborhood: string | null = null;
+    let adminAreaLevel2: string | null = null;
+
+    components.forEach((component) => {
+      if (!city && (component.types.includes('locality') || component.types.includes('postal_town'))) {
+        city = component.long_name;
+      }
+      if (!country && component.types.includes('country')) {
+        country = component.long_name;
+      }
+      if (!postalCode && component.types.includes('postal_code')) {
+        postalCode = component.long_name;
+      }
+      if (!streetNumber && component.types.includes('street_number')) {
+        streetNumber = component.long_name;
+      }
+      if (!route && component.types.includes('route')) {
+        route = component.long_name;
+      }
+      if (!sublocality && component.types.includes('sublocality')) {
+        sublocality = component.long_name;
+      }
+      if (!neighborhood && component.types.includes('neighborhood')) {
+        neighborhood = component.long_name;
+      }
+      if (!adminAreaLevel2 && component.types.includes('administrative_area_level_2')) {
+        adminAreaLevel2 = component.long_name;
+      }
+    });
+
+    const addressLine1Segments = [streetNumber, route].filter(isNonEmptyString);
+    const addressLine1 = addressLine1Segments.join(' ').trim();
+    const addressLine2 = sublocality ?? neighborhood ?? adminAreaLevel2 ?? null;
+
+    return {
+      city,
+      country,
+      postalCode,
+      addressLine1: addressLine1 || route || null,
+      addressLine2,
+    };
+  }, [emptyDetails]);
+
   const reverseGeocode = useCallback(
-    (lat: number, lng: number): Promise<{ city: string | null; country: string | null }> => {
-      if (!geocoder) return Promise.resolve({ city: null, country: null });
+    (lat: number, lng: number): Promise<LocationDetails> => {
+      if (!geocoder) return Promise.resolve(emptyDetails);
 
       return geocoder
         .geocode({ location: { lat, lng } })
@@ -92,34 +187,28 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
             ?.flatMap((result) => result.address_components)
             ?? [];
 
-          const locations = components.reduce(
-            (acc, component) => {
-              const updates = { ...acc };
-              if (!updates.city && component.types.includes('locality')) {
-                updates.city = component.long_name;
-              }
-              if (!updates.country && component.types.includes('country')) {
-                updates.country = component.long_name;
-              }
-              return updates;
-            },
-            { city: null as string | null, country: null as string | null },
-          );
-
-          return locations;
+          return parseLocationDetails(components);
         })
-        .catch(() => ({ city: null, country: null }));
+        .catch(() => emptyDetails);
     },
-    [geocoder],
+    [emptyDetails, geocoder, parseLocationDetails],
   );
 
   const upsertLocation = useCallback(
     (lat: number, lng: number, shouldPan = false) => {
       setIsGeocoding(true);
       reverseGeocode(lat, lng)
-        .then(({ city, country }) => {
+        .then(({
+          city, country, addressLine1, addressLine2, postalCode,
+        }) => {
           const location = {
-            lat, lng, city, country,
+            lat,
+            lng,
+            city,
+            country,
+            addressLine1,
+            addressLine2,
+            postalCode,
           };
           setSelectedLocation(location);
 
@@ -132,6 +221,9 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
             longitude: lng,
             city,
             country,
+            addressLine1,
+            addressLine2,
+            postalCode,
           });
         })
         .finally(() => {
@@ -169,6 +261,18 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
   const center = selectedLocation
     ? { lat: selectedLocation.lat, lng: selectedLocation.lng }
     : DEFAULT_CENTER;
+
+  const locationLineOne = selectedLocation
+    ? [selectedLocation.addressLine1, selectedLocation.addressLine2].filter(isNonEmptyString).join(', ')
+    : '';
+  const locationLineTwo = selectedLocation
+    ? [selectedLocation.postalCode, selectedLocation.city, selectedLocation.country].filter(isNonEmptyString).join(', ')
+    : '';
+  const fallbackLocation = selectedLocation
+    ? `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`
+    : '';
+  const primarySummary = selectedLocation ? (locationLineOne || locationLineTwo || fallbackLocation) : '';
+  const secondarySummary = selectedLocation && locationLineOne && locationLineTwo ? locationLineTwo : '';
 
   return (
     <Stack gap="sm">
@@ -212,12 +316,18 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
       <Group justify="space-between" align="flex-start">
         <Box>
           {selectedLocation ? (
-            <Group gap="xs">
+            <Group gap="xs" align="flex-start">
               <MapPin size={16} />
-              <Text size="sm">
-                {[selectedLocation.city, selectedLocation.country].filter(Boolean).join(', ')
-                  || `${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}`}
-              </Text>
+              <Stack gap={2}>
+                <Text size="sm">
+                  {primarySummary}
+                </Text>
+                {secondarySummary ? (
+                  <Text size="xs" c="dimmed">
+                    {secondarySummary}
+                  </Text>
+                ) : null}
+              </Stack>
             </Group>
           ) : (
             <Text size="sm" c="dimmed">

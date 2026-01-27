@@ -25,6 +25,7 @@ import { ClientBookingsDataTableFilters } from './client-bookings-data-table-fil
 import {
   CancelActionRenderer,
   renderDuration,
+  renderLocation,
   renderPrice,
   renderScheduledAt,
   renderStatus,
@@ -127,6 +128,11 @@ export function ClientBookingsDataTable() {
       accessor: 'masterJobTitle',
       title: 'Service',
       sortKey: 'masterJobTitle',
+    },
+    {
+      accessor: 'locationCity',
+      title: 'Location',
+      render: renderLocation,
     },
     {
       accessor: 'scheduledAt',

@@ -22,6 +22,9 @@ public partial class MasterAggregate : Aggregate
     public double? Longitude { get; private set; }
     public string? City { get; private set; }
     public string? Country { get; private set; }
+    public string? AddressLine1 { get; private set; }
+    public string? AddressLine2 { get; private set; }
+    public string? PostalCode { get; private set; }
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
     public IReadOnlyCollection<MasterAvailabilitySlot> Availabilities => _availabilities.Values.ToList();
 
@@ -47,6 +50,9 @@ public partial class MasterAggregate : Aggregate
         Longitude = @event.Longitude;
         City = @event.City;
         Country = @event.Country;
+        AddressLine1 = @event.AddressLine1;
+        AddressLine2 = @event.AddressLine2;
+        PostalCode = @event.PostalCode;
     }
 
     internal void Apply(MasterProfileImageUploaded @event)

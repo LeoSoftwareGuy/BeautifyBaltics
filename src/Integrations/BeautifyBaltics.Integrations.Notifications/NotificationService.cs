@@ -66,31 +66,31 @@ public class NotificationService(
 
     private Task SendMasterBookingRequestSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Uus broneering! {context.ClientName} soovib {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Palun kinnita või tühista.";
+        var message = $"Uus broneering! {context.ClientName} soovib {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Palun kinnita või tühista.{BuildLocationSnippet(context)}";
         return smsService.SendSmsAsync(context.MasterPhone, message);
     }
 
     private Task SendClientConfirmationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Tere, {context.ClientName}! Teie broneering on kinnitatud: {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Meister: {context.MasterName}. Aitäh!";
+        var message = $"Tere, {context.ClientName}! Teie broneering on kinnitatud: {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Meister: {context.MasterName}.{BuildLocationSnippet(context)} Aitäh!";
         return smsService.SendSmsAsync(context.ClientPhone, message);
     }
 
     private Task SendMasterConfirmationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Uus kinnitus! {context.ClientName} broneeris {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Hind: {context.Price}€";
+        var message = $"Uus kinnitus! {context.ClientName} broneeris {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Hind: {context.Price}€.{BuildLocationSnippet(context)}";
         return smsService.SendSmsAsync(context.MasterPhone, message);
     }
 
     private Task SendClientCancellationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Teie broneering {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy} on tühistatud. Vabandame ebamugavuste pärast.";
+        var message = $"Teie broneering {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy} on tühistatud.{BuildLocationSnippet(context)} Vabandame ebamugavuste pärast.";
         return smsService.SendSmsAsync(context.ClientPhone, message);
     }
 
     private Task SendMasterCancellationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Broneering tühistatud: {context.ClientName}, {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}";
+        var message = $"Broneering tühistatud: {context.ClientName}, {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}.{BuildLocationSnippet(context)}";
         return smsService.SendSmsAsync(context.MasterPhone, message);
     }
 
@@ -183,5 +183,27 @@ public class NotificationService(
             templateData,
             cancellationToken
         );
+    }
+
+    private static string BuildLocationSnippet(BookingNotificationContext context)
+    {
+        if (string.IsNullOrWhiteSpace(context.LocationName) && string.IsNullOrWhiteSpace(context.LocationAddress))
+        {
+            return string.Empty;
+        }
+
+        var parts = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(context.LocationName))
+        {
+            parts.Add(context.LocationName);
+        }
+
+        if (!string.IsNullOrWhiteSpace(context.LocationAddress))
+        {
+            parts.Add(context.LocationAddress);
+        }
+
+        return parts.Count == 0 ? string.Empty : $" Asukoht: {string.Join(", ", parts)}.";
     }
 }

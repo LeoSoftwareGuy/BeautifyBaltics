@@ -38,7 +38,8 @@ public class SendNotificationOnBookingRequestedEventHandler(
             ScheduledAt: @event.Data.ScheduledAt,
             Duration: @event.Data.Duration,
             Price: @event.Data.Price,
-            LocationName: master.City
+            LocationName: master.LocationName,
+            LocationAddress: master.LocationAddress
         );
 
         await notificationService.NotifyBookingRequestedAsync(context, cancellationToken);

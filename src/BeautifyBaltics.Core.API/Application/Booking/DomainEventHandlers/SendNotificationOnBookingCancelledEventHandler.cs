@@ -41,17 +41,18 @@ public class SendNotificationOnBookingCancelledEventHandler(
 
         var context = new BookingNotificationContext(
             BookingId: booking.Id,
-            ClientName: client.FirstName + " " + client.LastName,
+            ClientName: booking.ClientName,
             ClientEmail: client.Email,
             ClientPhone: client.PhoneNumber,
-            MasterName: master.FirstName + " " + master.LastName,
+            MasterName: booking.MasterName,
             MasterEmail: master.Email,
             MasterPhone: master.PhoneNumber,
             ServiceName: booking.MasterJobTitle,
             ScheduledAt: booking.ScheduledAt,
             Duration: booking.Duration,
             Price: booking.Price,
-            LocationName: master.City
+            LocationName: booking.LocationName,
+            LocationAddress: booking.LocationAddress
         );
 
         await notificationService.NotifyBookingCancelledAsync(context, cancellationToken);

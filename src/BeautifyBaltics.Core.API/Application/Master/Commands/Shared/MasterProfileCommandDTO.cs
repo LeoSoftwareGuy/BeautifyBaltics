@@ -40,4 +40,13 @@ public record MasterProfileCommandDTO
 
     [MaxLength(128)]
     public string? Country { get; init; }
+
+    [MaxLength(256)]
+    public string? AddressLine1 { get; init; }
+
+    [MaxLength(256)]
+    public string? AddressLine2 { get; init; }
+
+    [MaxLength(32)]
+    public string? PostalCode { get; init; }
 }

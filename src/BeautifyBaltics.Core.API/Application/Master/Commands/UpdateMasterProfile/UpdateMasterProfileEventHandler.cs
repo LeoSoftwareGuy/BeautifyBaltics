@@ -25,7 +25,10 @@ public class UpdateMasterProfileEventHandler
             request.Latitude,
             request.Longitude,
             request.City,
-            request.Country
+            request.Country,
+            request.AddressLine1,
+            request.AddressLine2,
+            request.PostalCode
         );
 
         return Task.FromResult<(Events, OutgoingMessages)>(([updated], [new UpdateMasterProfileResponse(request.MasterId)]));

@@ -22,10 +22,28 @@ public record Master(Guid Id) : Projection
     public double? Longitude { get; init; }
     public string? City { get; init; }
     public string? Country { get; init; }
+    public string? AddressLine1 { get; init; }
+    public string? AddressLine2 { get; init; }
+    public string? PostalCode { get; init; }
     public string? ProfileImageBlobName { get; init; }
     public string? ProfileImageFileName { get; init; }
     public string? ProfileImageMimeType { get; init; }
     public long? ProfileImageSize { get; init; }
+
+    public string? LocationName =>
+        !string.IsNullOrWhiteSpace(City) ? City :
+        !string.IsNullOrWhiteSpace(Country) ? Country : null;
+
+    public string? LocationAddress
+    {
+        get
+        {
+            var segments = new[] { AddressLine1, AddressLine2, PostalCode, Country }
+                .Where(s => !string.IsNullOrWhiteSpace(s));
+            var address = string.Join(", ", segments);
+            return string.IsNullOrWhiteSpace(address) ? null : address;
+        }
+    }
 }
 
 public class MasterProjection : SingleStreamProjection<Master, Guid>
@@ -57,6 +75,9 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             Longitude = @event.Longitude,
             City = @event.City,
             Country = @event.Country,
+            AddressLine1 = @event.AddressLine1,
+            AddressLine2 = @event.AddressLine2,
+            PostalCode = @event.PostalCode,
         };
     }
 

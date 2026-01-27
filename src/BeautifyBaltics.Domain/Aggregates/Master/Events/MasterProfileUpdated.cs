@@ -14,5 +14,8 @@ public record MasterProfileUpdated(
     double? Latitude,
     double? Longitude,
     string? City,
-    string? Country
+    string? Country,
+    string? AddressLine1,
+    string? AddressLine2,
+    string? PostalCode
 );

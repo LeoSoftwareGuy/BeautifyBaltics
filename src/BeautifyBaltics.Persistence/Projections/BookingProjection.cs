@@ -16,11 +16,31 @@ public record Booking(Guid Id) : Projection
     public Guid MasterJobId { get; init; }
     public required string MasterJobTitle { get; init; }
     public Guid MasterAvailabilitySlotId { get; init; }
+    public string? LocationCity { get; init; }
+    public string? LocationCountry { get; init; }
+    public string? LocationAddressLine1 { get; init; }
+    public string? LocationAddressLine2 { get; init; }
+    public string? LocationPostalCode { get; init; }
     public DateTime ScheduledAt { get; init; }
     public TimeSpan Duration { get; init; }
     public decimal Price { get; init; }
     public BookingStatus Status { get; init; } = BookingStatus.Requested;
     public DateTime RequestedAt { get; init; }
+
+    public string? LocationName =>
+        !string.IsNullOrWhiteSpace(LocationCity) ? LocationCity :
+        !string.IsNullOrWhiteSpace(LocationCountry) ? LocationCountry : null;
+
+    public string? LocationAddress
+    {
+        get
+        {
+            var segments = new[] { LocationAddressLine1, LocationAddressLine2, LocationPostalCode, LocationCountry }
+                .Where(s => !string.IsNullOrWhiteSpace(s));
+            var address = string.Join(", ", segments);
+            return string.IsNullOrWhiteSpace(address) ? null : address;
+        }
+    }
 }
 
 public class BookingProjection : SingleStreamProjection<Booking, Guid>
@@ -51,6 +71,11 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
             MasterJobId = @event.Data.MasterJobId,
             MasterJobTitle = masterJob.Title,
             MasterAvailabilitySlotId = @event.Data.MasterAvailabilitySlotId,
+            LocationCity = master.City,
+            LocationCountry = master.Country,
+            LocationAddressLine1 = master.AddressLine1,
+            LocationAddressLine2 = master.AddressLine2,
+            LocationPostalCode = master.PostalCode,
             ScheduledAt = @event.Data.ScheduledAt,
             Duration = @event.Data.Duration,
             Price = @event.Data.Price,

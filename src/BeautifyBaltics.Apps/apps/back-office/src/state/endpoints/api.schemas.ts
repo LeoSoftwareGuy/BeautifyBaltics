@@ -41,6 +41,31 @@ export type BookingDTO = {
    * @minLength 1
    */
   masterJobTitle: string;
+  /**
+   * Booking city
+   * @nullable
+   */
+  locationCity?: string | null;
+  /**
+   * Booking country
+   * @nullable
+   */
+  locationCountry?: string | null;
+  /**
+   * Address line 1
+   * @nullable
+   */
+  locationAddressLine1?: string | null;
+  /**
+   * Address line 2
+   * @nullable
+   */
+  locationAddressLine2?: string | null;
+  /**
+   * Postal code
+   * @nullable
+   */
+  locationPostalCode?: string | null;
   /** Scheduled at */
   scheduledAt: Date;
   /** Duration */
@@ -455,6 +480,12 @@ export type MasterDTO = {
   /** @nullable */
   country?: string | null;
   /** @nullable */
+  addressLine1?: string | null;
+  /** @nullable */
+  addressLine2?: string | null;
+  /** @nullable */
+  postalCode?: string | null;
+  /** @nullable */
   profileImageUrl?: string | null;
 };
 
@@ -602,6 +633,21 @@ export type MasterProfileCommandDTO = {
    * @nullable
    */
   country?: string | null;
+  /**
+   * @maxLength 256
+   * @nullable
+   */
+  addressLine1?: string | null;
+  /**
+   * @maxLength 256
+   * @nullable
+   */
+  addressLine2?: string | null;
+  /**
+   * @maxLength 32
+   * @nullable
+   */
+  postalCode?: string | null;
 };
 
 export type ProblemDetails = {

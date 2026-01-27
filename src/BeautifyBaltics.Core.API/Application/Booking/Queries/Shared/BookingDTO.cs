@@ -48,6 +48,31 @@ public record BookingDTO
     public required string MasterJobTitle { get; init; }
 
     /// <summary>
+    /// Booking city
+    /// </summary>
+    public string? LocationCity { get; init; }
+
+    /// <summary>
+    /// Booking country
+    /// </summary>
+    public string? LocationCountry { get; init; }
+
+    /// <summary>
+    /// Address line 1
+    /// </summary>
+    public string? LocationAddressLine1 { get; init; }
+
+    /// <summary>
+    /// Address line 2
+    /// </summary>
+    public string? LocationAddressLine2 { get; init; }
+
+    /// <summary>
+    /// Postal code
+    /// </summary>
+    public string? LocationPostalCode { get; init; }
+
+    /// <summary>
     /// Scheduled at
     /// </summary>
     [Required]

@@ -1708,6 +1708,26 @@ components:
           minLength: 1
           type: string
           description: Master job title
+        locationCity:
+          type: string
+          description: Booking city
+          nullable: true
+        locationCountry:
+          type: string
+          description: Booking country
+          nullable: true
+        locationAddressLine1:
+          type: string
+          description: Address line 1
+          nullable: true
+        locationAddressLine2:
+          type: string
+          description: Address line 2
+          nullable: true
+        locationPostalCode:
+          type: string
+          description: Postal code
+          nullable: true
         scheduledAt:
           type: string
           description: Scheduled at
@@ -2405,6 +2425,15 @@ components:
         country:
           type: string
           nullable: true
+        addressLine1:
+          type: string
+          nullable: true
+        addressLine2:
+          type: string
+          nullable: true
+        postalCode:
+          type: string
+          nullable: true
         profileImageUrl:
           type: string
           nullable: true
@@ -2602,6 +2631,18 @@ components:
           nullable: true
         country:
           maxLength: 128
+          type: string
+          nullable: true
+        addressLine1:
+          maxLength: 256
+          type: string
+          nullable: true
+        addressLine2:
+          maxLength: 256
+          type: string
+          nullable: true
+        postalCode:
+          maxLength: 32
           type: string
           nullable: true
       additionalProperties: false
