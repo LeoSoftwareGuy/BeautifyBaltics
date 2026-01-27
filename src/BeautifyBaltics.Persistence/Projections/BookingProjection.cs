@@ -20,6 +20,7 @@ public record Booking(Guid Id) : Projection
     public TimeSpan Duration { get; init; }
     public decimal Price { get; init; }
     public BookingStatus Status { get; init; } = BookingStatus.Requested;
+    public DateTime RequestedAt { get; init; }
 }
 
 public class BookingProjection : SingleStreamProjection<Booking, Guid>
@@ -37,6 +38,8 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
         var masterAvailability = await session.LoadAsync<MasterAvailabilitySlot>(@event.Data.MasterAvailabilitySlotId, cancellationToken)
             ?? throw new InvalidOperationException($"Master availability with ID '{@event.Data.MasterAvailabilitySlotId}' not found.");
 
+        var requestedAt = DateTime.SpecifyKind(@event.Timestamp.UtcDateTime, DateTimeKind.Unspecified);
+
         return masterJob == null
             ? throw new InvalidOperationException($"Booking with master job ID {@event.Data.MasterJobId} not found.")
             : new Booking(@event.StreamId)
@@ -52,6 +55,7 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
             Duration = @event.Data.Duration,
             Price = @event.Data.Price,
             Status = BookingStatus.Requested,
+            RequestedAt = requestedAt
         };
     }
 

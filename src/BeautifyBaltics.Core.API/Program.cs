@@ -91,6 +91,7 @@ internal class Program
         builder.Services.AddScoped<IUserProvisioningService, UserProvisioningService>();
 
         builder.Services.AddHostedService<BookingCompletionBackgroundService>();
+        builder.Services.AddHostedService<BookingExpirationBackgroundService>();
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {

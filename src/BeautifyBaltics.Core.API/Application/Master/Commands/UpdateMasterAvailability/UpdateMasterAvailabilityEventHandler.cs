@@ -22,9 +22,10 @@ public class UpdateMasterAvailabilityEventHandler
             throw DomainException.WithMessage("Availability slot end time must be after the start time.");
         }
 
-        if (request.Availability.Start <= DateTime.UtcNow)
+        var earliestAllowedStart = DateTime.UtcNow.AddHours(3);
+        if (DateTime.SpecifyKind(request.Availability.Start, DateTimeKind.Utc) < earliestAllowedStart)
         {
-            throw DomainException.WithMessage("Availability slots must start in the future.");
+            throw DomainException.WithMessage("Availability slots must start at least 3 hours from now.");
         }
 
         var @event = new MasterAvailabilitySlotUpdated(

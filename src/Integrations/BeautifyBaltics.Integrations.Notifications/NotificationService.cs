@@ -15,6 +15,17 @@ public class NotificationService(
 {
     private readonly EmailTemplates _templates = emailOptions.Value.Templates;
 
+    public Task NotifyBookingRequestedAsync(BookingNotificationContext context, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation(
+            "Sending booking request notification for {ServiceName} scheduled at {ScheduledAt}",
+            context.ServiceName,
+            context.ScheduledAt
+        );
+
+        return SendMasterBookingRequestSmsAsync(context);
+    }
+
     public async Task NotifyBookingConfirmedAsync(BookingNotificationContext context, CancellationToken cancellationToken = default)
     {
         logger.LogInformation(
@@ -51,6 +62,12 @@ public class NotificationService(
         };
 
         await Task.WhenAll(tasks);
+    }
+
+    private Task SendMasterBookingRequestSmsAsync(BookingNotificationContext context)
+    {
+        var message = $"Uus broneering! {context.ClientName} soovib {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Palun kinnita või tühista.";
+        return smsService.SendSmsAsync(context.MasterPhone, message);
     }
 
     private Task SendClientConfirmationSmsAsync(BookingNotificationContext context)

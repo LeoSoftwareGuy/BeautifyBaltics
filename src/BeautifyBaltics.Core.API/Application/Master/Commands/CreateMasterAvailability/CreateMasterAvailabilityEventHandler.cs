@@ -15,6 +15,7 @@ public class CreateMasterAvailabilityEventHandler
 
         var events = new Events();
         var now = DateTime.UtcNow;
+        var earliestAllowedStart = now.AddHours(3);
 
         foreach (var availability in request.Availability)
         {
@@ -23,9 +24,9 @@ public class CreateMasterAvailabilityEventHandler
                 throw DomainException.WithMessage("Availability slot end time must be after the start time.");
             }
 
-            if (availability.Start <= now)
+            if (DateTime.SpecifyKind(availability.Start, DateTimeKind.Utc) < earliestAllowedStart)
             {
-                throw DomainException.WithMessage("Availability slots must start in the future.");
+                throw DomainException.WithMessage("Availability slots must start at least 3 hours from now.");
             }
 
             if (master.HasOverlappingAvailability(availability.Start, availability.End))

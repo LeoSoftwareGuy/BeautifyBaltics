@@ -2,6 +2,7 @@ namespace BeautifyBaltics.Integrations.Notifications;
 
 public interface INotificationService
 {
+    Task NotifyBookingRequestedAsync(BookingNotificationContext context, CancellationToken cancellationToken = default);
     Task NotifyBookingConfirmedAsync(BookingNotificationContext context, CancellationToken cancellationToken = default);
     Task NotifyBookingCancelledAsync(BookingNotificationContext context, CancellationToken cancellationToken = default);
 }
