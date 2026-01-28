@@ -4,15 +4,18 @@ import { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
 
 import {
-  MainNavigation,
+  ClientNavigation,
+  MasterNavigation,
   NavigationBreadcrumbs,
   NavigationLoadingIndicator,
+  SidebarFooter,
 } from '@/components/navigation';
 import { MegaSearch } from '@/features/mega-search';
-import { UserMenu } from '@/features/users';
 import usePageTitle from '@/hooks/use-page-title';
 import { AppLayout } from '@/layouts';
 import { FileRoutesByFullPath } from '@/routeTree.gen';
+import { UserRole } from '@/state/endpoints/api.schemas';
+import { useGetUser } from '@/state/endpoints/users';
 
 interface RouteContext {
   queryClient: QueryClient;
@@ -30,7 +33,9 @@ export const Route = createRootRouteWithContext<RouteContext>()({
 function Root() {
   usePageTitle();
   const location = useRouterState({ select: (state) => state.location });
+  const { data: user } = useGetUser();
   const isPublicRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');
+  const isMaster = user?.role === UserRole.Master;
 
   if (isPublicRoute) {
     return (
@@ -51,9 +56,9 @@ function Root() {
       }}
       navbar={{
         top: null,
-        upperMiddle: <MainNavigation />,
-        lowerMiddle: <UserMenu />,
-        bottom: null,
+        upperMiddle: isMaster ? <MasterNavigation /> : <ClientNavigation />,
+        lowerMiddle: null,
+        bottom: <SidebarFooter />,
       }}
       devtools={(
         <DevtoolsContainer>

@@ -13,7 +13,6 @@
     <TypeScriptConfiguration Include="apps\back-office\project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="apps\back-office\src\components\dashboard\" />
     <Folder Include="apps\back-office\src\state\endpoints\" />
   </ItemGroup>
 </Project>

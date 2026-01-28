@@ -1,19 +1,26 @@
+import { useEffect } from 'react';
 import {
   Box, Center, Loader, Stack, Text,
 } from '@mantine/core';
+import { useNavigate } from '@tanstack/react-router';
 
 import { ClientDashboardPage } from '@/features/client';
 import { UserRole } from '@/state/endpoints/api.schemas';
 import { useGetUser } from '@/state/endpoints/users';
 
-import MasterDashboardPage from '../master/master-dashboard-page';
-
 function DashboardPage() {
+  const navigate = useNavigate();
   const {
     data,
     isLoading,
     isError,
   } = useGetUser();
+
+  useEffect(() => {
+    if (data?.role === UserRole.Master) {
+      navigate({ to: '/master', replace: true });
+    }
+  }, [data?.role, navigate]);
 
   if (isLoading) {
     return (
@@ -35,7 +42,11 @@ function DashboardPage() {
   }
 
   if (data.role === UserRole.Master) {
-    return <MasterDashboardPage />;
+    return (
+      <Center mih="60vh">
+        <Loader />
+      </Center>
+    );
   }
 
   return <ClientDashboardPage />;

@@ -72,7 +72,7 @@ export default function AppLayout({
           <AppShell.Section mb={-1}>
             <Group p="md" gap="xs" h={68} mih={68} align="center" wrap="nowrap">
               <Logo />
-              {collapsedNavbar ? null : <Text fw={700} truncate="end" c={theme.primaryColor}>Transfer Agency</Text>}
+              {collapsedNavbar ? null : <Text fw={700} truncate="end" c={theme.primaryColor}>Beautify Baltics</Text>}
             </Group>
           </AppShell.Section>
           <Divider mx="md" />

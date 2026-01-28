@@ -86,7 +86,7 @@ function ExplorePage({ initialProcedureId }: ExplorePageProps = {}) {
 
   const handleSelectMaster = (masterId: string) => {
     setSelectedMaster(masterId);
-    navigate({ to: '/master/$masterId', params: { masterId: String(masterId) } });
+    navigate({ to: '/masters/$masterId', params: { masterId: String(masterId) } });
   };
 
   return (

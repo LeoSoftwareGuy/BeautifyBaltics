@@ -12,11 +12,17 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteRouteImport } from './routes/index.route'
 import { Route as TreatmentsIndexRouteRouteImport } from './routes/treatments/index.route'
 import { Route as RegisterIndexRouteRouteImport } from './routes/register/index.route'
+import { Route as MasterIndexRouteRouteImport } from './routes/master/index.route'
 import { Route as LoginIndexRouteRouteImport } from './routes/login/index.route'
 import { Route as HomeIndexRouteRouteImport } from './routes/home/index.route'
 import { Route as ExploreIndexRouteRouteImport } from './routes/explore/index.route'
 import { Route as DashboardIndexRouteRouteImport } from './routes/dashboard/index.route'
-import { Route as MasterMasterIdIndexRouteRouteImport } from './routes/master/$masterId/index.route'
+import { Route as MastersMasterIdIndexRouteRouteImport } from './routes/masters/$masterId/index.route'
+import { Route as MasterTimeSlotsIndexRouteRouteImport } from './routes/master/time-slots/index.route'
+import { Route as MasterSettingsIndexRouteRouteImport } from './routes/master/settings/index.route'
+import { Route as MasterServicesIndexRouteRouteImport } from './routes/master/services/index.route'
+import { Route as MasterEarningsIndexRouteRouteImport } from './routes/master/earnings/index.route'
+import { Route as MasterBookingsIndexRouteRouteImport } from './routes/master/bookings/index.route'
 import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bookings/index.route'
 
 const IndexRouteRoute = IndexRouteRouteImport.update({
@@ -32,6 +38,11 @@ const TreatmentsIndexRouteRoute = TreatmentsIndexRouteRouteImport.update({
 const RegisterIndexRouteRoute = RegisterIndexRouteRouteImport.update({
   id: '/register/',
   path: '/register/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasterIndexRouteRoute = MasterIndexRouteRouteImport.update({
+  id: '/master/',
+  path: '/master/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginIndexRouteRoute = LoginIndexRouteRouteImport.update({
@@ -54,10 +65,40 @@ const DashboardIndexRouteRoute = DashboardIndexRouteRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MasterMasterIdIndexRouteRoute =
-  MasterMasterIdIndexRouteRouteImport.update({
-    id: '/master/$masterId/',
-    path: '/master/$masterId/',
+const MastersMasterIdIndexRouteRoute =
+  MastersMasterIdIndexRouteRouteImport.update({
+    id: '/masters/$masterId/',
+    path: '/masters/$masterId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterTimeSlotsIndexRouteRoute =
+  MasterTimeSlotsIndexRouteRouteImport.update({
+    id: '/master/time-slots/',
+    path: '/master/time-slots/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterSettingsIndexRouteRoute =
+  MasterSettingsIndexRouteRouteImport.update({
+    id: '/master/settings/',
+    path: '/master/settings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterServicesIndexRouteRoute =
+  MasterServicesIndexRouteRouteImport.update({
+    id: '/master/services/',
+    path: '/master/services/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterEarningsIndexRouteRoute =
+  MasterEarningsIndexRouteRouteImport.update({
+    id: '/master/earnings/',
+    path: '/master/earnings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const MasterBookingsIndexRouteRoute =
+  MasterBookingsIndexRouteRouteImport.update({
+    id: '/master/bookings/',
+    path: '/master/bookings/',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ClientBookingsIndexRouteRoute =
@@ -73,10 +114,16 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
+  '/master': typeof MasterIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
   '/treatments': typeof TreatmentsIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
-  '/master/$masterId': typeof MasterMasterIdIndexRouteRoute
+  '/master/bookings': typeof MasterBookingsIndexRouteRoute
+  '/master/earnings': typeof MasterEarningsIndexRouteRoute
+  '/master/services': typeof MasterServicesIndexRouteRoute
+  '/master/settings': typeof MasterSettingsIndexRouteRoute
+  '/master/time-slots': typeof MasterTimeSlotsIndexRouteRoute
+  '/masters/$masterId': typeof MastersMasterIdIndexRouteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRouteRoute
@@ -84,10 +131,16 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
+  '/master': typeof MasterIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
   '/treatments': typeof TreatmentsIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
-  '/master/$masterId': typeof MasterMasterIdIndexRouteRoute
+  '/master/bookings': typeof MasterBookingsIndexRouteRoute
+  '/master/earnings': typeof MasterEarningsIndexRouteRoute
+  '/master/services': typeof MasterServicesIndexRouteRoute
+  '/master/settings': typeof MasterSettingsIndexRouteRoute
+  '/master/time-slots': typeof MasterTimeSlotsIndexRouteRoute
+  '/masters/$masterId': typeof MastersMasterIdIndexRouteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,10 +149,16 @@ export interface FileRoutesById {
   '/explore/': typeof ExploreIndexRouteRoute
   '/home/': typeof HomeIndexRouteRoute
   '/login/': typeof LoginIndexRouteRoute
+  '/master/': typeof MasterIndexRouteRoute
   '/register/': typeof RegisterIndexRouteRoute
   '/treatments/': typeof TreatmentsIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
-  '/master/$masterId/': typeof MasterMasterIdIndexRouteRoute
+  '/master/bookings/': typeof MasterBookingsIndexRouteRoute
+  '/master/earnings/': typeof MasterEarningsIndexRouteRoute
+  '/master/services/': typeof MasterServicesIndexRouteRoute
+  '/master/settings/': typeof MasterSettingsIndexRouteRoute
+  '/master/time-slots/': typeof MasterTimeSlotsIndexRouteRoute
+  '/masters/$masterId/': typeof MastersMasterIdIndexRouteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,10 +168,16 @@ export interface FileRouteTypes {
     | '/explore'
     | '/home'
     | '/login'
+    | '/master'
     | '/register'
     | '/treatments'
     | '/client/bookings'
-    | '/master/$masterId'
+    | '/master/bookings'
+    | '/master/earnings'
+    | '/master/services'
+    | '/master/settings'
+    | '/master/time-slots'
+    | '/masters/$masterId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,10 +185,16 @@ export interface FileRouteTypes {
     | '/explore'
     | '/home'
     | '/login'
+    | '/master'
     | '/register'
     | '/treatments'
     | '/client/bookings'
-    | '/master/$masterId'
+    | '/master/bookings'
+    | '/master/earnings'
+    | '/master/services'
+    | '/master/settings'
+    | '/master/time-slots'
+    | '/masters/$masterId'
   id:
     | '__root__'
     | '/'
@@ -131,10 +202,16 @@ export interface FileRouteTypes {
     | '/explore/'
     | '/home/'
     | '/login/'
+    | '/master/'
     | '/register/'
     | '/treatments/'
     | '/client/bookings/'
-    | '/master/$masterId/'
+    | '/master/bookings/'
+    | '/master/earnings/'
+    | '/master/services/'
+    | '/master/settings/'
+    | '/master/time-slots/'
+    | '/masters/$masterId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -143,10 +220,16 @@ export interface RootRouteChildren {
   ExploreIndexRouteRoute: typeof ExploreIndexRouteRoute
   HomeIndexRouteRoute: typeof HomeIndexRouteRoute
   LoginIndexRouteRoute: typeof LoginIndexRouteRoute
+  MasterIndexRouteRoute: typeof MasterIndexRouteRoute
   RegisterIndexRouteRoute: typeof RegisterIndexRouteRoute
   TreatmentsIndexRouteRoute: typeof TreatmentsIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
-  MasterMasterIdIndexRouteRoute: typeof MasterMasterIdIndexRouteRoute
+  MasterBookingsIndexRouteRoute: typeof MasterBookingsIndexRouteRoute
+  MasterEarningsIndexRouteRoute: typeof MasterEarningsIndexRouteRoute
+  MasterServicesIndexRouteRoute: typeof MasterServicesIndexRouteRoute
+  MasterSettingsIndexRouteRoute: typeof MasterSettingsIndexRouteRoute
+  MasterTimeSlotsIndexRouteRoute: typeof MasterTimeSlotsIndexRouteRoute
+  MastersMasterIdIndexRouteRoute: typeof MastersMasterIdIndexRouteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -170,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/': {
+      id: '/master/'
+      path: '/master'
+      fullPath: '/master'
+      preLoaderRoute: typeof MasterIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/': {
@@ -200,11 +290,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/master/$masterId/': {
-      id: '/master/$masterId/'
-      path: '/master/$masterId'
-      fullPath: '/master/$masterId'
-      preLoaderRoute: typeof MasterMasterIdIndexRouteRouteImport
+    '/masters/$masterId/': {
+      id: '/masters/$masterId/'
+      path: '/masters/$masterId'
+      fullPath: '/masters/$masterId'
+      preLoaderRoute: typeof MastersMasterIdIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/time-slots/': {
+      id: '/master/time-slots/'
+      path: '/master/time-slots'
+      fullPath: '/master/time-slots'
+      preLoaderRoute: typeof MasterTimeSlotsIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/settings/': {
+      id: '/master/settings/'
+      path: '/master/settings'
+      fullPath: '/master/settings'
+      preLoaderRoute: typeof MasterSettingsIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/services/': {
+      id: '/master/services/'
+      path: '/master/services'
+      fullPath: '/master/services'
+      preLoaderRoute: typeof MasterServicesIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/earnings/': {
+      id: '/master/earnings/'
+      path: '/master/earnings'
+      fullPath: '/master/earnings'
+      preLoaderRoute: typeof MasterEarningsIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/master/bookings/': {
+      id: '/master/bookings/'
+      path: '/master/bookings'
+      fullPath: '/master/bookings'
+      preLoaderRoute: typeof MasterBookingsIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/client/bookings/': {
@@ -223,10 +348,16 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreIndexRouteRoute: ExploreIndexRouteRoute,
   HomeIndexRouteRoute: HomeIndexRouteRoute,
   LoginIndexRouteRoute: LoginIndexRouteRoute,
+  MasterIndexRouteRoute: MasterIndexRouteRoute,
   RegisterIndexRouteRoute: RegisterIndexRouteRoute,
   TreatmentsIndexRouteRoute: TreatmentsIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,
-  MasterMasterIdIndexRouteRoute: MasterMasterIdIndexRouteRoute,
+  MasterBookingsIndexRouteRoute: MasterBookingsIndexRouteRoute,
+  MasterEarningsIndexRouteRoute: MasterEarningsIndexRouteRoute,
+  MasterServicesIndexRouteRoute: MasterServicesIndexRouteRoute,
+  MasterSettingsIndexRouteRoute: MasterSettingsIndexRouteRoute,
+  MasterTimeSlotsIndexRouteRoute: MasterTimeSlotsIndexRouteRoute,
+  MastersMasterIdIndexRouteRoute: MastersMasterIdIndexRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
