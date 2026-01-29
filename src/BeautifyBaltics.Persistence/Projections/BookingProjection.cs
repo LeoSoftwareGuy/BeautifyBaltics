@@ -15,6 +15,7 @@ public record Booking(Guid Id) : Projection
     public required string ClientName { get; init; }
     public Guid MasterJobId { get; init; }
     public required string MasterJobTitle { get; init; }
+    public required string MasterJobCategoryName { get; init; }
     public Guid MasterAvailabilitySlotId { get; init; }
     public string? LocationCity { get; init; }
     public string? LocationCountry { get; init; }
@@ -70,6 +71,7 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
             ClientName = $"{client.FirstName} {client.LastName}",
             MasterJobId = @event.Data.MasterJobId,
             MasterJobTitle = masterJob.Title,
+            MasterJobCategoryName = masterJob.JobCategoryName,
             MasterAvailabilitySlotId = @event.Data.MasterAvailabilitySlotId,
             LocationCity = master.City,
             LocationCountry = master.Country,

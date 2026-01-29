@@ -48,6 +48,11 @@ public record BookingDTO
     public required string MasterJobTitle { get; init; }
 
     /// <summary>
+    /// Master job category name
+    /// </summary>
+    [Required]
+    public required string MasterJobCategoryName { get; init; }
+    /// <summary>
     /// Booking city
     /// </summary>
     public string? LocationCity { get; init; }

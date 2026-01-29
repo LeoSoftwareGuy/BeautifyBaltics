@@ -42,6 +42,11 @@ export type BookingDTO = {
    */
   masterJobTitle: string;
   /**
+   * Master job category name
+   * @minLength 1
+   */
+  masterJobCategoryName: string;
+  /**
    * Booking city
    * @nullable
    */

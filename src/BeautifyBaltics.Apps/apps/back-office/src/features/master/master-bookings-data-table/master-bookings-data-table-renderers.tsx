@@ -1,21 +1,18 @@
 import {
-  ActionIcon, Badge, Group, Stack, Text, Tooltip,
+  Anchor, Avatar, Badge, Button, Group, Stack, Text,
 } from '@mantine/core';
-import { IconCheck, IconX } from '@tabler/icons-react';
 
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
 
-const isNonEmpty = (value?: string | null): value is string => !!value && value.trim().length > 0;
-
 export function getStatusColor(status: BookingStatus): string {
   switch (status) {
     case BookingStatus.Confirmed:
-      return 'green';
+      return 'teal';
     case BookingStatus.Requested:
       return 'yellow';
     case BookingStatus.Completed:
-      return 'blue';
+      return 'gray';
     case BookingStatus.Cancelled:
       return 'red';
     default:
@@ -23,60 +20,74 @@ export function getStatusColor(status: BookingStatus): string {
   }
 }
 
-export function renderScheduledAt(booking: FindBookingsResponse) {
+export function getStatusLabel(status: BookingStatus): string {
+  switch (status) {
+    case BookingStatus.Requested:
+      return 'PENDING';
+    default:
+      return status.toUpperCase();
+  }
+}
+
+export function renderClient(booking: FindBookingsResponse) {
   return (
-    <Stack gap={0}>
-      <Text size="sm" fw={500}>
-        {datetime.formatDate(booking.scheduledAt)}
-      </Text>
-      <Text size="xs" c="dimmed">
-        {datetime.formatTimeFromDate(booking.scheduledAt)}
-      </Text>
+    <Group gap="sm" wrap="nowrap">
+      <Avatar
+        name={booking.clientName}
+        color="initials"
+        size="md"
+        radius="xl"
+      />
+      <Stack gap={2}>
+        <Text size="sm" fw={500}>{booking.clientName}</Text>
+        <Text size="xs" c="dimmed">Client</Text>
+      </Stack>
+    </Group>
+  );
+}
+
+export function renderJobDetails(booking: FindBookingsResponse) {
+  return (
+    <Stack gap={2}>
+      <Text size="sm" fw={500}>{booking.masterJobTitle}</Text>
+      <Text size="xs" c="dimmed">{booking.masterJobCategoryName}</Text>
     </Stack>
   );
 }
 
-export function renderDuration(booking: FindBookingsResponse) {
-  return <Text size="sm">{booking.duration}</Text>;
-}
-
-export function renderPrice(booking: FindBookingsResponse) {
-  return (
-    <Text size="sm" fw={500}>
-      €
-      {booking.price.toFixed(2)}
-    </Text>
-  );
-}
-
-export function renderLocation(booking: FindBookingsResponse) {
-  const lineOne = [booking.locationAddressLine1, booking.locationAddressLine2]
-    .filter(isNonEmpty)
-    .join(', ');
-  const lineTwo = [booking.locationPostalCode, booking.locationCity, booking.locationCountry]
-    .filter(isNonEmpty)
-    .join(', ');
-
-  if (!lineOne && !lineTwo) {
-    return <Text size="sm" c="dimmed">Location not provided</Text>;
-  }
+export function renderDateTime(booking: FindBookingsResponse) {
+  const date = datetime.formatDate(booking.scheduledAt);
+  const time = datetime.formatTimeFromDate(booking.scheduledAt);
 
   return (
     <Stack gap={2}>
-      <Text size="sm">{lineOne || lineTwo}</Text>
-      {lineOne && lineTwo ? (
-        <Text size="xs" c="dimmed">
-          {lineTwo}
-        </Text>
-      ) : null}
+      <Text size="sm" fw={500}>{date}</Text>
+      <Text size="xs" c="brand" fw={500}>{time}</Text>
+    </Stack>
+  );
+}
+
+export function renderPricing(booking: FindBookingsResponse) {
+  return (
+    <Stack gap={2}>
+      <Text size="sm" fw={600}>
+        €
+        {booking.price.toFixed(2)}
+      </Text>
+      <Text size="xs" c="dimmed">{booking.duration}</Text>
     </Stack>
   );
 }
 
 export function renderStatus(booking: FindBookingsResponse) {
   return (
-    <Badge color={getStatusColor(booking.status)} variant="light">
-      {booking.status}
+    <Badge
+      color={getStatusColor(booking.status)}
+      variant="light"
+      size="sm"
+      tt="uppercase"
+    >
+      {getStatusLabel(booking.status)}
     </Badge>
   );
 }
@@ -111,40 +122,53 @@ export function ActionsRenderer({
 }: ActionsRendererProps) {
   const showConfirm = canConfirmBooking(booking);
   const showCancel = canCancelBooking(booking);
+  const isCompleted = booking.status === BookingStatus.Completed;
+
+  if (isCompleted) {
+    return (
+      <Anchor size="xs" c="brand">
+        View Invoice
+      </Anchor>
+    );
+  }
 
   if (!showConfirm && !showCancel) {
     return <Text size="sm" c="dimmed">-</Text>;
   }
 
   return (
-    <Group gap="xs">
+    <Group gap="xs" wrap="nowrap">
       {showConfirm && (
-        <Tooltip label="Confirm booking">
-          <ActionIcon
-            variant="light"
-            color="green"
-            size="sm"
-            onClick={() => onConfirm(booking.id)}
-            loading={isConfirming}
-            disabled={isCancelling}
-          >
-            <IconCheck size={16} />
-          </ActionIcon>
-        </Tooltip>
+        <Button
+          variant="filled"
+          color="brand"
+          size="xs"
+          onClick={() => onConfirm(booking.id)}
+          loading={isConfirming}
+          disabled={isCancelling}
+        >
+          Confirm
+        </Button>
       )}
-      {showCancel && (
-        <Tooltip label="Cancel booking">
-          <ActionIcon
-            variant="light"
-            color="red"
-            size="sm"
-            onClick={() => onCancel(booking.id)}
-            loading={isCancelling}
-            disabled={isConfirming}
-          >
-            <IconX size={16} />
-          </ActionIcon>
-        </Tooltip>
+      <Button
+        variant="outline"
+        color="gray"
+        size="xs"
+        disabled={isConfirming || isCancelling}
+      >
+        Reschedule
+      </Button>
+      {showCancel && !showConfirm && (
+        <Button
+          variant="outline"
+          color="red"
+          size="xs"
+          onClick={() => onCancel(booking.id)}
+          loading={isCancelling}
+          disabled={isConfirming}
+        >
+          Cancel
+        </Button>
       )}
     </Group>
   );

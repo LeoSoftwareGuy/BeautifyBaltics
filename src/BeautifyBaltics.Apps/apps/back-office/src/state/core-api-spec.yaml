@@ -1672,6 +1672,7 @@ components:
         - duration
         - id
         - masterId
+        - masterJobCategoryName
         - masterJobId
         - masterJobTitle
         - masterName
@@ -1708,6 +1709,10 @@ components:
           minLength: 1
           type: string
           description: Master job title
+        masterJobCategoryName:
+          minLength: 1
+          type: string
+          description: Master job category name
         locationCity:
           type: string
           description: Booking city

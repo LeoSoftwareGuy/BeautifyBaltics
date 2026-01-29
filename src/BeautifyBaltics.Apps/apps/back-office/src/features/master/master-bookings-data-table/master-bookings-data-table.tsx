@@ -25,10 +25,10 @@ import datetime from '@/utils/datetime';
 import { BookingsFilters } from './master-bookings-data-table-filters';
 import {
   ActionsRenderer,
-  renderDuration,
-  renderLocation,
-  renderPrice,
-  renderScheduledAt,
+  renderClient,
+  renderDateTime,
+  renderJobDetails,
+  renderPricing,
   renderStatus,
 } from './master-bookings-data-table-renderers';
 
@@ -42,7 +42,8 @@ export function MasterBookingsDataTable() {
   const queryClient = useQueryClient();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
-  const [status, setStatus] = useState<string>('');
+  const [status, setStatus] = useState<string>('all');
+  const [searchValue, setSearchValue] = useState('');
   const [actionBookingId, setActionBookingId] = useState<string | null>(null);
 
   const {
@@ -68,7 +69,7 @@ export function MasterBookingsDataTable() {
       pageSize: query.pageSize,
       sortBy: query.sortBy,
       ascending: query.ascending,
-      status: status ? (status as BookingStatus) : undefined,
+      status: status && status !== 'all' ? (status as BookingStatus) : undefined,
       from: datetime.toDate(dateRange[0]),
       to: datetime.toDate(dateRange[1]),
     },
@@ -145,52 +146,47 @@ export function MasterBookingsDataTable() {
   };
 
   const handleStatusChange = (value: string | null) => {
-    setStatus(value ?? '');
+    setStatus(value ?? 'all');
+    onPageChange(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchValue(value);
     onPageChange(1);
   };
 
   const columns: PagedDataTableColumn<FindBookingsResponse>[] = [
     {
       accessor: 'clientName',
-      title: 'Client',
-      sortKey: 'clientName',
+      title: 'CLIENT',
+      render: renderClient,
     },
     {
       accessor: 'masterJobTitle',
-      title: 'Service',
-      sortKey: 'masterJobTitle',
-    },
-    {
-      accessor: 'locationCity',
-      title: 'Location',
-      render: renderLocation,
+      title: 'JOB DETAILS',
+      render: renderJobDetails,
     },
     {
       accessor: 'scheduledAt',
-      title: 'Date & Time',
+      title: 'DATE & TIME',
       sortKey: 'scheduledAt',
-      render: renderScheduledAt,
-    },
-    {
-      accessor: 'duration',
-      title: 'Duration',
-      render: renderDuration,
+      render: renderDateTime,
     },
     {
       accessor: 'price',
-      title: 'Price',
+      title: 'PRICING',
       sortKey: 'price',
-      render: renderPrice,
+      render: renderPricing,
     },
     {
       accessor: 'status',
-      title: 'Status',
+      title: 'STATUS',
       sortKey: 'status',
       render: renderStatus,
     },
     {
       accessor: 'actions',
-      title: 'Actions',
+      title: 'ACTIONS',
       render: (booking) => (
         <ActionsRenderer
           booking={booking}
@@ -204,18 +200,22 @@ export function MasterBookingsDataTable() {
   ];
 
   return (
-    <Card withBorder>
-      <Stack gap="md">
-        <div>
-          <Title order={3}>My Bookings</Title>
-          <Text c="dimmed" fz="sm">Manage your appointments and client bookings</Text>
-        </div>
+    <Card withBorder radius="md" p="lg">
+      <Stack gap="lg">
+        <Stack gap="sm">
+          <Title order={2} fw={600}>Bookings Management</Title>
+          <Text c="dimmed" size="sm">
+            Organize your schedule and client requests effectively.
+          </Text>
+        </Stack>
 
         <BookingsFilters
           dateRange={dateRange}
           onDateRangeChange={handleDateRangeChange}
           status={status}
           onStatusChange={handleStatusChange}
+          searchValue={searchValue}
+          onSearchChange={handleSearchChange}
         />
 
         <PagedDataTable<FindBookingsResponsePagedResponse, FindBookingsResponse>
