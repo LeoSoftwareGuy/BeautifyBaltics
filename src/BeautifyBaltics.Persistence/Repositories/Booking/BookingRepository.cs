@@ -35,6 +35,14 @@ public class BookingRepository(IQuerySession session) : QueryRepository<Projecti
             query = query.Where(x => x.ScheduledAt <= to);
         }
 
+        if (!string.IsNullOrWhiteSpace(search.Search))
+        {
+            query = query.Where(x =>
+                x.ClientName.Contains(search.Search, StringComparison.OrdinalIgnoreCase) ||
+                x.MasterJobTitle.Contains(search.Search, StringComparison.OrdinalIgnoreCase)
+            );
+        }
+
         return query.OrderBy(x => x.ScheduledAt);
     }
 }

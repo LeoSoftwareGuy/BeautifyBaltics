@@ -72,6 +72,7 @@ export function MasterBookingsDataTable() {
       status: status && status !== 'all' ? (status as BookingStatus) : undefined,
       from: datetime.toDate(dateRange[0]),
       to: datetime.toDate(dateRange[1]),
+      search: searchValue || undefined,
     },
     {
       query: {

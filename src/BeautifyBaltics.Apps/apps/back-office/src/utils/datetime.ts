@@ -63,6 +63,71 @@ const minutesToTimeSpan = (minutes: number): string => {
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:00`;
 };
 
+/**
+ * Format an hour number (0-23) to 12-hour AM/PM format
+ */
+const formatHour = (hour: number): string => {
+  if (hour === 0) return '12:00 AM';
+  if (hour === 12) return '12:00 PM';
+  if (hour > 12) return `${hour - 12}:00 PM`;
+  return `${hour}:00 AM`;
+};
+
+/**
+ * Parse a time string (HH:mm) to total minutes from midnight
+ */
+const parseTimeToMinutes = (time: string): number => {
+  const [hours, minutes] = time.split(':').map(Number);
+  return hours * 60 + (minutes || 0);
+};
+
+/**
+ * Get an array of 7 dates for a week starting from the given date (Monday-based)
+ */
+const getWeekDates = (startDate: Date): Date[] => {
+  const start = dayjs(startDate).startOf('week').add(1, 'day'); // Monday
+  return Array.from({ length: 7 }, (_, i) => start.add(i, 'day').toDate());
+};
+
+/**
+ * Format a week range as a human-readable string
+ */
+const formatWeekRange = (weekStart: Date): string => {
+  const start = dayjs(weekStart);
+  const end = start.add(6, 'day');
+  if (start.month() === end.month()) {
+    return `${start.format('MMM D')} — ${end.format('D, YYYY')}`;
+  }
+  return `${start.format('MMM D')} — ${end.format('MMM D, YYYY')}`;
+};
+
+/**
+ * Check if a date is today
+ */
+const isToday = (inputDate: Date | string): boolean => dayjs(inputDate).isSame(dayjs(), 'day');
+
+/**
+ * Check if a date is tomorrow
+ */
+const isTomorrow = (inputDate: Date | string): boolean => dayjs(inputDate).isSame(dayjs().add(1, 'day'), 'day');
+
+/**
+ * Calculate minutes difference between a date and now
+ */
+const minutesFromNow = (inputDate: Date | string): number => dayjs(inputDate).diff(dayjs(), 'minute');
+
+/**
+ * Format minutes into hours and minutes (e.g., "2H 30M")
+ */
+const formatDuration = (totalMinutes: number): string => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}H ${minutes}M`;
+};
+
+const HOURS = Array.from({ length: 17 }, (_, i) => i + 7); // 07:00 - 23:00
+const DAYS_OF_WEEK = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
 const datetime = {
   formatDate,
   formatDateTime,
@@ -76,6 +141,16 @@ const datetime = {
   formatTimeSlot,
   toDate,
   minutesToTimeSpan,
+  formatHour,
+  parseTimeToMinutes,
+  getWeekDates,
+  formatWeekRange,
+  isToday,
+  isTomorrow,
+  minutesFromNow,
+  formatDuration,
+  HOURS,
+  DAYS_OF_WEEK,
 };
 
 export default datetime;

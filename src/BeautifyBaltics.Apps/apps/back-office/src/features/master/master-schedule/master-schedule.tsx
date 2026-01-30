@@ -4,9 +4,11 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
 import {
+  getFindMasterAvailabilitiesQueryKey,
   useCreateMasterAvailability,
   useDeleteMasterAvailability,
   useFindMasterAvailabilities,
@@ -14,43 +16,61 @@ import {
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
+import { MasterSchedulePanelUpcomingDrawer } from './components';
 import { MasterSchedulePanel } from './master-schedule-panel';
 
 export function MasterSchedule() {
+  const queryClient = useQueryClient();
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedRange, setSelectedRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startTimeInput, setStartTimeInput] = useState('');
   const [endTimeInput, setEndTimeInput] = useState('');
-  const [bulkStartTimeInput, setBulkStartTimeInput] = useState('');
-  const [bulkEndTimeInput, setBulkEndTimeInput] = useState('');
-  const [bulkSlotDuration, setBulkSlotDuration] = useState(60);
-  const [bulkDayCount, setBulkDayCount] = useState(1);
+  const [isUpcomingDrawerOpen, setUpcomingDrawerOpen] = useState(false);
 
+  // Fetch availability for a 1-month range to cover the calendar view
   const dateParams = useMemo(() => {
-    if (!selectedDate) return { startAt: undefined, endAt: undefined };
+    const now = dayjs();
     return {
-      startAt: dayjs(selectedDate).startOf('day').toDate(),
-      endAt: dayjs(selectedDate).endOf('day').toDate(),
+      startAt: now.startOf('day').toDate(),
+      endAt: now.add(1, 'month').endOf('day').toDate(),
     };
-  }, [selectedDate]);
+  }, []);
 
   const {
     data: availabilityData,
     isLoading: isAvailabilityLoading,
     isError: isAvailabilityError,
-    refetch,
   } = useFindMasterAvailabilities(
     masterId,
     { masterId, ...dateParams },
-    { query: { enabled: !!masterId && !!selectedDate } },
+    { query: { enabled: !!masterId } },
   );
+
+  const invalidateAvailabilities = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: getFindMasterAvailabilitiesQueryKey(masterId),
+      refetchType: 'all',
+    });
+  };
 
   const createAvailability = useCreateMasterAvailability({
     mutation: {
       onSuccess: async () => {
-        await refetch();
+        await invalidateAvailabilities();
+        notifications.show({
+          title: 'Slot created',
+          message: 'Your availability slot has been added.',
+          color: 'green',
+        });
+      },
+      onError: () => {
+        notifications.show({
+          title: 'Failed to create slot',
+          message: 'An error occurred while creating the slot.',
+          color: 'red',
+        });
       },
     },
   });
@@ -58,7 +78,19 @@ export function MasterSchedule() {
   const deleteAvailability = useDeleteMasterAvailability({
     mutation: {
       onSuccess: async () => {
-        await refetch();
+        await invalidateAvailabilities();
+        notifications.show({
+          title: 'Slot removed',
+          message: 'Your availability slot has been removed.',
+          color: 'green',
+        });
+      },
+      onError: () => {
+        notifications.show({
+          title: 'Failed to remove slot',
+          message: 'An error occurred while removing the slot.',
+          color: 'red',
+        });
       },
     },
   });
@@ -70,17 +102,26 @@ export function MasterSchedule() {
         id: slot.id,
         startTime: datetime.formatTimeFromDate(slot.startAt),
         endTime: datetime.formatTimeFromDate(slot.endAt),
+        date: new Date(slot.startAt),
+        isRecurring: false,
       }))
-      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [availabilityData]);
 
+  const futureSlots = useMemo(
+    () => slots.filter((slot) => dayjs(slot.date).isAfter(dayjs())),
+    [slots],
+  );
+
   const handleAddSlot = async () => {
-    if (!selectedDate || !startTimeInput || !endTimeInput || !masterId) return;
+    const [rangeStart, rawRangeEnd] = selectedRange;
+    if (!rangeStart || !startTimeInput || !endTimeInput || !masterId) return;
+    const rangeEnd = rawRangeEnd ?? rangeStart;
 
-    const startAt = datetime.createDateTimeFromDateAndTime(selectedDate, startTimeInput);
-    const endAt = datetime.createDateTimeFromDateAndTime(selectedDate, endTimeInput);
+    const sampleStartAt = datetime.createDateTimeFromDateAndTime(rangeStart, startTimeInput);
+    const sampleEndAt = datetime.createDateTimeFromDateAndTime(rangeStart, endTimeInput);
 
-    if (!dayjs(endAt).isAfter(dayjs(startAt))) {
+    if (!dayjs(sampleEndAt).isAfter(dayjs(sampleStartAt))) {
       notifications.show({
         title: 'Invalid time slot',
         message: 'End time must be after the start time.',
@@ -89,25 +130,52 @@ export function MasterSchedule() {
       return;
     }
 
-    if (dayjs(startAt).isBefore(dayjs())) {
-      notifications.show({
-        title: 'Invalid time slot',
-        message: 'Availability slots must start in the future.',
-        color: 'red',
-      });
-      return;
+    const now = dayjs();
+    let startDay = dayjs(rangeStart).startOf('day');
+    let endDay = dayjs(rangeEnd).startOf('day');
+    if (endDay.isBefore(startDay)) {
+      const temp = startDay;
+      startDay = endDay;
+      endDay = temp;
+    }
+
+    const slotsToCreate: { start: Date; end: Date }[] = [];
+    let cursor = startDay;
+    while (!cursor.isAfter(endDay)) {
+      if (cursor.isBefore(now.startOf('day'))) {
+        notifications.show({
+          title: 'Invalid date',
+          message: `Selected date ${cursor.format('MMM D, YYYY')} is in the past.`,
+          color: 'red',
+        });
+        return;
+      }
+
+      const slotStart = datetime.createDateTimeFromDateAndTime(cursor.toDate(), startTimeInput);
+      const slotEnd = datetime.createDateTimeFromDateAndTime(cursor.toDate(), endTimeInput);
+      if (dayjs(slotStart).isBefore(now)) {
+        notifications.show({
+          title: 'Invalid time slot',
+          message: 'Availability slots must start in the future.',
+          color: 'red',
+        });
+        return;
+      }
+      slotsToCreate.push({ start: slotStart, end: slotEnd });
+      cursor = cursor.add(1, 'day');
     }
 
     await createAvailability.mutateAsync({
       id: masterId,
       data: {
         masterId,
-        availability: [{ start: startAt, end: endAt }],
+        availability: slotsToCreate,
       },
     });
 
     setStartTimeInput('');
     setEndTimeInput('');
+    setSelectedRange([null, null]);
   };
 
   const handleRemoveSlot = async (slotId: string) => {
@@ -117,84 +185,6 @@ export function MasterSchedule() {
       id: masterId,
       availabilityId: slotId,
     });
-  };
-
-  const handleGenerateSlots = async () => {
-    if (!selectedDate || !bulkStartTimeInput || !bulkEndTimeInput || !masterId) return;
-
-    const dailyStart = datetime.createDateTimeFromDateAndTime(selectedDate, bulkStartTimeInput);
-    const dailyEnd = datetime.createDateTimeFromDateAndTime(selectedDate, bulkEndTimeInput);
-
-    if (!dayjs(dailyEnd).isAfter(dayjs(dailyStart))) {
-      notifications.show({
-        title: 'Invalid time range',
-        message: 'Bulk schedule end time must be after the start time.',
-        color: 'red',
-      });
-      return;
-    }
-
-    if (bulkSlotDuration <= 0) {
-      notifications.show({
-        title: 'Invalid duration',
-        message: 'Slot duration must be greater than zero.',
-        color: 'red',
-      });
-      return;
-    }
-
-    if (bulkDayCount <= 0) {
-      notifications.show({
-        title: 'Invalid day count',
-        message: 'Please choose at least one day.',
-        color: 'red',
-      });
-      return;
-    }
-
-    const slots: { start: Date; end: Date }[] = [];
-    for (let dayOffset = 0; dayOffset < bulkDayCount; dayOffset += 1) {
-      const dayStart = dayjs(dailyStart).add(dayOffset, 'day');
-      const dayEnd = dayjs(dailyEnd).add(dayOffset, 'day');
-      let cursor = dayStart;
-
-      while (cursor.isBefore(dayEnd)) {
-        const slotEnd = cursor.add(bulkSlotDuration, 'minute');
-        if (slotEnd.isAfter(dayEnd) || slotEnd.isSame(cursor)) {
-          break;
-        }
-
-        slots.push({
-          start: cursor.toDate(),
-          end: slotEnd.toDate(),
-        });
-
-        cursor = slotEnd;
-      }
-    }
-
-    if (slots.length === 0) {
-      notifications.show({
-        title: 'No slots generated',
-        message: 'Adjust the time range or duration to create slots.',
-        color: 'yellow',
-      });
-      return;
-    }
-
-    await createAvailability.mutateAsync({
-      id: masterId,
-      data: {
-        masterId,
-        availability: slots.map((slot) => ({
-          start: slot.start,
-          end: slot.end,
-        })),
-      },
-    });
-
-    setBulkStartTimeInput('');
-    setBulkEndTimeInput('');
   };
 
   if (isUserLoading || isAvailabilityLoading) {
@@ -215,26 +205,25 @@ export function MasterSchedule() {
   }
 
   return (
-    <MasterSchedulePanel
-      selectedDate={selectedDate}
-      onDateChange={setSelectedDate}
-      startTimeInput={startTimeInput}
-      onStartTimeInputChange={setStartTimeInput}
-      endTimeInput={endTimeInput}
-      onEndTimeInputChange={setEndTimeInput}
-      slots={slots}
-      onAddSlot={handleAddSlot}
-      onRemoveSlot={handleRemoveSlot}
-      bulkStartTimeInput={bulkStartTimeInput}
-      onBulkStartTimeInputChange={setBulkStartTimeInput}
-      bulkEndTimeInput={bulkEndTimeInput}
-      onBulkEndTimeInputChange={setBulkEndTimeInput}
-      bulkSlotDuration={bulkSlotDuration}
-      onBulkSlotDurationChange={setBulkSlotDuration}
-      bulkDayCount={bulkDayCount}
-      onBulkDayCountChange={setBulkDayCount}
-      onGenerateBulkSlots={handleGenerateSlots}
-      isLoading={createAvailability.isPending || deleteAvailability.isPending}
-    />
+    <>
+      <MasterSchedulePanel
+        selectedRange={selectedRange}
+        onRangeChange={setSelectedRange}
+        startTimeInput={startTimeInput}
+        onStartTimeInputChange={setStartTimeInput}
+        endTimeInput={endTimeInput}
+        onEndTimeInputChange={setEndTimeInput}
+        slots={slots}
+        onAddSlot={handleAddSlot}
+        onRemoveSlot={handleRemoveSlot}
+        isLoading={createAvailability.isPending || deleteAvailability.isPending}
+        onViewAllUpcoming={() => setUpcomingDrawerOpen(true)}
+      />
+      <MasterSchedulePanelUpcomingDrawer
+        opened={isUpcomingDrawerOpen}
+        onClose={() => setUpcomingDrawerOpen(false)}
+        slots={futureSlots}
+      />
+    </>
   );
 }

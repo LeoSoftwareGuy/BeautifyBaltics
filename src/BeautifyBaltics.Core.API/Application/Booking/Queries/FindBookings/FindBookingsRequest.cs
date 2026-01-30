@@ -29,4 +29,9 @@ public record FindBookingsRequest : PagedRequest
     /// Filter by to
     /// </summary>
     public DateTime? To { get; init; }
+
+    /// <summary>
+    /// Search by client name or job title
+    /// </summary>
+    public string? Search { get; init; }
 }

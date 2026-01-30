@@ -26,6 +26,7 @@ namespace BeautifyBaltics.Persistence.Projections
             Identity<MasterAvailabilitySlotUpdated>(e => e.MasterAvailabilityId);
             Identity<MasterAvailabilitySlotBooked>(e => e.MasterAvailabilitySlotId);
             Identity<MasterAvailabilitySlotRestored>(e => e.MasterAvailabilitySlotId);
+            Identity<MasterAvailabilitySlotDeleted>(e => e.MasterAvailabilitySlotId);
 
             DeleteEvent<MasterAvailabilitySlotDeleted>();
         }

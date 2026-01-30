@@ -805,6 +805,10 @@ export type FindBookingsParams = {
  */
   to?: Date;
   /**
+ * Search by client name or job title
+ */
+  search?: string;
+  /**
  * Page number
  */
   page?: number;

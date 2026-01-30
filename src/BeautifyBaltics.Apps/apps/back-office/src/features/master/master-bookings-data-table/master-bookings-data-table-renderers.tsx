@@ -150,15 +150,7 @@ export function ActionsRenderer({
           Confirm
         </Button>
       )}
-      <Button
-        variant="outline"
-        color="gray"
-        size="xs"
-        disabled={isConfirming || isCancelling}
-      >
-        Reschedule
-      </Button>
-      {showCancel && !showConfirm && (
+      {showCancel && (
         <Button
           variant="outline"
           color="red"

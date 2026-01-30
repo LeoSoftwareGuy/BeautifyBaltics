@@ -40,6 +40,11 @@ paths:
           schema:
             type: string
             format: date-time
+        - name: search
+          in: query
+          description: Search by client name or job title
+          schema:
+            type: string
         - name: page
           in: query
           description: Page number
