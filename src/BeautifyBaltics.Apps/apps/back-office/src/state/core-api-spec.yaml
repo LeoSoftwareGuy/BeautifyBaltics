@@ -2288,6 +2288,9 @@ components:
         name:
           type: string
           nullable: true
+        imageUrl:
+          type: string
+          nullable: true
       additionalProperties: false
     JobCommandDTO:
       required:

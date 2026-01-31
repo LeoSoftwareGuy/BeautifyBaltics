@@ -398,6 +398,8 @@ export type JobCategoryDTO = {
   id?: string;
   /** @nullable */
   name: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
 };
 
 export type JobCommandDTO = {

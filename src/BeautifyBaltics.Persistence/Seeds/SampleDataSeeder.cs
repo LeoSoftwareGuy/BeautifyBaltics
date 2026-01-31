@@ -19,19 +19,8 @@ public class SampleDataSeeder : IInitialData
     private readonly IHostEnvironment _environment;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<SampleDataSeeder> _logger;
-    private readonly string? _mediaRoot;
+    private readonly string? _seedAssetsRoot;
     private readonly Dictionary<Guid, CategoryMediaAssets?> _categoryMediaCache = new();
-
-    private static readonly Dictionary<string, string> CategoryFolderOverrides = new(StringComparer.OrdinalIgnoreCase)
-    {
-        { "Brows", "brows" },
-        { "Tattoo", "tatoo" },
-        { "Piercing", "piercing" },
-        { "Hair", "hair" },
-        { "Nails", "nails" },
-        { "Grooming", "grooming"},
-        { "Color", "color" }
-    };
 
     public SampleDataSeeder(
         IHostEnvironment environment,
@@ -41,7 +30,7 @@ public class SampleDataSeeder : IInitialData
         _environment = environment;
         _scopeFactory = scopeFactory;
         _logger = logger;
-        _mediaRoot = ResolveMediaRoot();
+        _seedAssetsRoot = ResolveSeedAssetsRoot();
     }
 
     public async Task Populate(IDocumentStore store, CancellationToken cancellation)
@@ -93,7 +82,8 @@ public class SampleDataSeeder : IInitialData
 
         foreach (var category in _categories)
         {
-            session.Store(category.ToDocument());
+            var imageDataUrl = CreateDataUrl(category.ImageAsset);
+            session.Store(category.ToDocument(imageDataUrl));
         }
     }
 
@@ -114,7 +104,8 @@ public class SampleDataSeeder : IInitialData
         IDocumentSession session,
         CancellationToken cancellation,
         IBlobStorageService<MasterAggregate.MasterProfileImage> masterProfileBlobStorage,
-        IBlobStorageService<MasterJobImage> masterJobImageBlobStorage)
+        IBlobStorageService<MasterJobImage> masterJobImageBlobStorage
+    )
     {
         var jobLookup = _jobs.ToDictionary(j => j.Id);
         var availabilityEvents = new Dictionary<Guid, List<MasterAvailabilitySlotCreated>>();
@@ -138,7 +129,8 @@ public class SampleDataSeeder : IInitialData
                     null,
                     null,
                     null,
-                    null)
+                    null
+                )
             };
 
             var primaryJob = master.JobOfferings
@@ -184,9 +176,10 @@ public class SampleDataSeeder : IInitialData
         MasterSeed master,
         JobSeed? primaryJob,
         IBlobStorageService<MasterAggregate.MasterProfileImage> masterProfileBlobStorage,
-        CancellationToken cancellation)
+        CancellationToken cancellation
+    )
     {
-        if (primaryJob is null || _mediaRoot is null) return null;
+        if (primaryJob is null || _seedAssetsRoot is null) return null;
 
         var assets = GetCategoryMediaAssets(primaryJob.CategoryId, primaryJob.CategoryName);
         if (assets?.ProfileImagePath is null) return null;
@@ -216,9 +209,10 @@ public class SampleDataSeeder : IInitialData
         MasterJobCreated masterJobCreated,
         JobSeed jobDefinition,
         IBlobStorageService<MasterJobImage> masterJobImageBlobStorage,
-        CancellationToken cancellation)
+        CancellationToken cancellation
+    )
     {
-        if (_mediaRoot is null) return Array.Empty<MasterJobImageUploaded>();
+        if (_seedAssetsRoot is null) return Array.Empty<MasterJobImageUploaded>();
 
         var assets = GetCategoryMediaAssets(jobDefinition.CategoryId, jobDefinition.CategoryName);
         if (assets is null || assets.JobImages.Count == 0) return Array.Empty<MasterJobImageUploaded>();
@@ -271,81 +265,66 @@ public class SampleDataSeeder : IInitialData
 
     private CategoryMediaAssets? GetCategoryMediaAssets(Guid categoryId, string categoryName)
     {
-        if (_mediaRoot is null) return null;
+        if (_seedAssetsRoot is null) return null;
 
         if (_categoryMediaCache.TryGetValue(categoryId, out var cached))
         {
             return cached;
         }
 
-        var folderPath = ResolveCategoryFolder(categoryName);
-        if (folderPath is null)
+        if (!CategoryAssetDefinitions.TryGetValue(categoryId, out var definition))
         {
+            _logger.LogDebug("No asset definition found for category {CategoryName}", categoryName);
             _categoryMediaCache[categoryId] = null;
             return null;
         }
 
-        var files = Directory.EnumerateFiles(folderPath).ToList();
-        var profile = files.FirstOrDefault(IsMasterImage);
-        var jobImages = files.Where(f => !IsMasterImage(f)).ToList();
+        var profile = GetAssetPath(definition.ProfileImageRelativePath);
+        var jobImages = definition.JobImageRelativePaths
+            .Select(GetAssetPath)
+            .Where(path => path is not null)!
+            .Cast<string>()
+            .ToList();
 
         var assets = new CategoryMediaAssets(profile, jobImages);
         _categoryMediaCache[categoryId] = assets;
         return assets;
     }
 
-    private string? ResolveCategoryFolder(string categoryName)
+    private string? GetAssetPath(string? relativePath)
     {
-        if (_mediaRoot is null) return null;
-
-        var candidates = new List<string>();
-
-        if (CategoryFolderOverrides.TryGetValue(categoryName, out var overrideName))
-        {
-            candidates.Add(overrideName);
-        }
-
-        candidates.Add(categoryName);
-        candidates.Add(categoryName.Replace(" ", string.Empty));
-        candidates.Add(categoryName.ToLowerInvariant());
-        candidates.Add(categoryName.ToUpperInvariant());
-
-        foreach (var path in candidates
-                     .Select(name => Path.Combine(_mediaRoot, name))
-                     .Distinct(StringComparer.OrdinalIgnoreCase))
-        {
-            if (Directory.Exists(path))
-            {
-                return path;
-            }
-        }
-
-        _logger.LogDebug("No media directory found for category {CategoryName}", categoryName);
-        return null;
+        if (string.IsNullOrWhiteSpace(relativePath) || _seedAssetsRoot is null) return null;
+        var combined = Path.GetFullPath(Path.Combine(_seedAssetsRoot, relativePath));
+        if (!combined.StartsWith(_seedAssetsRoot, StringComparison.OrdinalIgnoreCase)) return null;
+        return File.Exists(combined) ? combined : null;
     }
 
-    private string? ResolveMediaRoot()
+    private string? CreateDataUrl(string? relativeAssetPath)
     {
-        var candidates = new[]
-        {
-            @"C:\Dev\Media",
-            "/mnt/c/Dev/Media"
-        };
+        var absolutePath = GetAssetPath(relativeAssetPath);
+        if (absolutePath is null) return null;
 
-        foreach (var candidate in candidates)
+        try
         {
-            if (!string.IsNullOrWhiteSpace(candidate) && Directory.Exists(candidate))
-            {
-                return candidate;
-            }
+            var bytes = File.ReadAllBytes(absolutePath);
+            var mimeType = GetContentType(Path.GetExtension(absolutePath));
+            return $"data:{mimeType};base64,{Convert.ToBase64String(bytes)}";
         }
-
-        _logger.LogWarning("Media directory not found. Expected one of: {Candidates}", string.Join(", ", candidates));
-        return null;
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Unable to read seed asset at {Path}", absolutePath);
+            return null;
+        }
     }
 
-    private static bool IsMasterImage(string filePath) =>
-        string.Equals(Path.GetFileNameWithoutExtension(filePath), "Master", StringComparison.OrdinalIgnoreCase);
+    private string? ResolveSeedAssetsRoot()
+    {
+        var assetsPath = Path.Combine(AppContext.BaseDirectory, "Seeds", "Assets");
+        if (Directory.Exists(assetsPath)) return assetsPath;
+
+        _logger.LogWarning("Seed assets directory not found at {AssetsPath}", assetsPath);
+        return null;
+    }
 
     private static BlobFileDTO CreateBlobFileDto(string filePath, out long fileSize)
     {
@@ -372,80 +351,163 @@ public class SampleDataSeeder : IInitialData
 
     private sealed record CategoryMediaAssets(string? ProfileImagePath, IReadOnlyList<string> JobImages);
 
+    private sealed record CategoryAssetDefinition(string? ProfileImageRelativePath, IReadOnlyList<string> JobImageRelativePaths);
+
     #region Seed data
+
+    private static readonly Guid HairCategoryId = Guid.Parse("6a8d09ba-74f5-4216-8b63-bed3286851ba");
+    private static readonly Guid BarberCategoryId = Guid.Parse("d8aa52f8-a92a-4df9-8de3-578e11165c46");
+    private static readonly Guid NailsCategoryId = Guid.Parse("9cfab14c-e498-4d8f-b0a4-c94f2f5e9c0d");
+    private static readonly Guid BrowsLashesCategoryId = Guid.Parse("4eef6073-c27d-4f6b-967d-debe5be9501d");
+    private static readonly Guid TattooPiercingCategoryId = Guid.Parse("05ae4f80-0c2b-4833-8cd5-d9631506a30c");
+    private static readonly Guid SkinAestheticsCategoryId = Guid.Parse("4240b253-b463-44ac-88fd-3c55c0ffce4a");
+    private static readonly Guid HairRemovalCategoryId = Guid.Parse("d603b419-36b8-4164-9074-894549d80652");
+
+    private static readonly Dictionary<Guid, CategoryAssetDefinition> CategoryAssetDefinitions = new()
+    {
+        [HairCategoryId] = new("JobCategories/Hair/profile.jpg", ["JobCategories/Hair/job-1.jpg", "JobCategories/Hair/job-2.jpg"]),
+        [BarberCategoryId] = new("JobCategories/BarberBeards/profile.jpg", ["JobCategories/BarberBeards/job-1.jpg", "JobCategories/BarberBeards/job-2.jpg"]),
+        [NailsCategoryId] = new("JobCategories/Nails/profile.jpg", ["JobCategories/Nails/job-1.jpg", "JobCategories/Nails/job-2.jpg"]),
+        [BrowsLashesCategoryId] = new("JobCategories/BrowsLashes/profile.jpg", ["JobCategories/BrowsLashes/job-1.jpg", "JobCategories/BrowsLashes/job-2.jpg"]),
+        [TattooPiercingCategoryId] = new("JobCategories/TattooPiercing/profile.jpg", ["JobCategories/TattooPiercing/job-1.jpg", "JobCategories/TattooPiercing/job-2.jpg"]),
+        [SkinAestheticsCategoryId] = new("JobCategories/SkinAesthetics/profile.jpg", ["JobCategories/SkinAesthetics/job-1.jpg", "JobCategories/SkinAesthetics/job-2.jpg"]),
+        [HairRemovalCategoryId] = new("JobCategories/HairRemoval/profile.jpg", ["JobCategories/HairRemoval/job-1.jpg", "JobCategories/HairRemoval/job-2.jpg"]),
+    };
 
     private readonly JobCategorySeed[] _categories =
     {
-        new(Guid.Parse("3f2d35b0-84dc-4e0c-85a1-31c60f7ce62e"), "Hair"),
-        new(Guid.Parse("512308de-bf64-44a4-ae69-08b4d782e0ae"), "Grooming"),
-        new(Guid.Parse("8ecb25bf-6e2d-4cb3-b818-1c03f2b4b92e"), "Color"),
-        new(Guid.Parse("efec4bf5-05af-4621-b8d7-08d132128187"), "Nails"),
-        new(Guid.Parse("0db7e1a1-92bf-4c13-9f33-862ea1b9ed07"), "Brows"),
-        new(Guid.Parse("b59f3cb2-326c-42a7-9d5f-4c7344a5c5b8"), "Tattoo"),
-        new(Guid.Parse("7e5f2b4f-97b9-4a55-8985-7f99dc8df908"), "Piercing")
+        new(HairCategoryId, "Hair", CategoryAssetDefinitions[HairCategoryId].ProfileImageRelativePath),
+        new(BarberCategoryId, "Barber & Beards", CategoryAssetDefinitions[BarberCategoryId].ProfileImageRelativePath),
+        new(NailsCategoryId, "Nails", CategoryAssetDefinitions[NailsCategoryId].ProfileImageRelativePath),
+        new(BrowsLashesCategoryId, "Brows & Lashes", CategoryAssetDefinitions[BrowsLashesCategoryId].ProfileImageRelativePath),
+        new(TattooPiercingCategoryId, "Tattoo & Piercing", CategoryAssetDefinitions[TattooPiercingCategoryId].ProfileImageRelativePath),
+        new(SkinAestheticsCategoryId, "Skin & Aesthetics", CategoryAssetDefinitions[SkinAestheticsCategoryId].ProfileImageRelativePath),
+        new(HairRemovalCategoryId, "Hair Removal", CategoryAssetDefinitions[HairRemovalCategoryId].ProfileImageRelativePath)
     };
 
     private readonly JobSeed[] _jobs =
     {
-        new(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), "Signature Haircut", Guid.Parse("3f2d35b0-84dc-4e0c-85a1-31c60f7ce62e"),"Haircut", 45,
-            "Tailored haircut with styling finish.", 55m),
-        new(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), "Precision Beard Trim", Guid.Parse("512308de-bf64-44a4-ae69-08b4d782e0ae"),"Grooming", 30,
-            "Beard shaping, conditioning, and styling.", 40m),
-        new(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), "Creative Hair Color", Guid.Parse("8ecb25bf-6e2d-4cb3-b818-1c03f2b4b92e"),"Color", 120,
-            "Custom color work including toning and finish.", 150m),
-        new(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), "Hand-painted Nail Art", Guid.Parse("efec4bf5-05af-4621-b8d7-08d132128187"),"Nails", 75,
-            "Detailed gel manicure with custom art.", 65m),
-        new(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), "Brow Sculpt & Tint", Guid.Parse("0db7e1a1-92bf-4c13-9f33-862ea1b9ed07"),"Brows", 40,
-            "Brow mapping, waxing, and tinting for definition.", 45m),
-        new(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), "Fine Line Tattoo", Guid.Parse("b59f3cb2-326c-42a7-9d5f-4c7344a5c5b8"),"Tattoo", 180,
-            "Custom fine line tattoo session with consultation.", 320m),
-        new(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"), "Professional Piercing", Guid.Parse("7e5f2b4f-97b9-4a55-8985-7f99dc8df908"),"Piercing", 35,
-            "Sterile piercing service with jewelry.", 70m)
+        new(Guid.Parse("d8b7d62f-8030-46cd-b6f7-e1d5d0c8f5ff"), "Women's Cut", HairCategoryId, "Hair", 60,
+            "Signature dry or wet cut tailored to hair texture and lifestyle.", 70m),
+        new(Guid.Parse("4ca7a22c-4e3e-47dc-bc78-c37873887818"), "Men's Cut", HairCategoryId, "Hair", 45,
+            "Clipper and scissor work finished with styling detail.", 50m),
+        new(Guid.Parse("0aeb22fb-90e9-450c-b629-a22c2d4106c4"), "Balayage", HairCategoryId, "Hair", 150,
+            "Hand-painted lightening for seamless, sun-kissed dimension.", 185m),
+        new(Guid.Parse("13a8aaf5-deac-4c6c-883b-31379608784e"), "Highlights", HairCategoryId, "Hair", 120,
+            "Foil work to brighten and add contrast through the mid-lengths.", 150m),
+        new(Guid.Parse("436ea629-227b-4741-9ced-97e35547f016"), "Silk Press", HairCategoryId, "Hair", 90,
+            "Press and finish service for sleek, glass-like shine on textured hair.", 110m),
+        new(Guid.Parse("3694d18d-f488-459a-8ef2-822ee4463f8e"), "Keratin Treatment", HairCategoryId, "Hair", 120,
+            "Smoothing service reducing frizz and improving manageability.", 220m),
+
+        new(Guid.Parse("b70d4b7a-c215-43d0-8649-ddb5683766a2"), "Skin Fade", BarberCategoryId, "Barber & Beards", 45,
+            "High-contrast fade with razor cleanup and detail work.", 45m),
+        new(Guid.Parse("5973b24a-77a2-42d2-96c3-0511d81d41d4"), "Beard Trim", BarberCategoryId, "Barber & Beards", 30,
+            "Clipper/ shear beard work with conditioning finish.", 30m),
+        new(Guid.Parse("b0d07024-5b4d-4c2f-afb2-842995a5c7a3"), "Hot Towel Shave", BarberCategoryId, "Barber & Beards", 40,
+            "Straight razor shave with hot towel ritual and skin treatment.", 45m),
+        new(Guid.Parse("bb2e42ef-5628-4f13-a76b-e642b0c15a20"), "Line Up", BarberCategoryId, "Barber & Beards", 20,
+            "Edge detailing for hairline, beard, and neckline.", 25m),
+
+        new(Guid.Parse("1a6292b7-0cc0-4b2c-ad37-2276dfa4cfae"), "Gel Manicure", NailsCategoryId, "Nails", 60,
+            "Structured gel manicure with cuticle care and polish.", 65m),
+        new(Guid.Parse("fb142af6-5e83-4ea4-82c8-4f40aae70b4f"), "Acrylic Full Set", NailsCategoryId, "Nails", 90,
+            "Customized acrylic extensions with shape refining.", 95m),
+        new(Guid.Parse("7f9e8f66-de5a-41ff-8936-9884df371418"), "Pedicure", NailsCategoryId, "Nails", 75,
+            "Spa pedicure with exfoliation, massage, and polish.", 80m),
+        new(Guid.Parse("3abb66c1-cea4-4fd4-a37e-d4b0c31d110b"), "Nail Art (Complex)", NailsCategoryId, "Nails", 105,
+            "Hand-painted premium designs with encapsulation or chrome.", 120m),
+        new(Guid.Parse("bc5c5314-6333-488e-a568-1e8f4348555c"), "Shellac Removal", NailsCategoryId, "Nails", 30,
+            "Gentle soak-off and nail conditioning treatment.", 25m),
+
+        new(Guid.Parse("8a2abff0-a685-4bc4-b5be-ed989ef5f1d2"), "Brow Lamination", BrowsLashesCategoryId, "Brows & Lashes", 60,
+            "Keratin brow sculpt for lifted, brushed-up symmetry.", 70m),
+        new(Guid.Parse("02d717d3-a1b8-4c17-9c4b-36c3cc48899b"), "Brow Tint & Wax", BrowsLashesCategoryId, "Brows & Lashes", 45,
+            "Mapping, waxing, and tint for crisp brow definition.", 55m),
+        new(Guid.Parse("4588c693-ea49-4375-a47d-e2b31e0283bb"), "Classic Lash Extensions", BrowsLashesCategoryId, "Brows & Lashes", 120,
+            "Single-lash extensions for natural fullness.", 130m),
+        new(Guid.Parse("4ee28956-c376-4566-b9fa-76b7542d6292"), "Volume Lash Fill", BrowsLashesCategoryId, "Brows & Lashes", 90,
+            "Fan extensions fill for density and drama.", 110m),
+        new(Guid.Parse("0282c478-ad72-41dc-b6db-d48581efde2d"), "Lash Lift", BrowsLashesCategoryId, "Brows & Lashes", 50,
+            "Keratin lash curling service for wide-eyed lift.", 65m),
+
+        new(Guid.Parse("b3623438-df69-4aff-bdbb-aca2e38a04e8"), "Fine Line Tattoo (Small)", TattooPiercingCategoryId, "Tattoo & Piercing", 90,
+            "Custom minimal tattoo including stencil and aftercare.", 180m),
+        new(Guid.Parse("1216f27e-60b6-4ec4-a8f0-534ad3dfe239"), "Custom Tattoo Session (Hourly)", TattooPiercingCategoryId, "Tattoo & Piercing", 60,
+            "Hourly booking for bespoke illustration work.", 150m),
+        new(Guid.Parse("44b36869-25fc-4149-a5ad-4bbd2675c669"), "Ear Lobe Piercing", TattooPiercingCategoryId, "Tattoo & Piercing", 20,
+            "Sterile dual lobe piercing with curated jewelry.", 60m),
+        new(Guid.Parse("d93ad97e-c090-401c-a83f-ad6c5a2b4c94"), "Septum Piercing", TattooPiercingCategoryId, "Tattoo & Piercing", 30,
+            "Needle piercing with anatomy consultation and styling.", 80m),
+
+        new(Guid.Parse("cf22ea18-503a-48c8-92a0-b87f5ae9ca3d"), "Deep Cleansing Facial", SkinAestheticsCategoryId, "Skin & Aesthetics", 75,
+            "Enzyme exfoliation, steam, and lymphatic sculpting massage.", 95m),
+        new(Guid.Parse("56e4bd67-ca2a-400e-82d3-f00820a52f79"), "Microneedling", SkinAestheticsCategoryId, "Skin & Aesthetics", 90,
+            "Collagen induction therapy with targeted serum infusion.", 180m),
+        new(Guid.Parse("59565d42-e6d3-4fa7-ae19-5df18806d29e"), "Chemical Peel", SkinAestheticsCategoryId, "Skin & Aesthetics", 60,
+            "Layered resurfacing peel tailored to skin goals.", 150m),
+        new(Guid.Parse("27cc07d2-7771-4d2d-89bc-820e1e581a61"), "Lip Blush (Permanent Makeup)", SkinAestheticsCategoryId, "Skin & Aesthetics", 150,
+            "Custom pigment implantation for soft, balanced lip tone.", 220m),
+
+        new(Guid.Parse("dafe65dd-c1a7-48e4-945f-f8cf0b699458"), "Full Leg Wax", HairRemovalCategoryId, "Hair Removal", 70,
+            "Warm wax removal for thighs through ankles.", 85m),
+        new(Guid.Parse("b3c779fe-2915-4437-91c7-878bacb97423"), "Brazilian Wax", HairRemovalCategoryId, "Hair Removal", 60,
+            "Sensitive-skin wax service with calming finish.", 90m),
+        new(Guid.Parse("7c9ca09d-7f59-47b7-8117-f7d0afc24520"), "Laser Hair Removal (Underarms)", HairRemovalCategoryId, "Hair Removal", 45,
+            "Diode laser session targeting underarm growth reduction.", 120m),
+        new(Guid.Parse("237f190e-3786-4ff3-a580-1159e7bee46f"), "Threading (Face)", HairRemovalCategoryId, "Hair Removal", 30,
+            "Precision threading for brows, lip, and cheeks.", 40m)
     };
 
     private readonly MasterSeed[] _masters =
     {
         MasterSeed.Create("Karl", "Nurmsalu", "karl.nurmsalu@beautifybaltics.com", "+372 5550 1001", Gender.Male, 28,
-            "Contemporary hair artist focusing on precision fades and textured cuts for all hair types.",
+            "Contemporary hair artist focusing on precise shapes and luxe finishes.",
             new[]
             {
-                new JobOffering(Guid.Parse("27c3c927-3b06-4d71-9d4c-1fb3f301c730"), 60m, TimeSpan.FromMinutes(50), "Tailored Signature Cut")
+                new JobOffering(Guid.Parse("d8b7d62f-8030-46cd-b6f7-e1d5d0c8f5ff"), 78m, TimeSpan.FromMinutes(55), "Signature Women's Cut")
             }),
         MasterSeed.Create("Markus", "Lepik", "markus.lepik@beautifybaltics.com", "+372 5550 1002", Gender.Male, 34,
-            "Classic barbering meets modern grooming. Known for meticulous beard sculpting and hot towel rituals.",
+            "Classic barbering meets modern grooming with meticulous detail.",
             new[]
             {
-                new JobOffering(Guid.Parse("3c3e2f16-e154-432f-a4d4-c14b76e9e05f"), 42m, TimeSpan.FromMinutes(35), "Precision Beard Ritual")
+                new JobOffering(Guid.Parse("b70d4b7a-c215-43d0-8649-ddb5683766a2"), 48m, TimeSpan.FromMinutes(45), "Skin Fade Ritual")
             }),
         MasterSeed.Create("Eliis", "Kuusk", "eliis.kuusk@beautifybaltics.com", "+372 5550 1003", Gender.Female, 30,
-            "Award-winning colorist specializing in dimensional blonding and vivid transformations.",
+            "Award-winning colorist specializing in dimensional blonding and balayage.",
             new[]
             {
-                new JobOffering(Guid.Parse("1407ab0b-0cf4-4d68-8f78-8705498a1f4b"), 168m, TimeSpan.FromMinutes(135), "Couture Color Session")
+                new JobOffering(Guid.Parse("0aeb22fb-90e9-450c-b629-a22c2d4106c4"), 195m, TimeSpan.FromMinutes(150), "Couture Balayage Session")
             }),
         MasterSeed.Create("Greta", "Pärn", "greta.parn@beautifybaltics.com", "+372 5550 1004", Gender.Female, 35,
             "Editorial nail artist bringing runway-inspired designs to everyday wear.",
             new[]
             {
-                new JobOffering(Guid.Parse("502cb812-47f5-4c3b-b8c4-c38bea63b70a"), 74m, TimeSpan.FromMinutes(85), "Art Studio Manicure")
+                new JobOffering(Guid.Parse("3abb66c1-cea4-4fd4-a37e-d4b0c31d110b"), 130m, TimeSpan.FromMinutes(105), "Studio Nail Art")
             }),
         MasterSeed.Create("Johanna", "Sild", "johanna.sild@beautifybaltics.com", "+372 5550 1005", Gender.Female, 26,
-            "Brow designer focusing on natural symmetry, lamination, and tint artistry.",
+            "Brow designer focused on lamination, tint artistry, and symmetry.",
             new[]
             {
-                new JobOffering(Guid.Parse("45964e6e-8dc5-4fee-8c63-23982dffbca6"), 48m, TimeSpan.FromMinutes(45), "Brow Architecture")
+                new JobOffering(Guid.Parse("8a2abff0-a685-4bc4-b5be-ed989ef5f1d2"), 78m, TimeSpan.FromMinutes(60), "Brow Lamination Design")
             }),
-        MasterSeed.Create("Rasmus", "Hallik", "rasmus.hallik@beautifybaltics.com", "+372 5550 1006", Gender.Male, 31,
-            "Fine-line tattoo specialist with a minimalist aesthetic and surgical precision.",
+        MasterSeed.Create("Maris", "Kask", "maris.kask@beautifybaltics.com", "+372 5550 1006", Gender.Female, 33,
+            "Paramedical esthetician delivering corrective facials and microneedling.",
             new[]
             {
-                new JobOffering(Guid.Parse("65f2a003-af60-468f-8750-db7c819744c2"), 310m, TimeSpan.FromMinutes(195), "Fine Line Narrative")
+                new JobOffering(Guid.Parse("56e4bd67-ca2a-400e-82d3-f00820a52f79"), 195m, TimeSpan.FromMinutes(95), "Advanced Microneedling")
             }),
-        MasterSeed.Create("Anette", "Laur", "anette.laur@beautifybaltics.com", "+372 5550 1007", Gender.Female, 29,
-            "Professional piercer prioritizing comfort, curated jewelry, and impeccable hygiene.",
+        MasterSeed.Create("Rasmus", "Hallik", "rasmus.hallik@beautifybaltics.com", "+372 5550 1007", Gender.Male, 31,
+            "Fine-line tattoo specialist with minimalist precision.",
             new[]
             {
-                new JobOffering(Guid.Parse("b93cbbd8-1e8f-4da2-aee7-46fafa809e92"), 75m, TimeSpan.FromMinutes(45), "Curated Piercing Experience")
+                new JobOffering(Guid.Parse("b3623438-df69-4aff-bdbb-aca2e38a04e8"), 320m, TimeSpan.FromMinutes(100), "Fine Line Narrative")
+            }),
+        MasterSeed.Create("Anette", "Laur", "anette.laur@beautifybaltics.com", "+372 5550 1008", Gender.Female, 29,
+            "Body waxing and laser expert prioritizing comfort and hygiene.",
+            new[]
+            {
+                new JobOffering(Guid.Parse("b3c779fe-2915-4437-91c7-878bacb97423"), 95m, TimeSpan.FromMinutes(60), "Luxury Brazilian Wax")
             }),
     };
 
@@ -458,9 +520,9 @@ public class SampleDataSeeder : IInitialData
         public Job ToDocument(JobCategorySeed category) => new(Id, Name, category.Id, category.Name, TimeSpan.FromMinutes(DurationMinutes), Description);
     }
 
-    private sealed record JobCategorySeed(Guid Id, string Name)
+    private sealed record JobCategorySeed(Guid Id, string Name, string? ImageAsset)
     {
-        public JobCategory ToDocument() => new(Id, Name);
+        public JobCategory ToDocument(string? imageUrl) => new(Id, Name, imageUrl);
     }
 
     private sealed record MasterSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, string SupabaseUserId, int Age, Domain.Enumerations.Gender Gender, string? Description, IReadOnlyList<JobOffering> JobOfferings)

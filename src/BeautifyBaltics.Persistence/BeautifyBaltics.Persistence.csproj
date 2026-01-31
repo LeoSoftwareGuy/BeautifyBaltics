@@ -12,8 +12,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Seeds\Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Bogus" Version="35.6.4" />
     <PackageReference Include="Marten" Version="8.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Seeds\Assets\JobCategories\BarberBeards\profile.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
