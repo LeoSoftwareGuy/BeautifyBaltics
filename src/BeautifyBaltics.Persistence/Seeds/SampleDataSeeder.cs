@@ -25,7 +25,8 @@ public class SampleDataSeeder : IInitialData
     public SampleDataSeeder(
         IHostEnvironment environment,
         IServiceScopeFactory scopeFactory,
-        ILogger<SampleDataSeeder> logger)
+        ILogger<SampleDataSeeder> logger
+    )
     {
         _environment = environment;
         _scopeFactory = scopeFactory;
@@ -182,17 +183,17 @@ public class SampleDataSeeder : IInitialData
         if (primaryJob is null || _seedAssetsRoot is null) return null;
 
         var assets = GetCategoryMediaAssets(primaryJob.CategoryId, primaryJob.CategoryName);
-        if (assets?.ProfileImagePath is null) return null;
+        if (assets?.MasterImagePath is null) return null;
 
         try
         {
-            var blobFile = CreateBlobFileDto(assets.ProfileImagePath, out var fileSize);
+            var blobFile = CreateBlobFileDto(assets.MasterImagePath, out var fileSize);
             var blobName = await masterProfileBlobStorage.UploadAsync(master.Id, blobFile, cancellation);
 
             return new MasterProfileImageUploaded(
                 MasterId: master.Id,
                 BlobName: blobName,
-                FileName: Path.GetFileName(assets.ProfileImagePath),
+                FileName: Path.GetFileName(assets.MasterImagePath),
                 FileMimeType: blobFile.ContentType,
                 FileSize: fileSize
             );
@@ -267,10 +268,7 @@ public class SampleDataSeeder : IInitialData
     {
         if (_seedAssetsRoot is null) return null;
 
-        if (_categoryMediaCache.TryGetValue(categoryId, out var cached))
-        {
-            return cached;
-        }
+        if (_categoryMediaCache.TryGetValue(categoryId, out var cached)) return cached;
 
         if (!CategoryAssetDefinitions.TryGetValue(categoryId, out var definition))
         {
@@ -279,14 +277,14 @@ public class SampleDataSeeder : IInitialData
             return null;
         }
 
-        var profile = GetAssetPath(definition.ProfileImageRelativePath);
+        var masterImage = GetAssetPath(definition.MasterImageRelativePath);
         var jobImages = definition.JobImageRelativePaths
             .Select(GetAssetPath)
             .Where(path => path is not null)!
             .Cast<string>()
             .ToList();
 
-        var assets = new CategoryMediaAssets(profile, jobImages);
+        var assets = new CategoryMediaAssets(masterImage, jobImages);
         _categoryMediaCache[categoryId] = assets;
         return assets;
     }
@@ -345,13 +343,14 @@ public class SampleDataSeeder : IInitialData
             ".png" => "image/png",
             ".gif" => "image/gif",
             ".webp" => "image/webp",
+            ".svg" => "image/svg+xml",
             _ => "application/octet-stream"
         };
     }
 
-    private sealed record CategoryMediaAssets(string? ProfileImagePath, IReadOnlyList<string> JobImages);
+    private sealed record CategoryMediaAssets(string? MasterImagePath, IReadOnlyList<string> JobImages);
 
-    private sealed record CategoryAssetDefinition(string? ProfileImageRelativePath, IReadOnlyList<string> JobImageRelativePaths);
+    private sealed record CategoryAssetDefinition(string? CategoryImageRelativePath, string? MasterImageRelativePath, IReadOnlyList<string> JobImageRelativePaths);
 
     #region Seed data
 
@@ -365,24 +364,24 @@ public class SampleDataSeeder : IInitialData
 
     private static readonly Dictionary<Guid, CategoryAssetDefinition> CategoryAssetDefinitions = new()
     {
-        [HairCategoryId] = new("JobCategories/Hair/profile.jpg", ["JobCategories/Hair/job-1.jpg", "JobCategories/Hair/job-2.jpg"]),
-        [BarberCategoryId] = new("JobCategories/BarberBeards/profile.jpg", ["JobCategories/BarberBeards/job-1.jpg", "JobCategories/BarberBeards/job-2.jpg"]),
-        [NailsCategoryId] = new("JobCategories/Nails/profile.jpg", ["JobCategories/Nails/job-1.jpg", "JobCategories/Nails/job-2.jpg"]),
-        [BrowsLashesCategoryId] = new("JobCategories/BrowsLashes/profile.jpg", ["JobCategories/BrowsLashes/job-1.jpg", "JobCategories/BrowsLashes/job-2.jpg"]),
-        [TattooPiercingCategoryId] = new("JobCategories/TattooPiercing/profile.jpg", ["JobCategories/TattooPiercing/job-1.jpg", "JobCategories/TattooPiercing/job-2.jpg"]),
-        [SkinAestheticsCategoryId] = new("JobCategories/SkinAesthetics/profile.jpg", ["JobCategories/SkinAesthetics/job-1.jpg", "JobCategories/SkinAesthetics/job-2.jpg"]),
-        [HairRemovalCategoryId] = new("JobCategories/HairRemoval/profile.jpg", ["JobCategories/HairRemoval/job-1.jpg", "JobCategories/HairRemoval/job-2.jpg"]),
+        [HairCategoryId] = new("JobCategories/Hair/profile.jpg", "JobCategories/Hair/masterImage.jpg", ["JobCategories/Hair/job-1.jpg", "JobCategories/Hair/job-2.jpg"]),
+        [BarberCategoryId] = new("JobCategories/BarberBeards/profile.jpg", "JobCategories/BarberBeards/masterImage.jpg", ["JobCategories/BarberBeards/job-1.jpg", "JobCategories/BarberBeards/job-2.jpeg"]),
+        [NailsCategoryId] = new("JobCategories/Nails/profile.jpg", "JobCategories/Nails/masterImage.jpg", ["JobCategories/Nails/job-1.jpg", "JobCategories/Nails/job-2.jpg"]),
+        [BrowsLashesCategoryId] = new("JobCategories/BrowsLashes/profile.jpg", "JobCategories/BrowsLashes/masterImage.jpg", ["JobCategories/BrowsLashes/job-1.jpg", "JobCategories/BrowsLashes/job-2.jpg"]),
+        [TattooPiercingCategoryId] = new("JobCategories/TattooPiercing/profile.jpg", "JobCategories/TattooPiercing/masterImage.jpg", ["JobCategories/TattooPiercing/job-1.jpg", "JobCategories/TattooPiercing/job-2.jpg"]),
+        [SkinAestheticsCategoryId] = new("JobCategories/SkinAesthetics/profile.jpg", "JobCategories/SkinAesthetics/masterImage.jpg", ["JobCategories/SkinAesthetics/job-1.jpg", "JobCategories/SkinAesthetics/job-2.jpg"]),
+        [HairRemovalCategoryId] = new("JobCategories/HairRemoval/profile.jpg", "JobCategories/HairRemoval/masterImage.jpg", ["JobCategories/HairRemoval/job-1.jpg", "JobCategories/HairRemoval/job-2.jpg"]),
     };
 
     private readonly JobCategorySeed[] _categories =
     {
-        new(HairCategoryId, "Hair", CategoryAssetDefinitions[HairCategoryId].ProfileImageRelativePath),
-        new(BarberCategoryId, "Barber & Beards", CategoryAssetDefinitions[BarberCategoryId].ProfileImageRelativePath),
-        new(NailsCategoryId, "Nails", CategoryAssetDefinitions[NailsCategoryId].ProfileImageRelativePath),
-        new(BrowsLashesCategoryId, "Brows & Lashes", CategoryAssetDefinitions[BrowsLashesCategoryId].ProfileImageRelativePath),
-        new(TattooPiercingCategoryId, "Tattoo & Piercing", CategoryAssetDefinitions[TattooPiercingCategoryId].ProfileImageRelativePath),
-        new(SkinAestheticsCategoryId, "Skin & Aesthetics", CategoryAssetDefinitions[SkinAestheticsCategoryId].ProfileImageRelativePath),
-        new(HairRemovalCategoryId, "Hair Removal", CategoryAssetDefinitions[HairRemovalCategoryId].ProfileImageRelativePath)
+        new(HairCategoryId, "Hair", CategoryAssetDefinitions[HairCategoryId].CategoryImageRelativePath),
+        new(BarberCategoryId, "Barber & Beards", CategoryAssetDefinitions[BarberCategoryId].CategoryImageRelativePath),
+        new(NailsCategoryId, "Nails", CategoryAssetDefinitions[NailsCategoryId].CategoryImageRelativePath),
+        new(BrowsLashesCategoryId, "Brows & Lashes", CategoryAssetDefinitions[BrowsLashesCategoryId].CategoryImageRelativePath),
+        new(TattooPiercingCategoryId, "Tattoo & Piercing", CategoryAssetDefinitions[TattooPiercingCategoryId].CategoryImageRelativePath),
+        new(SkinAestheticsCategoryId, "Skin & Aesthetics", CategoryAssetDefinitions[SkinAestheticsCategoryId].CategoryImageRelativePath),
+        new(HairRemovalCategoryId, "Hair Removal", CategoryAssetDefinitions[HairRemovalCategoryId].CategoryImageRelativePath)
     };
 
     private readonly JobSeed[] _jobs =
