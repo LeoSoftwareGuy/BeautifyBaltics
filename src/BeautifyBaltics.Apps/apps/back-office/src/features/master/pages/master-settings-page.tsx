@@ -1,4 +1,6 @@
-import { Box, Card, Stack, Title } from '@mantine/core';
+import {
+  Box, Card, Stack, Title,
+} from '@mantine/core';
 
 import MasterProfileSettings from '../master-profile-settings';
 

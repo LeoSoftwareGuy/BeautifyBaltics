@@ -7,28 +7,30 @@ import {
   Select,
   Skeleton,
   Stack,
+  Text,
   TextInput,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
-import { useFindJobs } from '@/state/endpoints/jobs';
+import { useFindJobCategories, useFindJobs } from '@/state/endpoints/jobs';
 import { getFindMasterJobsQueryKey, useUpdateMasterJob } from '@/state/endpoints/masters';
 
-type MasterTreatmentsEditModalProps = {
+type MasterServicesEditModalProps = {
   opened: boolean;
   onClose: () => void;
   masterId: string;
-  treatment: MasterJobDTO | null;
+  service: MasterJobDTO | null;
 };
 
-export function MasterTreatmentsEditModal({
+export function MasterServicesEditModal({
   opened,
   onClose,
   masterId,
-  treatment,
-}: MasterTreatmentsEditModalProps) {
+  service,
+}: MasterServicesEditModalProps) {
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState<number | ''>('');
@@ -36,7 +38,15 @@ export function MasterTreatmentsEditModal({
 
   const queryClient = useQueryClient();
 
-  const { data: jobsData, isLoading: isJobsLoading } = useFindJobs({ pageSize: 100 });
+  const { data: categoriesData, isLoading: isCategoriesLoading } = useFindJobCategories({
+    pageSize: 100,
+  });
+  const categories = categoriesData?.items ?? [];
+
+  const { data: jobsData, isLoading: isJobsLoading } = useFindJobs(
+    { categoryId: selectedCategoryId ?? undefined, pageSize: 100 },
+    { query: { enabled: !!selectedCategoryId } },
+  );
   const jobs = jobsData?.items ?? [];
 
   const { mutateAsync: updateJob, isPending: isUpdating } = useUpdateMasterJob({
@@ -44,15 +54,15 @@ export function MasterTreatmentsEditModal({
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: getFindMasterJobsQueryKey(masterId) });
         notifications.show({
-          title: 'Treatment updated',
-          message: 'Your treatment has been updated successfully.',
+          title: 'Service updated',
+          message: 'Your service has been updated successfully.',
           color: 'green',
         });
         onClose();
       },
       onError: (error) => {
         notifications.show({
-          title: 'Failed to update treatment',
+          title: 'Failed to update service',
           message: error.detail,
           color: 'red',
         });
@@ -61,15 +71,23 @@ export function MasterTreatmentsEditModal({
   });
 
   useEffect(() => {
-    if (treatment) {
-      setSelectedJobId(treatment.jobId);
-      setTitle(treatment.title ?? treatment.jobName ?? '');
-      setPrice(treatment.price ?? '');
-      setDuration(treatment.durationMinutes ?? '');
+    if (service) {
+      setSelectedCategoryId(service.jobCategoryId ?? null);
+      setSelectedJobId(service.jobId);
+      setTitle(service.title ?? service.jobName ?? '');
+      setPrice(service.price ?? '');
+      setDuration(service.durationMinutes ?? '');
     }
-  }, [treatment]);
+  }, [service]);
 
   const canSubmit = !!selectedJobId && !!title.trim() && price !== '' && duration !== '';
+
+  const handleCategoryChange = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId);
+    setSelectedJobId(null);
+    setTitle('');
+    setDuration('');
+  };
 
   const handleJobChange = (jobId: string | null) => {
     setSelectedJobId(jobId);
@@ -83,15 +101,15 @@ export function MasterTreatmentsEditModal({
   };
 
   const handleSubmit = async () => {
-    if (!canSubmit || !selectedJobId || !treatment?.id) {
+    if (!canSubmit || !selectedJobId || !service?.id) {
       return;
     }
     await updateJob({
       id: masterId,
-      jobId: treatment.id,
+      jobId: service.id,
       data: {
         masterId,
-        masterJobId: treatment.id,
+        masterJobId: service.id,
         job: {
           jobId: selectedJobId,
           title: title.trim(),
@@ -114,26 +132,52 @@ export function MasterTreatmentsEditModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Edit Treatment"
+      title="Edit Service"
       size="md"
       centered
     >
       <Stack gap="md">
-        {isJobsLoading ? (
+        <Text c="dimmed" size="sm">
+          Update the service details below
+        </Text>
+
+        {/* Category Select */}
+        {isCategoriesLoading ? (
           <Skeleton height={36} radius="sm" />
         ) : (
           <Select
-            label="Treatment"
-            placeholder="Select treatment"
+            label="Category"
+            placeholder="Select category"
             searchable
+            data={categories
+              .filter((cat): cat is typeof cat & { id: string; name: string } => Boolean(cat.id && cat.name))
+              .map((cat) => ({
+                value: cat.id,
+                label: cat.name,
+              }))}
+            value={selectedCategoryId}
+            onChange={handleCategoryChange}
+          />
+        )}
+
+        {/* Service Select (filtered by category) */}
+        {isJobsLoading && selectedCategoryId ? (
+          <Skeleton height={36} radius="sm" />
+        ) : (
+          <Select
+            label="Service"
+            placeholder={selectedCategoryId ? 'Select service' : 'Select category first'}
+            searchable
+            disabled={!selectedCategoryId}
             data={jobs.map((job) => ({
               value: job.id,
-              label: `${job.name} (${job.categoryName})`,
+              label: job.name,
             }))}
             value={selectedJobId}
             onChange={handleJobChange}
           />
         )}
+
         <TextInput
           label="Service Title"
           placeholder="e.g., Classic Haircut"
@@ -161,7 +205,7 @@ export function MasterTreatmentsEditModal({
             Cancel
           </Button>
           <Button
-            color="pink"
+            color="brand"
             disabled={!canSubmit}
             loading={isUpdating}
             onClick={handleSubmit}

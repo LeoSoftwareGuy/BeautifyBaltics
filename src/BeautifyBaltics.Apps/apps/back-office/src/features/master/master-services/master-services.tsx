@@ -5,10 +5,9 @@ import { IconAlertCircle } from '@tabler/icons-react';
 
 import { useGetUser } from '@/state/endpoints/users';
 
-import { MasterTreatmentsForm } from './master-treatments-form';
-import { MasterTreatmentsList } from './master-treatments-list';
+import { MasterServicesList } from './master-services-list/master-services-list';
 
-export function MasterTreatments() {
+export function MasterServices() {
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
 
@@ -29,10 +28,5 @@ export function MasterTreatments() {
     );
   }
 
-  return (
-    <Stack gap="lg">
-      <MasterTreatmentsForm masterId={masterId} />
-      <MasterTreatmentsList masterId={masterId} />
-    </Stack>
-  );
+  return <MasterServicesList masterId={masterId} />;
 }

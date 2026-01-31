@@ -31,7 +31,7 @@ function MasterJobImage({
   }
 
   const imageUrl = imageData
-    ? `data:${imageData.fileMimeType};base64,${imageData.data}`
+    ? `data:${imageData.fileMimeType};base64,${imageData.url}`
     : null;
 
   return (
@@ -45,25 +45,25 @@ function MasterJobImage({
   );
 }
 
-type MasterTreatmentsUploadModalProps = {
+type MasterServicesUploadModalProps = {
   opened: boolean;
   onClose: () => void;
   masterId: string;
-  treatment: MasterJobDTO | null;
+  service: MasterJobDTO | null;
   onUpload: (files: File[] | null) => void;
   isUploading?: boolean;
 };
 
-export function MasterTreatmentsUploadModal({
+export function MasterServicesUploadModal({
   opened,
   onClose,
   masterId,
-  treatment,
+  service,
   onUpload,
   isUploading,
-}: MasterTreatmentsUploadModalProps) {
-  const images = treatment?.images ?? [];
-  const treatmentName = treatment?.title ?? treatment?.jobName ?? '';
+}: MasterServicesUploadModalProps) {
+  const images = service?.images ?? [];
+  const serviceName = service?.title ?? service?.jobName ?? '';
 
   return (
     <Modal
@@ -75,9 +75,9 @@ export function MasterTreatmentsUploadModal({
     >
       <Stack gap="md">
         <Text c="dimmed" size="sm">
-          {treatment
-            ? `Add images for "${treatmentName}"`
-            : 'Select a treatment to upload media'}
+          {service
+            ? `Add images for "${serviceName}"`
+            : 'Select a service to upload media'}
         </Text>
         <Stack
           gap="sm"
@@ -101,7 +101,7 @@ export function MasterTreatmentsUploadModal({
             )}
           </FileButton>
         </Stack>
-        {treatment && images.length > 0 && (
+        {service && images.length > 0 && (
           <Stack gap="sm">
             <Text size="sm" fw={500}>
               Uploaded Images (
@@ -118,7 +118,7 @@ export function MasterTreatmentsUploadModal({
                 <Box key={image.id}>
                   <MasterJobImage
                     masterId={masterId}
-                    jobId={treatment.id}
+                    jobId={service.id}
                     imageId={image.id}
                     alt={image.fileName ?? `Work sample ${index + 1}`}
                   />

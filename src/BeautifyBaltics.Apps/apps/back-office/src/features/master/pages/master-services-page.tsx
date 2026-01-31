@@ -1,6 +1,6 @@
 import { Box, Stack, Title } from '@mantine/core';
 
-import { MasterTreatments } from '../master-treatments/master-treatments';
+import { MasterServices } from '../master-services/master-services';
 
 function MasterServicesPage() {
   return (
@@ -10,7 +10,7 @@ function MasterServicesPage() {
       </Box>
 
       <Stack gap="xl" px="md" pb="xl">
-        <MasterTreatments />
+        <MasterServices />
       </Stack>
     </Box>
   );
