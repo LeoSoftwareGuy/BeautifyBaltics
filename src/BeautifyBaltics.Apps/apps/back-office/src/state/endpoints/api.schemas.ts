@@ -227,6 +227,22 @@ export type CreateMasterResponse = {
   id?: string;
 };
 
+export type EarningsDataPoint = {
+  /**
+   * Label for the data point (e.g., "Mon", "Jan", "2024")
+   * @minLength 1
+   */
+  label: string;
+  /** Earnings value for this period */
+  value: number;
+};
+
+export enum EarningsPeriod {
+  Weekly = 'Weekly',
+  Monthly = 'Monthly',
+  Yearly = 'Yearly',
+
+}
 export type FindBookingsResponseAllOf = { [key: string]: unknown };
 
 export type FindBookingsResponse = BookingDTO & FindBookingsResponseAllOf;
@@ -353,6 +369,30 @@ export type GetClientByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetClientByIdResponse = ClientDTO & GetClientByIdResponseAllOf;
 
+export type GetDashboardStatsResponse = {
+  /** Total number of bookings (excluding cancelled) */
+  totalBookings: number;
+  /** Percentage change in bookings compared to previous month */
+  totalBookingsChange: number;
+  /** Average monthly earnings from completed bookings */
+  monthlyEarningsAverage: number;
+  /** Percentage change in earnings compared to previous month */
+  monthlyEarningsChange: number;
+  /** Number of pending booking requests */
+  pendingRequestsCount: number;
+};
+
+export type GetEarningsPerformanceResponse = {
+  period: EarningsPeriod;
+  /**
+   * Earnings data points grouped by the selected period
+   * @nullable
+   */
+  data?: EarningsDataPoint[] | null;
+  /** Total earnings for the entire period */
+  total: number;
+};
+
 export type GetJobByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetJobByIdResponse = JobDTO & GetJobByIdResponseAllOf;
@@ -383,6 +423,16 @@ export type GetMasterJobImageByIdResponse = {
    * @minLength 1
    */
   url: string;
+};
+
+export type GetPendingRequestsResponse = {
+  /**
+   * List of pending booking requests
+   * @nullable
+   */
+  requests?: PendingRequestDTO[] | null;
+  /** Total count of pending requests */
+  totalCount: number;
 };
 
 export type GetUserResponse = {
@@ -655,6 +705,29 @@ export type MasterProfileCommandDTO = {
    * @nullable
    */
   postalCode?: string | null;
+};
+
+export type PendingRequestDTO = {
+  /** Booking ID */
+  id: string;
+  /** Client ID */
+  clientId: string;
+  /**
+   * Client name
+   * @minLength 1
+   */
+  clientName: string;
+  /**
+   * Service/job title
+   * @minLength 1
+   */
+  masterJobTitle: string;
+  /** When the booking was requested */
+  requestedAt: Date;
+  /** Scheduled date and time */
+  scheduledAt: Date;
+  /** Service price */
+  price: number;
 };
 
 export type ProblemDetails = {
@@ -1026,4 +1099,12 @@ export type UploadMasterJobImageBody = {
   masterJobId: string;
   /** File uploads */
   files: Blob[];
+};
+
+export type GetEarningsPerformanceParams = {
+  masterId: string;
+  /**
+ * Time period for earnings data grouping
+ */
+  period?: EarningsPeriod;
 };

@@ -3,7 +3,7 @@ import {
 } from '@mantine/core';
 import { IconTrendingUp } from '@tabler/icons-react';
 
-interface DashboardStatCardProps {
+interface MasterDashboardStatCardProps {
   title: string;
   value: string;
   change?: string;
@@ -12,14 +12,14 @@ interface DashboardStatCardProps {
   iconColor?: string;
 }
 
-export function DashboardStatCard({
+export function MasterDashboardStatCard({
   title,
   value,
   change,
   changeType = 'positive',
   icon: Icon,
   iconColor = 'brand',
-}: DashboardStatCardProps) {
+}: MasterDashboardStatCardProps) {
   const getChangeColor = () => {
     if (changeType === 'positive') return 'teal';
     if (changeType === 'negative') return 'red';

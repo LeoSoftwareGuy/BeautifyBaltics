@@ -16,6 +16,9 @@ using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobs;
 using BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobImages;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterProfileImage;
+using BeautifyBaltics.Core.API.Application.Master.Queries.GetDashboardStats;
+using BeautifyBaltics.Core.API.Application.Master.Queries.GetEarningsPerformance;
+using BeautifyBaltics.Core.API.Application.Master.Queries.GetPendingRequests;
 using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
@@ -341,6 +344,49 @@ public class MastersController(IMessageBus bus) : ApiController
             MasterJobId = jobId,
             MasterJobImageId = imageId
         });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get dashboard stats for a master
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <returns>Dashboard statistics including total bookings, earnings, and pending requests</returns>
+    [HttpGet("{id:guid}/dashboard/stats", Name = "GetDashboardStats")]
+    [ProducesResponseType(typeof(GetDashboardStatsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetDashboardStatsResponse>> GetDashboardStats([FromRoute] Guid id)
+    {
+        var response = await bus.InvokeAsync<GetDashboardStatsResponse>(new GetDashboardStatsRequest { MasterId = id });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get earnings performance data for a master
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Request with period filter (Weekly, Monthly, Yearly)</param>
+    /// <returns>Earnings data grouped by the selected period</returns>
+    [HttpGet("{id:guid}/dashboard/earnings", Name = "GetEarningsPerformance")]
+    [ProducesResponseType(typeof(GetEarningsPerformanceResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetEarningsPerformanceResponse>> GetEarningsPerformance([FromRoute] Guid id, [FromQuery] GetEarningsPerformanceRequest request)
+    {
+        var response = await bus.InvokeAsync<GetEarningsPerformanceResponse>(request with { MasterId = id });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get pending booking requests for a master
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <returns>List of pending booking requests</returns>
+    [HttpGet("{id:guid}/dashboard/pending-requests", Name = "GetPendingRequests")]
+    [ProducesResponseType(typeof(GetPendingRequestsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetPendingRequestsResponse>> GetPendingRequests([FromRoute] Guid id)
+    {
+        var response = await bus.InvokeAsync<GetPendingRequestsResponse>(new GetPendingRequestsRequest { MasterId = id });
         return Ok(response);
     }
 }

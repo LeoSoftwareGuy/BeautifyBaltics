@@ -1,4 +1,4 @@
-export { DashboardStatCard } from './dashboard-stat-card';
-export { EarningsPerformance } from './earnings-performance';
-export { PendingRequests } from './pending-requests';
-export { TodaysSchedule } from './todays-schedule';
+export { MasterDashboardEarningsPerformance } from './master-dashboard-earnings-performance';
+export { MasterDashboardPendingRequests } from './master-dashboard-pending-requests';
+export { MasterDashboardStatCard } from './master-dashboard-stat-card';
+export { MasterDashboardTodaysSchedule } from './master-dashboard-todays-schedule';

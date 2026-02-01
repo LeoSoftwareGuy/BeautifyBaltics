@@ -48,10 +48,14 @@ import type {
   FindMasterJobsResponse,
   FindMastersParams,
   FindMastersResponsePagedResponse,
+  GetDashboardStatsResponse,
+  GetEarningsPerformanceParams,
+  GetEarningsPerformanceResponse,
   GetMasterAvailabilityResponse,
   GetMasterByIdParams,
   GetMasterByIdResponse,
   GetMasterJobImageByIdResponse,
+  GetPendingRequestsResponse,
   ProblemDetails,
   UpdateMasterAvailabilityRequest,
   UpdateMasterAvailabilityResponse,
@@ -1893,3 +1897,363 @@ export const useDeleteMasterJobImage = <TError = ProblemDetails | ProblemDetails
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary Get dashboard stats for a master
+ */
+export const getDashboardStats = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<GetDashboardStatsResponse>(
+  { url: `/api/v1/masters/${id}/dashboard/stats`, method: 'GET', signal },
+);
+
+export const getGetDashboardStatsQueryKey = (id?: string) => [`/api/v1/masters/${id}/dashboard/stats`] as const;
+
+export const getGetDashboardStatsQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetDashboardStatsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardStats>>> = ({ signal }) => getDashboardStats(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetDashboardStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardStats>>>;
+export type GetDashboardStatsQueryError = ProblemDetails;
+
+export function useGetDashboardStats<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getDashboardStats>>,
+  TError,
+  Awaited<ReturnType<typeof getDashboardStats>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardStats<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getDashboardStats>>,
+  TError,
+  Awaited<ReturnType<typeof getDashboardStats>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardStats<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get dashboard stats for a master
+ */
+
+export function useGetDashboardStats<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetDashboardStatsQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetDashboardStatsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetDashboardStatsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardStats>>> = ({ signal }) => getDashboardStats(id, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetDashboardStatsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardStats>>>;
+export type GetDashboardStatsSuspenseQueryError = ProblemDetails;
+
+export function useGetDashboardStatsSuspense<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardStatsSuspense<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardStatsSuspense<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get dashboard stats for a master
+ */
+
+export function useGetDashboardStatsSuspense<TData = Awaited<ReturnType<typeof getDashboardStats>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardStats>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetDashboardStatsSuspenseQueryOptions(id, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Get earnings performance data for a master
+ */
+export const getEarningsPerformance = (
+  id: string,
+  params: GetEarningsPerformanceParams,
+  signal?: AbortSignal,
+) => customClient<GetEarningsPerformanceResponse>(
+  {
+    url: `/api/v1/masters/${id}/dashboard/earnings`,
+    method: 'GET',
+    params,
+    signal,
+  },
+);
+
+export const getGetEarningsPerformanceQueryKey = (
+  id?: string,
+  params?: GetEarningsPerformanceParams,
+) => [`/api/v1/masters/${id}/dashboard/earnings`, ...(params ? [params] : [])] as const;
+
+export const getGetEarningsPerformanceQueryOptions = <TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(id: string,
+  params: GetEarningsPerformanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetEarningsPerformanceQueryKey(id, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getEarningsPerformance>>> = ({ signal }) => getEarningsPerformance(id, params, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetEarningsPerformanceQueryResult = NonNullable<Awaited<ReturnType<typeof getEarningsPerformance>>>;
+export type GetEarningsPerformanceQueryError = ProblemDetails;
+
+export function useGetEarningsPerformance<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getEarningsPerformance>>,
+  TError,
+  Awaited<ReturnType<typeof getEarningsPerformance>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetEarningsPerformance<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getEarningsPerformance>>,
+  TError,
+  Awaited<ReturnType<typeof getEarningsPerformance>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetEarningsPerformance<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get earnings performance data for a master
+ */
+
+export function useGetEarningsPerformance<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetEarningsPerformanceQueryOptions(id, params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetEarningsPerformanceSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(id: string,
+  params: GetEarningsPerformanceParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetEarningsPerformanceQueryKey(id, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getEarningsPerformance>>> = ({ signal }) => getEarningsPerformance(id, params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetEarningsPerformanceSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getEarningsPerformance>>>;
+export type GetEarningsPerformanceSuspenseQueryError = ProblemDetails;
+
+export function useGetEarningsPerformanceSuspense<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetEarningsPerformanceSuspense<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetEarningsPerformanceSuspense<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get earnings performance data for a master
+ */
+
+export function useGetEarningsPerformanceSuspense<TData = Awaited<ReturnType<typeof getEarningsPerformance>>, TError = ProblemDetails>(
+  id: string,
+  params: GetEarningsPerformanceParams,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getEarningsPerformance>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetEarningsPerformanceSuspenseQueryOptions(id, params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * @summary Get pending booking requests for a master
+ */
+export const getPendingRequests = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<GetPendingRequestsResponse>(
+  { url: `/api/v1/masters/${id}/dashboard/pending-requests`, method: 'GET', signal },
+);
+
+export const getGetPendingRequestsQueryKey = (id?: string) => [`/api/v1/masters/${id}/dashboard/pending-requests`] as const;
+
+export const getGetPendingRequestsQueryOptions = <TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPendingRequestsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPendingRequests>>> = ({ signal }) => getPendingRequests(id, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetPendingRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof getPendingRequests>>>;
+export type GetPendingRequestsQueryError = ProblemDetails;
+
+export function useGetPendingRequests<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getPendingRequests>>,
+  TError,
+  Awaited<ReturnType<typeof getPendingRequests>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetPendingRequests<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getPendingRequests>>,
+  TError,
+  Awaited<ReturnType<typeof getPendingRequests>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetPendingRequests<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get pending booking requests for a master
+ */
+
+export function useGetPendingRequests<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetPendingRequestsQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetPendingRequestsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetPendingRequestsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getPendingRequests>>> = ({ signal }) => getPendingRequests(id, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetPendingRequestsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getPendingRequests>>>;
+export type GetPendingRequestsSuspenseQueryError = ProblemDetails;
+
+export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get pending booking requests for a master
+ */
+
+export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof getPendingRequests>>, TError = ProblemDetails>(
+  id: string,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getPendingRequests>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetPendingRequestsSuspenseQueryOptions(id, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
