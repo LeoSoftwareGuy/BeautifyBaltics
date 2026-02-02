@@ -11,15 +11,13 @@ function ClientDashboardPage() {
   return (
     <Box bg="var(--mantine-color-body)" mih="100vh">
       <Box component="header" bg="var(--mantine-color-default-hover)" px="md" py="sm" mb="lg">
-        <Container size="lg">
-          <Group justify="space-between">
-            <div>
-              <Title order={2}>My Bookings</Title>
-              <Text c="dimmed" size="sm">Manage your appointments</Text>
-            </div>
-            <Button onClick={() => navigate({ to: '/explore' })}>Book New Appointment</Button>
-          </Group>
-        </Container>
+        <Group justify="space-between">
+          <div>
+            <Title order={2}>My Bookings</Title>
+            <Text c="dimmed" size="sm">Manage your appointments</Text>
+          </div>
+          <Button onClick={() => navigate({ to: '/explore' })}>Book New Appointment</Button>
+        </Group>
       </Box>
 
       <Container size="lg" pb="xl">

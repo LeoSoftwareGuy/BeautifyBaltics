@@ -5,8 +5,6 @@ import {
   Grid,
   Paper,
   Stack,
-  Text,
-  Title,
 } from '@mantine/core';
 import dayjs from 'dayjs';
 
@@ -74,14 +72,6 @@ export function MasterSchedulePanel({
     <Grid gutter={0}>
       <Grid.Col span={8}>
         <Box p="lg" style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}>
-          <Stack gap="xs" mb="lg">
-            <Title order={2} fw={600}>
-              Availability Manager
-            </Title>
-            <Text size="sm" c="dimmed">
-              Manage your availability slots. Times shown in your local timezone.
-            </Text>
-          </Stack>
           <MasterSchedulePanelWeekNavigation
             weekStart={weekStart}
             onPrevWeek={handlePrevWeek}
