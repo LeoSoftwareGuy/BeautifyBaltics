@@ -76,6 +76,12 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
     .filter(Boolean)
     .join(', ') || 'Location not specified';
 
+  const fullLocation = [
+    booking.locationAddressLine1,
+    booking.locationAddressLine2,
+    booking.locationCity,
+  ].filter(Boolean).join(', ') || location;
+
   return (
     <Card withBorder radius="md" p="lg">
       <Group gap="xs" mb="md">
@@ -84,53 +90,51 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
       </Group>
 
       <Card radius="md" p={0} style={{ overflow: 'hidden' }}>
-        <Box pos="relative">
+        <Group gap={0} align="stretch" wrap="nowrap">
           <Image
             src={booking.masterJobCategoryImageUrl}
-            height={160}
+            w={220}
+            h={160}
             alt={booking.masterJobTitle}
-            fallbackSrc="https://placehold.co/600x400/e9ecef/868e96?text=Session"
+            fallbackSrc="https://placehold.co/180x160/e9ecef/868e96?text=Session"
+            style={{ objectFit: 'cover', flexShrink: 0 }}
           />
-          <Group pos="absolute" top={12} left={12} gap="xs">
-            <Badge color="blue" variant="filled" size="sm">
-              UPCOMING
-            </Badge>
-            <Badge color="dark" variant="filled" size="sm">
-              {timeUntil}
-            </Badge>
-          </Group>
-        </Box>
 
-        <Stack gap="sm" p="md" bg="var(--mantine-color-gray-0)">
-          <div>
-            <Text fw={600} size="lg">{booking.masterJobTitle}</Text>
-            <Text size="sm" c="dimmed">
-              with
-              {' '}
-              {booking.masterName}
-            </Text>
-          </div>
+          <Stack gap="sm" p="md" style={{ flex: 1 }}>
+            <Group gap="xs">
+              <Badge color="blue" variant="filled" size="sm">
+                UPCOMING TODAY
+              </Badge>
+              <Badge color="dark" variant="filled" size="sm">
+                {timeUntil}
+              </Badge>
+            </Group>
 
-          <Group gap="xs">
-            <IconMapPin size={16} color="var(--mantine-color-dimmed)" />
-            <Text size="sm" c="dimmed">{location}</Text>
-          </Group>
+            <div>
+              <Text fw={600} size="md">
+                {booking.masterJobTitle}
+                {' '}
+                with
+                {' '}
+                {booking.masterName}
+              </Text>
+            </div>
 
-          <Text size="sm" c="dimmed">
-            {scheduledDate.format('dddd, MMMM D, YYYY')}
-            {' at '}
-            {scheduledDate.format('h:mm A')}
-          </Text>
+            <Group gap="xs">
+              <IconMapPin size={16} color="var(--mantine-color-dimmed)" />
+              <Text size="sm" c="dimmed">{fullLocation}</Text>
+            </Group>
 
-          <Group gap="sm" mt="xs">
-            <Button variant="filled" color="brand" size="sm" style={{ flex: 1 }}>
-              View Details
-            </Button>
-            <Button variant="light" color="gray" size="sm" style={{ flex: 1 }}>
-              Get Directions
-            </Button>
-          </Group>
-        </Stack>
+            <Group gap="sm" mt="auto">
+              <Button variant="filled" color="brand" size="sm">
+                View Details
+              </Button>
+              <Button variant="default" size="sm">
+                Get Directions
+              </Button>
+            </Group>
+          </Stack>
+        </Group>
       </Card>
     </Card>
   );

@@ -20,6 +20,7 @@ import MasterBookingSection from './master-profile-booking/master-profile-bookin
 import MasterPortfolioGallery from './master-profile-gallery/master-profile-portfolio-gallery';
 import ProfileHeader from './master-profile-header';
 import MasterProfileHero from './master-profile-hero';
+import MasterProfileReviews from './master-profile-reviews';
 import MasterServicesList from './master-profile-services-list';
 
 type MasterProfilePageProps = {
@@ -99,6 +100,7 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
           masterId={masterId}
           onBook={handleBooking}
         />
+        <MasterProfileReviews masterId={masterId} />
       </Container>
 
       <BookingModal

@@ -1,7 +1,7 @@
 import {
   ActionIcon, Badge, Group, Stack, Text, Tooltip,
 } from '@mantine/core';
-import { IconX } from '@tabler/icons-react';
+import { IconStar, IconX } from '@tabler/icons-react';
 
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
@@ -90,36 +90,59 @@ function canCancelBooking(booking: FindBookingsResponse): boolean {
   return hoursUntilBooking >= 24;
 }
 
-type CancelActionRendererProps = {
+function canRateBooking(booking: FindBookingsResponse): boolean {
+  return booking.status === BookingStatus.Completed;
+}
+
+type BookingActionsRendererProps = {
   booking: FindBookingsResponse;
   onCancel: (bookingId: string) => void;
+  onRate: (booking: FindBookingsResponse) => void;
   isCancelling: boolean;
+  isRated?: boolean;
 };
 
-export function CancelActionRenderer({
+export function BookingActionsRenderer({
   booking,
   onCancel,
+  onRate,
   isCancelling,
-}: CancelActionRendererProps) {
+  isRated,
+}: BookingActionsRendererProps) {
   const showCancel = canCancelBooking(booking);
+  const showRate = canRateBooking(booking) && !isRated;
 
-  if (!showCancel) {
-    return <Text size="sm" c="dimmed">-</Text>;
+  if (!showCancel && !showRate) {
+    return <Text size="sm" c="dimmed">{isRated ? 'Rated' : '-'}</Text>;
   }
 
   return (
     <Group gap="xs">
-      <Tooltip label="Cancel booking">
-        <ActionIcon
-          variant="light"
-          color="red"
-          size="sm"
-          onClick={() => onCancel(booking.id)}
-          loading={isCancelling}
-        >
-          <IconX size={16} />
-        </ActionIcon>
-      </Tooltip>
+      {showCancel && (
+        <Tooltip label="Cancel booking">
+          <ActionIcon
+            variant="light"
+            color="red"
+            size="sm"
+            onClick={() => onCancel(booking.id)}
+            loading={isCancelling}
+          >
+            <IconX size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+      {showRate && (
+        <Tooltip label="Rate this booking">
+          <ActionIcon
+            variant="light"
+            color="yellow"
+            size="sm"
+            onClick={() => onRate(booking)}
+          >
+            <IconStar size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
     </Group>
   );
 }

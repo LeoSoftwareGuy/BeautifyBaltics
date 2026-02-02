@@ -4,6 +4,7 @@ using BeautifyBaltics.Persistence.Repositories.Booking;
 using BeautifyBaltics.Persistence.Repositories.Client;
 using BeautifyBaltics.Persistence.Repositories.Job;
 using BeautifyBaltics.Persistence.Repositories.Master;
+using BeautifyBaltics.Persistence.Repositories.Rating;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 
 using Marten;
@@ -24,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigureMarten, JobConfiguration>();
         services.AddSingleton<IConfigureMarten, JobCategoryConfiguration>();
         services.AddSingleton<IConfigureMarten, JobCategoryConfiguration>();
+        services.AddSingleton<IConfigureMarten, RatingConfiguration>();
 
         return services;
     }
@@ -38,6 +40,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<IJobRepository, JobRepository>();
         services.AddScoped<IJobCategoryRepository, JobCategoryRepository>();
+        services.AddScoped<IRatingRepository, RatingRepository>();
 
         return services;
     }

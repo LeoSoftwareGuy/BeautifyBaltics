@@ -1716,6 +1716,154 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/ratings:
+    post:
+      tags:
+        - Ratings
+      summary: Create a rating for a completed booking
+      description: "Only clients can Create ratings for their completed bookings.\r\nEach booking can only be rated once."
+      operationId: CreateRating
+      requestBody:
+        description: Create rating request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRatingRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateRatingRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateRatingResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+    get:
+      tags:
+        - Ratings
+      summary: Find ratings
+      operationId: FindRatings
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindMasterRatingsResponsePagedResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/ratings/master/{masterId}':
+    get:
+      tags:
+        - Ratings
+      summary: Get ratings for a master
+      operationId: GetMasterRatings
+      parameters:
+        - name: masterId
+          in: path
+          description: Master ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: masterId
+          in: query
+          description: Master ID to get ratings for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMasterRatingsResponsePagedResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   /api/v1/users:
     get:
       tags:
@@ -1810,6 +1958,10 @@ components:
           minLength: 1
           type: string
           description: Master job category name
+        masterJobCategoryImageUrl:
+          type: string
+          description: Master job category image URL
+          nullable: true
         locationCity:
           type: string
           description: Booking city
@@ -2064,6 +2216,37 @@ components:
           type: string
           format: uuid
       additionalProperties: false
+    CreateRatingRequest:
+      required:
+        - bookingId
+        - value
+      type: object
+      properties:
+        bookingId:
+          type: string
+          description: Booking ID to rate
+          format: uuid
+        value:
+          maximum: 5
+          minimum: 1
+          type: integer
+          description: Rating value (1-5)
+          format: int32
+        comment:
+          type: string
+          description: Optional comment
+          nullable: true
+      additionalProperties: false
+    CreateRatingResponse:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of created rating
+          format: uuid
+      additionalProperties: false
     EarningsDataPoint:
       required:
         - label
@@ -2283,6 +2466,42 @@ components:
             $ref: '#/components/schemas/MasterJobDTO'
           nullable: true
       additionalProperties: false
+    FindMasterRatingsResponse:
+      allOf:
+        - $ref: '#/components/schemas/RatingDTO'
+        - type: object
+          additionalProperties: false
+    FindMasterRatingsResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindMasterRatingsResponse'
+          description: Items
+      additionalProperties: false
     FindMastersResponse:
       allOf:
         - $ref: '#/components/schemas/MasterDTO'
@@ -2423,6 +2642,42 @@ components:
           minLength: 1
           type: string
           description: Direct URL to the image in blob storage
+      additionalProperties: false
+    GetMasterRatingsResponse:
+      allOf:
+        - $ref: '#/components/schemas/RatingDTO'
+        - type: object
+          additionalProperties: false
+    GetMasterRatingsResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetMasterRatingsResponse'
+          description: Items
       additionalProperties: false
     GetPendingRequestsResponse:
       required:
@@ -2897,6 +3152,50 @@ components:
           type: string
           nullable: true
       additionalProperties: { }
+    RatingDTO:
+      required:
+        - bookingId
+        - clientId
+        - clientName
+        - id
+        - masterName
+        - submittedAt
+        - value
+      type: object
+      properties:
+        id:
+          type: string
+          description: Rating ID
+          format: uuid
+        bookingId:
+          type: string
+          description: Booking ID
+          format: uuid
+        clientId:
+          type: string
+          description: Client ID who submitted the rating
+          format: uuid
+        clientName:
+          minLength: 1
+          type: string
+          description: Client name
+        masterName:
+          minLength: 1
+          type: string
+          description: Master name
+        value:
+          type: integer
+          description: Rating value (1-5)
+          format: int32
+        comment:
+          type: string
+          description: Optional comment
+          nullable: true
+        submittedAt:
+          type: string
+          description: When the rating was submitted
+          format: date-time
+      additionalProperties: false
     RescheduleBookingRequest:
       required:
         - bookingId

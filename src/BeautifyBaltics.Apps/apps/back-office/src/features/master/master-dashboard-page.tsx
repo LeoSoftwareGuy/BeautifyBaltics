@@ -18,6 +18,7 @@ import {
   useGetEarningsPerformance,
   useGetPendingRequests,
 } from '@/state/endpoints/masters';
+import { useGetMasterRatings } from '@/state/endpoints/ratings';
 import { useGetUser } from '@/state/endpoints/users';
 
 import {
@@ -47,6 +48,12 @@ function MasterDashboardPage() {
   const { data: pendingData, isLoading: isPendingLoading } = useGetPendingRequests(masterId, {
     query: { enabled: !!masterId },
   });
+
+  const { data: ratingsData, isLoading: isRatingsLoading } = useGetMasterRatings(
+    masterId,
+    { masterId, page: 1, pageSize: 100 },
+    { query: { enabled: !!masterId } },
+  );
 
   const today = dayjs();
   const { data: todayBookingsData, isLoading: isTodayBookingsLoading } = useFindBookings(
@@ -93,7 +100,13 @@ function MasterDashboardPage() {
     return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const isLoading = isUserLoading || isStatsLoading;
+  const isLoading = isUserLoading || isStatsLoading || isRatingsLoading;
+
+  const ratings = ratingsData?.items ?? [];
+  const averageRating = ratings.length > 0
+    ? ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length
+    : 0;
+  const ratingCount = ratingsData?.totalItemCount ?? 0;
 
   return (
     <Box bg="var(--mantine-color-body)" mih="100vh">
@@ -133,14 +146,18 @@ function MasterDashboardPage() {
             )}
           </Grid.Col>
           <Grid.Col span={{ base: 12, sm: 6, lg: 4 }}>
-            <MasterDashboardStatCard
-              title="Average Rating"
-              value="4.9/5.0"
-              change="+0.2%"
-              changeType="positive"
-              icon={IconStar}
-              iconColor="yellow"
-            />
+            {isLoading ? (
+              <Skeleton height={120} radius="md" />
+            ) : (
+              <MasterDashboardStatCard
+                title="Average Rating"
+                value={ratingCount > 0 ? `${averageRating.toFixed(1)}/5.0` : 'No ratings'}
+                change={ratingCount > 0 ? `${ratingCount} reviews` : ''}
+                changeType="positive"
+                icon={IconStar}
+                iconColor="yellow"
+              />
+            )}
           </Grid.Col>
         </Grid>
 

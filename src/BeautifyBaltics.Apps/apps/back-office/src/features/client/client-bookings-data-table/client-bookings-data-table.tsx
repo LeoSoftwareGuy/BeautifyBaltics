@@ -18,12 +18,14 @@ import {
   useCancelBooking,
   useFindBookings,
 } from '@/state/endpoints/bookings';
+import { useFindRatings } from '@/state/endpoints/ratings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
+import { ClientBookingRatingModal } from './client-booking-rating-modal';
 import { ClientBookingsDataTableFilters } from './client-bookings-data-table-filters';
 import {
-  CancelActionRenderer,
+  BookingActionsRenderer,
   renderDuration,
   renderLocation,
   renderPrice,
@@ -43,6 +45,8 @@ export function ClientBookingsDataTable() {
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
   const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
+  const [ratingModalOpen, setRatingModalOpen] = useState(false);
+  const [bookingToRate, setBookingToRate] = useState<FindBookingsResponse | null>(null);
 
   const {
     query,
@@ -76,6 +80,17 @@ export function ClientBookingsDataTable() {
         enabled: !!clientId,
       },
     },
+  );
+
+  const { data: ratingsData } = useFindRatings(
+    { pageSize: 100 },
+    { query: { enabled: !!clientId } },
+  );
+
+  // Filter ratings for this client's bookings
+  const clientBookingIds = new Set(bookingsData?.items?.map((b) => b.id) ?? []);
+  const ratedBookingIds = new Set(
+    ratingsData?.items?.filter((r) => clientBookingIds.has(r.bookingId)).map((r) => r.bookingId) ?? [],
   );
 
   const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
@@ -116,6 +131,16 @@ export function ClientBookingsDataTable() {
   const handleStatusChange = (value: string | null) => {
     setStatus(value ?? '');
     onPageChange(1);
+  };
+
+  const handleRate = (booking: FindBookingsResponse) => {
+    setBookingToRate(booking);
+    setRatingModalOpen(true);
+  };
+
+  const handleRatingModalClose = () => {
+    setRatingModalOpen(false);
+    setBookingToRate(null);
   };
 
   const columns: PagedDataTableColumn<FindBookingsResponse>[] = [
@@ -161,10 +186,12 @@ export function ClientBookingsDataTable() {
       accessor: 'actions',
       title: 'Actions',
       render: (booking) => (
-        <CancelActionRenderer
+        <BookingActionsRenderer
           booking={booking}
           onCancel={handleCancel}
+          onRate={handleRate}
           isCancelling={isCancelling && cancellingBookingId === booking.id}
+          isRated={ratedBookingIds.has(booking.id)}
         />
       ),
     },
@@ -197,6 +224,12 @@ export function ClientBookingsDataTable() {
           noRecordsText="No bookings found"
         />
       </Stack>
+
+      <ClientBookingRatingModal
+        opened={ratingModalOpen}
+        booking={bookingToRate}
+        onClose={handleRatingModalClose}
+      />
     </Card>
   );
 }

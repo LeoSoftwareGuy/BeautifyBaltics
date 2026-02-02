@@ -47,6 +47,11 @@ export type BookingDTO = {
    */
   masterJobCategoryName: string;
   /**
+   * Master job category image URL
+   * @nullable
+   */
+  masterJobCategoryImageUrl?: string | null;
+  /**
    * Booking city
    * @nullable
    */
@@ -227,6 +232,27 @@ export type CreateMasterResponse = {
   id?: string;
 };
 
+export type CreateRatingRequest = {
+  /** Booking ID to rate */
+  bookingId: string;
+  /**
+   * Rating value (1-5)
+   * @minimum 1
+   * @maximum 5
+   */
+  value: number;
+  /**
+   * Optional comment
+   * @nullable
+   */
+  comment?: string | null;
+};
+
+export type CreateRatingResponse = {
+  /** ID of created rating */
+  id: string;
+};
+
 export type EarningsDataPoint = {
   /**
    * Label for the data point (e.g., "Mon", "Jan", "2024")
@@ -338,6 +364,23 @@ export type FindMasterJobsResponse = {
   jobs?: MasterJobDTO[] | null;
 };
 
+export type FindMasterRatingsResponseAllOf = { [key: string]: unknown };
+
+export type FindMasterRatingsResponse = RatingDTO & FindMasterRatingsResponseAllOf;
+
+export type FindMasterRatingsResponsePagedResponse = {
+  /** Current page number */
+  page: number;
+  /** Page size */
+  pageSize: number;
+  /** Total pages count */
+  pageCount: number;
+  /** Total items count */
+  totalItemCount: number;
+  /** Items */
+  items: FindMasterRatingsResponse[];
+};
+
 export type FindMastersResponseAllOf = { [key: string]: unknown };
 
 export type FindMastersResponse = MasterDTO & FindMastersResponseAllOf;
@@ -423,6 +466,23 @@ export type GetMasterJobImageByIdResponse = {
    * @minLength 1
    */
   url: string;
+};
+
+export type GetMasterRatingsResponseAllOf = { [key: string]: unknown };
+
+export type GetMasterRatingsResponse = RatingDTO & GetMasterRatingsResponseAllOf;
+
+export type GetMasterRatingsResponsePagedResponse = {
+  /** Current page number */
+  page: number;
+  /** Page size */
+  pageSize: number;
+  /** Total pages count */
+  pageCount: number;
+  /** Total items count */
+  totalItemCount: number;
+  /** Items */
+  items: GetMasterRatingsResponse[];
 };
 
 export type GetPendingRequestsResponse = {
@@ -742,6 +802,34 @@ export type ProblemDetails = {
   /** @nullable */
   instance?: string | null;
   [key: string]: unknown;
+};
+
+export type RatingDTO = {
+  /** Rating ID */
+  id: string;
+  /** Booking ID */
+  bookingId: string;
+  /** Client ID who submitted the rating */
+  clientId: string;
+  /**
+   * Client name
+   * @minLength 1
+   */
+  clientName: string;
+  /**
+   * Master name
+   * @minLength 1
+   */
+  masterName: string;
+  /** Rating value (1-5) */
+  value: number;
+  /**
+   * Optional comment
+   * @nullable
+   */
+  comment?: string | null;
+  /** When the rating was submitted */
+  submittedAt: Date;
 };
 
 export type RescheduleBookingRequest = {
@@ -1107,4 +1195,54 @@ export type GetEarningsPerformanceParams = {
  * Time period for earnings data grouping
  */
   period?: EarningsPeriod;
+};
+
+export type FindRatingsParams = {
+/**
+ * Page number
+ */
+  page?: number;
+  /**
+ * Items per page
+ */
+  pageSize?: number;
+  /**
+ * Sort by column
+ */
+  sortBy?: string;
+  /**
+ * Is sorting order ascending or descending, defaults to false (descending)
+ */
+  ascending?: boolean;
+  /**
+ * Retrieve all items
+ */
+  all?: boolean;
+};
+
+export type GetMasterRatingsParams = {
+/**
+ * Master ID to get ratings for
+ */
+  masterId: string;
+  /**
+ * Page number
+ */
+  page?: number;
+  /**
+ * Items per page
+ */
+  pageSize?: number;
+  /**
+ * Sort by column
+ */
+  sortBy?: string;
+  /**
+ * Is sorting order ascending or descending, defaults to false (descending)
+ */
+  ascending?: boolean;
+  /**
+ * Retrieve all items
+ */
+  all?: boolean;
 };

@@ -294,6 +294,62 @@ export const findJobCategories = (
 
 export const getFindJobCategoriesQueryKey = (params?: FindJobCategoriesParams) => ['/api/v1/jobs/categories', ...(params ? [params] : [])] as const;
 
+export const getFindJobCategoriesInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findJobCategories>>, FindJobCategoriesParams['page']>, TError = ValidationProblemDetails>(params?: FindJobCategoriesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData, QueryKey, FindJobCategoriesParams['page']>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindJobCategoriesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findJobCategories>>, QueryKey, FindJobCategoriesParams['page']> = ({ signal, pageParam }) => findJobCategories({ ...params, page: pageParam || params?.page }, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData, QueryKey, FindJobCategoriesParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindJobCategoriesInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findJobCategories>>>;
+export type FindJobCategoriesInfiniteQueryError = ValidationProblemDetails;
+
+export function useFindJobCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findJobCategories>>, FindJobCategoriesParams['page']>, TError = ValidationProblemDetails>(
+  params: undefined | FindJobCategoriesParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData, QueryKey, FindJobCategoriesParams['page']>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findJobCategories>>,
+  TError,
+  Awaited<ReturnType<typeof findJobCategories>>, QueryKey
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindJobCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findJobCategories>>, FindJobCategoriesParams['page']>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData, QueryKey, FindJobCategoriesParams['page']>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findJobCategories>>,
+  TError,
+  Awaited<ReturnType<typeof findJobCategories>>, QueryKey
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindJobCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findJobCategories>>, FindJobCategoriesParams['page']>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData, QueryKey, FindJobCategoriesParams['page']>>, }
+  , queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Find paged job categories
+ */
+
+export function useFindJobCategoriesInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findJobCategories>>, FindJobCategoriesParams['page']>, TError = ValidationProblemDetails>(
+  params?: FindJobCategoriesParams,
+  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData, QueryKey, FindJobCategoriesParams['page']>>, },
+  queryClient?: QueryClient,
+): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindJobCategoriesInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export const getFindJobCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof findJobCategories>>, TError = ValidationProblemDetails>(params?: FindJobCategoriesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findJobCategories>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
