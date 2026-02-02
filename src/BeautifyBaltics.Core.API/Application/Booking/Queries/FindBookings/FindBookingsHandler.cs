@@ -1,5 +1,6 @@
 ﻿using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Persistence.Repositories.Booking;
+using BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 using Mapster;
 
 namespace BeautifyBaltics.Core.API.Application.Booking.Queries.FindBookings;

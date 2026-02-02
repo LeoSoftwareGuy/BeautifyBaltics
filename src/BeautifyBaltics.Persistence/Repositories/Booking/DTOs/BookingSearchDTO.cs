@@ -1,7 +1,7 @@
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 
-namespace BeautifyBaltics.Persistence.Repositories.Booking;
+namespace BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 
 public record BookingSearchDTO : BaseSearchDTO
 {

@@ -1,5 +1,4 @@
 using BeautifyBaltics.Domain.Aggregates.Client.Events;
-using BeautifyBaltics.Domain.Aggregates.SeedWork.Files;
 using BeautifyBaltics.Domain.SeedWork;
 using BeautifyBaltics.Domain.ValueObjects;
 

@@ -2,6 +2,7 @@
 using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Integrations.BlobStorage;
 using BeautifyBaltics.Persistence.Repositories.Client;
+using BeautifyBaltics.Persistence.Repositories.Client.DTOs;
 using Mapster;
 
 namespace BeautifyBaltics.Core.API.Application.Client.Queries.FindClients

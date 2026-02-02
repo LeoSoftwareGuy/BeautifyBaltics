@@ -1,3 +1,4 @@
+using BeautifyBaltics.Persistence.Repositories.Client.DTOs;
 using Marten;
 using Marten.Pagination;
 

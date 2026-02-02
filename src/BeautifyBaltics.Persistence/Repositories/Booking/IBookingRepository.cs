@@ -1,3 +1,4 @@
+using BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 
 namespace BeautifyBaltics.Persistence.Repositories.Booking;

@@ -1,6 +1,6 @@
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 
-namespace BeautifyBaltics.Persistence.Repositories.Client;
+namespace BeautifyBaltics.Persistence.Repositories.Client.DTOs;
 
 public record ClientSearchDTO : BaseSearchDTO
 {

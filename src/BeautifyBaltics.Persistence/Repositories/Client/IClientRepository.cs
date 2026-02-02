@@ -1,3 +1,4 @@
+using BeautifyBaltics.Persistence.Repositories.Client.DTOs;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 
 namespace BeautifyBaltics.Persistence.Repositories.Client;
