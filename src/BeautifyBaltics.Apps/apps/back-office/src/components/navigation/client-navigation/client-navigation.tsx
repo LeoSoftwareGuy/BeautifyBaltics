@@ -28,8 +28,8 @@ export default function ClientNavigation() {
 
   return (
     <Stack gap={4}>
-      <NavigationItem icon={IconDashboard} label="Home" href="/" />
-      <NavigationItem icon={IconCalendarEvent} label="Bookings" href="/dashboard" />
+      <NavigationItem icon={IconDashboard} label="Dashboard" href="/dashboard" />
+      <NavigationItem icon={IconCalendarEvent} label="My Bookings" href="/client/bookings" />
       <NavigationItem icon={IconSparkles} label="Services" href="/treatments" />
       <UnstyledButton
         onClick={handleLogout}

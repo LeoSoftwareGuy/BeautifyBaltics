@@ -1,4 +1,5 @@
 using BeautifyBaltics.Domain.Aggregates.Booking.Events;
+using BeautifyBaltics.Domain.Documents;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
 using JasperFx.Events;
@@ -16,6 +17,7 @@ public record Booking(Guid Id) : Projection
     public Guid MasterJobId { get; init; }
     public required string MasterJobTitle { get; init; }
     public required string MasterJobCategoryName { get; init; }
+    public string? MasterJobCategoryImageUrl { get; init; }
     public Guid MasterAvailabilitySlotId { get; init; }
     public string? LocationCity { get; init; }
     public string? LocationCountry { get; init; }
@@ -54,16 +56,17 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
         var client = await session.LoadAsync<Client>(@event.Data.ClientId, cancellationToken)
             ?? throw new InvalidOperationException($"Booking with client ID '{@event.Data.ClientId}' not found.");
 
-        var masterJob = await session.LoadAsync<MasterJob>(@event.Data.MasterJobId, cancellationToken);
+        var masterJob = await session.LoadAsync<MasterJob>(@event.Data.MasterJobId, cancellationToken)
+            ?? throw new InvalidOperationException($"Booking with master job ID {@event.Data.MasterJobId} not found.");
+
+        var jobCategory = await session.LoadAsync<JobCategory>(masterJob.JobCategoryId, cancellationToken);
 
         var masterAvailability = await session.LoadAsync<MasterAvailabilitySlot>(@event.Data.MasterAvailabilitySlotId, cancellationToken)
             ?? throw new InvalidOperationException($"Master availability with ID '{@event.Data.MasterAvailabilitySlotId}' not found.");
 
         var requestedAt = DateTime.SpecifyKind(@event.Timestamp.UtcDateTime, DateTimeKind.Unspecified);
 
-        return masterJob == null
-            ? throw new InvalidOperationException($"Booking with master job ID {@event.Data.MasterJobId} not found.")
-            : new Booking(@event.StreamId)
+        return new Booking(@event.StreamId)
         {
             MasterId = @event.Data.MasterId,
             MasterName = $"{master.FirstName} {master.LastName}",
@@ -72,6 +75,7 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
             MasterJobId = @event.Data.MasterJobId,
             MasterJobTitle = masterJob.Title,
             MasterJobCategoryName = masterJob.JobCategoryName,
+            MasterJobCategoryImageUrl = jobCategory?.ImageUrl,
             MasterAvailabilitySlotId = @event.Data.MasterAvailabilitySlotId,
             LocationCity = master.City,
             LocationCountry = master.Country,

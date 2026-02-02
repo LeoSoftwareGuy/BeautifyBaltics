@@ -52,6 +52,12 @@ public record BookingDTO
     /// </summary>
     [Required]
     public required string MasterJobCategoryName { get; init; }
+
+    /// <summary>
+    /// Master job category image URL
+    /// </summary>
+    public string? MasterJobCategoryImageUrl { get; init; }
+
     /// <summary>
     /// Booking city
     /// </summary>

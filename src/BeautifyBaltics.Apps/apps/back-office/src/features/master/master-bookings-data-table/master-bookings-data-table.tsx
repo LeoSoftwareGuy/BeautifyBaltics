@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Card, Stack, Text, Title,
+  Card, Stack,
 } from '@mantine/core';
 import { DatesRangeValue } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
@@ -203,13 +203,6 @@ export function MasterBookingsDataTable() {
   return (
     <Card withBorder radius="md" p="lg">
       <Stack gap="lg">
-        <Stack gap="sm">
-          <Title order={2} fw={600}>Bookings Management</Title>
-          <Text c="dimmed" size="sm">
-            Organize your schedule and client requests effectively.
-          </Text>
-        </Stack>
-
         <BookingsFilters
           dateRange={dateRange}
           onDateRangeChange={handleDateRangeChange}

@@ -4,7 +4,7 @@ import {
 } from '@mantine/core';
 import { useNavigate } from '@tanstack/react-router';
 
-import { ClientDashboardPage } from '@/features/client';
+import { ClientDashboardOverviewPage } from '@/features/client';
 import { UserRole } from '@/state/endpoints/api.schemas';
 import { useGetUser } from '@/state/endpoints/users';
 
@@ -49,7 +49,7 @@ function DashboardPage() {
     );
   }
 
-  return <ClientDashboardPage />;
+  return <ClientDashboardOverviewPage />;
 }
 
 export default DashboardPage;
