@@ -1,5 +1,6 @@
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Repositories.Booking;
+using BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Queries.GetEarningsPerformance;
 

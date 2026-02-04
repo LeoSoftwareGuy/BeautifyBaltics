@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Badge,
   Box,
@@ -10,10 +11,16 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { IconCalendarEvent, IconMapPin } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
 import { FindBookingsResponse } from '@/state/endpoints/api.schemas';
+import { getFindBookingsQueryKey, useCancelBooking } from '@/state/endpoints/bookings';
+import { useGetUser } from '@/state/endpoints/users';
+
+import { ClientBookingDetailsDrawer } from './client-booking-details-drawer';
 
 interface ClientDashboardNextSessionProps {
   booking?: FindBookingsResponse;
@@ -21,6 +28,38 @@ interface ClientDashboardNextSessionProps {
 }
 
 export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboardNextSessionProps) {
+  const [drawerOpened, setDrawerOpened] = useState(false);
+  const { data: user } = useGetUser();
+  const queryClient = useQueryClient();
+
+  const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
+    mutation: {
+      onSuccess: () => {
+        notifications.show({
+          title: 'Booking cancelled',
+          message: 'Your booking has been cancelled successfully.',
+          color: 'green',
+        });
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+        setDrawerOpened(false);
+      },
+      onError: (error: any) => {
+        notifications.show({
+          title: 'Failed to cancel booking',
+          message: error.message || 'An error occurred while cancelling the booking.',
+          color: 'red',
+        });
+      },
+    },
+  });
+
+  const handleCancel = (bookingId: string) => {
+    cancelBooking({
+      id: bookingId,
+      data: { bookingId, clientId: user?.id ?? '' },
+    });
+  };
+
   if (isLoading) {
     return (
       <Card withBorder radius="md" p="lg">
@@ -126,16 +165,26 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
             </Group>
 
             <Group gap="sm" mt="auto">
-              <Button variant="filled" color="brand" size="sm">
+              <Button
+                variant="filled"
+                color="brand"
+                size="sm"
+                onClick={() => setDrawerOpened(true)}
+              >
                 View Details
-              </Button>
-              <Button variant="default" size="sm">
-                Get Directions
               </Button>
             </Group>
           </Stack>
         </Group>
       </Card>
+
+      <ClientBookingDetailsDrawer
+        opened={drawerOpened}
+        onClose={() => setDrawerOpened(false)}
+        booking={booking}
+        onCancel={handleCancel}
+        isCancelling={isCancelling}
+      />
     </Card>
   );
 }
