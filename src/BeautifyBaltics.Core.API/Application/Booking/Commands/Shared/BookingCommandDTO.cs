@@ -23,8 +23,8 @@ public record BookingCommandDTO
     public Guid MasterJobId { get; init; }
 
     /// <summary>
-    /// Id of the master availability slot
+    /// The scheduled start time for the booking
     /// </summary>
     [Required]
-    public Guid MasterAvailabilityId { get; init; }
+    public DateTime ScheduledAt { get; init; }
 }

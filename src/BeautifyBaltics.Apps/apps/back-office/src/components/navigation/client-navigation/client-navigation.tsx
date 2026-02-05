@@ -7,7 +7,6 @@ import {
   IconDashboard,
   IconHome,
   IconLogout,
-  IconSparkles,
 } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -34,7 +33,6 @@ export default function ClientNavigation() {
       <NavigationItem icon={IconDashboard} label="Dashboard" href="/dashboard" />
       <NavigationItem icon={IconCompass} label="Explore" href="/client/explore" />
       <NavigationItem icon={IconCalendarEvent} label="My Bookings" href="/client/bookings" />
-      <NavigationItem icon={IconSparkles} label="Services" href="/treatments" />
       <UnstyledButton
         onClick={handleLogout}
         px="xs"

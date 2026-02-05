@@ -4,7 +4,6 @@ import {
 import {
   IconCalendarEvent,
   IconClock,
-  IconCurrencyDollar,
   IconLayoutDashboard,
   IconLogout,
   IconSettings,
@@ -35,7 +34,6 @@ export default function MasterNavigation() {
       <NavigationItem icon={IconCalendarEvent} label="Bookings" href="/master/bookings" />
       <NavigationItem icon={IconClock} label="Time Slots" href="/master/time-slots" />
       <NavigationItem icon={IconSparkles} label="Services" href="/master/services" />
-      <NavigationItem icon={IconCurrencyDollar} label="Earnings" href="/master/earnings" />
       <NavigationItem icon={IconSettings} label="Settings" href="/master/settings" />
 
       <UnstyledButton

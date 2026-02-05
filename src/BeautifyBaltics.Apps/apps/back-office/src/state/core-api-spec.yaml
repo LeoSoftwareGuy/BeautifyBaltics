@@ -1378,6 +1378,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{id}/available-slots':
+    get:
+      tags:
+        - Masters
+      summary: Get available time slots for booking
+      operationId: GetAvailableTimeSlots
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: masterId
+          in: query
+          description: Master identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          description: The date to get available slots for
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: serviceDurationMinutes
+          in: query
+          description: Duration of the service in minutes
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: slotIntervalMinutes
+          in: query
+          description: 'Interval between slot start times in minutes (default: 30)'
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAvailableTimeSlotsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   '/api/v1/masters/{id}/profile-image':
     post:
       tags:
@@ -1913,12 +1973,22 @@ paths:
                 $ref: '#/components/schemas/ProblemDetails'
 components:
   schemas:
+    AvailableTimeSlotDTO:
+      type: object
+      properties:
+        startAt:
+          type: string
+          format: date-time
+        endAt:
+          type: string
+          format: date-time
+      additionalProperties: false
     BookingCommandDTO:
       required:
         - clientId
-        - masterAvailabilityId
         - masterId
         - masterJobId
+        - scheduledAt
       type: object
       properties:
         masterId:
@@ -1933,10 +2003,10 @@ components:
           type: string
           description: Id of the master job
           format: uuid
-        masterAvailabilityId:
+        scheduledAt:
           type: string
-          description: Id of the master availability slot
-          format: uuid
+          description: The scheduled start time for the booking
+          format: date-time
       additionalProperties: false
     BookingDTO:
       required:
@@ -2572,6 +2642,17 @@ components:
         - Female
         - Other
       type: string
+    GetAvailableTimeSlotsResponse:
+      required:
+        - slots
+      type: object
+      properties:
+        slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailableTimeSlotDTO'
+          nullable: true
+      additionalProperties: false
     GetBookingByIdResponse:
       allOf:
         - $ref: '#/components/schemas/BookingDTO'

@@ -122,22 +122,6 @@ public partial class MasterAggregate : Aggregate
         this._availabilities.Remove(@event.MasterAvailabilitySlotId);
     }
 
-    internal void Apply(MasterAvailabilitySlotBooked @event)
-    {
-        if (this._availabilities.TryGetValue(@event.MasterAvailabilitySlotId, out var slot))
-        {
-            slot.MarkAsBooked();
-        }
-    }
-
-    internal void Apply(MasterAvailabilitySlotRestored @event)
-    {
-        if (this._availabilities.TryGetValue(@event.MasterAvailabilitySlotId, out var slot))
-        {
-            slot.Restore();
-        }
-    }
-
     internal void Apply(MasterJobImageUploaded @event)
     {
         if (!_jobs.TryGetValue(@event.MasterJobId, out var job)) return;

@@ -1,4 +1,4 @@
-﻿using BeautifyBaltics.Persistence.Projections;
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.Master.DTOs;
 using Marten;
 using Marten.Pagination;
@@ -23,7 +23,6 @@ namespace BeautifyBaltics.Persistence.Repositories.Master
             var query = _session.Query<MasterAvailabilitySlot>().AsQueryable();
 
             query = query.Where(x => x.MasterId == search.MasterId);
-            query = query.Where(x => !x.IsBooked);
 
             if (search.StartAt is not null)
             {

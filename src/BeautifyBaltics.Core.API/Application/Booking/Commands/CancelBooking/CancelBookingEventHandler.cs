@@ -1,4 +1,4 @@
-﻿using BeautifyBaltics.Domain.Aggregates.Booking;
+using BeautifyBaltics.Domain.Aggregates.Booking;
 using BeautifyBaltics.Domain.Aggregates.Booking.Events;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
@@ -38,7 +38,6 @@ namespace BeautifyBaltics.Core.API.Application.Booking.Commands.CancelBooking
             var bookingCancelledEvent = new BookingCancelled(
                 BookingId: request.BookingId,
                 MasterId: booking.MasterId,
-                MasterAvailabilitySlotId: booking.MasterAvailabilitySlotId,
                 CancelledByMasterId: request.MasterId,
                 CancelledByClientId: request.ClientId
             );

@@ -9,7 +9,7 @@ namespace BeautifyBaltics.Core.API.Application.Booking.Commands.Shared
             RuleFor(v => v.MasterId).NotEqual(Guid.Empty);
             RuleFor(v => v.ClientId).NotEqual(Guid.Empty);
             RuleFor(v => v.MasterJobId).NotEqual(Guid.Empty);
-            RuleFor(v => v.MasterAvailabilityId).NotEqual(Guid.Empty);
+            RuleFor(v => v.ScheduledAt).NotEmpty().WithMessage("ScheduledAt is required.");
         }
     }
 }

@@ -12,10 +12,6 @@ namespace BeautifyBaltics.Persistence.Projections
         public required string MasterName { get; init; }
 
         public DateTime EndAt { get; init; }
-
-        public bool IsBooked { get; init; }
-
-        public Guid? BookingId { get; init; }
     }
 
     public class MasterAvailabilitySlotProjection : MultiStreamProjection<MasterAvailabilitySlot, Guid>
@@ -24,8 +20,6 @@ namespace BeautifyBaltics.Persistence.Projections
         {
             Identity<MasterAvailabilitySlotCreated>(e => e.MasterAvailabilityId);
             Identity<MasterAvailabilitySlotUpdated>(e => e.MasterAvailabilityId);
-            Identity<MasterAvailabilitySlotBooked>(e => e.MasterAvailabilitySlotId);
-            Identity<MasterAvailabilitySlotRestored>(e => e.MasterAvailabilitySlotId);
             Identity<MasterAvailabilitySlotDeleted>(e => e.MasterAvailabilitySlotId);
 
             DeleteEvent<MasterAvailabilitySlotDeleted>();
@@ -43,8 +37,6 @@ namespace BeautifyBaltics.Persistence.Projections
                 MasterName = master.FirstName,
                 StartAt = @event.StartAt,
                 EndAt = @event.EndAt,
-                IsBooked = false,
-                BookingId = null,
             };
         }
 
@@ -53,20 +45,6 @@ namespace BeautifyBaltics.Persistence.Projections
             {
                 StartAt = @event.StartAt,
                 EndAt = @event.EndAt,
-            };
-
-        public static MasterAvailabilitySlot Apply(MasterAvailabilitySlotBooked @event, MasterAvailabilitySlot current) =>
-            current with
-            {
-                IsBooked = true,
-                BookingId = @event.BookingId,
-            };
-
-        public static MasterAvailabilitySlot Apply(MasterAvailabilitySlotRestored @event, MasterAvailabilitySlot current) =>
-            current with
-            {
-                IsBooked = false,
-                BookingId = null,
             };
     }
 }

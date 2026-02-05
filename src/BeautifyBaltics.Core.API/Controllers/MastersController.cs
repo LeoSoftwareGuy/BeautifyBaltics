@@ -19,6 +19,7 @@ using BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterProfileImage;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetDashboardStats;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetEarningsPerformance;
 using BeautifyBaltics.Core.API.Application.Master.Queries.GetPendingRequests;
+using BeautifyBaltics.Core.API.Application.Master.Queries.GetAvailableTimeSlots;
 using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
@@ -230,6 +231,22 @@ public class MastersController(IMessageBus bus) : ApiController
     public async Task<ActionResult<GetMasterAvailabilityResponse>> GetMasterAvailability([FromRoute] Guid id, [FromRoute] Guid availabilityId)
     {
         var response = await bus.InvokeAsync<GetMasterAvailabilityResponse>(new GetMasterAvailabilityRequest { MasterId = id, MasterAvailabilityId = availabilityId });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Get available time slots for booking
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Request with date and service duration</param>
+    /// <returns>List of available time slots</returns>
+    [HttpGet("{id:guid}/available-slots", Name = "GetAvailableTimeSlots")]
+    [ProducesResponseType(typeof(GetAvailableTimeSlotsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<GetAvailableTimeSlotsResponse>> GetAvailableTimeSlots([FromRoute] Guid id, [FromQuery] GetAvailableTimeSlotsRequest request)
+    {
+        var response = await bus.InvokeAsync<GetAvailableTimeSlotsResponse>(request with { MasterId = id });
         return Ok(response);
     }
 

@@ -6,6 +6,11 @@
  * Beautify Baltics Core API for back-office operations
  * OpenAPI spec version: v1
  */
+export type AvailableTimeSlotDTO = {
+  startAt?: Date;
+  endAt?: Date;
+};
+
 export type BookingCommandDTO = {
   /** Id of master */
   masterId: string;
@@ -13,8 +18,8 @@ export type BookingCommandDTO = {
   clientId: string;
   /** Id of the master job */
   masterJobId: string;
-  /** Id of the master availability slot */
-  masterAvailabilityId: string;
+  /** The scheduled start time for the booking */
+  scheduledAt: Date;
 };
 
 export type BookingDTO = {
@@ -404,6 +409,11 @@ export enum Gender {
   Other = 'Other',
 
 }
+export type GetAvailableTimeSlotsResponse = {
+  /** @nullable */
+  slots: AvailableTimeSlotDTO[] | null;
+};
+
 export type GetBookingByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetBookingByIdResponse = BookingDTO & GetBookingByIdResponseAllOf;
@@ -1173,6 +1183,25 @@ export type FindMasterAvailabilitiesParams = {
  * Retrieve all items
  */
   all?: boolean;
+};
+
+export type GetAvailableTimeSlotsParams = {
+/**
+ * Master identifier
+ */
+  masterId: string;
+  /**
+ * The date to get available slots for
+ */
+  date: Date;
+  /**
+ * Duration of the service in minutes
+ */
+  serviceDurationMinutes: number;
+  /**
+ * Interval between slot start times in minutes (default: 30)
+ */
+  slotIntervalMinutes?: number;
 };
 
 export type UploadMasterProfileImageBody = {

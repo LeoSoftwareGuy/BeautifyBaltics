@@ -39,7 +39,7 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
   } = useGetMasterById(masterId, { id: masterId });
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [bookingAvailabilityId, setBookingAvailabilityId] = useState<string | null>(null);
+  const [bookingScheduledAt, setBookingScheduledAt] = useState<Date | null>(null);
   const [bookingJob, setBookingJob] = useState<MasterJobDTO | null>(null);
 
   if (isLoading) {
@@ -74,8 +74,8 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
     );
   }
 
-  const handleBooking = ({ availabilityId, job }: { availabilityId: string; job: MasterJobDTO }) => {
-    setBookingAvailabilityId(availabilityId);
+  const handleBooking = ({ scheduledAt, job }: { scheduledAt: Date; job: MasterJobDTO }) => {
+    setBookingScheduledAt(scheduledAt);
     setBookingJob(job);
     setModalOpen(true);
   };
@@ -83,7 +83,6 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
   const addressParts = [
     data.addressLine1,
     data.addressLine2,
-    data.postalCode,
     data.city,
     data.country,
   ].filter(isNonEmptyString);
@@ -107,7 +106,7 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
         masterId={masterId}
-        availabilityId={bookingAvailabilityId}
+        scheduledAt={bookingScheduledAt}
         job={bookingJob}
         address={bookingAddress}
         phone={data.phoneNumber}

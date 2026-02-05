@@ -19,14 +19,14 @@ import {
   Phone,
 } from 'lucide-react';
 
-import { FindMasterAvailabilitiesResponsePagedResponse, MasterJobDTO } from '@/state/endpoints/api.schemas';
+import { MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { getFindBookingsQueryKey, useCreateBooking } from '@/state/endpoints/bookings';
 import { useGetUser } from '@/state/endpoints/users';
 
 type BookingModalProps = {
   opened: boolean;
   masterId: string;
-  availabilityId: string | null;
+  scheduledAt: Date | null;
   job: MasterJobDTO | null;
   address?: string | null;
   phone?: string | null;
@@ -36,7 +36,7 @@ type BookingModalProps = {
 function BookingModal({
   opened,
   masterId,
-  availabilityId,
+  scheduledAt,
   job,
   address,
   phone,
@@ -49,30 +49,7 @@ function BookingModal({
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  const availabilityKeyPrefix = `/api/v1/masters/${masterId}/availability`;
-
-  const removeSlotFromCache = () => {
-    if (!availabilityId) return;
-
-    queryClient.setQueriesData<FindMasterAvailabilitiesResponsePagedResponse | undefined>(
-      {
-        predicate: (query) => Array.isArray(query.queryKey)
-          && query.queryKey.length > 0
-          && query.queryKey[0] === availabilityKeyPrefix,
-      },
-      (old) => {
-        if (!old?.items?.length) return old;
-        const filteredItems = old.items.filter((slot) => slot.id !== availabilityId);
-        if (filteredItems.length === old.items.length) return old;
-
-        return {
-          ...old,
-          items: filteredItems,
-          totalItemCount: Math.max(0, old.totalItemCount - (old.items.length - filteredItems.length)),
-        };
-      },
-    );
-  };
+  const availableSlotsKeyPrefix = `/api/v1/masters/${masterId}/available-slots`;
 
   const { mutate: createBooking, isPending } = useCreateBooking({
     mutation: {
@@ -84,12 +61,11 @@ function BookingModal({
           queryKey: getFindBookingsQueryKey(),
         });
 
-        removeSlotFromCache();
-
         await queryClient.invalidateQueries({
           predicate: (query) => Array.isArray(query.queryKey)
             && query.queryKey.length > 0
-            && query.queryKey[0] === availabilityKeyPrefix,
+            && typeof query.queryKey[0] === 'string'
+            && query.queryKey[0].includes(availableSlotsKeyPrefix),
         });
 
         notifications.show({
@@ -110,14 +86,14 @@ function BookingModal({
   });
 
   const handleConfirm = () => {
-    if (!availabilityId || !job || !user?.id) return;
+    if (!scheduledAt || !job || !user?.id) return;
 
     createBooking({
       data: {
         masterId,
         clientId: user.id,
         masterJobId: job.id,
-        masterAvailabilityId: availabilityId,
+        scheduledAt,
       },
     });
   };
@@ -195,7 +171,6 @@ function BookingModal({
           <Group gap="sm">
             <DollarSign size={18} />
             <Text fw={500}>
-              $
               {job.price}
             </Text>
           </Group>
@@ -223,7 +198,7 @@ function BookingModal({
           <Button
             onClick={handleConfirm}
             flex={1}
-            disabled={isPending || !user?.id || !availabilityId || !job}
+            disabled={isPending || !user?.id || !scheduledAt || !job}
             leftSection={isPending ? <Loader size={16} /> : null}
           >
             {isPending ? 'Booking...' : 'Confirm Booking'}

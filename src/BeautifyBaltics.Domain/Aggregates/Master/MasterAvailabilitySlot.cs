@@ -6,8 +6,7 @@ namespace BeautifyBaltics.Domain.Aggregates.Master
             Guid id,
             Guid masterId,
             DateTime startAt,
-            DateTime endAt,
-            bool isBooked = false
+            DateTime endAt
         )
         {
             public Guid Id { get; private set; } = id;
@@ -18,23 +17,11 @@ namespace BeautifyBaltics.Domain.Aggregates.Master
 
             public DateTime EndAt { get; private set; } = endAt;
 
-            public bool IsBooked { get; private set; } = isBooked;
-
             public void Update(Guid masterId, DateTime startAt, DateTime endAt)
             {
                 MasterId = masterId;
                 StartAt = startAt;
                 EndAt = endAt;
-            }
-
-            public void MarkAsBooked()
-            {
-                IsBooked = true;
-            }
-
-            public void Restore()
-            {
-                IsBooked = false;
             }
         }
     }

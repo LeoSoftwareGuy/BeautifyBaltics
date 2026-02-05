@@ -13,14 +13,14 @@ import { DatePicker } from '@mantine/dates';
 import { Briefcase, Calendar, Clock } from 'lucide-react';
 
 import { MasterJobDTO, UserRole } from '@/state/endpoints/api.schemas';
-import { useFindMasterAvailabilities, useFindMasterJobs } from '@/state/endpoints/masters';
+import { useFindMasterJobs, useGetAvailableTimeSlots } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
 import MasterProfileTimeSlots from './master-profile-booking-time-slot';
 
 type BookingData = {
-  availabilityId: string;
+  scheduledAt: Date;
   job: MasterJobDTO;
 };
 
@@ -32,7 +32,7 @@ type MasterBookingSectionProps = {
 function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
   const { data: user } = useGetUser();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  const [selectedScheduledAt, setSelectedScheduledAt] = useState<Date | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   const isOwnProfile = user?.role === UserRole.Master && user?.id === masterId;
@@ -57,64 +57,80 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
     }
   }, [jobs, selectedJobId]);
 
-  const dateRange = useMemo(() => {
-    if (!selectedDate) return { startAt: undefined, endAt: undefined };
-
-    const startAt = new Date(selectedDate);
-    startAt.setHours(0, 0, 0, 0);
-
-    const endAt = new Date(selectedDate);
-    endAt.setHours(23, 59, 59, 999);
-
-    return { startAt, endAt };
-  }, [selectedDate]);
-
-  const { data: availabilityData, isLoading } = useFindMasterAvailabilities(
+  // Get available time slots based on selected date and service duration
+  const { data: slotsData, isLoading } = useGetAvailableTimeSlots(
     masterId,
     {
       masterId,
-      startAt: dateRange.startAt,
-      endAt: dateRange.endAt,
-      page: 1,
-      pageSize: 50,
+      date: selectedDate ?? new Date(),
+      serviceDurationMinutes: selectedJob?.durationMinutes ?? 60,
+    },
+    {
+      query: {
+        enabled: !!selectedDate && !!selectedJob,
+      },
     },
   );
 
   const availableSlots = useMemo(() => {
-    if (!availabilityData?.items) return [];
+    if (!slotsData?.slots) return [];
 
-    return availabilityData.items.map((slot) => ({
-      id: slot.id,
-      label: datetime.formatTimeSlot(slot.startAt, slot.endAt),
-    }));
-  }, [availabilityData?.items]);
+    return slotsData.slots
+      .map((slot) => {
+        const startAt = datetime.toDate(slot.startAt);
+        const endAt = datetime.toDate(slot.endAt);
+        if (!startAt || !endAt) return null;
 
+        return {
+          id: startAt.toISOString(),
+          startAt,
+          label: datetime.formatTimeSlot(startAt, endAt),
+        };
+      })
+      .filter((slot): slot is NonNullable<typeof slot> => slot !== null);
+  }, [slotsData?.slots]);
+
+  // Reset slot selection when date or job changes
+  useEffect(() => {
+    setSelectedScheduledAt(null);
+  }, [selectedDate, selectedJobId]);
+
+  // Auto-select first slot when available
   useEffect(() => {
     if (!availableSlots.length) {
-      setSelectedSlotId(null);
+      setSelectedScheduledAt(null);
       return;
     }
 
-    const currentSlotExists = availableSlots.some((slot) => slot.id === selectedSlotId);
-    if (!selectedSlotId || !currentSlotExists) {
-      setSelectedSlotId(availableSlots[0].id);
+    const currentSlotExists = selectedScheduledAt
+      && availableSlots.some((slot) => slot.startAt.getTime() === selectedScheduledAt.getTime());
+
+    if (!selectedScheduledAt || !currentSlotExists) {
+      setSelectedScheduledAt(availableSlots[0].startAt);
     }
-  }, [availableSlots, selectedSlotId]);
+  }, [availableSlots, selectedScheduledAt]);
 
   if (isOwnProfile) {
     return null;
   }
 
   const handleBook = () => {
-    if (selectedSlotId && selectedJob) {
+    if (selectedScheduledAt && selectedJob) {
       onBook({
-        availabilityId: selectedSlotId,
+        scheduledAt: selectedScheduledAt,
         job: selectedJob,
       });
     }
   };
 
-  const isDisabled = !selectedDate || !selectedSlotId || !selectedJob;
+  const handleSlotSelect = (slotId: string) => {
+    const slot = availableSlots.find((s) => s.id === slotId);
+    if (slot) {
+      setSelectedScheduledAt(slot.startAt);
+    }
+  };
+
+  const isDisabled = !selectedDate || !selectedScheduledAt || !selectedJob;
 
   const formatDate = (date: Date | null) => {
     if (!date) return '';
@@ -124,6 +140,11 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
       year: 'numeric',
     });
   };
+
+  // Convert selectedScheduledAt to slot id format for the time slots component
+  const selectedSlotId = selectedScheduledAt
+    ? availableSlots.find((s) => s.startAt.getTime() === selectedScheduledAt.getTime())?.id ?? null
+    : null;
 
   return (
     <Stack gap="lg" mt="xl">
@@ -202,7 +223,7 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
                 isLoading={isLoading}
                 availableSlots={availableSlots}
                 selectedSlotId={selectedSlotId}
-                onSlotSelect={setSelectedSlotId}
+                onSlotSelect={handleSlotSelect}
               />
               <Button
                 size="lg"

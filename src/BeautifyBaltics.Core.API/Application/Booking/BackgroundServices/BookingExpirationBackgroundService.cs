@@ -56,8 +56,7 @@ public class BookingExpirationBackgroundService(
         {
             var bookingCancelledEvent = new BookingCancelled(
                 BookingId: booking.Id,
-                MasterId: booking.MasterId,
-                MasterAvailabilitySlotId: booking.MasterAvailabilitySlotId
+                MasterId: booking.MasterId
             );
 
             session.Events.Append(booking.Id, bookingCancelledEvent);

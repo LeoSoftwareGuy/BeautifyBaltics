@@ -48,6 +48,8 @@ import type {
   FindMasterJobsResponse,
   FindMastersParams,
   FindMastersResponsePagedResponse,
+  GetAvailableTimeSlotsParams,
+  GetAvailableTimeSlotsResponse,
   GetDashboardStatsResponse,
   GetEarningsPerformanceParams,
   GetEarningsPerformanceResponse,
@@ -1465,6 +1467,139 @@ export const useDeleteMasterAvailability = <TError = ProblemDetails | ProblemDet
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary Get available time slots for booking
+ */
+export const getAvailableTimeSlots = (
+  id: string,
+  params: GetAvailableTimeSlotsParams,
+  signal?: AbortSignal,
+) => customClient<GetAvailableTimeSlotsResponse>(
+  {
+    url: `/api/v1/masters/${id}/available-slots`,
+    method: 'GET',
+    params,
+    signal,
+  },
+);
+
+export const getGetAvailableTimeSlotsQueryKey = (
+  id?: string,
+  params?: GetAvailableTimeSlotsParams,
+) => [`/api/v1/masters/${id}/available-slots`, ...(params ? [params] : [])] as const;
+
+export const getGetAvailableTimeSlotsQueryOptions = <TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
+  params: GetAvailableTimeSlotsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAvailableTimeSlotsQueryKey(id, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableTimeSlots>>> = ({ signal }) => getAvailableTimeSlots(id, params, signal);
+
+  return {
+    queryKey, queryFn, enabled: !!(id), ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetAvailableTimeSlotsQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableTimeSlots>>>;
+export type GetAvailableTimeSlotsQueryError = ProblemDetails | ValidationProblemDetails;
+
+export function useGetAvailableTimeSlots<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getAvailableTimeSlots>>,
+  TError,
+  Awaited<ReturnType<typeof getAvailableTimeSlots>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetAvailableTimeSlots<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getAvailableTimeSlots>>,
+  TError,
+  Awaited<ReturnType<typeof getAvailableTimeSlots>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetAvailableTimeSlots<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get available time slots for booking
+ */
+
+export function useGetAvailableTimeSlots<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetAvailableTimeSlotsQueryOptions(id, params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetAvailableTimeSlotsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
+  params: GetAvailableTimeSlotsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAvailableTimeSlotsQueryKey(id, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAvailableTimeSlots>>> = ({ signal }) => getAvailableTimeSlots(id, params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetAvailableTimeSlotsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getAvailableTimeSlots>>>;
+export type GetAvailableTimeSlotsSuspenseQueryError = ProblemDetails | ValidationProblemDetails;
+
+export function useGetAvailableTimeSlotsSuspense<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetAvailableTimeSlotsSuspense<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetAvailableTimeSlotsSuspense<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Get available time slots for booking
+ */
+
+export function useGetAvailableTimeSlotsSuspense<TData = Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError = ProblemDetails | ValidationProblemDetails>(
+  id: string,
+  params: GetAvailableTimeSlotsParams,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getAvailableTimeSlots>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetAvailableTimeSlotsSuspenseQueryOptions(id, params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * @summary Upload master profile image
  */

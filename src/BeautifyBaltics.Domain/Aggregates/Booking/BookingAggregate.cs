@@ -11,7 +11,6 @@ public class BookingAggregate : Aggregate
     public Guid MasterId { get; private set; }
     public Guid ClientId { get; private set; }
     public Guid MasterJobId { get; private set; }
-    public Guid MasterAvailabilitySlotId { get; private set; }
     public DateTime ScheduledAt { get; private set; }
     public TimeSpan Duration { get; private set; }
     public decimal Price { get; private set; }
@@ -24,7 +23,6 @@ public class BookingAggregate : Aggregate
         MasterId = @event.MasterId;
         ClientId = @event.ClientId;
         MasterJobId = @event.MasterJobId;
-        MasterAvailabilitySlotId = @event.MasterAvailabilitySlotId;
         ScheduledAt = @event.ScheduledAt;
         Duration = @event.Duration;
         Price = @event.Price;
@@ -57,4 +55,6 @@ public class BookingAggregate : Aggregate
         var timeUntilBooking = ScheduledAt - DateTime.UtcNow;
         return timeUntilBooking < MinimumCancellationNotice;
     }
+
+    public DateTime EndAt => ScheduledAt + Duration;
 }

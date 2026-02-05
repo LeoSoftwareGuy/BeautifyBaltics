@@ -2,9 +2,13 @@ using BeautifyBaltics.Domain.Aggregates.Booking;
 using BeautifyBaltics.Domain.Aggregates.Booking.Events;
 using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Domain.Aggregates.Master;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Persistence.Projections;
+using BeautifyBaltics.Persistence.Repositories.Booking;
+using BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 using BeautifyBaltics.Persistence.Repositories.Master;
+using BeautifyBaltics.Persistence.Repositories.Master.DTOs;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 using Wolverine.Marten;
 
@@ -13,7 +17,8 @@ namespace BeautifyBaltics.Core.API.Application.Booking.Commands.CreateBooking;
 public class CreateBookingEventHandler(
     ICommandRepository commandRepository,
     IMasterJobRepository masterJobRepository,
-    IMasterAvailabilitySlotRepository masterAvailabilitySlotRepository
+    IMasterAvailabilitySlotRepository masterAvailabilitySlotRepository,
+    IBookingRepository bookingRepository
 )
 {
     public async Task<CreateBookingResponse> Handle(
@@ -36,20 +41,60 @@ public class CreateBookingEventHandler(
             throw DomainException.WithMessage($"Master job with ID {request.MasterJobId} does not belong to master {request.MasterId}");
         }
 
-        var availability = await masterAvailabilitySlotRepository.GetByIdAsync(request.MasterAvailabilityId, cancellationToken)
-            ?? throw NotFoundException.For<MasterAvailabilitySlot>(request.MasterAvailabilityId);
+        var scheduledAt = DateTime.SpecifyKind(request.ScheduledAt, DateTimeKind.Utc);
+        var bookingEndAt = scheduledAt + masterJob.Duration;
 
-        if (availability.MasterId != request.MasterId)
+        // Validate that the requested time is within master's availability
+        var dayStart = scheduledAt.Date;
+        var dayEnd = dayStart.AddDays(1);
+
+        var availabilityWindows = await masterAvailabilitySlotRepository.GetListAsync(
+            new MasterAvailabilitySlotSearchDTO
+            {
+                MasterId = request.MasterId,
+                StartAt = dayStart,
+                EndAt = dayEnd
+            },
+            cancellationToken
+        );
+
+        var validWindow = availabilityWindows.FirstOrDefault(w =>
+            scheduledAt >= w.StartAt && bookingEndAt <= w.EndAt);
+
+        if (validWindow == null)
         {
-            throw DomainException.WithMessage($"Availability slot with ID {request.MasterAvailabilityId} does not belong to master {request.MasterId}");
+            throw DomainException.WithMessage("The requested time is not within the master's availability window.");
+        }
+
+        // Check for conflicts with existing bookings
+        var existingBookings = await bookingRepository.GetListAsync(
+            new BookingSearchDTO
+            {
+                MasterId = request.MasterId,
+                From = dayStart,
+                To = dayEnd
+            },
+            cancellationToken
+        );
+
+        var hasConflict = existingBookings
+            .Where(b => b.Status != BookingStatus.Cancelled)
+            .Any(b =>
+            {
+                var existingEndAt = b.ScheduledAt + b.Duration;
+                return scheduledAt < existingEndAt && bookingEndAt > b.ScheduledAt;
+            });
+
+        if (hasConflict)
+        {
+            throw DomainException.WithMessage("The requested time conflicts with an existing booking.");
         }
 
         var bookingCreatedEvent = new BookingCreated(
             MasterId: request.MasterId,
             ClientId: request.ClientId,
             MasterJobId: request.MasterJobId,
-            MasterAvailabilitySlotId: request.MasterAvailabilityId,
-            ScheduledAt: availability.StartAt,
+            ScheduledAt: scheduledAt,
             Duration: masterJob.Duration,
             Price: masterJob.Price
         );
