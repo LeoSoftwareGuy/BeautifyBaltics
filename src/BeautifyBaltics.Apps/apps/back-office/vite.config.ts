@@ -1,7 +1,6 @@
 /// <reference types='vitest' />
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import * as path from 'node:path';

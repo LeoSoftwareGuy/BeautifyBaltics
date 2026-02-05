@@ -1,4 +1,5 @@
 import { DevtoolsContainer, TanStackQueryDevtools, TanStackRouterDevtools } from '@beautify-baltics-apps/devtools';
+import { Group } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
@@ -10,6 +11,7 @@ import {
   NavigationLoadingIndicator,
   SidebarFooter,
 } from '@/components/navigation';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { MegaSearch } from '@/features/mega-search';
 import usePageTitle from '@/hooks/use-page-title';
 import { AppLayout } from '@/layouts';
@@ -52,7 +54,12 @@ function Root() {
     <AppLayout
       header={{
         start: <NavigationBreadcrumbs />,
-        end: <MegaSearch />,
+        end: (
+          <Group gap="md" align="center" wrap="nowrap">
+            <LanguageSwitcher />
+            <MegaSearch />
+          </Group>
+        ),
       }}
       navbar={{
         top: null,

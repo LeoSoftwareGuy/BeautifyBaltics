@@ -1,11 +1,13 @@
 import { Breadcrumbs } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
 import { useMatches } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import AnchorLink from './anchor-link';
 
 export default function NavigationBreadcrumbs() {
   const matches = useMatches();
+  const { t } = useTranslation();
 
   const breadcrumbs = matches
     .flatMap(({ context }) => context.breadcrumbs)
@@ -25,7 +27,7 @@ export default function NavigationBreadcrumbs() {
           key={breadcrumb.path}
           to={breadcrumb.path}
         >
-          {breadcrumb.path === '/' ? 'Home' : breadcrumb.title}
+          {breadcrumb.path === '/' ? t('common:home') : breadcrumb.title}
         </AnchorLink>
       ))}
     </Breadcrumbs>
