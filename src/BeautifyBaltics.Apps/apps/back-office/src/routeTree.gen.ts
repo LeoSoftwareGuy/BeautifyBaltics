@@ -23,6 +23,7 @@ import { Route as MasterSettingsIndexRouteRouteImport } from './routes/master/se
 import { Route as MasterServicesIndexRouteRouteImport } from './routes/master/services/index.route'
 import { Route as MasterEarningsIndexRouteRouteImport } from './routes/master/earnings/index.route'
 import { Route as MasterBookingsIndexRouteRouteImport } from './routes/master/bookings/index.route'
+import { Route as ClientExploreIndexRouteRouteImport } from './routes/client/explore/index.route'
 import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bookings/index.route'
 
 const IndexRouteRoute = IndexRouteRouteImport.update({
@@ -101,6 +102,11 @@ const MasterBookingsIndexRouteRoute =
     path: '/master/bookings/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ClientExploreIndexRouteRoute = ClientExploreIndexRouteRouteImport.update({
+  id: '/client/explore/',
+  path: '/client/explore/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClientBookingsIndexRouteRoute =
   ClientBookingsIndexRouteRouteImport.update({
     id: '/client/bookings/',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterIndexRouteRoute
   '/treatments': typeof TreatmentsIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
+  '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
   '/master/earnings': typeof MasterEarningsIndexRouteRoute
   '/master/services': typeof MasterServicesIndexRouteRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterIndexRouteRoute
   '/treatments': typeof TreatmentsIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
+  '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
   '/master/earnings': typeof MasterEarningsIndexRouteRoute
   '/master/services': typeof MasterServicesIndexRouteRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/register/': typeof RegisterIndexRouteRoute
   '/treatments/': typeof TreatmentsIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
+  '/client/explore/': typeof ClientExploreIndexRouteRoute
   '/master/bookings/': typeof MasterBookingsIndexRouteRoute
   '/master/earnings/': typeof MasterEarningsIndexRouteRoute
   '/master/services/': typeof MasterServicesIndexRouteRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/treatments'
     | '/client/bookings'
+    | '/client/explore'
     | '/master/bookings'
     | '/master/earnings'
     | '/master/services'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/treatments'
     | '/client/bookings'
+    | '/client/explore'
     | '/master/bookings'
     | '/master/earnings'
     | '/master/services'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/register/'
     | '/treatments/'
     | '/client/bookings/'
+    | '/client/explore/'
     | '/master/bookings/'
     | '/master/earnings/'
     | '/master/services/'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   RegisterIndexRouteRoute: typeof RegisterIndexRouteRoute
   TreatmentsIndexRouteRoute: typeof TreatmentsIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
+  ClientExploreIndexRouteRoute: typeof ClientExploreIndexRouteRoute
   MasterBookingsIndexRouteRoute: typeof MasterBookingsIndexRouteRoute
   MasterEarningsIndexRouteRoute: typeof MasterEarningsIndexRouteRoute
   MasterServicesIndexRouteRoute: typeof MasterServicesIndexRouteRoute
@@ -332,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MasterBookingsIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/client/explore/': {
+      id: '/client/explore/'
+      path: '/client/explore'
+      fullPath: '/client/explore'
+      preLoaderRoute: typeof ClientExploreIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/client/bookings/': {
       id: '/client/bookings/'
       path: '/client/bookings'
@@ -352,6 +372,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterIndexRouteRoute: RegisterIndexRouteRoute,
   TreatmentsIndexRouteRoute: TreatmentsIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,
+  ClientExploreIndexRouteRoute: ClientExploreIndexRouteRoute,
   MasterBookingsIndexRouteRoute: MasterBookingsIndexRouteRoute,
   MasterEarningsIndexRouteRoute: MasterEarningsIndexRouteRoute,
   MasterServicesIndexRouteRoute: MasterServicesIndexRouteRoute,

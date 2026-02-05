@@ -27,22 +27,25 @@ public class MasterRepository(IQuerySession session) : QueryRepository<Projectio
 
         if (!string.IsNullOrWhiteSpace(search.Text))
         {
-            query = query.Where(x => x.FirstName.Contains(search.Text));
-            query = query.Where(x => x.LastName.Contains(search.Text));
+            query = query.Where(x => x.FirstName.NgramSearch(search.Text) || x.LastName.NgramSearch(search.Text));
         }
 
         if (!string.IsNullOrWhiteSpace(search.City))
         {
-            query = query.Where(x => x.City == search.City);
+            query = query.Where(x => x.City.NgramSearch(search.City));
         }
 
-        if (search.JobCategoryId.HasValue)
+        if (search.JobCategoryId is not null|| search.MinPrice is not null || search.MaxPrice is not null)
         {
-            var jobCategoryId = search.JobCategoryId.Value;
-            var masterIds = _session.Query<MasterJob>()
-                .Where(job => job.JobCategoryId == jobCategoryId)
-                .Select(job => job.MasterId)
-                .ToList();
+            var jobQuery = _session.Query<MasterJob>().AsQueryable();
+
+            if (search.JobCategoryId is not null) jobQuery = jobQuery.Where(job => job.JobCategoryId == search.JobCategoryId);
+
+            if (search.MinPrice is not null) jobQuery = jobQuery.Where(job => job.Price >= search.MinPrice);
+
+            if (search.MaxPrice is not null) jobQuery = jobQuery.Where(job => job.Price <= search.MaxPrice);
+
+            var masterIds = jobQuery.Select(job => job.MasterId).ToList();
 
             query = query.Where(x => masterIds.Contains(x.Id));
         }

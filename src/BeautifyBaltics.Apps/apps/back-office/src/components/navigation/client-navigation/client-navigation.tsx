@@ -3,7 +3,9 @@ import {
 } from '@mantine/core';
 import {
   IconCalendarEvent,
+  IconCompass,
   IconDashboard,
+  IconHome,
   IconLogout,
   IconSparkles,
 } from '@tabler/icons-react';
@@ -28,7 +30,9 @@ export default function ClientNavigation() {
 
   return (
     <Stack gap={4}>
+      <NavigationItem icon={IconHome} label="Home" href="/home" />
       <NavigationItem icon={IconDashboard} label="Dashboard" href="/dashboard" />
+      <NavigationItem icon={IconCompass} label="Explore" href="/client/explore" />
       <NavigationItem icon={IconCalendarEvent} label="My Bookings" href="/client/bookings" />
       <NavigationItem icon={IconSparkles} label="Services" href="/treatments" />
       <UnstyledButton

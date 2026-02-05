@@ -1112,6 +1112,8 @@ export type FindMastersParams = {
   text?: string;
   city?: string;
   jobCategoryId?: string;
+  minPrice?: number;
+  maxPrice?: number;
   /**
  * Page number
  */
@@ -1199,6 +1201,18 @@ export type GetEarningsPerformanceParams = {
 
 export type FindRatingsParams = {
 /**
+ * Filter by client ID
+ */
+  clientId?: string;
+  /**
+ * Filter by booking ID
+ */
+  bookingId?: string;
+  /**
+ * Filter by master ID
+ */
+  masterId?: string;
+  /**
  * Page number
  */
   page?: number;

@@ -775,6 +775,16 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+            format: double
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+            format: double
         - name: page
           in: query
           description: Page number
@@ -1763,6 +1773,24 @@ paths:
       summary: Find ratings
       operationId: FindRatings
       parameters:
+        - name: clientId
+          in: query
+          description: Filter by client ID
+          schema:
+            type: string
+            format: uuid
+        - name: bookingId
+          in: query
+          description: Filter by booking ID
+          schema:
+            type: string
+            format: uuid
+        - name: masterId
+          in: query
+          description: Filter by master ID
+          schema:
+            type: string
+            format: uuid
         - name: page
           in: query
           description: Page number
