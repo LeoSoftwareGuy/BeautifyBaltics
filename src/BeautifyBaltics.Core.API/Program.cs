@@ -1,3 +1,6 @@
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using BeautifyBaltics.Core.API.Application.Auth.Services;
 using BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 using BeautifyBaltics.Core.API.Authentication;
@@ -29,6 +32,8 @@ internal class Program
     private static async Task<int> Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        ConfigureKeyVault(builder);
 
         builder.AddServiceDefaults();
         builder.AddNpgsqlDataSource(connectionName: "postgres", s => { s.DisableHealthChecks = true; });
@@ -196,6 +201,20 @@ internal class Program
 
         var app = builder.Build();
 
+        if (!builder.Environment.IsProduction())
+        {
+            var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(Program));
+            var testSecret = app.Configuration["test-secret"];
+            if (!string.IsNullOrWhiteSpace(testSecret))
+            {
+                logger.LogInformation("Key Vault secret 'test-secret' read successfully (length {Length}).", testSecret.Length);
+            }
+            else
+            {
+                logger.LogWarning("Key Vault secret 'test-secret' not found in configuration.");
+            }
+        }
+
         app.UseForwardedHeaders();
 
         // Configure the HTTP request pipeline.
@@ -227,5 +246,17 @@ internal class Program
         app.MapDeadLettersEndpoints("/api/v1/debug/dead-letters").WithTags("Debug");
 
         return await app.RunJasperFxCommands(args);
+    }
+
+    private static void ConfigureKeyVault(WebApplicationBuilder builder)
+    {
+        var keyVaultUri = builder.Configuration.GetConnectionString("key-vault");
+        if (string.IsNullOrWhiteSpace(keyVaultUri)) throw new ArgumentException("Key vault connection string is not configured.");
+
+        var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+        builder.Configuration.AddAzureKeyVault(secretClient, new AzureKeyVaultConfigurationOptions
+        {
+            ReloadInterval = TimeSpan.FromHours(8)
+        });
     }
 }
