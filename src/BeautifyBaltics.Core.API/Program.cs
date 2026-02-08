@@ -70,14 +70,13 @@ internal class Program
         // Register exceptions handling
         builder.Services.AddDefaultExceptionHandler();
 
-        builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null);
-            // TODO: Re-enable after deployment is stable
-            // .ProcessEventsWithWolverineHandlersInStrictOrder("bookings", o =>
-            // {
-            //     o.IncludeType<BookingCreated>();
-            //     o.IncludeType<BookingConfirmed>();
-            //     o.IncludeType<BookingCancelled>();
-            // });
+        builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null)
+             .ProcessEventsWithWolverineHandlersInStrictOrder("bookings", o =>
+             {
+                 o.IncludeType<BookingCreated>();
+                 o.IncludeType<BookingConfirmed>();
+                 o.IncludeType<BookingCancelled>();
+             });
 
         builder.Services.ConfigurePersistence();
 
@@ -85,8 +84,8 @@ internal class Program
         {
             o.ApplicationAssembly = typeof(Program).Assembly;
 
-            // Solo mode for single-instance deployment
-            o.Durability.Mode = DurabilityMode.Solo;
+            // Mediator-only mode disables all background agents
+            o.Durability.Mode = DurabilityMode.MediatorOnly;
         });
 
         builder.Services.AddPersistenceServices();
