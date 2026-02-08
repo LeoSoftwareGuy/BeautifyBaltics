@@ -124,7 +124,7 @@ public static class ServiceCollectionExtensions
               })
             .UseNpgsqlDataSource()
             .UseLightweightSessions()
-            .AddAsyncDaemon(environment.IsDevelopment() ? DaemonMode.Solo : DaemonMode.HotCold)
+            .AddAsyncDaemon(DaemonMode.Solo)
             .ApplyAllDatabaseChangesOnStartup()
             .InitializeWith<SampleDataSeeder>();
     }

@@ -84,11 +84,8 @@ internal class Program
         {
             o.ApplicationAssembly = typeof(Program).Assembly;
 
-            if (builder.Environment.IsDevelopment())
-            {
-                // https://wolverinefx.net/guide/durability/leadership-and-troubleshooting.html#solo-mode
-                o.Durability.Mode = DurabilityMode.Solo;
-            }
+            // Solo mode for single-instance deployment
+            o.Durability.Mode = DurabilityMode.Solo;
         });
 
         builder.Services.AddPersistenceServices();
