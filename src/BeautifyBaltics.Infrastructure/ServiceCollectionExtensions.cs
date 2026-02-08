@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using Wolverine;
 using Wolverine.ErrorHandling;
 using Wolverine.FluentValidation;
@@ -57,14 +58,18 @@ public static class ServiceCollectionExtensions
          Action<StoreOptions>? configure
      )
     {
-        var connectionString = configurationManager.GetConnectionString("Postgres") ?? throw new ArgumentException("Postgres connection string is required", nameof(configurationManager));
-        const string databaseName = "beautify_baltics_db";
+        var rawConnectionString = configurationManager.GetConnectionString("Postgres") ?? throw new ArgumentException("Postgres connection string is required", nameof(configurationManager));
+
+        var connectionBuilder = new NpgsqlConnectionStringBuilder(rawConnectionString);
+        if (string.IsNullOrWhiteSpace(connectionBuilder.Database)) throw new InvalidOperationException("Postgres connection string must specify a Database.");
+
+        var connectionString = connectionBuilder.ConnectionString;
 
         return services.AddMarten(options =>
             {
                 options.UseSystemTextJsonForSerialization(casing: Casing.CamelCase);
 
-                options.Connection($"{connectionString};Database={databaseName}");
+                options.Connection(connectionString);
 
                 options.DatabaseSchemaName = "app";
                 options.Events.DatabaseSchemaName = "event";
@@ -112,7 +117,7 @@ public static class ServiceCollectionExtensions
              .IntegrateWithWolverine(cfg =>
               {
                   cfg.MessageStorageSchemaName = "message";
-                  cfg.MasterDatabaseConnectionString = $"{connectionString};Database={databaseName}";
+                  cfg.MasterDatabaseConnectionString = connectionString;
 
                   // https://martendb.io/tutorials/advanced-considerations
                   // cfg.UseWolverineManagedEventSubscriptionDistribution = true;

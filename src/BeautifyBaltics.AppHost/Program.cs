@@ -6,12 +6,12 @@ internal class Program
     {
         var builder = DistributedApplication.CreateBuilder(args);
 
-        var postgres = builder
-            .AddPostgres("postgres", port: 5432)
+        var postgresServer = builder
+            .AddPostgres("postgres-server", port: 5432)
             .WithDataVolume()
             .WithPgAdmin(c => c.WithHostPort(5100));
 
-        var database = postgres.AddDatabase("beautifybaltics-db", "beautify_baltics_db");
+        var database = postgresServer.AddDatabase("postgres", "beautify_baltics_db");
 
         var storage = builder.AddAzureStorage("storage");
         if (builder.Environment.IsDevelopment())
@@ -27,11 +27,10 @@ internal class Program
         var dataProtectionKeys = storage.AddBlobContainer("data-protection");
 
         var coreApi = builder.AddProject("core-api", "../BeautifyBaltics.Core.API/BeautifyBaltics.Core.API.csproj")
-            .WithReference(postgres)
             .WithReference(database)
             .WithReference(blobStorage)
             .WithExternalHttpEndpoints()
-            .WaitFor(postgres)
+            .WaitFor(postgresServer)
             .WaitFor(blobStorage)
             .WaitFor(dataProtectionKeys);
 
