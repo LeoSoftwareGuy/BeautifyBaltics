@@ -70,13 +70,13 @@ internal class Program
         // Register exceptions handling
         builder.Services.AddDefaultExceptionHandler();
 
-        builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null)
-             .ProcessEventsWithWolverineHandlersInStrictOrder("bookings", o =>
-             {
-                 o.IncludeType<BookingCreated>();
-                 o.IncludeType<BookingConfirmed>();
-                 o.IncludeType<BookingCancelled>();
-             });
+        builder.Services.AddMartenDefaults(builder.Configuration, builder.Environment, null);
+             //.ProcessEventsWithWolverineHandlersInStrictOrder("bookings", o =>
+             //{
+             //    o.IncludeType<BookingCreated>();
+             //    o.IncludeType<BookingConfirmed>();
+             //    o.IncludeType<BookingCancelled>();
+             //});
 
         builder.Services.ConfigurePersistence();
 
