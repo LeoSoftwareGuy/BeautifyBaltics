@@ -50,6 +50,17 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Configure ghcr.io registry
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az containerapp registry set \
+              --name beautify-baltics-api \
+              --resource-group beautify-baltics \
+              --server ghcr.io \
+              --username ${{ github.actor }} \
+              --password ${{ secrets.GITHUB_TOKEN }}
+
       - name: Deploy to Azure Container Apps
         uses: azure/cli@v2
         with:
@@ -58,8 +69,9 @@ jobs:
               --name beautify-baltics-api \
               --resource-group beautify-baltics \
               --image ${{ env.IMAGE_NAME }}:${{ github.sha }} \
-              --set-env-vars "ASPNETCORE_ENVIRONMENT=Production" \
-              --registry-server ghcr.io \
-              --registry-username ${{ github.actor }} \
-              --registry-password ${{ secrets.GITHUB_TOKEN }} \
+              --set-env-vars "ASPNETCORE_ENVIRONMENT=Production"
+
+            az containerapp ingress update \
+              --name beautify-baltics-api \
+              --resource-group beautify-baltics \
               --target-port 8080
