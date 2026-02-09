@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
     || env.VITE_CORE_API_BASE_URL
     || env['services__core-api__https__0']
     || env['services__core-api__http__0']
-    || 'https://localhost:5225';
+    || (mode === 'production' ? '' : 'https://localhost:5225');
 
   return {
     root: __dirname,
