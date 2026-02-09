@@ -153,20 +153,14 @@ internal class Program
             .AddAzureBlobStorage(name: "azureblobstorage");
 
         // Register controllers in the IoC container
-        const string CorsPolicy = "frontend";
-
-        var allowedOrigins = new[]
-        {
-            "http://localhost:4300",
-            "https://beautify-baltics-app.proudglacier-3df80c29.swedencentral.azurecontainerapps.io"
-        };
-
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy(name: CorsPolicy, configurePolicy: policy =>
+            options.AddDefaultPolicy(policy =>
             {
                 policy
-                    .WithOrigins(allowedOrigins)
+                    .WithOrigins(
+                        "http://localhost:4300",
+                        "https://beautify-baltics-app.proudglacier-3df80c29.swedencentral.azurecontainerapps.io")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
@@ -235,7 +229,7 @@ internal class Program
         app.MapDefaultEndpoints();
         app.UseRouting();
 
-        app.UseCors(CorsPolicy);
+        app.UseCors();
         app.UseAuthentication();
         app.UseMiddleware<UserProvisioningMiddleware>();
         app.UseAuthorization();
