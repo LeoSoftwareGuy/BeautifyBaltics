@@ -2,17 +2,21 @@ server {
   listen       ${PORT};
   server_name  _;
 
+  # Use Azure DNS with 30s TTL so nginx re-resolves if backend IP changes
+  resolver 168.63.129.16 valid=30s;
+
   # Proxy API requests to the backend
   location /api {
-    proxy_pass         ${BACKEND_URL};
+    set $backend "${BACKEND_URL}";
+    proxy_pass         $backend;
     proxy_http_version 1.1;
-    proxy_set_header   Host $proxy_host;
+    proxy_set_header   Host beautify-baltics-api.proudglacier-3df80c29.swedencentral.azurecontainerapps.io;
     proxy_set_header   X-Real-IP $remote_addr;
     proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header   X-Forwarded-Proto $scheme;
     proxy_set_header   Authorization $http_authorization;
     proxy_ssl_server_name on;
-    proxy_ssl_name     $proxy_host;
+    proxy_ssl_name     beautify-baltics-api.proudglacier-3df80c29.swedencentral.azurecontainerapps.io;
   }
 
   # Serve SPA with fallback to index.html for client-side routing
