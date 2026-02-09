@@ -155,8 +155,11 @@ internal class Program
         // Register controllers in the IoC container
         const string CorsPolicy = "frontend";
 
-        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? ["http://localhost:4300"];
+        var allowedOrigins = new[]
+        {
+            "http://localhost:4300",
+            "https://beautify-baltics-app.proudglacier-3df80c29.swedencentral.azurecontainerapps.io"
+        };
 
         builder.Services.AddCors(options =>
         {
