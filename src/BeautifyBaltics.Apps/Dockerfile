@@ -29,6 +29,9 @@ FROM nginx:alpine
 # Name of the app to build
 ARG APP_NAME
 
+# Install CA certificates so nginx can trust outbound HTTPS targets (Azure Container Apps backend)
+RUN apk add --no-cache ca-certificates && update-ca-certificates
+
 # Port for nginx to listen on (used by default.conf.template via envsubst)
 ENV PORT=8080
 
