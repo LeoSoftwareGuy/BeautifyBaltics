@@ -9,7 +9,7 @@ on:
 
 env:
   IMAGE_NAME: ghcr.io/leosoftwareguy/beautify-baltics-app
-  API_URL: https://beautify-baltics-api.proudglacier-3df80c29.swedencentral.azurecontainerapps.io
+  BACKEND_URL: https://beautify-baltics-api.proudglacier-3df80c29.swedencentral.azurecontainerapps.io
 
 jobs:
   build-and-deploy:
@@ -38,7 +38,6 @@ jobs:
           push: true
           build-args: |
             APP_NAME=back-office
-            VITE_CORE_API_URL=${{ env.API_URL }}
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
@@ -55,7 +54,8 @@ jobs:
             az containerapp update \
               --name beautify-baltics-app \
               --resource-group beautify-baltics \
-              --image ${{ env.IMAGE_NAME }}:${{ github.sha }}
+              --image ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+              --set-env-vars "BACKEND_URL=${{ env.BACKEND_URL }}"
 
             az containerapp ingress update \
               --name beautify-baltics-app \
