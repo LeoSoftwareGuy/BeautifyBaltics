@@ -155,13 +155,13 @@ internal class Program
         // Register controllers in the IoC container
         const string CorsPolicy = "frontend";
 
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? ["http://localhost:4300"];
+
         builder.Services.AddCors(options =>
         {
             options.AddPolicy(name: CorsPolicy, configurePolicy: policy =>
             {
-                var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-                    ?? ["http://localhost:4300"];
-
                 policy
                     .WithOrigins(allowedOrigins)
                     .AllowAnyMethod()
