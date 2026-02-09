@@ -2,8 +2,8 @@ server {
   listen       ${PORT};
   server_name  _;
 
-  # Use Azure DNS with 30s TTL so nginx re-resolves if backend IP changes
-  resolver 168.63.129.16 valid=30s;
+  # Use container DNS (Docker embedded DNS) with 30s TTL so nginx re-resolves if backend IP changes
+  resolver 127.0.0.11 valid=30s;
 
   # Proxy API requests to the backend
   location /api {
