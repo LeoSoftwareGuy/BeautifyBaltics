@@ -159,8 +159,11 @@ internal class Program
         {
             options.AddPolicy(name: CorsPolicy, configurePolicy: policy =>
             {
+                var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+                    ?? ["http://localhost:4300"];
+
                 policy
-                    .WithOrigins("http://localhost:4300")
+                    .WithOrigins(allowedOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();

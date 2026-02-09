@@ -1,0 +1,63 @@
+name: Deploy App
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'src/BeautifyBaltics.Apps/**'
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: ghcr.io/leosoftwareguy/beautify-baltics-app
+  API_URL: https://beautify-baltics-api.proudglacier-3df80c29.swedencentral.azurecontainerapps.io
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: src/BeautifyBaltics.Apps/Dockerfile
+          push: true
+          build-args: |
+            APP_NAME=back-office
+            VITE_CORE_API_URL=${{ env.API_URL }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Container Apps
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az containerapp update \
+              --name beautify-baltics-app \
+              --resource-group beautify-baltics \
+              --image ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+            az containerapp ingress update \
+              --name beautify-baltics-app \
+              --resource-group beautify-baltics \
+              --target-port 8080

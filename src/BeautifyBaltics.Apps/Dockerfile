@@ -4,6 +4,10 @@ FROM node:20 as build
 # Name of the app to build
 ARG APP_NAME
 
+# API URL baked into the JS bundle at build time
+ARG VITE_CORE_API_URL
+ENV VITE_CORE_API_URL=$VITE_CORE_API_URL
+
 # Set working directory
 WORKDIR /app
 
@@ -24,6 +28,9 @@ FROM nginx:alpine
 
 # Name of the app to build
 ARG APP_NAME
+
+# Port for nginx to listen on (used by default.conf.template via envsubst)
+ENV PORT=8080
 
 # Copy built files to Nginx web directory
 COPY --from=build /app/nginx /etc/nginx
