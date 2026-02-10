@@ -52,6 +52,10 @@ internal class Program
 
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddHttpClient();
+        builder.Services.AddHttpClient(nameof(SupabaseSigningKeysProvider), client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+        });
 
         builder.Services.AddSingleton<ISupabaseSigningKeysProvider, SupabaseSigningKeysProvider>();
 
@@ -140,8 +144,14 @@ internal class Program
                     ValidIssuer = issuer,
                     IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
                     {
-                        var keys = signingKeysProvider.GetSigningKeysAsync().GetAwaiter().GetResult();
-                        return keys;
+                        try
+                        {
+                            return signingKeysProvider.GetSigningKeysAsync().GetAwaiter().GetResult();
+                        }
+                        catch (Exception)
+                        {
+                            return Array.Empty<SecurityKey>();
+                        }
                     }
                 };
             });
@@ -196,6 +206,21 @@ internal class Program
         builder.Host.UseResourceSetupOnStartup();
 
         var app = builder.Build();
+
+        // Pre-load JWKS signing keys at startup to diagnose outbound connectivity
+        {
+            var jwksProvider = app.Services.GetRequiredService<ISupabaseSigningKeysProvider>();
+            var startupLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+            try
+            {
+                var keys = await jwksProvider.GetSigningKeysAsync();
+                startupLogger.LogInformation("JWKS pre-loaded successfully: {KeyCount} key(s)", keys.Count);
+            }
+            catch (Exception ex)
+            {
+                startupLogger.LogError(ex, "Failed to pre-load JWKS from Supabase. Authenticated requests will fail until keys are fetched.");
+            }
+        }
 
         if (!builder.Environment.IsProduction())
         {
