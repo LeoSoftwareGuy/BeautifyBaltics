@@ -14,6 +14,9 @@ namespace BeautifyBaltics.Integrations.BlobStorage
     ) : IBlobStorageService<TFile>
         where TFile : notnull
     {
+        private static UserDelegationKey? _cachedDelegationKey;
+        private static DateTimeOffset _delegationKeyExpiry = DateTimeOffset.MinValue;
+        private static readonly object _delegationKeyLock = new();
         public async Task<string> UploadAsync(Guid containerId, BlobFileDTO file, string tenantId, CancellationToken cancellationToken = default)
             => await UploadInternalAsync(containerId, file, tenantId, cancellationToken);
 
@@ -94,27 +97,54 @@ namespace BeautifyBaltics.Integrations.BlobStorage
                 var containerClient = blobServiceClient.GetBlobContainerClient(options.Value.ContainerName);
                 var blobClient = containerClient.GetBlobClient(blobName);
 
-                if (!blobClient.CanGenerateSasUri)
-                {
-                    logger.LogWarning("Cannot generate SAS URI for blob {BlobName}. Ensure the BlobServiceClient is authenticated with account credentials.", blobName);
-                    return null;
-                }
+                var sasExpiry = DateTimeOffset.UtcNow.Add(expiresIn ?? TimeSpan.FromHours(1));
 
                 var sasBuilder = new BlobSasBuilder
                 {
                     BlobContainerName = options.Value.ContainerName,
                     BlobName = blobName,
                     Resource = "b",
-                    ExpiresOn = DateTimeOffset.UtcNow.Add(expiresIn ?? TimeSpan.FromHours(1))
+                    ExpiresOn = sasExpiry
                 };
                 sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
-                return blobClient.GenerateSasUri(sasBuilder).ToString();
+                if (blobClient.CanGenerateSasUri)
+                {
+                    return blobClient.GenerateSasUri(sasBuilder).ToString();
+                }
+
+                // Fallback: User Delegation SAS for Managed Identity auth
+                var delegationKey = GetCachedUserDelegationKey();
+                var blobUriBuilder = new BlobUriBuilder(blobClient.Uri)
+                {
+                    Sas = sasBuilder.ToSasQueryParameters(delegationKey, blobServiceClient.AccountName)
+                };
+                return blobUriBuilder.ToUri().ToString();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error generating SAS URL for blob {BlobName}", blobName);
                 return null;
+            }
+        }
+
+        private UserDelegationKey GetCachedUserDelegationKey()
+        {
+            if (_cachedDelegationKey is not null && DateTimeOffset.UtcNow < _delegationKeyExpiry)
+                return _cachedDelegationKey;
+
+            lock (_delegationKeyLock)
+            {
+                if (_cachedDelegationKey is not null && DateTimeOffset.UtcNow < _delegationKeyExpiry)
+                    return _cachedDelegationKey;
+
+                var response = blobServiceClient.GetUserDelegationKey(
+                    DateTimeOffset.UtcNow.AddMinutes(-5),
+                    DateTimeOffset.UtcNow.AddHours(6)
+                );
+                _cachedDelegationKey = response.Value;
+                _delegationKeyExpiry = DateTimeOffset.UtcNow.AddHours(5);
+                return _cachedDelegationKey;
             }
         }
 
@@ -125,5 +155,4 @@ namespace BeautifyBaltics.Integrations.BlobStorage
             return containerClient;
         }
     }
-
 }
