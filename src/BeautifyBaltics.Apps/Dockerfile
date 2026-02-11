@@ -8,6 +8,10 @@ ARG APP_NAME
 ARG VITE_CORE_API_URL
 ENV VITE_CORE_API_URL=$VITE_CORE_API_URL
 
+# Google Maps API key baked into the JS bundle at build time
+ARG VITE_GOOGLE_MAPS_API_KEY
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
+
 # Set working directory
 WORKDIR /app
 
