@@ -162,21 +162,6 @@ internal class Program
             .AddNpgSql(name: "npgsql")
             .AddAzureBlobStorage(name: "azureblobstorage");
 
-        // Register controllers in the IoC container
-        builder.Services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(policy =>
-            {
-                policy
-                    .WithOrigins(
-                        "http://localhost:4300",
-                        "https://beautify-baltics-app.proudglacier-3df80c29.swedencentral.azurecontainerapps.io")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-            });
-        });
-
         builder.Services.AddApiControllers(o =>
         {
             o.Groups.Add(new ApiGroup
@@ -254,7 +239,6 @@ internal class Program
         app.MapDefaultEndpoints();
         app.UseRouting();
 
-        app.UseCors();
         app.UseAuthentication();
         app.UseMiddleware<UserProvisioningMiddleware>();
         app.UseAuthorization();
