@@ -2056,10 +2056,6 @@ components:
           minLength: 1
           type: string
           description: Master job category name
-        masterJobCategoryImageUrl:
-          type: string
-          description: Master job category image URL
-          nullable: true
         locationCity:
           type: string
           description: Booking city
@@ -2830,9 +2826,6 @@ components:
         name:
           type: string
           nullable: true
-        imageUrl:
-          type: string
-          nullable: true
       additionalProperties: false
     JobCommandDTO:
       required:
@@ -3038,6 +3031,11 @@ components:
           type: integer
           description: Job duration in minutes
           format: int32
+        featuredImageId:
+          type: string
+          description: Featured image identifier
+          format: uuid
+          nullable: true
         images:
           type: array
           items:

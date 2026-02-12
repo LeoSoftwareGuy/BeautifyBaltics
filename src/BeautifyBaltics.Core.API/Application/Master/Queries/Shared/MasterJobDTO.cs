@@ -53,6 +53,11 @@ public record MasterJobDTO
     public required int DurationMinutes { get; init; }
 
     /// <summary>
+    /// Featured image identifier
+    /// </summary>
+    public Guid? FeaturedImageId { get; init; }
+
+    /// <summary>
     /// Job images
     /// </summary>
     [Required]

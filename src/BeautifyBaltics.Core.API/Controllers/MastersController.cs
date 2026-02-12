@@ -2,6 +2,7 @@ using BeautifyBaltics.Core.API.Application.Master.Commands.AddMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJobImage;
+using BeautifyBaltics.Core.API.Application.Master.Commands.SetMasterJobFeaturedImage;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.CreateMaster;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DefineAvailability;
@@ -360,6 +361,28 @@ public class MastersController(IMessageBus bus) : ApiController
             MasterId = masterId,
             MasterJobId = jobId,
             MasterJobImageId = imageId
+        });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Set or unset the featured image for a master job
+    /// </summary>
+    /// <param name="masterId"></param>
+    /// <param name="jobId"></param>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpPut("{masterId:guid}/jobs/{jobId:guid}/featured-image", Name = "SetMasterJobFeaturedImage")]
+    [ProducesResponseType(typeof(SetMasterJobFeaturedImageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> SetMasterJobFeaturedImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromBody] SetMasterJobFeaturedImageBody request)
+    {
+        var response = await bus.InvokeAsync<SetMasterJobFeaturedImageResponse>(new SetMasterJobFeaturedImageRequest
+        {
+            MasterId = masterId,
+            MasterJobId = jobId,
+            MasterJobImageId = request.ImageId
         });
         return Ok(response);
     }

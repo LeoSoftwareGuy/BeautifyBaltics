@@ -30,6 +30,7 @@ public class FindMasterJobsHandler(
                 Title = job.Title,
                 Price = job.Price,
                 DurationMinutes = (int)job.Duration.TotalMinutes,
+                FeaturedImageId = job.FeaturedImageId,
                 Images = job.Images?.Select(image => new MasterJobImageDTO
                 {
                     Id = image.Id,

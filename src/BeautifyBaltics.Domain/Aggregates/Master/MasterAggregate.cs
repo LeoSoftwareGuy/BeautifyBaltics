@@ -144,6 +144,13 @@ public partial class MasterAggregate : Aggregate
         job.RemoveImage(@event.MasterJobImageId);
     }
 
+    internal void Apply(MasterJobFeaturedImageSet @event)
+    {
+        if (!_jobs.TryGetValue(@event.MasterJobId, out var job)) return;
+
+        job.SetFeaturedImage(@event.FeaturedImageId);
+    }
+
     public bool IsAvailable(DateTime startAt, DateTime endAt)
     {
         return !_availabilities.Any(v =>

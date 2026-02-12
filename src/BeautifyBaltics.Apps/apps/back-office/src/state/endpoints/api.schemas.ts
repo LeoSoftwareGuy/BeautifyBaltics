@@ -55,7 +55,6 @@ export type BookingDTO = {
    * Master job category image URL
    * @nullable
    */
-  masterJobCategoryImageUrl?: string | null;
   /**
    * Booking city
    * @nullable
@@ -518,8 +517,6 @@ export type JobCategoryDTO = {
   id?: string;
   /** @nullable */
   name: string | null;
-  /** @nullable */
-  imageUrl?: string | null;
 };
 
 export type JobCommandDTO = {
@@ -642,6 +639,8 @@ export type MasterJobDTO = {
   price: number;
   /** Job duration in minutes */
   durationMinutes: number;
+  /** Featured image identifier */
+  featuredImageId?: string | null;
   /** Job images */
   images: MasterJobImageDTO[];
 };

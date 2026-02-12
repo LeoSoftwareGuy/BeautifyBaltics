@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
     cacheDir: '../../node_modules/.vite/apps/back-office',
 
     define: {
-      __CORE_API_BASE_URL__: JSON.stringify(coreApiBaseUrl),
+      __CORE_API_BASE_URL__: JSON.stringify(''),
     },
 
     server: {
@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': {
           target: coreApiBaseUrl,
+          secure: false,
         },
       },
     },

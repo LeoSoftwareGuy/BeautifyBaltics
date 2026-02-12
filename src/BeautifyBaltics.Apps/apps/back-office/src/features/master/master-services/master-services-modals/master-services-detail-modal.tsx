@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  ActionIcon,
   Badge,
   Box,
   Button,
@@ -10,41 +11,95 @@ import {
   Stack,
   Text,
   Title,
+  Tooltip,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import {
   IconClock,
   IconCurrencyEuro,
   IconEdit,
   IconPhoto,
+  IconStar,
+  IconStarFilled,
+  IconTrash,
   IconUpload,
   IconX,
 } from '@tabler/icons-react';
 
+import { LightboxCarousel } from '@/components/lightbox-carousel';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
+import { useDeleteMasterJobImage } from '@/state/endpoints/masters';
+import { useSetMasterJobFeaturedImage } from '@/state/endpoints/masters-custom';
 
 type MasterServicesDetailModalProps = {
   opened: boolean;
   onClose: () => void;
+  masterId: string;
   service: MasterJobDTO | null;
-  categoryImageUrl?: string | null;
   onEdit: (id: string) => void;
   onUploadImage: (id: string) => void;
+  onRefetch: () => void;
 };
 
 export function MasterServicesDetailModal({
   opened,
   onClose,
+  masterId,
   service,
-  categoryImageUrl,
   onEdit,
   onUploadImage,
+  onRefetch,
 }: MasterServicesDetailModalProps) {
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const { mutateAsync: setFeaturedImage, isPending: isSettingFeatured } = useSetMasterJobFeaturedImage({
+    mutation: {
+      onSuccess: () => {
+        onRefetch();
+        notifications.show({
+          title: 'Featured image updated',
+          message: 'The featured image has been updated.',
+          color: 'green',
+        });
+      },
+      onError: () => {
+        notifications.show({
+          title: 'Failed to set featured image',
+          message: 'Please try again.',
+          color: 'red',
+        });
+      },
+    },
+  });
+
+  const { mutateAsync: deleteImage, isPending: isDeleting } = useDeleteMasterJobImage({
+    mutation: {
+      onSuccess: () => {
+        onRefetch();
+        notifications.show({
+          title: 'Image deleted',
+          message: 'The image has been removed.',
+          color: 'green',
+        });
+      },
+      onError: () => {
+        notifications.show({
+          title: 'Failed to delete image',
+          message: 'Please try again.',
+          color: 'red',
+        });
+      },
+    },
+  });
 
   if (!service) return null;
 
   const displayTitle = service.title ?? service.jobName;
   const images = service.images ?? [];
+  const featuredImage = service.featuredImageId
+    ? images.find((img) => img.id === service.featuredImageId)
+    : null;
+  const headerImageUrl = featuredImage?.url ?? images[0]?.url;
 
   const handleEdit = () => {
     onClose();
@@ -54,6 +109,15 @@ export function MasterServicesDetailModal({
   const handleUpload = () => {
     onClose();
     onUploadImage(service.id);
+  };
+
+  const handleToggleFeatured = async (imageId: string) => {
+    const newFeaturedId = service.featuredImageId === imageId ? null : imageId;
+    await setFeaturedImage({ masterId, jobId: service.id, imageId: newFeaturedId });
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    await deleteImage({ masterId, jobId: service.id, imageId });
   };
 
   return (
@@ -76,10 +140,10 @@ export function MasterServicesDetailModal({
             backgroundColor: 'var(--mantine-color-gray-1)',
           }}
         >
-          {categoryImageUrl ? (
+          {headerImageUrl ? (
             <Box
               component="img"
-              src={categoryImageUrl}
+              src={headerImageUrl}
               alt={displayTitle}
               style={{
                 position: 'absolute',
@@ -220,82 +284,90 @@ export function MasterServicesDetailModal({
               </Box>
             ) : (
               <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="sm">
-                {images.map((image) => (
-                  <Box
-                    key={image.id}
-                    style={{
-                      aspectRatio: '1/1',
-                      borderRadius: 8,
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      position: 'relative',
-                    }}
-                    onClick={() => setLightboxImage(image.url)}
-                  >
-                    <Image
-                      src={image.url}
-                      alt={image.fileName ?? 'Work sample'}
-                      h="100%"
-                      w="100%"
-                      fit="cover"
+                {images.map((image) => {
+                  const isFeatured = service.featuredImageId === image.id;
+                  return (
+                    <Box
+                      key={image.id}
                       style={{
-                        transition: 'transform 150ms ease',
+                        aspectRatio: '1/1',
+                        borderRadius: 8,
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        position: 'relative',
                       }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.05)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                      }}
-                    />
-                  </Box>
-                ))}
+                      onClick={() => setLightboxIndex(images.indexOf(image))}
+                    >
+                      <Image
+                        src={image.url}
+                        alt={image.fileName ?? 'Work sample'}
+                        h="100%"
+                        w="100%"
+                        fit="cover"
+                        style={{
+                          transition: 'transform 150ms ease',
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = 'scale(1.05)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                      />
+                      <Tooltip label={isFeatured ? 'Remove as featured' : 'Set as featured'} position="top">
+                        <ActionIcon
+                          variant="filled"
+                          color={isFeatured ? 'yellow' : 'dark'}
+                          radius="xl"
+                          size="sm"
+                          pos="absolute"
+                          top={6}
+                          right={6}
+                          loading={isSettingFeatured}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleFeatured(image.id);
+                          }}
+                          style={{ opacity: isFeatured ? 1 : 0.7 }}
+                        >
+                          {isFeatured ? <IconStarFilled size={14} /> : <IconStar size={14} />}
+                        </ActionIcon>
+                      </Tooltip>
+                      <Tooltip label="Delete image" position="top">
+                        <ActionIcon
+                          variant="filled"
+                          color="red"
+                          radius="xl"
+                          size="sm"
+                          pos="absolute"
+                          bottom={6}
+                          right={6}
+                          loading={isDeleting}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteImage(image.id);
+                          }}
+                          style={{ opacity: 0.7 }}
+                        >
+                          <IconTrash size={14} />
+                        </ActionIcon>
+                      </Tooltip>
+                    </Box>
+                  );
+                })}
               </SimpleGrid>
             )}
           </Stack>
         </Stack>
       </Modal>
 
-      {/* Lightbox Modal */}
-      <Modal
-        opened={!!lightboxImage}
-        onClose={() => setLightboxImage(null)}
-        size="xl"
-        centered
-        padding={0}
-        withCloseButton={false}
-        styles={{
-          content: {
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-          },
-          body: {
-            padding: 0,
-          },
-        }}
-      >
-        <Box pos="relative">
-          <Image
-            src={lightboxImage ?? ''}
-            alt="Work sample"
-            fit="contain"
-            mah="80vh"
-            radius="md"
-          />
-          <Button
-            variant="filled"
-            color="dark"
-            size="compact-sm"
-            radius="xl"
-            pos="absolute"
-            top={8}
-            right={8}
-            onClick={() => setLightboxImage(null)}
-          >
-            <IconX size={16} />
-          </Button>
-        </Box>
-      </Modal>
+      {/* Lightbox Carousel */}
+      <LightboxCarousel
+        opened={lightboxIndex !== null}
+        onClose={() => setLightboxIndex(null)}
+        images={images.map((img) => ({ url: img.url ?? '', alt: img.fileName ?? 'Work sample' }))}
+        initialIndex={lightboxIndex ?? 0}
+      />
     </>
   );
 }

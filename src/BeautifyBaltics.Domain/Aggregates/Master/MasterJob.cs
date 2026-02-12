@@ -23,6 +23,7 @@ public partial class MasterAggregate
         public Guid JobCategoryId { get; private set; } = jobCategoryId;
         public string JobCategoryName { get; private set; } = jobCategoryName;
         public string JobName { get; private set; } = jobName;
+        public Guid? FeaturedImageId { get; private set; }
         public IReadOnlyCollection<MasterJobImage> Images => [.. _images.Values];
 
         public void Update(Guid jobId, decimal price, TimeSpan duration, string title, Guid jobCategoryId, string jobCategoryName, string jobName)
@@ -44,6 +45,13 @@ public partial class MasterAggregate
         public void RemoveImage(Guid masterJobImageId)
         {
             _images.Remove(masterJobImageId);
+            if (FeaturedImageId == masterJobImageId)
+                FeaturedImageId = null;
+        }
+
+        public void SetFeaturedImage(Guid? imageId)
+        {
+            FeaturedImageId = imageId;
         }
     }
 }

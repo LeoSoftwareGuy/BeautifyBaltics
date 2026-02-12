@@ -36,6 +36,13 @@ public class SampleDataSeeder : IInitialData
 
     public async Task Populate(IDocumentStore store, CancellationToken cancellation)
     {
+        // Reference data: seed categories and jobs in ALL environments
+        await using var refSession = store.LightweightSession();
+        await SeedCategoriesAsync(refSession, cancellation);
+        await SeedJobsAsync(refSession, cancellation);
+        await refSession.SaveChangesAsync(cancellation);
+
+        // Sample data: only seed masters and availability in development
         if (!_environment.IsDevelopment()) return;
 
         using var daemon = await store.BuildProjectionDaemonAsync();
@@ -51,8 +58,6 @@ public class SampleDataSeeder : IInitialData
             var masterProfileBlobStorage = scope.ServiceProvider.GetRequiredService<IBlobStorageService<MasterAggregate.MasterProfileImage>>();
             var masterJobImageBlobStorage = scope.ServiceProvider.GetRequiredService<IBlobStorageService<MasterJobImage>>();
 
-            await SeedCategoriesAsync(session, cancellation);
-            await SeedJobsAsync(session, cancellation);
             var availabilityByMaster = await SeedMastersAsync(session, cancellation, masterProfileBlobStorage, masterJobImageBlobStorage);
 
             await session.SaveChangesAsync(cancellation);
@@ -83,8 +88,7 @@ public class SampleDataSeeder : IInitialData
 
         foreach (var category in _categories)
         {
-            var imageDataUrl = CreateDataUrl(category.ImageAsset);
-            session.Store(category.ToDocument(imageDataUrl));
+            session.Store(category.ToDocument());
         }
     }
 
@@ -297,24 +301,6 @@ public class SampleDataSeeder : IInitialData
         return File.Exists(combined) ? combined : null;
     }
 
-    private string? CreateDataUrl(string? relativeAssetPath)
-    {
-        var absolutePath = GetAssetPath(relativeAssetPath);
-        if (absolutePath is null) return null;
-
-        try
-        {
-            var bytes = File.ReadAllBytes(absolutePath);
-            var mimeType = GetContentType(Path.GetExtension(absolutePath));
-            return $"data:{mimeType};base64,{Convert.ToBase64String(bytes)}";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Unable to read seed asset at {Path}", absolutePath);
-            return null;
-        }
-    }
-
     private string? ResolveSeedAssetsRoot()
     {
         var assetsPath = Path.Combine(AppContext.BaseDirectory, "Seeds", "Assets");
@@ -350,7 +336,7 @@ public class SampleDataSeeder : IInitialData
 
     private sealed record CategoryMediaAssets(string? MasterImagePath, IReadOnlyList<string> JobImages);
 
-    private sealed record CategoryAssetDefinition(string? CategoryImageRelativePath, string? MasterImageRelativePath, IReadOnlyList<string> JobImageRelativePaths);
+    private sealed record CategoryAssetDefinition(string? MasterImageRelativePath, IReadOnlyList<string> JobImageRelativePaths);
 
     #region Seed data
 
@@ -364,24 +350,24 @@ public class SampleDataSeeder : IInitialData
 
     private static readonly Dictionary<Guid, CategoryAssetDefinition> CategoryAssetDefinitions = new()
     {
-        [HairCategoryId] = new("JobCategories/Hair/profile.jpg", "JobCategories/Hair/masterImage.jpg", ["JobCategories/Hair/job-1.jpg", "JobCategories/Hair/job-2.jpg"]),
-        [BarberCategoryId] = new("JobCategories/BarberBeards/profile.jpg", "JobCategories/BarberBeards/masterImage.jpg", ["JobCategories/BarberBeards/job-1.jpg", "JobCategories/BarberBeards/job-2.jpeg"]),
-        [NailsCategoryId] = new("JobCategories/Nails/profile.jpg", "JobCategories/Nails/masterImage.jpg", ["JobCategories/Nails/job-1.jpg", "JobCategories/Nails/job-2.jpg"]),
-        [BrowsLashesCategoryId] = new("JobCategories/BrowsLashes/profile.jpg", "JobCategories/BrowsLashes/masterImage.jpg", ["JobCategories/BrowsLashes/job-1.jpg", "JobCategories/BrowsLashes/job-2.jpg"]),
-        [TattooPiercingCategoryId] = new("JobCategories/TattooPiercing/profile.jpg", "JobCategories/TattooPiercing/masterImage.jpg", ["JobCategories/TattooPiercing/job-1.jpg", "JobCategories/TattooPiercing/job-2.jpg"]),
-        [SkinAestheticsCategoryId] = new("JobCategories/SkinAesthetics/profile.jpg", "JobCategories/SkinAesthetics/masterImage.jpg", ["JobCategories/SkinAesthetics/job-1.jpg", "JobCategories/SkinAesthetics/job-2.jpg"]),
-        [HairRemovalCategoryId] = new("JobCategories/HairRemoval/profile.jpg", "JobCategories/HairRemoval/masterImage.jpg", ["JobCategories/HairRemoval/job-1.jpg", "JobCategories/HairRemoval/job-2.jpg"]),
+        [HairCategoryId] = new("JobCategories/Hair/masterImage.jpg", ["JobCategories/Hair/job-1.jpg", "JobCategories/Hair/job-2.jpg"]),
+        [BarberCategoryId] = new("JobCategories/BarberBeards/masterImage.jpg", ["JobCategories/BarberBeards/job-1.jpg", "JobCategories/BarberBeards/job-2.jpeg"]),
+        [NailsCategoryId] = new("JobCategories/Nails/masterImage.jpg", ["JobCategories/Nails/job-1.jpg", "JobCategories/Nails/job-2.jpg"]),
+        [BrowsLashesCategoryId] = new("JobCategories/BrowsLashes/masterImage.jpg", ["JobCategories/BrowsLashes/job-1.jpg", "JobCategories/BrowsLashes/job-2.jpg"]),
+        [TattooPiercingCategoryId] = new("JobCategories/TattooPiercing/masterImage.jpg", ["JobCategories/TattooPiercing/job-1.jpg", "JobCategories/TattooPiercing/job-2.jpg"]),
+        [SkinAestheticsCategoryId] = new("JobCategories/SkinAesthetics/masterImage.jpg", ["JobCategories/SkinAesthetics/job-1.jpg", "JobCategories/SkinAesthetics/job-2.jpg"]),
+        [HairRemovalCategoryId] = new("JobCategories/HairRemoval/masterImage.jpg", ["JobCategories/HairRemoval/job-1.jpg", "JobCategories/HairRemoval/job-2.jpg"]),
     };
 
     private readonly JobCategorySeed[] _categories =
     {
-        new(HairCategoryId, "Hair", CategoryAssetDefinitions[HairCategoryId].CategoryImageRelativePath),
-        new(BarberCategoryId, "Barber & Beards", CategoryAssetDefinitions[BarberCategoryId].CategoryImageRelativePath),
-        new(NailsCategoryId, "Nails", CategoryAssetDefinitions[NailsCategoryId].CategoryImageRelativePath),
-        new(BrowsLashesCategoryId, "Brows & Lashes", CategoryAssetDefinitions[BrowsLashesCategoryId].CategoryImageRelativePath),
-        new(TattooPiercingCategoryId, "Tattoo & Piercing", CategoryAssetDefinitions[TattooPiercingCategoryId].CategoryImageRelativePath),
-        new(SkinAestheticsCategoryId, "Skin & Aesthetics", CategoryAssetDefinitions[SkinAestheticsCategoryId].CategoryImageRelativePath),
-        new(HairRemovalCategoryId, "Hair Removal", CategoryAssetDefinitions[HairRemovalCategoryId].CategoryImageRelativePath)
+        new(HairCategoryId, "Hair"),
+        new(BarberCategoryId, "Barber & Beards"),
+        new(NailsCategoryId, "Nails"),
+        new(BrowsLashesCategoryId, "Brows & Lashes"),
+        new(TattooPiercingCategoryId, "Tattoo & Piercing"),
+        new(SkinAestheticsCategoryId, "Skin & Aesthetics"),
+        new(HairRemovalCategoryId, "Hair Removal")
     };
 
     private readonly JobSeed[] _jobs =
@@ -519,9 +505,9 @@ public class SampleDataSeeder : IInitialData
         public Job ToDocument(JobCategorySeed category) => new(Id, Name, category.Id, category.Name, TimeSpan.FromMinutes(DurationMinutes), Description);
     }
 
-    private sealed record JobCategorySeed(Guid Id, string Name, string? ImageAsset)
+    private sealed record JobCategorySeed(Guid Id, string Name)
     {
-        public JobCategory ToDocument(string? imageUrl) => new(Id, Name, imageUrl);
+        public JobCategory ToDocument() => new(Id, Name);
     }
 
     private sealed record MasterSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, string SupabaseUserId, int Age, Domain.Enumerations.Gender Gender, string? Description, IReadOnlyList<JobOffering> JobOfferings)

@@ -16,7 +16,6 @@ import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
 
 type MasterServiceCardProps = {
   service: MasterJobDTO;
-  categoryImageUrl?: string | null;
   onClick: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -26,7 +25,6 @@ type MasterServiceCardProps = {
 
 export function MasterServiceCard({
   service,
-  categoryImageUrl,
   onClick,
   onEdit,
   onDelete,
@@ -35,7 +33,10 @@ export function MasterServiceCard({
 }: MasterServiceCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const displayTitle = service.title ?? service.jobName;
-  const backgroundImage = categoryImageUrl;
+  const featuredImage = service.featuredImageId
+    ? service.images?.find((img) => img.id === service.featuredImageId)
+    : null;
+  const backgroundImage = featuredImage?.url ?? service.images?.[0]?.url;
 
   return (
     <Card

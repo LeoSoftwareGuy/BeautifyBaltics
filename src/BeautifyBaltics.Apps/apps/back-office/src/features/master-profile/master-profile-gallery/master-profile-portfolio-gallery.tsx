@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   SimpleGrid,
   Skeleton,
@@ -8,6 +8,7 @@ import {
 } from '@mantine/core';
 
 import { useFindMasterJobImages } from '@/state/endpoints/masters';
+import { LightboxCarousel } from '@/components/lightbox-carousel';
 
 import MasterPortfolioImage from './master-profile-image';
 
@@ -17,6 +18,7 @@ type PortfolioGalleryProps = {
 
 function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
   const { data, isLoading } = useFindMasterJobImages(masterId);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const items = useMemo(() => {
     if (!data?.images) return [];
@@ -53,14 +55,27 @@ function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
   }
 
   return (
-    <Stack gap="lg" mt="xl">
-      <Title order={2}>Portfolio</Title>
-      <SimpleGrid cols={{ base: 2, md: 3 }} spacing="md">
-        {items.map((item) => (
-          <MasterPortfolioImage key={item.id} item={item} />
-        ))}
-      </SimpleGrid>
-    </Stack>
+    <>
+      <Stack gap="lg" mt="xl">
+        <Title order={2}>Portfolio</Title>
+        <SimpleGrid cols={{ base: 2, md: 3 }} spacing="md">
+          {items.map((item, index) => (
+            <MasterPortfolioImage
+              key={item.id}
+              item={item}
+              onClick={() => setLightboxIndex(index)}
+            />
+          ))}
+        </SimpleGrid>
+      </Stack>
+
+      <LightboxCarousel
+        opened={lightboxIndex !== null}
+        onClose={() => setLightboxIndex(null)}
+        images={items.map((item) => ({ url: item.url, alt: item.alt }))}
+        initialIndex={lightboxIndex ?? 0}
+      />
+    </>
   );
 }
 

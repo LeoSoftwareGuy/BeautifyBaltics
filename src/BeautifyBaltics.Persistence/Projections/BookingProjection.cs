@@ -17,7 +17,6 @@ public record Booking(Guid Id) : Projection
     public Guid MasterJobId { get; init; }
     public required string MasterJobTitle { get; init; }
     public required string MasterJobCategoryName { get; init; }
-    public string? MasterJobCategoryImageUrl { get; init; }
     public string? LocationCity { get; init; }
     public string? LocationCountry { get; init; }
     public string? LocationAddressLine1 { get; init; }
@@ -58,8 +57,6 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
         var masterJob = await session.LoadAsync<MasterJob>(@event.Data.MasterJobId, cancellationToken)
             ?? throw new InvalidOperationException($"Booking with master job ID {@event.Data.MasterJobId} not found.");
 
-        var jobCategory = await session.LoadAsync<JobCategory>(masterJob.JobCategoryId, cancellationToken);
-
         var requestedAt = DateTime.SpecifyKind(@event.Timestamp.UtcDateTime, DateTimeKind.Unspecified);
 
         return new Booking(@event.StreamId)
@@ -71,7 +68,6 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
             MasterJobId = @event.Data.MasterJobId,
             MasterJobTitle = masterJob.Title,
             MasterJobCategoryName = masterJob.JobCategoryName,
-            MasterJobCategoryImageUrl = jobCategory?.ImageUrl,
             LocationCity = master.City,
             LocationCountry = master.Country,
             LocationAddressLine1 = master.AddressLine1,

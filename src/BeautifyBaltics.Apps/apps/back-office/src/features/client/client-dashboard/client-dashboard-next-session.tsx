@@ -131,7 +131,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
       <Card radius="md" p={0} style={{ overflow: 'hidden' }}>
         <Group gap={0} align="stretch" wrap="nowrap">
           <Image
-            src={booking.masterJobCategoryImageUrl}
+            src={null}
             w={220}
             h={160}
             alt={booking.masterJobTitle}

@@ -15,6 +15,7 @@ public record MasterJob(Guid Id, Guid MasterId) : Projection
     public string Title { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public TimeSpan Duration { get; init; }
+    public Guid? FeaturedImageId { get; init; }
     public IReadOnlyCollection<MasterJobImage> Images { get; init; } = [];
 }
 
@@ -27,6 +28,7 @@ public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
         Identity<MasterJobDeleted>(e => e.MasterJobId);
         Identity<MasterJobImageUploaded>(e => e.MasterJobId);
         Identity<MasterJobImageDeleted>(e => e.MasterJobId);
+        Identity<MasterJobFeaturedImageSet>(e => e.MasterJobId);
 
         DeleteEvent<MasterJobDeleted>();
     }
@@ -82,6 +84,13 @@ public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
 
         images.RemoveAll(i => i.Id == @event.MasterJobImageId);
 
-        return current with { Images = images };
+        return current with
+        {
+            Images = images,
+            FeaturedImageId = current.FeaturedImageId == @event.MasterJobImageId ? null : current.FeaturedImageId
+        };
     }
+
+    public static MasterJob Apply(MasterJobFeaturedImageSet @event, MasterJob current) =>
+        current with { FeaturedImageId = @event.FeaturedImageId };
 }

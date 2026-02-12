@@ -30,9 +30,7 @@ function MasterJobImage({
     return <Skeleton h={120} radius="md" />;
   }
 
-  const imageUrl = imageData
-    ? `data:${imageData.fileMimeType};base64,${imageData.url}`
-    : null;
+  const imageUrl = imageData?.url ?? null;
 
   return (
     <Image

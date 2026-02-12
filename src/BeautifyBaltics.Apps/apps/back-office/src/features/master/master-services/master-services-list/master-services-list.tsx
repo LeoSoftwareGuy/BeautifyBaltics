@@ -11,7 +11,6 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
 
-import { useFindJobCategories } from '@/state/endpoints/jobs';
 import {
   useDeleteMasterJob,
   useFindMasterJobs,
@@ -47,11 +46,6 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
   } = useFindMasterJobs(masterId, {
     query: { enabled: !!masterId },
   });
-
-  const { data: categoriesData } = useFindJobCategories({ pageSize: 100 });
-  const categoryImageMap = new Map(
-    (categoriesData?.items ?? []).map((cat) => [cat.id, cat.imageUrl]),
-  );
 
   const allServices = useMemo(() => jobsData?.jobs ?? [], [jobsData?.jobs]);
 
@@ -202,7 +196,6 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
             <MasterServiceCard
               key={service.id}
               service={service}
-              categoryImageUrl={categoryImageMap.get(service.jobCategoryId)}
               onClick={handleOpenDetailModal}
               onEdit={handleOpenEditModal}
               onDelete={handleDelete}
@@ -247,10 +240,11 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
       <MasterServicesDetailModal
         opened={detailModalOpened}
         onClose={() => setDetailModalOpened(false)}
+        masterId={masterId}
         service={selectedJob}
-        categoryImageUrl={selectedJob ? categoryImageMap.get(selectedJob.jobCategoryId) : null}
         onEdit={handleOpenEditModal}
         onUploadImage={handleOpenUploadModal}
+        onRefetch={refetch}
       />
     </>
   );

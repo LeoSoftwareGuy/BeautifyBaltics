@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { Image } from '@mantine/core';
 
-export default function MasterPortfolioImage({ item }: { item: { id: string; url: string; alt?: string } }) {
+export default function MasterPortfolioImage({
+  item,
+  onClick,
+}: {
+  item: { id: string; url: string; alt?: string };
+  onClick?: () => void;
+}) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -11,6 +17,7 @@ export default function MasterPortfolioImage({ item }: { item: { id: string; url
       radius="lg"
       h={200}
       fit="cover"
+      onClick={onClick}
       style={{
         cursor: 'pointer',
         transform: isHovered ? 'scale(1.02)' : 'scale(1)',
