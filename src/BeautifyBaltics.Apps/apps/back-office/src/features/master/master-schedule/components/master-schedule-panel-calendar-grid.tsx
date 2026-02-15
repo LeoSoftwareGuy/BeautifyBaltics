@@ -7,8 +7,10 @@ import {
 } from '@mantine/core';
 import dayjs from 'dayjs';
 
+import { AvailabilitySlotType, BookingStatus } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
 
+import { MasterSchedulePanelCalendarBooking } from './master-schedule-panel-calendar-booking';
 import { MasterSchedulePanelCalendarSlot } from './master-schedule-panel-calendar-slot';
 
 const HOUR_HEIGHT = 60;
@@ -19,19 +21,39 @@ type SlotData = {
   endTime: string;
   date: Date;
   isRecurring?: boolean;
+  slotType?: AvailabilitySlotType;
+};
+
+type BookingData = {
+  id: string;
+  clientName: string;
+  serviceName: string;
+  startTime: string;
+  durationMinutes: number;
+  date: Date;
+  status: BookingStatus;
 };
 
 type CalendarGridProps = {
   weekDates: Date[];
   slots: SlotData[];
+  bookings: BookingData[];
   onRemoveSlot: (id: string) => void;
 };
 
-export function MasterSchedulePanelCalendarGrid({ weekDates, slots, onRemoveSlot }: CalendarGridProps) {
+export function MasterSchedulePanelCalendarGrid({
+  weekDates, slots, bookings, onRemoveSlot,
+}: CalendarGridProps) {
   // Get slots for a specific day and hour
   const getSlotsForCell = (date: Date, hour: number) => slots.filter((slot) => {
     const slotHour = parseInt(slot.startTime.split(':')[0], 10);
     return datetime.isSameDay(slot.date, date) && slotHour === hour;
+  });
+
+  // Get bookings for a specific day and hour
+  const getBookingsForCell = (date: Date, hour: number) => bookings.filter((booking) => {
+    const bookingHour = parseInt(booking.startTime.split(':')[0], 10);
+    return datetime.isSameDay(booking.date, date) && bookingHour === hour;
   });
 
   return (
@@ -107,6 +129,7 @@ export function MasterSchedulePanelCalendarGrid({ weekDates, slots, onRemoveSlot
               </Box>
               {weekDates.map((date, index) => {
                 const cellSlots = getSlotsForCell(date, hour);
+                const cellBookings = getBookingsForCell(date, hour);
                 return (
                   <Box
                     key={`${date.toISOString()}-${hour}`}
@@ -124,7 +147,18 @@ export function MasterSchedulePanelCalendarGrid({ weekDates, slots, onRemoveSlot
                         startTime={slot.startTime}
                         endTime={slot.endTime}
                         isRecurring={slot.isRecurring}
+                        slotType={slot.slotType}
                         onRemove={onRemoveSlot}
+                      />
+                    ))}
+                    {cellBookings.map((booking) => (
+                      <MasterSchedulePanelCalendarBooking
+                        key={booking.id}
+                        clientName={booking.clientName}
+                        serviceName={booking.serviceName}
+                        startTime={booking.startTime}
+                        durationMinutes={booking.durationMinutes}
+                        status={booking.status}
                       />
                     ))}
                   </Box>

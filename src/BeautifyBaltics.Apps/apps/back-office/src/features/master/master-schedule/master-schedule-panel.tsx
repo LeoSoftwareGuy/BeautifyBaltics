@@ -8,6 +8,7 @@ import {
 } from '@mantine/core';
 import dayjs from 'dayjs';
 
+import { AvailabilitySlotType, BookingStatus } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
 
 import {
@@ -23,6 +24,17 @@ type SlotDisplay = {
   endTime: string;
   date: Date;
   isRecurring?: boolean;
+  slotType?: AvailabilitySlotType;
+};
+
+type BookingDisplay = {
+  id: string;
+  clientName: string;
+  serviceName: string;
+  startTime: string;
+  durationMinutes: number;
+  date: Date;
+  status: BookingStatus;
 };
 
 interface MasterSchedulePanelProps {
@@ -32,7 +44,10 @@ interface MasterSchedulePanelProps {
   onStartTimeInputChange: (value: string) => void;
   endTimeInput: string;
   onEndTimeInputChange: (value: string) => void;
+  slotType: AvailabilitySlotType;
+  onSlotTypeChange: (value: AvailabilitySlotType) => void;
   slots: SlotDisplay[];
+  bookings: BookingDisplay[];
   onAddSlot: () => void;
   onRemoveSlot: (id: string) => void;
   isLoading?: boolean;
@@ -46,7 +61,10 @@ export function MasterSchedulePanel({
   onStartTimeInputChange,
   endTimeInput,
   onEndTimeInputChange,
+  slotType,
+  onSlotTypeChange,
   slots,
+  bookings,
   onAddSlot,
   onRemoveSlot,
   isLoading = false,
@@ -81,6 +99,7 @@ export function MasterSchedulePanel({
           <MasterSchedulePanelCalendarGrid
             weekDates={weekDates}
             slots={slots}
+            bookings={bookings}
             onRemoveSlot={onRemoveSlot}
           />
         </Box>
@@ -99,10 +118,12 @@ export function MasterSchedulePanel({
               selectedRange={selectedRange}
               startTimeInput={startTimeInput}
               endTimeInput={endTimeInput}
+              slotType={slotType}
               isLoading={isLoading}
               onRangeChange={onRangeChange}
               onStartTimeChange={onStartTimeInputChange}
               onEndTimeChange={onEndTimeInputChange}
+              onSlotTypeChange={onSlotTypeChange}
               onSave={onAddSlot}
             />
 

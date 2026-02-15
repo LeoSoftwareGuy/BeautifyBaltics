@@ -1694,6 +1694,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{masterId}/jobs/{jobId}/featured-image':
+    put:
+      tags:
+        - Masters
+      summary: Set or unset the featured image for a master job
+      operationId: SetMasterJobFeaturedImage
+      parameters:
+        - name: masterId
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetMasterJobFeaturedImageBody'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/SetMasterJobFeaturedImageBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetMasterJobFeaturedImageResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   '/api/v1/masters/{id}/dashboard/stats':
     get:
       tags:
@@ -1786,6 +1835,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/buffer-time':
+    put:
+      tags:
+        - Masters
+      summary: Update master buffer time between bookings
+      operationId: UpdateMasterBufferTime
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Buffer time request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterBufferTimeRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterBufferTimeRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMasterBufferTimeResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   /api/v1/ratings:
     post:
       tags:
@@ -1973,6 +2064,11 @@ paths:
                 $ref: '#/components/schemas/ProblemDetails'
 components:
   schemas:
+    AvailabilitySlotType:
+      enum:
+        - Available
+        - Break
+      type: string
     AvailableTimeSlotDTO:
       type: object
       properties:
@@ -2898,6 +2994,8 @@ components:
           type: string
           description: Slot ends at
           format: date-time
+        slotType:
+          $ref: '#/components/schemas/AvailabilitySlotType'
       additionalProperties: false
     MasterAvailabilitySlotDTO:
       required:
@@ -2928,6 +3026,8 @@ components:
           type: string
           description: Ends at
           format: date-time
+        slotType:
+          $ref: '#/components/schemas/AvailabilitySlotType'
       additionalProperties: false
     MasterDTO:
       type: object
@@ -3333,6 +3433,28 @@ components:
           description: Id of created booking
           format: uuid
       additionalProperties: false
+    SetMasterJobFeaturedImageBody:
+      type: object
+      properties:
+        imageId:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+    SetMasterJobFeaturedImageResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
+        featuredImageId:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
     UpdateClientProfileRequest:
       allOf:
         - $ref: '#/components/schemas/ClientCommandDTO'
@@ -3407,6 +3529,30 @@ components:
         masterAvailabilityId:
           type: string
           description: Master availability identifier
+          format: uuid
+      additionalProperties: false
+    UpdateMasterBufferTimeRequest:
+      required:
+        - bufferMinutes
+        - masterId
+      type: object
+      properties:
+        masterId:
+          type: string
+          description: Master identifier
+          format: uuid
+        bufferMinutes:
+          maximum: 60
+          minimum: 0
+          type: integer
+          description: Buffer time in minutes between bookings (0-60)
+          format: int32
+      additionalProperties: false
+    UpdateMasterBufferTimeResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
           format: uuid
       additionalProperties: false
     UpdateMasterJobRequest:

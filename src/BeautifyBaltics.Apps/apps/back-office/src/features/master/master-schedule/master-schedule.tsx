@@ -7,6 +7,8 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
+import { AvailabilitySlotType, BookingStatus } from '@/state/endpoints/api.schemas';
+import { useFindBookings } from '@/state/endpoints/bookings';
 import {
   getFindMasterAvailabilitiesQueryKey,
   useCreateMasterAvailability,
@@ -27,6 +29,7 @@ export function MasterSchedule() {
   const [selectedRange, setSelectedRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startTimeInput, setStartTimeInput] = useState('');
   const [endTimeInput, setEndTimeInput] = useState('');
+  const [slotType, setSlotType] = useState<AvailabilitySlotType>(AvailabilitySlotType.Available);
   const [isUpcomingDrawerOpen, setUpcomingDrawerOpen] = useState(false);
 
   // Fetch availability for a 1-month range to cover the calendar view
@@ -45,6 +48,13 @@ export function MasterSchedule() {
   } = useFindMasterAvailabilities(
     masterId,
     { masterId, ...dateParams },
+    { query: { enabled: !!masterId } },
+  );
+
+  const { data: bookingsData } = useFindBookings(
+    {
+      masterId, from: dateParams.startAt, to: dateParams.endAt, pageSize: 100,
+    },
     { query: { enabled: !!masterId } },
   );
 
@@ -104,9 +114,31 @@ export function MasterSchedule() {
         endTime: datetime.formatTimeFromDate(slot.endAt),
         date: new Date(slot.startAt),
         isRecurring: false,
+        slotType: (slot.slotType as AvailabilitySlotType) ?? AvailabilitySlotType.Available,
       }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [availabilityData]);
+
+  const bookings = useMemo(() => {
+    const items = bookingsData?.items ?? [];
+    return items
+      .filter((b) => b.status !== BookingStatus.Cancelled)
+      .map((booking) => {
+        const scheduledDate = new Date(booking.scheduledAt);
+        // Parse duration "HH:MM:SS" to minutes
+        const parts = booking.duration.split(':');
+        const durationMinutes = parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+        return {
+          id: booking.id,
+          clientName: booking.clientName,
+          serviceName: booking.masterJobTitle,
+          startTime: datetime.formatTimeFromDate(scheduledDate),
+          durationMinutes,
+          date: scheduledDate,
+          status: booking.status,
+        };
+      });
+  }, [bookingsData]);
 
   const futureSlots = useMemo(
     () => slots.filter((slot) => dayjs(slot.date).isAfter(dayjs())),
@@ -139,7 +171,7 @@ export function MasterSchedule() {
       endDay = temp;
     }
 
-    const slotsToCreate: { start: Date; end: Date }[] = [];
+    const slotsToCreate: { start: Date; end: Date; slotType: AvailabilitySlotType }[] = [];
     let cursor = startDay;
     while (!cursor.isAfter(endDay)) {
       if (cursor.isBefore(now.startOf('day'))) {
@@ -161,7 +193,7 @@ export function MasterSchedule() {
         });
         return;
       }
-      slotsToCreate.push({ start: slotStart, end: slotEnd });
+      slotsToCreate.push({ start: slotStart, end: slotEnd, slotType });
       cursor = cursor.add(1, 'day');
     }
 
@@ -176,6 +208,7 @@ export function MasterSchedule() {
     setStartTimeInput('');
     setEndTimeInput('');
     setSelectedRange([null, null]);
+    setSlotType(AvailabilitySlotType.Available);
   };
 
   const handleRemoveSlot = async (slotId: string) => {
@@ -213,7 +246,10 @@ export function MasterSchedule() {
         onStartTimeInputChange={setStartTimeInput}
         endTimeInput={endTimeInput}
         onEndTimeInputChange={setEndTimeInput}
+        slotType={slotType}
+        onSlotTypeChange={setSlotType}
         slots={slots}
+        bookings={bookings}
         onAddSlot={handleAddSlot}
         onRemoveSlot={handleRemoveSlot}
         isLoading={createAvailability.isPending || deleteAvailability.isPending}

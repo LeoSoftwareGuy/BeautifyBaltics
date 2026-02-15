@@ -25,6 +25,7 @@ public partial class MasterAggregate : Aggregate
     public string? AddressLine1 { get; private set; }
     public string? AddressLine2 { get; private set; }
     public string? PostalCode { get; private set; }
+    public int BufferMinutes { get; private set; }
     public IReadOnlyCollection<MasterJob> Jobs => _jobs.Values.ToList();
     public IReadOnlyCollection<MasterAvailabilitySlot> Availabilities => _availabilities.Values.ToList();
 
@@ -150,6 +151,11 @@ public partial class MasterAggregate : Aggregate
         if (!_jobs.TryGetValue(@event.MasterJobId, out var job)) return;
 
         job.SetFeaturedImage(@event.FeaturedImageId);
+    }
+
+    internal void Apply(MasterBufferTimeUpdated @event)
+    {
+        BufferMinutes = @event.BufferMinutes;
     }
 
     public bool IsAvailable(DateTime startAt, DateTime endAt)

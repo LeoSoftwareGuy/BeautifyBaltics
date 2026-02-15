@@ -4,8 +4,9 @@ import {
   Paper,
   Text,
 } from '@mantine/core';
-import { IconDotsVertical, IconTrash } from '@tabler/icons-react';
+import { IconCoffee, IconDotsVertical, IconTrash } from '@tabler/icons-react';
 
+import { AvailabilitySlotType } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
 
 const HOUR_HEIGHT = 60; // Height of each hour row in pixels
@@ -16,6 +17,7 @@ type CalendarSlotProps = {
   startTime: string;
   endTime: string;
   isRecurring?: boolean;
+  slotType?: AvailabilitySlotType;
   onRemove: (id: string) => void;
 };
 
@@ -24,12 +26,23 @@ export function MasterSchedulePanelCalendarSlot({
   startTime,
   endTime,
   isRecurring = false,
+  slotType = AvailabilitySlotType.Available,
   onRemove,
 }: CalendarSlotProps) {
   const startMinutes = datetime.parseTimeToMinutes(startTime);
   const endMinutes = datetime.parseTimeToMinutes(endTime);
   const durationMinutes = endMinutes - startMinutes;
-  const textColor = isRecurring ? 'brand' : 'white';
+  const isBreak = slotType === AvailabilitySlotType.Break;
+
+  let textColor: string;
+
+  if (isBreak) {
+    textColor = 'dark';
+  } else if (isRecurring) {
+    textColor = 'brand';
+  } else {
+    textColor = 'white';
+  }
 
   // Calculate height based on duration (60 minutes = HOUR_HEIGHT pixels)
   const height = (durationMinutes / 60) * HOUR_HEIGHT;
@@ -38,13 +51,31 @@ export function MasterSchedulePanelCalendarSlot({
   const minutesPastHour = startMinutes % 60;
   const topOffset = (minutesPastHour / 60) * HOUR_HEIGHT;
 
+  const getBackgroundStyle = () => {
+    if (isBreak) {
+      return {
+        backgroundColor: 'var(--mantine-color-gray-2)',
+        border: '2px dashed var(--mantine-color-gray-5)',
+      };
+    }
+    if (isRecurring) {
+      return {
+        backgroundColor: 'transparent',
+        border: '2px dashed var(--mantine-color-brand-5)',
+      };
+    }
+    return {
+      backgroundColor: 'var(--mantine-color-brand-5)',
+      border: 'none',
+    };
+  };
+
   return (
     <Paper
       p="xs"
       radius="sm"
       style={{
-        backgroundColor: isRecurring ? 'transparent' : 'var(--mantine-color-brand-5)',
-        border: isRecurring ? '2px dashed var(--mantine-color-brand-5)' : 'none',
+        ...getBackgroundStyle(),
         position: 'absolute',
         top: topOffset,
         left: 4,
@@ -65,13 +96,21 @@ export function MasterSchedulePanelCalendarSlot({
           height: '100%',
         }}
       >
+        {isBreak && height > 40 && (
+          <IconCoffee size={14} color="var(--mantine-color-gray-6)" />
+        )}
         <Text size="xs" fw={600} c={textColor} lh={1}>
           {startTime}
         </Text>
         <Text size="xs" fw={500} c={textColor} lh={1} style={{ opacity: 0.85 }}>
           {endTime}
         </Text>
-        {isRecurring && height > 40 && (
+        {isBreak && height > 50 && (
+          <Text size="xs" c="dimmed" lh={1}>
+            Break
+          </Text>
+        )}
+        {isRecurring && !isBreak && height > 40 && (
           <Text size="xs" c="brand">
             Weekly
           </Text>
@@ -83,7 +122,7 @@ export function MasterSchedulePanelCalendarSlot({
           <ActionIcon
             size="xs"
             variant="subtle"
-            color={textColor}
+            color={isBreak ? 'dark' : textColor}
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'absolute',

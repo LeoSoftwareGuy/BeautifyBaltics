@@ -29,8 +29,7 @@ import {
 import { LightboxCarousel } from '@/components/lightbox-carousel';
 import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
-import { useDeleteMasterJobImage } from '@/state/endpoints/masters';
-import { useSetMasterJobFeaturedImage } from '@/state/endpoints/masters-custom';
+import { useDeleteMasterJobImage, useSetMasterJobFeaturedImage } from '@/state/endpoints/masters';
 
 type MasterServicesDetailModalProps = {
   opened: boolean;
@@ -52,6 +51,7 @@ export function MasterServicesDetailModal({
   onRefetch,
 }: MasterServicesDetailModalProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const { translateService, translateCategory } = useTranslateData();
 
   const { mutateAsync: setFeaturedImage, isPending: isSettingFeatured } = useSetMasterJobFeaturedImage({
     mutation: {
@@ -95,7 +95,6 @@ export function MasterServicesDetailModal({
 
   if (!service) return null;
 
-  const { translateService, translateCategory } = useTranslateData();
   const displayTitle = translateService(service.title ?? service.jobName);
   const images = service.images ?? [];
   const featuredImage = service.featuredImageId
@@ -115,7 +114,7 @@ export function MasterServicesDetailModal({
 
   const handleToggleFeatured = async (imageId: string) => {
     const newFeaturedId = service.featuredImageId === imageId ? null : imageId;
-    await setFeaturedImage({ masterId, jobId: service.id, imageId: newFeaturedId });
+    await setFeaturedImage({ masterId, jobId: service.id, data: { imageId: newFeaturedId } });
   };
 
   const handleDeleteImage = async (imageId: string) => {

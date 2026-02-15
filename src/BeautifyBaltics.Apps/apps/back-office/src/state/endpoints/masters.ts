@@ -59,8 +59,12 @@ import type {
   GetMasterJobImageByIdResponse,
   GetPendingRequestsResponse,
   ProblemDetails,
+  SetMasterJobFeaturedImageBody,
+  SetMasterJobFeaturedImageResponse,
   UpdateMasterAvailabilityRequest,
   UpdateMasterAvailabilityResponse,
+  UpdateMasterBufferTimeRequest,
+  UpdateMasterBufferTimeResponse,
   UpdateMasterJobRequest,
   UpdateMasterJobResponse,
   UpdateMasterProfileRequest,
@@ -2033,6 +2037,60 @@ export const useDeleteMasterJobImage = <TError = ProblemDetails | ProblemDetails
   return useMutation(mutationOptions, queryClient);
 };
 /**
+ * @summary Set or unset the featured image for a master job
+ */
+export const setMasterJobFeaturedImage = (
+  masterId: string,
+  jobId: string,
+  setMasterJobFeaturedImageBody: SetMasterJobFeaturedImageBody,
+) => customClient<SetMasterJobFeaturedImageResponse>(
+  {
+    url: `/api/v1/masters/${masterId}/jobs/${jobId}/featured-image`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: setMasterJobFeaturedImageBody,
+  },
+);
+
+export const getSetMasterJobFeaturedImageMutationOptions = <TError = ProblemDetails | ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }, TContext> => {
+  const mutationKey = ['setMasterJobFeaturedImage'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }> = (props) => {
+    const { masterId, jobId, data } = props ?? {};
+
+    return setMasterJobFeaturedImage(masterId, jobId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SetMasterJobFeaturedImageMutationResult = NonNullable<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>>;
+export type SetMasterJobFeaturedImageMutationBody = SetMasterJobFeaturedImageBody;
+export type SetMasterJobFeaturedImageMutationError = ProblemDetails | ProblemDetails;
+
+/**
+ * @summary Set or unset the featured image for a master job
+ */
+export const useSetMasterJobFeaturedImage = <TError = ProblemDetails | ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof setMasterJobFeaturedImage>>,
+  TError,
+  { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody },
+  TContext
+  > => {
+  const mutationOptions = getSetMasterJobFeaturedImageMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * @summary Get dashboard stats for a master
  */
 export const getDashboardStats = (
@@ -2392,3 +2450,57 @@ export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof 
 
   return query;
 }
+
+/**
+ * @summary Update master buffer time between bookings
+ */
+export const updateMasterBufferTime = (
+  id: string,
+  updateMasterBufferTimeRequest: UpdateMasterBufferTimeRequest,
+) => customClient<UpdateMasterBufferTimeResponse>(
+  {
+    url: `/api/v1/masters/${id}/buffer-time`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateMasterBufferTimeRequest,
+  },
+);
+
+export const getUpdateMasterBufferTimeMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterBufferTime>>, TError, { id: string;data: UpdateMasterBufferTimeRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof updateMasterBufferTime>>, TError, { id: string;data: UpdateMasterBufferTimeRequest }, TContext> => {
+  const mutationKey = ['updateMasterBufferTime'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMasterBufferTime>>, { id: string;data: UpdateMasterBufferTimeRequest }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateMasterBufferTime(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateMasterBufferTimeMutationResult = NonNullable<Awaited<ReturnType<typeof updateMasterBufferTime>>>;
+export type UpdateMasterBufferTimeMutationBody = UpdateMasterBufferTimeRequest;
+export type UpdateMasterBufferTimeMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Update master buffer time between bookings
+ */
+export const useUpdateMasterBufferTime = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMasterBufferTime>>, TError, { id: string;data: UpdateMasterBufferTimeRequest }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof updateMasterBufferTime>>,
+  TError,
+  { id: string;data: UpdateMasterBufferTimeRequest },
+  TContext
+  > => {
+  const mutationOptions = getUpdateMasterBufferTimeMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};

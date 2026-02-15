@@ -3,6 +3,7 @@ import {
 } from '@mantine/core';
 
 import MasterProfileSettings from '../master-profile-settings';
+import { MasterSchedulingSettings } from '../master-scheduling-settings';
 
 function MasterSettingsPage() {
   return (
@@ -14,6 +15,10 @@ function MasterSettingsPage() {
       <Stack gap="xl" px="md" pb="xl">
         <Card withBorder>
           <MasterProfileSettings />
+        </Card>
+
+        <Card withBorder>
+          <MasterSchedulingSettings />
         </Card>
       </Stack>
     </Box>

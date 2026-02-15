@@ -6,6 +6,7 @@ using BeautifyBaltics.Core.API.Application.Master.Commands.SetMasterJobFeaturedI
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.CreateMaster;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DefineAvailability;
+using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterBufferTime;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterProfile;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterJobImage;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterProfileImage;
@@ -427,6 +428,22 @@ public class MastersController(IMessageBus bus) : ApiController
     public async Task<ActionResult<GetPendingRequestsResponse>> GetPendingRequests([FromRoute] Guid id)
     {
         var response = await bus.InvokeAsync<GetPendingRequestsResponse>(new GetPendingRequestsRequest { MasterId = id });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Update master buffer time between bookings
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="request">Buffer time request</param>
+    /// <returns>Updated master id</returns>
+    [HttpPut("{id:guid}/buffer-time", Name = "UpdateMasterBufferTime")]
+    [ProducesResponseType(typeof(UpdateMasterBufferTimeResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult> UpdateMasterBufferTime([FromRoute] Guid id, [FromBody] UpdateMasterBufferTimeRequest request)
+    {
+        var response = await bus.InvokeAsync<UpdateMasterBufferTimeResponse>(request with { MasterId = id });
         return Ok(response);
     }
 }

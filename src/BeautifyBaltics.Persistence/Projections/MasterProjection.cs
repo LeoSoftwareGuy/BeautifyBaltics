@@ -29,6 +29,7 @@ public record Master(Guid Id) : Projection
     public string? ProfileImageFileName { get; init; }
     public string? ProfileImageMimeType { get; init; }
     public long? ProfileImageSize { get; init; }
+    public int BufferMinutes { get; init; }
 
     public string? LocationName =>
         !string.IsNullOrWhiteSpace(City) ? City :
@@ -91,4 +92,6 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             ProfileImageSize = @event.FileSize
         };
     }
+
+    public static Master Apply(MasterBufferTimeUpdated @event, Master current) => current with { BufferMinutes = @event.BufferMinutes };
 }

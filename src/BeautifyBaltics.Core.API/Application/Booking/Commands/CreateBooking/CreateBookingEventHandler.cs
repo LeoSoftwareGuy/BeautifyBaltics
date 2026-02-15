@@ -58,15 +58,20 @@ public class CreateBookingEventHandler(
             cancellationToken
         );
 
+        // Only consider Available windows (not Break slots)
         var validWindow = availabilityWindows.FirstOrDefault(w =>
-            scheduledAt >= w.StartAt && bookingEndAt <= w.EndAt);
+            w.SlotType == AvailabilitySlotType.Available &&
+            scheduledAt >= w.StartAt && bookingEndAt <= w.EndAt) ?? throw DomainException.WithMessage("The requested time is not within the master's availability window.");
 
-        if (validWindow == null)
-        {
-            throw DomainException.WithMessage("The requested time is not within the master's availability window.");
-        }
+        // Check for conflicts with break slots
+        var hasBreakConflict = availabilityWindows
+            .Where(w => w.SlotType == AvailabilitySlotType.Break)
+            .Any(brk => scheduledAt < brk.EndAt && bookingEndAt > brk.StartAt);
 
-        // Check for conflicts with existing bookings
+        if (hasBreakConflict) throw DomainException.WithMessage("The requested time conflicts with the master's break time.");
+
+        // Check for conflicts with existing bookings (with buffer time)
+        var bufferTime = TimeSpan.FromMinutes(master.BufferMinutes);
         var existingBookings = await bookingRepository.GetListAsync(
             new BookingSearchDTO
             {
@@ -81,14 +86,12 @@ public class CreateBookingEventHandler(
             .Where(b => b.Status != BookingStatus.Cancelled)
             .Any(b =>
             {
-                var existingEndAt = b.ScheduledAt + b.Duration;
-                return scheduledAt < existingEndAt && bookingEndAt > b.ScheduledAt;
+                var bookingStart = b.ScheduledAt - bufferTime;
+                var bookingEnd = b.ScheduledAt + b.Duration + bufferTime;
+                return scheduledAt < bookingEnd && bookingEndAt > bookingStart;
             });
 
-        if (hasConflict)
-        {
-            throw DomainException.WithMessage("The requested time conflicts with an existing booking.");
-        }
+        if (hasConflict) throw DomainException.WithMessage("The requested time conflicts with an existing booking.");
 
         var bookingCreatedEvent = new BookingCreated(
             MasterId: request.MasterId,

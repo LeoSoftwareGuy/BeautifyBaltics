@@ -6,6 +6,11 @@
  * Beautify Baltics Core API for back-office operations
  * OpenAPI spec version: v1
  */
+export enum AvailabilitySlotType {
+  Available = 'Available',
+  Break = 'Break',
+
+}
 export type AvailableTimeSlotDTO = {
   startAt?: Date;
   endAt?: Date;
@@ -51,10 +56,6 @@ export type BookingDTO = {
    * @minLength 1
    */
   masterJobCategoryName: string;
-  /**
-   * Master job category image URL
-   * @nullable
-   */
   /**
    * Booking city
    * @nullable
@@ -561,6 +562,7 @@ export type MasterAvailabilitySlotCommandDTO = {
   start: Date;
   /** Slot ends at */
   end: Date;
+  slotType?: AvailabilitySlotType;
 };
 
 export type MasterAvailabilitySlotDTO = {
@@ -577,6 +579,7 @@ export type MasterAvailabilitySlotDTO = {
   startAt: Date;
   /** Ends at */
   endAt: Date;
+  slotType?: AvailabilitySlotType;
 };
 
 export type MasterDTO = {
@@ -639,7 +642,10 @@ export type MasterJobDTO = {
   price: number;
   /** Job duration in minutes */
   durationMinutes: number;
-  /** Featured image identifier */
+  /**
+   * Featured image identifier
+   * @nullable
+   */
   featuredImageId?: string | null;
   /** Job images */
   images: MasterJobImageDTO[];
@@ -855,6 +861,18 @@ export type RescheduleBookingResponse = {
   id: string;
 };
 
+export type SetMasterJobFeaturedImageBody = {
+  /** @nullable */
+  imageId?: string | null;
+};
+
+export type SetMasterJobFeaturedImageResponse = {
+  masterId?: string;
+  masterJobId?: string;
+  /** @nullable */
+  featuredImageId?: string | null;
+};
+
 export type UpdateClientProfileRequestAllOf = {
   /** Client id */
   clientID: string;
@@ -891,6 +909,21 @@ export type UpdateMasterAvailabilityResponse = {
   masterId: string;
   /** Master availability identifier */
   masterAvailabilityId: string;
+};
+
+export type UpdateMasterBufferTimeRequest = {
+  /** Master identifier */
+  masterId: string;
+  /**
+   * Buffer time in minutes between bookings (0-60)
+   * @minimum 0
+   * @maximum 60
+   */
+  bufferMinutes: number;
+};
+
+export type UpdateMasterBufferTimeResponse = {
+  masterId?: string;
 };
 
 export type UpdateMasterJobRequest = {
