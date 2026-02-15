@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Badge,
@@ -10,7 +11,6 @@ import {
   Text,
 } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import { GetPendingRequestsResponse } from '@/state/endpoints/api.schemas';

@@ -1,9 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import {
   Group, Tabs, TextInput,
 } from '@mantine/core';
 import { DatePickerInput, DatesRangeValue } from '@mantine/dates';
 import { IconCalendar, IconSearch } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
 

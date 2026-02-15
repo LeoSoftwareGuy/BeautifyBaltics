@@ -1,8 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import {
   Alert, Loader, Stack, Text,
 } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import { useGetUser } from '@/state/endpoints/users';
 

@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Card,
@@ -6,8 +8,6 @@ import {
   Text,
 } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType, BookingStatus } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';

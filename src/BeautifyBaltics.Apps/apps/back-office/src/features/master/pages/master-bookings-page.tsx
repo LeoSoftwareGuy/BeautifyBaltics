@@ -1,7 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box, Stack, Text, Title,
 } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
 
 import { MasterBookingsDataTable } from '../master-bookings-data-table';
 

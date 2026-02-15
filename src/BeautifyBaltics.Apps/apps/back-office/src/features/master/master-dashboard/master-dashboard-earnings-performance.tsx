@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BarChart } from '@mantine/charts';
 import {
   Card, Group, Select, Skeleton, Stack, Text,
 } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
 
 import { EarningsPeriod, GetEarningsPerformanceResponse } from '@/state/endpoints/api.schemas';
 

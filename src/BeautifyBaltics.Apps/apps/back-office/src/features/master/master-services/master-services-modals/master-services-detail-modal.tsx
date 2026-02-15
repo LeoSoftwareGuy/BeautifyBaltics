@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionIcon,
   Badge,
@@ -25,7 +26,6 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import { LightboxCarousel } from '@/components/lightbox-carousel';
 import { useTranslateData } from '@/hooks/use-translate-data';

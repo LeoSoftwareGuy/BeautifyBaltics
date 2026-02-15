@@ -501,8 +501,6 @@ const ru: CommonLocale = {
       summary: {
         title: 'Мои услуги',
         count_one: '{{count}} услуга добавлена',
-        count_few: '{{count}} услуги добавлены',
-        count_many: '{{count}} услуг добавлено',
         count_other: '{{count}} услуг добавлено',
       },
       notifications: {

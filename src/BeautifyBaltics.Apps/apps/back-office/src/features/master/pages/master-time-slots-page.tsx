@@ -1,7 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box, Text, Title,
 } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
 
 import { MasterSchedule } from '../master-schedule';
 

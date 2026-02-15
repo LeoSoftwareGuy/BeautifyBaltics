@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -10,7 +11,6 @@ import {
   Text,
 } from '@mantine/core';
 import { IconUpload } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { useGetMasterJobImageById } from '@/state/endpoints/masters';

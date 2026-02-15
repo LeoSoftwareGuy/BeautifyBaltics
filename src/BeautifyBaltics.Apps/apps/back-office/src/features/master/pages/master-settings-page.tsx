@@ -1,7 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box, Card, Stack, Title,
 } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
 
 import MasterProfileSettings from '../master-profile-settings';
 import { MasterSchedulingSettings } from '../master-scheduling-settings';

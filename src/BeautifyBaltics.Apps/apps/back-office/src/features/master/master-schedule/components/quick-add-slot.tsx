@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Card,
@@ -9,7 +10,6 @@ import {
 } from '@mantine/core';
 import { DatePickerInput, TimeInput } from '@mantine/dates';
 import { IconCalendar, IconCoffee, IconPlus } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType } from '@/state/endpoints/api.schemas';
 

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Loader,
@@ -10,7 +11,6 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import {
   useDeleteMasterJob,

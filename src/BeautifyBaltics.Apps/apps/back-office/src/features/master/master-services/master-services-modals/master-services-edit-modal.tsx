@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Group,
@@ -12,7 +13,6 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';

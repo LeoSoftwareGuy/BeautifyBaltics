@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Drawer,
   Group,
@@ -7,7 +8,6 @@ import {
   Text,
 } from '@mantine/core';
 import dayjs from 'dayjs';
-import { useTranslation } from 'react-i18next';
 
 import datetime from '@/utils/datetime';
 

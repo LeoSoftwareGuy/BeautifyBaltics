@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   ActionIcon,
   Menu,
@@ -5,7 +6,6 @@ import {
   Text,
 } from '@mantine/core';
 import { IconCoffee, IconDotsVertical, IconTrash } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';

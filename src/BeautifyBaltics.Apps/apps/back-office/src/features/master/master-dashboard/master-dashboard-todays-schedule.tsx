@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Anchor,
   Avatar,
@@ -14,7 +15,6 @@ import {
 import { IconClock, IconMapPin } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 import dayjs from 'dayjs';
-import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';

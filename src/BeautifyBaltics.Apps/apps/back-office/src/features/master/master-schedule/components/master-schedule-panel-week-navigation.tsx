@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   ActionIcon,
   Button,
@@ -9,7 +10,6 @@ import {
   IconChevronRight,
   IconRefresh,
 } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import datetime from '@/utils/datetime';
 

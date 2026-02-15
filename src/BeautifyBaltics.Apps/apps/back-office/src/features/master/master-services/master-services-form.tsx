@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   NumberInput,
@@ -12,7 +13,6 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconPlus } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import { useFindJobCategories, useFindJobs } from '@/state/endpoints/jobs';

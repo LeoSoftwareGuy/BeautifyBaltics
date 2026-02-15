@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Group,
@@ -10,7 +11,6 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconClock, IconDeviceFloppy } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import { getGetMasterByIdQueryKey, useGetMasterById, useUpdateMasterBufferTime } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';

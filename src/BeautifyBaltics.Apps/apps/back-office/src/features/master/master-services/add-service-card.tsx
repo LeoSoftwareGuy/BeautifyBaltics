@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card, Stack, Text, ThemeIcon,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 type AddServiceCardProps = {
   onClick: () => void;

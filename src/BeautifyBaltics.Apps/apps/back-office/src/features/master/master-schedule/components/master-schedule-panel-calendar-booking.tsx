@@ -1,10 +1,10 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Badge,
   Paper,
   Text,
 } from '@mantine/core';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';

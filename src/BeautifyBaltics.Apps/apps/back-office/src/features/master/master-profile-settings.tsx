@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Avatar,
@@ -19,7 +20,6 @@ import {
 import { hasLength, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconDeviceFloppy, IconPhotoUp } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import type { LocationData } from '@/features/map';
 import { LocationPicker } from '@/features/map';

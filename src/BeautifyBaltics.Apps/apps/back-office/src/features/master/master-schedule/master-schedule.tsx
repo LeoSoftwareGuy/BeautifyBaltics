@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert, Loader, Stack, Text,
 } from '@mantine/core';
@@ -6,7 +7,6 @@ import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType, BookingStatus } from '@/state/endpoints/api.schemas';
 import { useFindBookings } from '@/state/endpoints/bookings';
