@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import dayjs from 'dayjs';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { GetPendingRequestsResponse } from '@/state/endpoints/api.schemas';
 
 interface MasterDashboardPendingRequestsProps {
@@ -25,6 +26,7 @@ interface MasterDashboardPendingRequestsProps {
 export function MasterDashboardPendingRequests({
   data, isLoading, isConfirming, isCancelling, onConfirm, onCancel,
 }: MasterDashboardPendingRequestsProps) {
+  const { translateService } = useTranslateData();
   const requests = data?.requests ?? [];
   const totalCount = data?.totalCount ?? 0;
   const displayedCount = requests.length;
@@ -100,7 +102,7 @@ export function MasterDashboardPendingRequests({
                   <Avatar name={request.clientName} size="md" radius="xl" color="initials" />
                   <Stack gap={2}>
                     <Text fw={500} size="sm">{request.clientName}</Text>
-                    <Text size="xs" c="dimmed">{request.masterJobTitle}</Text>
+                    <Text size="xs" c="dimmed">{translateService(request.masterJobTitle)}</Text>
                   </Stack>
                 </Group>
                 <Stack gap={0} align="flex-end">

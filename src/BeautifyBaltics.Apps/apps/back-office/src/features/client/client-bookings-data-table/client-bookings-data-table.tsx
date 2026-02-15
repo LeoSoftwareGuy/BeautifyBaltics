@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card, Stack, Text, Title,
 } from '@mantine/core';
 import { DatesRangeValue } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
+import { useTranslateData } from '@/hooks/use-translate-data';
 import {
   BookingStatus,
   FindBookingsParams,
@@ -43,6 +44,7 @@ export function ClientBookingsDataTable() {
   const clientId = user?.id ?? '';
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { translateService } = useTranslateData();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
@@ -155,6 +157,7 @@ export function ClientBookingsDataTable() {
       accessor: 'masterJobTitle',
       title: t('client.bookings.table.columns.service'),
       sortKey: 'masterJobTitle',
+      render: (booking) => translateService(booking.masterJobTitle),
     },
     {
       accessor: 'locationCity',

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -8,7 +9,6 @@ import {
   Text,
 } from '@mantine/core';
 import { IconMapPin, IconStar } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import type { FindMastersResponse } from '@/state/endpoints/api.schemas';
 

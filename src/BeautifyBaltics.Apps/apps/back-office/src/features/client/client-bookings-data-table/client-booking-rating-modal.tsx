@@ -15,6 +15,7 @@ import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Check, Star } from 'lucide-react';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import { getFindBookingsQueryKey } from '@/state/endpoints/bookings';
 import { getFindRatingsQueryKey, useCreateRating } from '@/state/endpoints/ratings';
@@ -32,6 +33,7 @@ export function ClientBookingRatingModal({
 }: ClientBookingRatingModalProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { translateService } = useTranslateData();
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -141,7 +143,7 @@ export function ClientBookingRatingModal({
 
         {booking && (
           <Stack gap="xs">
-            <Text fw={500}>{booking.masterJobTitle}</Text>
+            <Text fw={500}>{translateService(booking.masterJobTitle)}</Text>
             <Text size="sm" c="dimmed">
               {t('client.ratingModal.withLabel', { name: booking.masterName })}
             </Text>

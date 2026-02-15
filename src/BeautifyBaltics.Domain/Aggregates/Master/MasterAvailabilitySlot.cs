@@ -1,3 +1,5 @@
+using BeautifyBaltics.Domain.Enumerations;
+
 namespace BeautifyBaltics.Domain.Aggregates.Master
 {
     public partial class MasterAggregate
@@ -6,7 +8,8 @@ namespace BeautifyBaltics.Domain.Aggregates.Master
             Guid id,
             Guid masterId,
             DateTime startAt,
-            DateTime endAt
+            DateTime endAt,
+            AvailabilitySlotType slotType = AvailabilitySlotType.Available
         )
         {
             public Guid Id { get; private set; } = id;
@@ -16,6 +19,8 @@ namespace BeautifyBaltics.Domain.Aggregates.Master
             public DateTime StartAt { get; private set; } = startAt;
 
             public DateTime EndAt { get; private set; } = endAt;
+
+            public AvailabilitySlotType SlotType { get; private set; } = slotType;
 
             public void Update(Guid masterId, DateTime startAt, DateTime endAt)
             {

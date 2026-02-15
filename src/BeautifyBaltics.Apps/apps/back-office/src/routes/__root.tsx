@@ -1,10 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import { DevtoolsContainer, TanStackQueryDevtools, TanStackRouterDevtools } from '@beautify-baltics-apps/devtools';
 import { Group } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
-import { useTranslation } from 'react-i18next';
 
+import { LanguageSwitcher } from '@/components/language-switcher';
 import {
   ClientNavigation,
   MasterNavigation,
@@ -12,7 +13,6 @@ import {
   NavigationLoadingIndicator,
   SidebarFooter,
 } from '@/components/navigation';
-import { LanguageSwitcher } from '@/components/language-switcher';
 import { MegaSearch } from '@/features/mega-search';
 import usePageTitle from '@/hooks/use-page-title';
 import { AppLayout } from '@/layouts';
@@ -36,7 +36,6 @@ export const Route = createRootRouteWithContext<RouteContext>()({
 });
 
 function Root() {
-  const { t } = useTranslation();
   usePageTitle();
   const location = useRouterState({ select: (state) => state.location });
   const isPublicRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');

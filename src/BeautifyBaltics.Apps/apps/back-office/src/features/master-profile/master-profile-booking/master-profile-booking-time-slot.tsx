@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Button, SimpleGrid, Skeleton, Text,
 } from '@mantine/core';
@@ -20,6 +21,8 @@ export default function MasterProfileTimeSlots({
   selectedSlotId,
   onSlotSelect,
 }: MasterProfileTimeSlotsProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <SimpleGrid cols={2} spacing="sm">
@@ -33,7 +36,7 @@ export default function MasterProfileTimeSlots({
   if (availableSlots.length === 0) {
     return (
       <Text c="dimmed" ta="center" py="md">
-        No available slots for this date
+        {t('masterProfile.booking.noSlots')}
       </Text>
     );
   }

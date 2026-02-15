@@ -2,6 +2,7 @@ import {
   Anchor, Avatar, Badge, Button, Group, Stack, Text,
 } from '@mantine/core';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
 
@@ -46,13 +47,18 @@ export function renderClient(booking: FindBookingsResponse) {
   );
 }
 
-export function renderJobDetails(booking: FindBookingsResponse) {
+function JobDetailsCell({ booking }: { booking: FindBookingsResponse }) {
+  const { translateService, translateCategory } = useTranslateData();
   return (
     <Stack gap={2}>
-      <Text size="sm" fw={500}>{booking.masterJobTitle}</Text>
-      <Text size="xs" c="dimmed">{booking.masterJobCategoryName}</Text>
+      <Text size="sm" fw={500}>{translateService(booking.masterJobTitle)}</Text>
+      <Text size="xs" c="dimmed">{translateCategory(booking.masterJobCategoryName)}</Text>
     </Stack>
   );
+}
+
+export function renderJobDetails(booking: FindBookingsResponse) {
+  return <JobDetailsCell booking={booking} />;
 }
 
 export function renderDateTime(booking: FindBookingsResponse) {

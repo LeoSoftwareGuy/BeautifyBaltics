@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AppShell, Box, Divider, Group, ScrollArea, Text, useMantineTheme,
 } from '@mantine/core';
 import { useFavicon, useLocalStorage } from '@mantine/hooks';
-import { useTranslation } from 'react-i18next';
 
 import storageKeygen from '@/utils/storage-keygen';
 

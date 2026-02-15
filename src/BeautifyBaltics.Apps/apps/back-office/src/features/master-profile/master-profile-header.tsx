@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Button, Container } from '@mantine/core';
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowLeft } from 'lucide-react';
@@ -8,6 +9,7 @@ type ProfileHeaderProps = {
 
 function ProfileHeader({ backTo }: ProfileHeaderProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Box
@@ -23,7 +25,7 @@ function ProfileHeader({ backTo }: ProfileHeaderProps) {
           leftSection={<ArrowLeft size={16} />}
           onClick={() => navigate({ to: backTo })}
         >
-          Back to explore
+          {t('masterProfile.backToExplore')}
         </Button>
       </Container>
     </Box>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   Group,
@@ -10,6 +11,7 @@ import {
 } from '@mantine/core';
 import { Clock } from 'lucide-react';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { useFindMasterJobs } from '@/state/endpoints/masters';
 
 type ServicesListProps = {
@@ -17,6 +19,8 @@ type ServicesListProps = {
 };
 
 function MasterServicesList({ masterId }: ServicesListProps) {
+  const { t } = useTranslation();
+  const { translateService } = useTranslateData();
   const { data, isLoading } = useFindMasterJobs(masterId);
 
   const services = useMemo(() => {
@@ -33,7 +37,7 @@ function MasterServicesList({ masterId }: ServicesListProps) {
   if (isLoading) {
     return (
       <Stack gap="lg" mt="xl">
-        <Title order={2}>Services & Pricing</Title>
+        <Title order={2}>{t('masterProfile.services.title')}</Title>
         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
           {[1, 2].map((i) => (
             <Skeleton key={i} height={80} radius="lg" />
@@ -46,23 +50,23 @@ function MasterServicesList({ masterId }: ServicesListProps) {
   if (services.length === 0) {
     return (
       <Stack gap="lg" mt="xl">
-        <Title order={2}>Services & Pricing</Title>
-        <Text c="dimmed">This master has not shared any services yet.</Text>
+        <Title order={2}>{t('masterProfile.services.title')}</Title>
+        <Text c="dimmed">{t('masterProfile.services.empty')}</Text>
       </Stack>
     );
   }
 
   return (
     <Stack gap="lg" mt="xl">
-      <Title order={2}>Services & Pricing</Title>
+      <Title order={2}>{t('masterProfile.services.title')}</Title>
       <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
         {services.map((service) => (
           <Card key={service.id} withBorder radius="lg">
             <Stack gap={4}>
               <Group justify="space-between">
-                <Text fw={600}>{service.name}</Text>
+                <Text fw={600}>{translateService(service.name)}</Text>
                 <Text fw={700} c="grape.6">
-                  {typeof service.price === 'number' ? `$${service.price}` : 'Ask for price'}
+                  {typeof service.price === 'number' ? `$${service.price}` : t('masterProfile.services.askForPrice')}
                 </Text>
               </Group>
               <Group gap="xs" c="dimmed" fz="sm">

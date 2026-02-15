@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Card,
@@ -18,6 +19,7 @@ type MasterProfileReviewsProps = {
 };
 
 function MasterProfileReviews({ masterId }: MasterProfileReviewsProps) {
+  const { t } = useTranslation();
   const { data, isLoading } = useGetMasterRatings(
     masterId,
     { masterId, page: 1, pageSize: 10 },
@@ -31,7 +33,7 @@ function MasterProfileReviews({ masterId }: MasterProfileReviewsProps) {
     return (
       <Card withBorder radius="lg" p="xl" mt="xl">
         <Stack gap="md">
-          <Title order={3}>Reviews</Title>
+          <Title order={3}>{t('masterProfile.reviews.title')}</Title>
           <Skeleton height={100} />
           <Skeleton height={100} />
         </Stack>
@@ -43,9 +45,9 @@ function MasterProfileReviews({ masterId }: MasterProfileReviewsProps) {
     return (
       <Card withBorder radius="lg" p="xl" mt="xl">
         <Stack gap="md">
-          <Title order={3}>Reviews</Title>
+          <Title order={3}>{t('masterProfile.reviews.title')}</Title>
           <Text c="dimmed" ta="center" py="xl">
-            No reviews yet. Be the first to leave a review!
+            {t('masterProfile.reviews.empty')}
           </Text>
         </Stack>
       </Card>
@@ -61,11 +63,9 @@ function MasterProfileReviews({ masterId }: MasterProfileReviewsProps) {
       <Stack gap="lg">
         <Group justify="space-between" align="flex-start">
           <div>
-            <Title order={3}>Reviews</Title>
+            <Title order={3}>{t('masterProfile.reviews.title')}</Title>
             <Text size="sm" c="dimmed">
-              {totalCount}
-              {' '}
-              {totalCount === 1 ? 'review' : 'reviews'}
+              {t('masterProfile.reviews.review', { count: totalCount })}
             </Text>
           </div>
           <Group gap="xs">

@@ -13,6 +13,7 @@ import {
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { useFindJobCategories, useFindJobs } from '@/state/endpoints/jobs';
 import { getFindMasterJobsQueryKey, useUpdateMasterJob } from '@/state/endpoints/masters';
@@ -30,6 +31,7 @@ export function MasterServicesEditModal({
   masterId,
   service,
 }: MasterServicesEditModalProps) {
+  const { translateCategory, translateService } = useTranslateData();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -153,7 +155,7 @@ export function MasterServicesEditModal({
               .filter((cat): cat is typeof cat & { id: string; name: string } => Boolean(cat.id && cat.name))
               .map((cat) => ({
                 value: cat.id,
-                label: cat.name,
+                label: translateCategory(cat.name),
               }))}
             value={selectedCategoryId}
             onChange={handleCategoryChange}
@@ -171,7 +173,7 @@ export function MasterServicesEditModal({
             disabled={!selectedCategoryId}
             data={jobs.map((job) => ({
               value: job.id,
-              label: job.name,
+              label: translateService(job.name),
             }))}
             value={selectedJobId}
             onChange={handleJobChange}

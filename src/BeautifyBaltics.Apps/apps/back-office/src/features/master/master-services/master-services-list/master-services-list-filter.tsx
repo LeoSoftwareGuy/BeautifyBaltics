@@ -1,6 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box, Group, Text, UnstyledButton,
 } from '@mantine/core';
+
+import { useTranslateData } from '@/hooks/use-translate-data';
 
 type Category = {
   id: string;
@@ -18,6 +21,9 @@ export function MasterServicesListFilter({
   selectedCategoryId,
   onCategoryChange,
 }: MasterServicesListFilterProps) {
+  const { t } = useTranslation();
+  const { translateCategory } = useTranslateData();
+
   if (categories.length === 0) {
     return null;
   }
@@ -45,7 +51,7 @@ export function MasterServicesListFilter({
             fw={600}
             c={selectedCategoryId === null ? undefined : 'dimmed'}
           >
-            All Services
+            {t('explore.categories.all')}
           </Text>
         </UnstyledButton>
         {categories.map((category) => (
@@ -66,7 +72,7 @@ export function MasterServicesListFilter({
               fw={600}
               c={selectedCategoryId === category.id ? undefined : 'dimmed'}
             >
-              {category.name}
+              {translateCategory(category.name)}
             </Text>
           </UnstyledButton>
         ))}

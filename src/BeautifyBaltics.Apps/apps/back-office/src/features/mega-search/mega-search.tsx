@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card, rem, useMantineTheme,
 } from '@mantine/core';
@@ -7,7 +8,6 @@ import {
   Spotlight, spotlight,
 } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 import KbdCommands from './kbd-commands';
 import SearchInput from './search-input';

@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Divider, Flex, Group, Skeleton, Stack, Text,
 } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
 
 import Widget, { WidgetProps } from './widget';
 

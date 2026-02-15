@@ -14,20 +14,17 @@ type SetFeaturedImageResponse = {
   featuredImageId: string | null;
 };
 
-export const setMasterJobFeaturedImage = ({ masterId, jobId, imageId }: SetFeaturedImageParams) =>
-  customClient<SetFeaturedImageResponse>({
-    url: `/api/v1/masters/${masterId}/jobs/${jobId}/featured-image`,
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    data: { imageId },
-  });
+export const setMasterJobFeaturedImage = ({ masterId, jobId, imageId }: SetFeaturedImageParams) => customClient<SetFeaturedImageResponse>({
+  url: `/api/v1/masters/${masterId}/jobs/${jobId}/featured-image`,
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  data: { imageId },
+});
 
 export const useSetMasterJobFeaturedImage = (
   options?: { mutation?: UseMutationOptions<SetFeaturedImageResponse, Error, SetFeaturedImageParams> },
-) => {
-  return useMutation({
-    mutationKey: ['setMasterJobFeaturedImage'],
-    mutationFn: setMasterJobFeaturedImage,
-    ...options?.mutation,
-  });
-};
+) => useMutation({
+  mutationKey: ['setMasterJobFeaturedImage'],
+  mutationFn: setMasterJobFeaturedImage,
+  ...options?.mutation,
+});

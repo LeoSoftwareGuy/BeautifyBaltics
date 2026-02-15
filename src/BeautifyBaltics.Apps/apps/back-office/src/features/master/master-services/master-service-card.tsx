@@ -12,6 +12,7 @@ import {
   IconClock, IconEdit, IconPhoto, IconTrash, IconUpload,
 } from '@tabler/icons-react';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
 
 type MasterServiceCardProps = {
@@ -32,7 +33,8 @@ export function MasterServiceCard({
   isDeleting,
 }: MasterServiceCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const displayTitle = service.title ?? service.jobName;
+  const { translateService, translateCategory } = useTranslateData();
+  const displayTitle = translateService(service.title ?? service.jobName);
   const featuredImage = service.featuredImageId
     ? service.images?.find((img) => img.id === service.featuredImageId)
     : null;
@@ -99,7 +101,7 @@ export function MasterServiceCard({
             bottom={8}
             left={8}
           >
-            {service.jobCategoryName}
+            {translateCategory(service.jobCategoryName)}
           </Badge>
         )}
         <Group

@@ -13,6 +13,7 @@ import { notifications } from '@mantine/notifications';
 import { IconPlus } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { useFindJobCategories, useFindJobs } from '@/state/endpoints/jobs';
 import { getFindMasterJobsQueryKey, useCreateMasterJob } from '@/state/endpoints/masters';
 
@@ -22,6 +23,7 @@ type MasterServicesFormProps = {
 };
 
 export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormProps) {
+  const { translateCategory, translateService } = useTranslateData();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -142,7 +144,7 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
               .filter((cat): cat is typeof cat & { id: string; name: string } => Boolean(cat.id && cat.name))
               .map((cat) => ({
                 value: cat.id,
-                label: cat.name,
+                label: translateCategory(cat.name),
               }))}
             value={selectedCategoryId}
             onChange={handleCategoryChange}
@@ -160,7 +162,7 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
             disabled={!selectedCategoryId}
             data={jobs.map((job) => ({
               value: job.id,
-              label: job.name,
+              label: translateService(job.name),
             }))}
             value={selectedJobId}
             onChange={handleJobChange}

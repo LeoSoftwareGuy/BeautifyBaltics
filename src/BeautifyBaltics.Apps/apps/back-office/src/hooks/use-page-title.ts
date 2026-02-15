@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useMatches } from '@tanstack/react-router';
-import { useTranslation } from 'react-i18next';
 
 export default function usePageTitle() {
   const [title, setTitle] = useState('Beautify Baltics');

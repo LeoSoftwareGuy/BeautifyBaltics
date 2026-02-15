@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Group, Stack, Text, UnstyledButton,
 } from '@mantine/core';
@@ -10,7 +11,6 @@ import {
   IconSparkles,
 } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
-import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/contexts/session-context';
 import { useLayout } from '@/layouts';

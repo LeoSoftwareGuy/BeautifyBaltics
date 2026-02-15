@@ -27,6 +27,7 @@ import {
 } from '@tabler/icons-react';
 
 import { LightboxCarousel } from '@/components/lightbox-carousel';
+import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { useDeleteMasterJobImage } from '@/state/endpoints/masters';
 import { useSetMasterJobFeaturedImage } from '@/state/endpoints/masters-custom';
@@ -94,7 +95,8 @@ export function MasterServicesDetailModal({
 
   if (!service) return null;
 
-  const displayTitle = service.title ?? service.jobName;
+  const { translateService, translateCategory } = useTranslateData();
+  const displayTitle = translateService(service.title ?? service.jobName);
   const images = service.images ?? [];
   const featuredImage = service.featuredImageId
     ? images.find((img) => img.id === service.featuredImageId)
@@ -179,7 +181,7 @@ export function MasterServicesDetailModal({
               bottom={16}
               left={16}
             >
-              {service.jobCategoryName}
+              {translateCategory(service.jobCategoryName)}
             </Badge>
           )}
 
@@ -206,7 +208,7 @@ export function MasterServicesDetailModal({
             <Stack gap={4}>
               <Title order={3}>{displayTitle}</Title>
               <Text c="dimmed" size="sm">
-                {service.jobName}
+                {translateService(service.jobName)}
               </Text>
             </Stack>
             <Group gap="xs">
@@ -361,7 +363,6 @@ export function MasterServicesDetailModal({
         </Stack>
       </Modal>
 
-      {/* Lightbox Carousel */}
       <LightboxCarousel
         opened={lightboxIndex !== null}
         onClose={() => setLightboxIndex(null)}

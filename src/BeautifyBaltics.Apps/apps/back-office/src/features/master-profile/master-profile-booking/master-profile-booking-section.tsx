@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Card,
@@ -12,6 +13,7 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { Briefcase, Calendar, Clock } from 'lucide-react';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { MasterJobDTO, UserRole } from '@/state/endpoints/api.schemas';
 import { useFindMasterJobs, useGetAvailableTimeSlots } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
@@ -30,6 +32,8 @@ type MasterBookingSectionProps = {
 };
 
 function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
+  const { t } = useTranslation();
+  const { translateService } = useTranslateData();
   const { data: user } = useGetUser();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedScheduledAt, setSelectedScheduledAt] = useState<Date | null>(null);
@@ -43,8 +47,8 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
 
   const jobOptions = useMemo(() => jobs.map((job) => ({
     value: job.id,
-    label: `${job.title} - $${job.price} (${job.durationMinutes} min)`,
-  })), [jobs]);
+    label: `${translateService(job.title)} - $${job.price} (${job.durationMinutes} min)`,
+  })), [jobs, translateService]);
 
   const selectedJob = useMemo(
     () => jobs.find((job) => job.id === selectedJobId),
@@ -148,7 +152,7 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
 
   return (
     <Stack gap="lg" mt="xl">
-      <Title order={2}>Book an Appointment</Title>
+      <Title order={2}>{t('masterProfile.booking.title')}</Title>
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Card withBorder radius="lg" h="100%">
@@ -156,27 +160,27 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
               <Stack gap={4}>
                 <Group gap="xs">
                   <Briefcase size={20} />
-                  <Text fw={600} size="lg">Select Service</Text>
+                  <Text fw={600} size="lg">{t('masterProfile.booking.selectService')}</Text>
                 </Group>
                 <Text size="sm" c="dimmed">
-                  Choose the service you want to book
+                  {t('masterProfile.booking.selectServiceHint')}
                 </Text>
               </Stack>
               <Select
                 data={jobOptions}
                 value={selectedJobId}
                 onChange={setSelectedJobId}
-                placeholder="Select a service"
+                placeholder={t('masterProfile.booking.selectServicePlaceholder')}
                 allowDeselect={false}
               />
 
               <Stack gap={4} mt="md">
                 <Group gap="xs">
                   <Calendar size={20} />
-                  <Text fw={600} size="lg">Select Date</Text>
+                  <Text fw={600} size="lg">{t('masterProfile.booking.selectDate')}</Text>
                 </Group>
                 <Text size="sm" c="dimmed">
-                  Choose your preferred appointment date
+                  {t('masterProfile.booking.selectDateHint')}
                 </Text>
               </Stack>
               <div style={{
@@ -213,10 +217,10 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
               <Stack gap={4}>
                 <Group gap="xs">
                   <Clock size={20} />
-                  <Text fw={600} size="lg">Available Time Slots</Text>
+                  <Text fw={600} size="lg">{t('masterProfile.booking.availableSlots')}</Text>
                 </Group>
                 <Text size="sm" c="dimmed">
-                  {selectedDate ? formatDate(selectedDate) : 'Select a date first'}
+                  {selectedDate ? formatDate(selectedDate) : t('masterProfile.booking.selectDateFirst')}
                 </Text>
               </Stack>
               <MasterProfileTimeSlots
@@ -239,7 +243,7 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
                   },
                 }}
               >
-                Book Appointment
+                {t('masterProfile.booking.bookAppointment')}
               </Button>
             </Stack>
           </Card>

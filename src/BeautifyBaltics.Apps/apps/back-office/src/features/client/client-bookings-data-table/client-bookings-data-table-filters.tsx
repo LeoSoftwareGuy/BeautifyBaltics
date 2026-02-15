@@ -1,6 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import { Group, Select } from '@mantine/core';
 import { DatePickerInput, DatesRangeValue } from '@mantine/dates';
-import { useTranslation } from 'react-i18next';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
 

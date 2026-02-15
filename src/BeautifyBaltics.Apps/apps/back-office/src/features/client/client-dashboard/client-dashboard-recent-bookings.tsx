@@ -6,6 +6,7 @@ import {
 import { DatesRangeValue } from '@mantine/dates';
 
 import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
+import { useTranslateData } from '@/hooks/use-translate-data';
 import {
   BookingStatus,
   FindBookingsParams,
@@ -32,6 +33,7 @@ export function ClientDashboardRecentBookings() {
   const { data: user } = useGetUser();
   const clientId = user?.id ?? '';
   const { t } = useTranslation();
+  const { translateService } = useTranslateData();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
@@ -86,7 +88,7 @@ export function ClientDashboardRecentBookings() {
       title: t('client.recentBookings.table.columns.service'),
       render: (booking) => (
         <Stack gap={2}>
-          <Text size="sm" fw={500}>{booking.masterJobTitle}</Text>
+          <Text size="sm" fw={500}>{translateService(booking.masterJobTitle)}</Text>
           <Text size="xs" c="dimmed">{booking.masterName}</Text>
         </Stack>
       ),

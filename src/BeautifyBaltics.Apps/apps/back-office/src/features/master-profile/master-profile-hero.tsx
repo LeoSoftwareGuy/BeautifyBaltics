@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Badge,
   Card,
@@ -19,7 +20,8 @@ type ProfileHeroProps = {
 };
 
 function MasterProfileHero({ master }: ProfileHeroProps) {
-  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || 'Unnamed master';
+  const { t } = useTranslation();
+  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || t('masterProfile.hero.unnamed');
   const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
 
   return (
@@ -47,24 +49,24 @@ function MasterProfileHero({ master }: ProfileHeroProps) {
             <Group gap={6}>
               <Star size={18} fill="currentColor" />
               <Text fw={600} c="var(--mantine-color-text)">
-                {ratingValue ?? 'New'}
+                {ratingValue ?? t('masterProfile.hero.new')}
               </Text>
               <Text>
                 (
-                {ratingValue ? 'Rating' : 'Awaiting reviews'}
+                {ratingValue ? t('masterProfile.hero.rating') : t('masterProfile.hero.awaitingReviews')}
                 )
               </Text>
             </Group>
           </Group>
           <Text c="dimmed" lh={1.7}>
-            {master.description ?? ' This master has not provided a bio yet. Check back later for more details.' }
+            {master.description ?? t('masterProfile.hero.noBio')}
           </Text>
 
           <Card withBorder radius="lg">
             <Stack gap="sm">
               <Group gap="sm">
                 <MapPin size={18} />
-                <Text>{master.city ?? 'Location not provided'}</Text>
+                <Text>{master.city ?? t('masterProfile.hero.locationFallback')}</Text>
               </Group>
               <Group gap="sm" wrap="nowrap">
                 <Phone size={18} />
@@ -73,7 +75,7 @@ function MasterProfileHero({ master }: ProfileHeroProps) {
                   c="grape.6"
                   style={{ textDecoration: 'none', fontWeight: 600 }}
                 >
-                  {master.phoneNumber ?? 'Phone not provided'}
+                  {master.phoneNumber ?? t('masterProfile.hero.phoneFallback')}
                 </Text>
               </Group>
               <Group gap="sm" wrap="nowrap">
@@ -83,7 +85,7 @@ function MasterProfileHero({ master }: ProfileHeroProps) {
                   c="grape.6"
                   style={{ textDecoration: 'none', fontWeight: 600 }}
                 >
-                  {master.email ?? 'Email not provided'}
+                  {master.email ?? t('masterProfile.hero.emailFallback')}
                 </Text>
               </Group>
             </Stack>

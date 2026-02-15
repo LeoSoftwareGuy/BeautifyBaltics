@@ -1,4 +1,5 @@
 using BeautifyBaltics.Domain.Enumerations;
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.Booking;
 using BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 using BeautifyBaltics.Persistence.Repositories.Master;
@@ -43,12 +44,22 @@ public class GetAvailableTimeSlotsHandler(
             .Where(b => b.Status != BookingStatus.Cancelled)
             .ToList();
 
+        // Filter out break slots — only use Available windows for generating candidate time slots
+        var availableWindows = availabilityWindows
+            .Where(w => w.SlotType == AvailabilitySlotType.Available)
+            .ToList();
+
+        // Break slots block time just like bookings
+        var breakWindows = availabilityWindows
+            .Where(w => w.SlotType == AvailabilitySlotType.Break)
+            .ToList();
+
         // Calculate available slots
         var serviceDuration = TimeSpan.FromMinutes(request.ServiceDurationMinutes);
         var slotInterval = TimeSpan.FromMinutes(request.SlotIntervalMinutes);
         var availableSlots = new List<AvailableTimeSlotDTO>();
 
-        foreach (var window in availabilityWindows)
+        foreach (var window in availableWindows)
         {
             var currentSlotStart = window.StartAt;
 
@@ -56,12 +67,14 @@ public class GetAvailableTimeSlotsHandler(
             {
                 var currentSlotEnd = currentSlotStart + serviceDuration;
 
-                // Check if this slot conflicts with any existing booking
+                // Check if this slot conflicts with any existing booking or break
                 var hasConflict = activeBookings.Any(b =>
                 {
                     var existingEndAt = b.ScheduledAt + b.Duration;
                     return currentSlotStart < existingEndAt && currentSlotEnd > b.ScheduledAt;
-                });
+                }) || breakWindows.Any(brk =>
+                    currentSlotStart < brk.EndAt && currentSlotEnd > brk.StartAt
+                );
 
                 if (!hasConflict)
                 {

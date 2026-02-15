@@ -17,6 +17,7 @@ import { IconCalendarEvent, IconMapPin } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import { getFindBookingsQueryKey, useCancelBooking } from '@/state/endpoints/bookings';
 import { useGetUser } from '@/state/endpoints/users';
@@ -33,6 +34,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
   const { data: user } = useGetUser();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const { translateService } = useTranslateData();
 
   const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
     mutation: {
@@ -136,7 +138,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
             src={null}
             w={220}
             h={160}
-            alt={booking.masterJobTitle}
+            alt={translateService(booking.masterJobTitle)}
             fallbackSrc="https://placehold.co/180x160/e9ecef/868e96?text=Session"
             style={{ objectFit: 'cover', flexShrink: 0 }}
           />
@@ -153,7 +155,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
 
             <div>
               <Text fw={600} size="md">
-                {booking.masterJobTitle}
+                {translateService(booking.masterJobTitle)}
                 {' '}
                 {t('client.nextSession.withLabel', { name: booking.masterName })}
               </Text>

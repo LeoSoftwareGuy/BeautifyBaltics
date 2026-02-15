@@ -107,7 +107,8 @@ public partial class MasterAggregate : Aggregate
                 @event.MasterAvailabilityId,
                 @event.MasterId,
                 @event.StartAt,
-                @event.EndAt
+                @event.EndAt,
+                @event.SlotType
             )
         );
     }

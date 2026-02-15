@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button, Group, ScrollArea } from '@mantine/core';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import type { FindJobCategoriesResponse } from '@/state/endpoints/api.schemas';
 
 type CategoryFiltersProps = {
@@ -11,6 +12,7 @@ type CategoryFiltersProps = {
 
 function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProps) {
   const { t } = useTranslation();
+  const { translateCategory } = useTranslateData();
 
   return (
     <ScrollArea type="auto" offsetScrollbars>
@@ -30,7 +32,7 @@ function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProp
             radius="xl"
             onClick={() => onSelect(category.id ?? null)}
           >
-            {category.name ?? t('explore.categories.unnamed')}
+            {category.name ? translateCategory(category.name) : t('explore.categories.unnamed')}
           </Button>
         ))}
       </Group>

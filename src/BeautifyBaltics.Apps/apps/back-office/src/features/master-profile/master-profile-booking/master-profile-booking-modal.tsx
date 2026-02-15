@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Button,
@@ -19,6 +20,7 @@ import {
   Phone,
 } from 'lucide-react';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { getFindBookingsQueryKey, useCreateBooking } from '@/state/endpoints/bookings';
 import { useGetUser } from '@/state/endpoints/users';
@@ -42,6 +44,8 @@ function BookingModal({
   phone,
   onClose,
 }: BookingModalProps) {
+  const { t } = useTranslation();
+  const { translateService } = useTranslateData();
   const queryClient = useQueryClient();
 
   const { data: user } = useGetUser();
@@ -69,16 +73,16 @@ function BookingModal({
         });
 
         notifications.show({
-          title: 'Booking created',
-          message: 'Your booking was successfully created',
+          title: t('masterProfile.bookingModal.notifications.successTitle'),
+          message: t('masterProfile.bookingModal.notifications.successMessage'),
           color: 'green',
         });
       },
       onError: (err) => {
-        setError(err?.detail ?? 'Failed to create booking. Please try again.');
+        setError(err?.detail ?? t('masterProfile.bookingModal.notifications.failMessage'));
         notifications.show({
-          title: 'Booking failed',
-          message: err?.detail ?? 'Failed to create booking',
+          title: t('masterProfile.bookingModal.notifications.failTitle'),
+          message: err?.detail ?? t('masterProfile.bookingModal.notifications.failMessage'),
           color: 'red',
         });
       },
@@ -109,7 +113,7 @@ function BookingModal({
       <Modal
         opened={opened}
         onClose={handleClose}
-        title="Booking Confirmed"
+        title={t('masterProfile.bookingModal.confirmedTitle')}
         centered
       >
         <Stack gap="md" align="center" py="md">
@@ -126,13 +130,13 @@ function BookingModal({
             <Check size={32} color="var(--mantine-color-green-6)" />
           </div>
           <Text size="lg" fw={500} ta="center">
-            Your booking has been submitted!
+            {t('masterProfile.bookingModal.submitted')}
           </Text>
           <Text size="sm" c="dimmed" ta="center">
-            The master will review your request and confirm the appointment.
+            {t('masterProfile.bookingModal.submittedDetail')}
           </Text>
           <Button onClick={handleClose} fullWidth mt="md">
-            Done
+            {t('actions.done')}
           </Button>
         </Stack>
       </Modal>
@@ -143,7 +147,7 @@ function BookingModal({
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="Confirm your booking"
+      title={t('masterProfile.bookingModal.confirmTitle')}
       centered
     >
       <Stack gap="md">
@@ -157,11 +161,11 @@ function BookingModal({
           <Group gap="sm">
             <Briefcase size={18} />
             <div>
-              <Text fw={500}>{job.title}</Text>
+              <Text fw={500}>{translateService(job.title)}</Text>
               <Text size="sm" c="dimmed">
                 {job.durationMinutes}
                 {' '}
-                minutes
+                {t('masterProfile.bookingModal.minutes')}
               </Text>
             </div>
           </Group>
@@ -178,12 +182,12 @@ function BookingModal({
 
         <Group gap="sm">
           <MapPin size={18} />
-          <Text>{address ?? 'Address not provided'}</Text>
+          <Text>{address ?? t('masterProfile.bookingModal.addressFallback')}</Text>
         </Group>
 
         <Group gap="sm">
           <Phone size={18} />
-          <Text>{phone ?? 'Phone not provided'}</Text>
+          <Text>{phone ?? t('masterProfile.bookingModal.phoneFallback')}</Text>
         </Group>
 
         <Group gap="sm" mt="md">
@@ -193,7 +197,7 @@ function BookingModal({
             flex={1}
             disabled={isPending}
           >
-            Cancel
+            {t('actions.cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
@@ -201,7 +205,7 @@ function BookingModal({
             disabled={isPending || !user?.id || !scheduledAt || !job}
             leftSection={isPending ? <Loader size={16} /> : null}
           >
-            {isPending ? 'Booking...' : 'Confirm Booking'}
+            {isPending ? t('masterProfile.bookingModal.booking') : t('masterProfile.bookingModal.confirmBooking')}
           </Button>
         </Group>
       </Stack>

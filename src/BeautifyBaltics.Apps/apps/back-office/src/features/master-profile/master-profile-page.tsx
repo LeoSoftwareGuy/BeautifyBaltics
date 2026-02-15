@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
@@ -31,6 +32,7 @@ const isNonEmptyString = (value?: string | null): value is string => typeof valu
 
 function MasterProfilePage({ masterId }: MasterProfilePageProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     data,
     isLoading,
@@ -56,17 +58,17 @@ function MasterProfilePage({ masterId }: MasterProfilePageProps) {
         <Stack align="center" gap="md">
           <Alert
             icon={<AlertCircle size={16} />}
-            title="Unable to load master profile"
+            title={t('masterProfile.error.title')}
             color="red"
           >
-            Something went wrong while loading this master. Please try again.
+            {t('masterProfile.error.message')}
           </Alert>
           <Group>
             <Button variant="light" onClick={() => refetch()}>
-              Retry
+              {t('masterProfile.error.retry')}
             </Button>
             <Button variant="subtle" onClick={() => navigate({ to: '/explore' })}>
-              Back to explore
+              {t('masterProfile.backToExplore')}
             </Button>
           </Group>
         </Stack>

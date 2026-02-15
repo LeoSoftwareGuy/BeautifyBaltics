@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   ActionIcon,
   Box,
@@ -7,7 +8,6 @@ import {
   TextInput,
 } from '@mantine/core';
 import { Filter, Search } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 type ExploreHeaderProps = {
   searchValue: string;

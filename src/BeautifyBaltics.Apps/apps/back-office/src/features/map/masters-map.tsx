@@ -1,6 +1,6 @@
+import { useTranslation } from 'react-i18next';
 import { Card, Stack, Text } from '@mantine/core';
 import { APIProvider } from '@vis.gl/react-google-maps';
-import { useTranslation } from 'react-i18next';
 
 import type { MasterDTO } from '@/state/endpoints/api.schemas';
 

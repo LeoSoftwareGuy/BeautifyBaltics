@@ -1,7 +1,7 @@
+import { useTranslation } from 'react-i18next';
 import { Breadcrumbs } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
 import { useMatches } from '@tanstack/react-router';
-import { useTranslation } from 'react-i18next';
 
 import AnchorLink from './anchor-link';
 

@@ -1,4 +1,5 @@
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
 using Marten;
 using Marten.Events.Projections;
@@ -12,6 +13,8 @@ namespace BeautifyBaltics.Persistence.Projections
         public required string MasterName { get; init; }
 
         public DateTime EndAt { get; init; }
+
+        public AvailabilitySlotType SlotType { get; init; } = AvailabilitySlotType.Available;
     }
 
     public class MasterAvailabilitySlotProjection : MultiStreamProjection<MasterAvailabilitySlot, Guid>
@@ -37,6 +40,7 @@ namespace BeautifyBaltics.Persistence.Projections
                 MasterName = master.FirstName,
                 StartAt = @event.StartAt,
                 EndAt = @event.EndAt,
+                SlotType = @event.SlotType,
             };
         }
 

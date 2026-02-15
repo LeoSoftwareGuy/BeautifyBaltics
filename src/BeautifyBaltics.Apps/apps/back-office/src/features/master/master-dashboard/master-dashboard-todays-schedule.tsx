@@ -15,6 +15,7 @@ import { IconClock, IconMapPin } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 
 interface MasterDashboardTodaysScheduleProps {
@@ -57,6 +58,7 @@ function formatDuration(duration: string): string {
 }
 
 export function MasterDashboardTodaysSchedule({ bookings = [], isLoading }: MasterDashboardTodaysScheduleProps) {
+  const { translateService } = useTranslateData();
   if (isLoading) {
     return (
       <Card withBorder radius="md" p="lg" h="100%">
@@ -132,7 +134,7 @@ export function MasterDashboardTodaysSchedule({ bookings = [], isLoading }: Mast
                       {booking.status}
                     </Badge>
                   </Group>
-                  <Text size="sm" c="dimmed">{booking.masterJobTitle}</Text>
+                  <Text size="sm" c="dimmed">{translateService(booking.masterJobTitle)}</Text>
                   <Group gap="md">
                     {booking.locationCity && (
                       <Group gap={4}>

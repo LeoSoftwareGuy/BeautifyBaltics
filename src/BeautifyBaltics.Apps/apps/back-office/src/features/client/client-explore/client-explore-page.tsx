@@ -3,6 +3,7 @@ import { Box, Container } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useNavigate } from '@tanstack/react-router';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import type { FindMastersParams } from '@/state/endpoints/api.schemas';
 import { useFindJobCategories, useFindJobs } from '@/state/endpoints/jobs';
 import { useFindMasters } from '@/state/endpoints/masters';
@@ -14,6 +15,7 @@ const PAGE_SIZE = 12;
 
 export function ClientExplorePage() {
   const navigate = useNavigate();
+  const { translateCategory, translateService } = useTranslateData();
 
   const [searchValue, setSearchValue] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchValue, 300);
@@ -80,18 +82,18 @@ export function ClientExplorePage() {
       ?.filter((cat): cat is typeof cat & { id: string; name: string } => !!cat.id && !!cat.name)
       .map((cat) => ({
         value: cat.id,
-        label: cat.name,
+        label: translateCategory(cat.name),
       })) ?? []
-  ), [jobCategories?.items]);
+  ), [jobCategories?.items, translateCategory]);
 
   const jobOptions = useMemo(() => (
     jobs?.items
       ?.filter((job): job is typeof job & { id: string; name: string } => !!job.id && !!job.name)
       .map((job) => ({
         value: job.id,
-        label: job.name,
+        label: translateService(job.name),
       })) ?? []
-  ), [jobs?.items]);
+  ), [jobs?.items, translateService]);
 
   const handleSelectMaster = (masterId: string) => {
     navigate({ to: '/masters/$masterId', params: { masterId } });

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Avatar,
   Badge,
@@ -23,8 +24,8 @@ import {
   IconTool,
   IconX,
 } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
+import { useTranslateData } from '@/hooks/use-translate-data';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import { useGetMasterById } from '@/state/endpoints/masters';
 import datetime from '@/utils/datetime';
@@ -84,6 +85,7 @@ export function ClientBookingDetailsDrawer({
   );
 
   const { t } = useTranslation();
+  const { translateService } = useTranslateData();
 
   if (!booking) {
     return null;
@@ -173,7 +175,7 @@ export function ClientBookingDetailsDrawer({
             )}
             <div>
               <Text fw={700} size="lg">{booking.masterName}</Text>
-              <Text size="sm" c="dimmed">{booking.masterJobTitle}</Text>
+              <Text size="sm" c="dimmed">{translateService(booking.masterJobTitle)}</Text>
             </div>
           </Group>
         </Box>
@@ -186,7 +188,7 @@ export function ClientBookingDetailsDrawer({
                 <IconTool size={14} color="var(--mantine-color-dimmed)" />
                 <Text size="xs" c="dimmed" tt="uppercase" fw={600}>{t('client.bookingDetails.serviceSection.service')}</Text>
               </Group>
-              <Text fw={700}>{booking.masterJobTitle}</Text>
+              <Text fw={700}>{translateService(booking.masterJobTitle)}</Text>
             </Paper>
 
             <Paper p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)">

@@ -40,7 +40,7 @@ public class CreateMasterAvailabilityEventHandler
                     $"Time slot {availability.Start:HH:mm} - {availability.End:HH:mm} overlaps with an existing availability slot.");
             }
 
-            events.Add(new MasterAvailabilitySlotCreated(request.MasterId, availability.Start, availability.End));
+            events.Add(new MasterAvailabilitySlotCreated(request.MasterId, availability.Start, availability.End, availability.SlotType));
         }
 
         return Task.FromResult<(Events, OutgoingMessages)>((events, [new CreateMasterAvailabilityResponse(request.MasterId)]));

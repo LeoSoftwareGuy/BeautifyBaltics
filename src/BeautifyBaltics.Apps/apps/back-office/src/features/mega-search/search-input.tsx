@@ -1,8 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { Badge, Input } from '@mantine/core';
 import { useOs } from '@mantine/hooks';
 import { spotlight } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
-import { useTranslation } from 'react-i18next';
 
 export default function SearchInput() {
   const os = useOs();

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   SimpleGrid,
   Skeleton,
@@ -7,8 +8,8 @@ import {
   Title,
 } from '@mantine/core';
 
-import { useFindMasterJobImages } from '@/state/endpoints/masters';
 import { LightboxCarousel } from '@/components/lightbox-carousel';
+import { useFindMasterJobImages } from '@/state/endpoints/masters';
 
 import MasterPortfolioImage from './master-profile-image';
 
@@ -17,6 +18,7 @@ type PortfolioGalleryProps = {
 };
 
 function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
+  const { t } = useTranslation();
   const { data, isLoading } = useFindMasterJobImages(masterId);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -35,7 +37,7 @@ function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
   if (isLoading) {
     return (
       <Stack gap="lg" mt="xl">
-        <Title order={2}>Portfolio</Title>
+        <Title order={2}>{t('masterProfile.portfolio.title')}</Title>
         <SimpleGrid cols={{ base: 2, md: 3 }} spacing="md">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} height={200} radius="lg" />
@@ -48,8 +50,8 @@ function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
   if (items.length === 0) {
     return (
       <Stack gap="lg" mt="xl">
-        <Title order={2}>Portfolio</Title>
-        <Text c="dimmed">Portfolio images will appear here once jobs are uploaded.</Text>
+        <Title order={2}>{t('masterProfile.portfolio.title')}</Title>
+        <Text c="dimmed">{t('masterProfile.portfolio.empty')}</Text>
       </Stack>
     );
   }
@@ -57,7 +59,7 @@ function MasterPortfolioGallery({ masterId }: PortfolioGalleryProps) {
   return (
     <>
       <Stack gap="lg" mt="xl">
-        <Title order={2}>Portfolio</Title>
+        <Title order={2}>{t('masterProfile.portfolio.title')}</Title>
         <SimpleGrid cols={{ base: 2, md: 3 }} spacing="md">
           {items.map((item, index) => (
             <MasterPortfolioImage

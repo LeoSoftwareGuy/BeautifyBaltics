@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box, Grid, Skeleton, Stack, Title,
 } from '@mantine/core';
@@ -9,7 +10,6 @@ import {
 } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { useTranslation } from 'react-i18next';
 
 import { EarningsPeriod } from '@/state/endpoints/api.schemas';
 import { useCancelBooking, useConfirmBooking, useFindBookings } from '@/state/endpoints/bookings';
