@@ -16,7 +16,7 @@ export const Route = createFileRoute('/explore/')({
 
     return ({
       breadcrumbs: [
-        { title: 'Explore', path: '/explore' },
+        { titleKey: 'navigation.breadcrumbs.explore', path: '/explore' },
       ],
     });
   },

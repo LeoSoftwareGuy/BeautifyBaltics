@@ -8,6 +8,7 @@ import {
   Text,
 } from '@mantine/core';
 import { IconMapPin, IconStar } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import type { FindMastersResponse } from '@/state/endpoints/api.schemas';
 
@@ -17,9 +18,11 @@ interface ClientExploreMasterCardProps {
 }
 
 export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMasterCardProps) {
-  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || 'Unnamed Master';
+  const { t } = useTranslation();
+  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim()
+    || t('explore.masterCard.unnamed');
   const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
-  const location = master.city ?? 'Location not specified';
+  const location = master.city ?? t('explore.masterCard.locationFallback');
 
   const handleClick = () => {
     if (master.id) {
@@ -117,7 +120,7 @@ export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMaste
             },
           }}
         >
-          View Profile
+          {t('client.explore.card.viewProfile')}
         </Button>
       </Stack>
     </Card>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Box,
@@ -32,6 +33,7 @@ interface ExplorePageProps {
 
 function ExplorePage({ initialProcedureId }: ExplorePageProps = {}) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedMaster, setSelectedMaster] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -105,20 +107,20 @@ function ExplorePage({ initialProcedureId }: ExplorePageProps = {}) {
         />
         {isLoadingCategories ? (
           <Text c="dimmed" size="sm" mb="md">
-            Loading categories...
+            {t('explore.page.loadingCategories')}
           </Text>
         ) : null}
         {isCategoriesError ? (
           <Alert
             icon={<AlertCircle size={16} />}
-            title="Unable to load categories"
+            title={t('explore.page.categoriesErrorTitle')}
             color="red"
             mb="md"
           >
             <Stack gap={4}>
-              <Text>Something went wrong while fetching job categories.</Text>
+              <Text>{t('explore.page.categoriesErrorMessage')}</Text>
               <Button variant="light" color="red" onClick={() => refetchCategories()}>
-                Try again
+                {t('common.cta.tryAgain')}
               </Button>
             </Stack>
           </Alert>
@@ -142,13 +144,13 @@ function ExplorePage({ initialProcedureId }: ExplorePageProps = {}) {
               {isError ? (
                 <Alert
                   icon={<AlertCircle size={16} />}
-                  title="Unable to load masters"
+                  title={t('explore.page.mastersErrorTitle')}
                   color="red"
                 >
                   <Stack gap={4}>
-                    <Text>Something went wrong while fetching masters.</Text>
+                    <Text>{t('explore.page.mastersErrorMessage')}</Text>
                     <Button variant="light" color="red" onClick={() => refetch()}>
-                      Try again
+                      {t('common.cta.tryAgain')}
                     </Button>
                   </Stack>
                 </Alert>
@@ -156,8 +158,8 @@ function ExplorePage({ initialProcedureId }: ExplorePageProps = {}) {
 
               {!isLoading && !isError && !data?.items?.length ? (
                 <Stack align="center" gap={4} py="xl">
-                  <Text fw={500}>No masters found</Text>
-                  <Text c="dimmed">Adjust filters or try a different search.</Text>
+                  <Text fw={500}>{t('explore.page.emptyTitle')}</Text>
+                  <Text c="dimmed">{t('explore.page.emptySubtitle')}</Text>
                 </Stack>
               ) : null}
 

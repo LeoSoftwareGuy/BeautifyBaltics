@@ -9,6 +9,7 @@ import {
 } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 import { EarningsPeriod } from '@/state/endpoints/api.schemas';
 import { useCancelBooking, useConfirmBooking, useFindBookings } from '@/state/endpoints/bookings';
@@ -32,6 +33,7 @@ function MasterDashboardPage() {
   const queryClient = useQueryClient();
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
+  const { t } = useTranslation();
 
   const [earningsPeriod, setEarningsPeriod] = useState<EarningsPeriod>(EarningsPeriod.Monthly);
 
@@ -111,7 +113,7 @@ function MasterDashboardPage() {
   return (
     <Box bg="var(--mantine-color-body)" mih="100vh">
       <Box component="header" bg="var(--mantine-color-default-hover)" px="md" py="sm" mb="lg">
-        <Title order={2}>Dashboard</Title>
+        <Title order={2}>{t('master.dashboard.title')}</Title>
       </Box>
 
       <Stack gap="xl" px="md" pb="xl">
@@ -122,7 +124,7 @@ function MasterDashboardPage() {
               <Skeleton height={120} radius="md" />
             ) : (
               <MasterDashboardStatCard
-                title="Total Bookings"
+                title={t('master.dashboard.stats.totalBookings')}
                 value={statsData?.totalBookings?.toString() ?? '0'}
                 change={formatChange(statsData?.totalBookingsChange)}
                 changeType={statsData?.totalBookingsChange && statsData.totalBookingsChange >= 0 ? 'positive' : 'negative'}
@@ -136,7 +138,7 @@ function MasterDashboardPage() {
               <Skeleton height={120} radius="md" />
             ) : (
               <MasterDashboardStatCard
-                title="Monthly Earnings"
+                title={t('master.dashboard.stats.monthlyEarnings')}
                 value={formatCurrency(statsData?.monthlyEarningsAverage)}
                 change={formatChange(statsData?.monthlyEarningsChange)}
                 changeType={statsData?.monthlyEarningsChange && statsData.monthlyEarningsChange >= 0 ? 'positive' : 'negative'}
@@ -150,9 +152,9 @@ function MasterDashboardPage() {
               <Skeleton height={120} radius="md" />
             ) : (
               <MasterDashboardStatCard
-                title="Average Rating"
-                value={ratingCount > 0 ? `${averageRating.toFixed(1)}/5.0` : 'No ratings'}
-                change={ratingCount > 0 ? `${ratingCount} reviews` : ''}
+                title={t('master.dashboard.stats.averageRating')}
+                value={ratingCount > 0 ? `${averageRating.toFixed(1)}/5.0` : t('master.dashboard.stats.noRatings')}
+                change={ratingCount > 0 ? t('master.dashboard.stats.reviewsLabel', { count: ratingCount }) : ''}
                 changeType="positive"
                 icon={IconStar}
                 iconColor="yellow"

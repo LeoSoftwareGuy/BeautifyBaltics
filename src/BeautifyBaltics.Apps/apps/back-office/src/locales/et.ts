@@ -1,0 +1,349 @@
+import type { CommonLocale } from './en';
+
+const et: CommonLocale = {
+  brand: {
+    name: 'Beautify Baltics',
+  },
+  language: {
+    switcherLabel: 'Vaheta keelt',
+  },
+  general: {
+    notFound: 'Lehte ei leitud',
+    noData: 'Andmeid pole',
+    today: 'Täna',
+  },
+  actions: {
+    logout: 'Logi välja',
+    cancel: 'Tühista',
+    done: 'Valmis',
+  },
+  cta: {
+    tryAgain: 'Proovi uuesti',
+  },
+  navigation: {
+    userMenu: {
+      fallbackName: 'Beautify Baltics kasutaja',
+    },
+    client: {
+      home: 'Avaleht',
+      dashboard: 'Töölaud',
+      explore: 'Avasta',
+      bookings: 'Minu broneeringud',
+    },
+    master: {
+      dashboard: 'Töölaud',
+      bookings: 'Broneeringud',
+      timeSlots: 'Ajaaknad',
+      services: 'Teenused',
+      settings: 'Seaded',
+    },
+    breadcrumbs: {
+      brand: 'Beautify Baltics',
+      home: 'Avaleht',
+      login: 'Logi sisse',
+      register: 'Registreeru',
+      explore: 'Avasta',
+      clientExplore: 'Avasta meistreid',
+      clientBookings: 'Minu broneeringud',
+      dashboard: 'Töölaud',
+      masterDashboard: 'Meistri töölaud',
+      masterBookings: 'Broneeringud',
+      masterServices: 'Teenused',
+      masterTimeSlots: 'Ajaaknad',
+      masterSettings: 'Seaded',
+      masterProfile: 'Meistri profiil',
+    },
+  },
+  auth: {
+    shared: {
+      labels: {
+        firstName: 'Eesnimi',
+        lastName: 'Perekonnanimi',
+        email: 'E-posti aadress',
+        password: 'Parool',
+        phoneNumber: 'Telefoninumber',
+      },
+      placeholders: {
+        firstName: 'Mari',
+        lastName: 'Tamm',
+        email: 'sina@naide.ee',
+        password: '••••••••',
+        phoneNumber: '+3721234567',
+      },
+      validation: {
+        firstNameMin: 'Eesnimi peab olema vähemalt 3 märki',
+        lastNameMin: 'Perekonnanimi peab olema vähemalt 3 märki',
+        emailInvalid: 'Vigane e-posti aadress',
+        passwordMin: 'Parool peab olema vähemalt 6 märki',
+        phoneRequired: 'Telefoninumber on kohustuslik',
+      },
+    },
+    login: {
+      title: 'Tere tulemast tagasi',
+      subtitle: 'Logi Beautify Balticsi kontoga jätkamiseks.',
+      registeredTitle: 'Registreerimine õnnestus',
+      registeredMessage: 'Palun logi sisse oma uute andmetega.',
+      noAccount: 'Pole kontot?',
+      createAccountLink: 'Loo konto',
+    },
+    register: {
+      title: 'Loo konto',
+      subtitle: 'Registreeru, et kasutada Beautify Balticsit.',
+      accountTypeLabel: 'Konto tüüp',
+      accountTypeHint: 'Vali, kuidas soovid Beautify Balticsit kasutada',
+      roleClient: 'Klient',
+      roleMaster: 'Meister',
+      submitButton: 'Loo konto',
+      notifications: {
+        checkInboxTitle: 'Kontrolli oma postkasti',
+        checkInboxMessage: 'Palun kinnita e-post enne sisselogimist.',
+        successTitle: 'Konto loodud',
+        successMessage: 'Tere tulemast Beautify Balticsisse!',
+        failureTitle: 'Registreerimine ebaõnnestus',
+        failureMessage: 'Registreerimine nurjus. Palun proovi uuesti.',
+      },
+    },
+  },
+  map: {
+    unavailableTitle: 'Kaarti ei saa kuvada',
+    unavailableDescription: 'Google Maps API võti pole seadistatud',
+    coordinatesMissing: 'Asukoha koordinaadid puuduvad',
+  },
+  explore: {
+    header: {
+      searchPlaceholder: 'Otsi teenuse, meistri või asukoha järgi...',
+    },
+    filters: {
+      title: 'Filtrid',
+      priceRange: 'Hinnavahemik',
+    },
+    categories: {
+      all: 'Kõik teenused',
+      unnamed: 'Nimeta kategooria',
+    },
+    masterCard: {
+      unnamed: 'Nimeta meister',
+      locationFallback: 'Asukoht täpsustamata',
+      new: 'Uus',
+      ratingLabel: 'Hinne',
+      awaitingReviews: 'Ootab arvustusi',
+    },
+    page: {
+      loadingCategories: 'Laen kategooriaid...',
+      categoriesErrorTitle: 'Kategooriate laadimine ebaõnnestus',
+      categoriesErrorMessage: 'Kategooriate toomisel tekkis viga.',
+      mastersErrorTitle: 'Meistreid ei õnnestu laadida',
+      mastersErrorMessage: 'Meistrite toomisel tekkis viga.',
+      emptyTitle: 'Meistreid ei leitud',
+      emptySubtitle: 'Muuda filtreid või proovi uut otsingut.',
+    },
+  },
+  client: {
+    dashboard: {
+      title: 'Kliendi töölaud',
+      subtitle: 'Halda oma kohtumisi ja jälgi teenuste ajalugu.',
+      stats: {
+        upcoming: 'Tulemas',
+        completed: 'Lõpetatud',
+        totalSpent: 'Kulutatud kokku',
+      },
+    },
+    recentBookings: {
+      title: 'Hiljutised broneeringud',
+      subtitle: 'Sinu broneeringute ajalugu',
+      table: {
+        columns: {
+          service: 'Teenus ja meister',
+          date: 'Kuupäev',
+          duration: 'Kestus',
+          price: 'Hind',
+          status: 'Staatus',
+        },
+      },
+    },
+    bookings: {
+      headerTitle: 'Minu broneeringud',
+      headerSubtitle: 'Halda oma aegu',
+      bookCta: 'Broneeri uus aeg',
+      empty: 'Broneeringuid ei leitud',
+      notifications: {
+        cancelSuccessTitle: 'Broneering tühistatud',
+        cancelSuccessMessage: 'Su broneering tühistati edukalt.',
+        cancelErrorTitle: 'Broneeringut ei saa tühistada',
+        cancelErrorMessage: 'Broneeringu tühistamisel tekkis viga.',
+      },
+      table: {
+        columns: {
+          master: 'Meister',
+          service: 'Teenus',
+          location: 'Asukoht',
+          scheduledAt: 'Kuupäev ja kellaaeg',
+          duration: 'Kestus',
+          price: 'Hind',
+          status: 'Staatus',
+          actions: 'Toimingud',
+        },
+      },
+      status: {
+        requested: 'Päring',
+        confirmed: 'Kinnitatud',
+        completed: 'Tehtud',
+        cancelled: 'Tühistatud',
+        rated: 'Hinnatud',
+      },
+      actions: {
+        cancel: 'Tühista broneering',
+        rate: 'Hinda broneeringut',
+      },
+      locationFallback: 'Asukohta pole lisatud',
+      filters: {
+        allStatuses: 'Kõik staatused',
+        dateLabel: 'Filtreeri kuupäeva järgi',
+        datePlaceholder: 'Vali kuupäevavahemik',
+        statusLabel: 'Staatus',
+        statusPlaceholder: 'Filtreeri staatuse järgi',
+      },
+    },
+    ratingModal: {
+      title: 'Hinda kogemust',
+      successTitle: 'Hinnang saadetud',
+      successMessage: 'Aitäh tagasiside eest!',
+      successSubtext: 'Sinu hinnang aitab teistel klientidel häid meistreid leida.',
+      errorTitle: 'Hinnangu saatmine ebaõnnestus',
+      errorFallback: 'Hinnangu saatmine ebaõnnestus',
+      errorMessage: 'Hinnangu saatmine nurjus. Palun proovi uuesti.',
+      withLabel: 'meistriga {{name}}',
+      prompt: 'Kuidas hindad seda teenust?',
+      ratingLabels: {
+        0: 'Vali hinnang',
+        1: 'Nõrk',
+        2: 'Rahuldav',
+        3: 'Hea',
+        4: 'Väga hea',
+        5: 'Suurepärane',
+      },
+      commentLabel: 'Kommentaar (valikuline)',
+      commentPlaceholder: 'Jaga oma kogemust selle meistriga...',
+      submitting: 'Saadan...',
+      submit: 'Saada hinnang',
+    },
+    nextSession: {
+      title: 'Sinu järgmine aeg',
+      emptyTitle: 'Tulevasi aegu pole',
+      emptySubtitle: 'Broneeri aeg mõne meie meistri juurde, et alustada.',
+      badges: {
+        today: 'TÄNA TULEMAS',
+      },
+      startsInDays_one: 'Algab {{count}} päeva pärast',
+      startsInDays_other: 'Algab {{count}} päeva pärast',
+      startsInHours: 'Algab {{hours}}h {{minutes}}m pärast',
+      startsInMinutes: 'Algab {{minutes}} minuti pärast',
+      startingSoon: 'Algab peagi',
+      withLabel: 'meistriga {{name}}',
+      viewDetails: 'Vaata detaile',
+    },
+    bookingDetails: {
+      title: 'Broneeringu detailid',
+      serviceSection: {
+        service: 'Teenus',
+        price: 'Hind',
+        duration: 'Kestus',
+        date: 'Kuupäev',
+      },
+      locationSection: {
+        title: 'Teenuse asukoht',
+      },
+      infoSection: {
+        title: 'Broneeringu info',
+        scheduledTime: 'Planeeritud aeg',
+        status: 'Staatus',
+      },
+      contactSection: {
+        title: 'Kontaktandmed',
+        empty: 'Kontaktandmed puuduvad',
+      },
+    },
+    explore: {
+      header: {
+        searchPlaceholder: 'Otsi teenuseid või märksõnu...',
+        locationPlaceholder: 'Asukoht...',
+        searchButton: 'Otsi',
+        categoryLabel: 'Kategooria',
+        categoryPlaceholder: 'Kõik kategooriad',
+        serviceLabel: 'Teenus',
+        servicePlaceholder: 'Kõik teenused',
+        priceRange: 'Hinnavahemik',
+      },
+      results: {
+        title: 'Parimad meistrid',
+        subtitle: 'Avasta kõrgelt hinnatud spetsialistid',
+        subtitleWithLocation: 'Avasta spetsialiste asukohas {{location}}',
+        count: 'Kuvatud {{count}} tulemust',
+        errorTitle: 'Meistreid ei õnnestu laadida',
+        errorMessage: 'Meistrite toomisel tekkis viga.',
+        emptyTitle: 'Meistreid ei leitud',
+        emptySubtitle: 'Muuda filtreid või proovi uut otsingut.',
+      },
+      card: {
+        viewProfile: 'Vaata profiili',
+      },
+    },
+  },
+  home: {
+    hero: {
+      badge: 'Avasta lähedal tegutsevad ilumeistrid',
+      titleLineOne: 'Broneeri endale',
+      titleHighlight: 'täiuslik iluelamus',
+      subtitle: 'Ühendu andekate juuksurite, tätoveerijate ja ilumeistritega oma linnas. Sirvi portfooliosid, vaata saadavust ja broneeri mugavalt.',
+      cta: 'Avasta meistreid',
+      highlights: {
+        verified: 'Kinnitatud professionaalid',
+        instant: 'Kohene broneerimine',
+        secure: 'Turvalised maksed',
+      },
+    },
+    features: {
+      title: 'Miks valida Beautify Baltics',
+      subtitle: 'Kõik vajalik, et leida ja broneerida parimad iluteenused oma piirkonnas.',
+      items: {
+        booking: {
+          title: 'Lihtne broneerimine',
+          description: 'Broneeri ajad hetkega reaalajas saadavusega.',
+        },
+        portfolio: {
+          title: 'Portfooliod ühes kohas',
+          description: 'Sirvi meistrite töid ja leia oma stiil.',
+        },
+        reviews: {
+          title: 'Kinnitatud arvustused',
+          description: 'Loe pärisklientide hinnanguid enne otsustamist.',
+        },
+        security: {
+          title: 'Turvaline platvorm',
+          description: 'Broneeri vaid kontrollitud professionaalide juurde.',
+        },
+      },
+    },
+  },
+  megaSearch: {
+    placeholder: 'Otsi...',
+    shortcuts: {
+      navigate: 'liikumiseks',
+      select: 'valimiseks',
+    },
+  },
+  master: {
+    dashboard: {
+      title: 'Töölaud',
+      stats: {
+        totalBookings: 'Broneeringuid kokku',
+        monthlyEarnings: 'Kuu sissetulek',
+        averageRating: 'Keskmine hinne',
+        noRatings: 'Hinnanguid pole',
+        reviewsLabel: '{{count}} arvustust',
+      },
+    },
+  },
+} as const;
+
+export default et;

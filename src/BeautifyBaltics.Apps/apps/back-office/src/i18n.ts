@@ -3,21 +3,19 @@ import { initReactI18next } from 'react-i18next';
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+import en from './locales/en';
+import et from './locales/et';
+import ru from './locales/ru';
+
 const resources = {
   en: {
-    common: {
-      home: 'Home',
-    },
+    common: en,
   },
   et: {
-    common: {
-      home: 'Avaleht',
-    },
+    common: et,
   },
   ru: {
-    common: {
-      home: 'Главная',
-    },
+    common: ru,
   },
 } as const;
 

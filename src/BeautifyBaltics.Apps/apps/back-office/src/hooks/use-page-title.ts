@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useDocumentTitle } from '@mantine/hooks';
 import { useMatches } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 export default function usePageTitle() {
   const [title, setTitle] = useState('Beautify Baltics');
   const matches = useMatches();
+  const { t } = useTranslation();
 
   useDocumentTitle(title);
 
@@ -19,10 +21,15 @@ export default function usePageTitle() {
 
     Promise.all(breadcrumbPromises).then((breadcrumb) => {
       if (!breadcrumb) return;
-      const t = breadcrumb.map((b) => b.title).join(' · ');
-      setTitle(t);
+      const translatedTitle = breadcrumb
+        .map((b) => (b?.titleKey ? t(b.titleKey) : ''))
+        .filter(Boolean)
+        .join(' · ');
+      if (translatedTitle) {
+        setTitle(translatedTitle);
+      }
     });
-  }, [matches]);
+  }, [matches, t]);
 
   return null;
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   ActionIcon, Badge, Group, Stack, Text, Tooltip,
 } from '@mantine/core';
@@ -50,35 +51,11 @@ export function renderPrice(booking: FindBookingsResponse) {
 }
 
 export function renderLocation(booking: FindBookingsResponse) {
-  const lineOne = [booking.locationAddressLine1, booking.locationAddressLine2]
-    .filter(isNonEmpty)
-    .join(', ');
-  const lineTwo = [booking.locationPostalCode, booking.locationCity, booking.locationCountry]
-    .filter(isNonEmpty)
-    .join(', ');
-
-  if (!lineOne && !lineTwo) {
-    return <Text size="sm" c="dimmed">Location not provided</Text>;
-  }
-
-  return (
-    <Stack gap={2}>
-      <Text size="sm">{lineOne || lineTwo}</Text>
-      {lineOne && lineTwo ? (
-        <Text size="xs" c="dimmed">
-          {lineTwo}
-        </Text>
-      ) : null}
-    </Stack>
-  );
+  return <BookingLocationCell booking={booking} />;
 }
 
 export function renderStatus(booking: FindBookingsResponse) {
-  return (
-    <Badge color={getStatusColor(booking.status)} variant="light">
-      {booking.status}
-    </Badge>
-  );
+  return <BookingStatusBadge booking={booking} />;
 }
 
 function canCancelBooking(booking: FindBookingsResponse): boolean {
@@ -109,17 +86,18 @@ export function BookingActionsRenderer({
   isCancelling,
   isRated,
 }: BookingActionsRendererProps) {
+  const { t } = useTranslation();
   const showCancel = canCancelBooking(booking);
   const showRate = canRateBooking(booking) && !isRated;
 
   if (!showCancel && !showRate) {
-    return <Text size="sm" c="dimmed">{isRated ? 'Rated' : '-'}</Text>;
+    return <Text size="sm" c="dimmed">{isRated ? t('client.bookings.status.rated') : '-'}</Text>;
   }
 
   return (
     <Group gap="xs">
       {showCancel && (
-        <Tooltip label="Cancel booking">
+        <Tooltip label={t('client.bookings.actions.cancel')}>
           <ActionIcon
             variant="light"
             color="red"
@@ -132,7 +110,7 @@ export function BookingActionsRenderer({
         </Tooltip>
       )}
       {showRate && (
-        <Tooltip label="Rate this booking">
+        <Tooltip label={t('client.bookings.actions.rate')}>
           <ActionIcon
             variant="light"
             color="yellow"
@@ -144,5 +122,46 @@ export function BookingActionsRenderer({
         </Tooltip>
       )}
     </Group>
+  );
+}
+
+function BookingLocationCell({ booking }: { booking: FindBookingsResponse }) {
+  const { t } = useTranslation();
+  const lineOne = [booking.locationAddressLine1, booking.locationAddressLine2]
+    .filter(isNonEmpty)
+    .join(', ');
+  const lineTwo = [booking.locationPostalCode, booking.locationCity, booking.locationCountry]
+    .filter(isNonEmpty)
+    .join(', ');
+
+  if (!lineOne && !lineTwo) {
+    return <Text size="sm" c="dimmed">{t('client.bookings.locationFallback')}</Text>;
+  }
+
+  return (
+    <Stack gap={2}>
+      <Text size="sm">{lineOne || lineTwo}</Text>
+      {lineOne && lineTwo ? (
+        <Text size="xs" c="dimmed">
+          {lineTwo}
+        </Text>
+      ) : null}
+    </Stack>
+  );
+}
+
+const BOOKING_STATUS_KEYS: Record<BookingStatus, string> = {
+  [BookingStatus.Confirmed]: 'client.bookings.status.confirmed',
+  [BookingStatus.Requested]: 'client.bookings.status.requested',
+  [BookingStatus.Completed]: 'client.bookings.status.completed',
+  [BookingStatus.Cancelled]: 'client.bookings.status.cancelled',
+};
+
+function BookingStatusBadge({ booking }: { booking: FindBookingsResponse }) {
+  const { t } = useTranslation();
+  return (
+    <Badge color={getStatusColor(booking.status)} variant="light">
+      {t(BOOKING_STATUS_KEYS[booking.status] ?? 'client.bookings.status.requested')}
+    </Badge>
   );
 }

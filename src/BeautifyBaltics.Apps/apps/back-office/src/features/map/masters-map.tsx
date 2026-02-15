@@ -1,5 +1,6 @@
 import { Card, Stack, Text } from '@mantine/core';
 import { APIProvider } from '@vis.gl/react-google-maps';
+import { useTranslation } from 'react-i18next';
 
 import type { MasterDTO } from '@/state/endpoints/api.schemas';
 
@@ -22,13 +23,14 @@ function MastersMap({
   height = 600,
   userLocation,
 }: MastersMapProps) {
+  const { t } = useTranslation();
   if (!GOOGLE_MAPS_API_KEY) {
     return (
       <Card radius="lg" withBorder h={height} pos="relative">
         <Stack justify="center" align="center" h="100%">
-          <Text c="dimmed">Map unavailable</Text>
+          <Text c="dimmed">{t('map.unavailableTitle')}</Text>
           <Text size="sm" c="dimmed">
-            Google Maps API key is not configured
+            {t('map.unavailableDescription')}
           </Text>
         </Stack>
       </Card>

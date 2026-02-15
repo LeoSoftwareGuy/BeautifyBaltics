@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Badge,
   Box,
@@ -31,13 +32,14 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
   const [drawerOpened, setDrawerOpened] = useState(false);
   const { data: user } = useGetUser();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
     mutation: {
       onSuccess: () => {
         notifications.show({
-          title: 'Booking cancelled',
-          message: 'Your booking has been cancelled successfully.',
+          title: t('client.bookings.notifications.cancelSuccessTitle'),
+          message: t('client.bookings.notifications.cancelSuccessMessage'),
           color: 'green',
         });
         queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
@@ -45,8 +47,8 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
       },
       onError: (error: any) => {
         notifications.show({
-          title: 'Failed to cancel booking',
-          message: error.message || 'An error occurred while cancelling the booking.',
+          title: t('client.bookings.notifications.cancelErrorTitle'),
+          message: error.message || t('client.bookings.notifications.cancelErrorMessage'),
           color: 'red',
         });
       },
@@ -65,7 +67,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
       <Card withBorder radius="md" p="lg">
         <Group gap="xs" mb="md">
           <IconCalendarEvent size={20} />
-          <Title order={4}>Your Next Session</Title>
+          <Title order={4}>{t('client.nextSession.title')}</Title>
         </Group>
         <Skeleton height={200} radius="md" />
       </Card>
@@ -77,16 +79,16 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
       <Card withBorder radius="md" p="lg">
         <Group gap="xs" mb="md">
           <IconCalendarEvent size={20} />
-          <Title order={4}>Your Next Session</Title>
+          <Title order={4}>{t('client.nextSession.title')}</Title>
         </Group>
         <Box
           bg="var(--mantine-color-gray-1)"
           p="xl"
           style={{ borderRadius: 'var(--mantine-radius-md)' }}
         >
-          <Text c="dimmed" ta="center">No upcoming sessions</Text>
+          <Text c="dimmed" ta="center">{t('client.nextSession.emptyTitle')}</Text>
           <Text size="sm" c="dimmed" ta="center" mt="xs">
-            Book a session with one of our masters to get started
+            {t('client.nextSession.emptySubtitle')}
           </Text>
         </Box>
       </Card>
@@ -102,18 +104,18 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
   let timeUntil = '';
   if (diffHours > 24) {
     const days = Math.floor(diffHours / 24);
-    timeUntil = `Starts in ${days} day${days > 1 ? 's' : ''}`;
+    timeUntil = t('client.nextSession.startsInDays', { count: days });
   } else if (diffHours > 0) {
-    timeUntil = `Starts in ${diffHours}h ${remainingMinutes}m`;
+    timeUntil = t('client.nextSession.startsInHours', { hours: diffHours, minutes: remainingMinutes });
   } else if (diffMinutes > 0) {
-    timeUntil = `Starts in ${diffMinutes}m`;
+    timeUntil = t('client.nextSession.startsInMinutes', { minutes: diffMinutes });
   } else {
-    timeUntil = 'Starting soon';
+    timeUntil = t('client.nextSession.startingSoon');
   }
 
   const location = [booking.locationCity, booking.locationCountry]
     .filter(Boolean)
-    .join(', ') || 'Location not specified';
+    .join(', ') || t('client.bookings.locationFallback');
 
   const fullLocation = [
     booking.locationAddressLine1,
@@ -125,7 +127,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
     <Card withBorder radius="md" p="lg">
       <Group gap="xs" mb="md">
         <IconCalendarEvent size={20} />
-        <Title order={4}>Your Next Session</Title>
+        <Title order={4}>{t('client.nextSession.title')}</Title>
       </Group>
 
       <Card radius="md" p={0} style={{ overflow: 'hidden' }}>
@@ -142,7 +144,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
           <Stack gap="sm" p="md" style={{ flex: 1 }}>
             <Group gap="xs">
               <Badge color="blue" variant="filled" size="sm">
-                UPCOMING TODAY
+                {t('client.nextSession.badges.today')}
               </Badge>
               <Badge color="dark" variant="filled" size="sm">
                 {timeUntil}
@@ -153,9 +155,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
               <Text fw={600} size="md">
                 {booking.masterJobTitle}
                 {' '}
-                with
-                {' '}
-                {booking.masterName}
+                {t('client.nextSession.withLabel', { name: booking.masterName })}
               </Text>
             </div>
 
@@ -171,7 +171,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
                 size="sm"
                 onClick={() => setDrawerOpened(true)}
               >
-                View Details
+                {t('client.nextSession.viewDetails')}
               </Button>
             </Group>
           </Stack>

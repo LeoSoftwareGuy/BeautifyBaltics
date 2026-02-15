@@ -1,15 +1,8 @@
 import { Group, Select } from '@mantine/core';
 import { DatePickerInput, DatesRangeValue } from '@mantine/dates';
+import { useTranslation } from 'react-i18next';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
-
-const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
-  { value: BookingStatus.Requested, label: 'Requested' },
-  { value: BookingStatus.Confirmed, label: 'Confirmed' },
-  { value: BookingStatus.Completed, label: 'Completed' },
-  { value: BookingStatus.Cancelled, label: 'Cancelled' },
-];
 
 interface ClientBookingsFiltersProps {
   dateRange: DatesRangeValue;
@@ -24,21 +17,30 @@ export function ClientBookingsDataTableFilters({
   status,
   onStatusChange,
 }: ClientBookingsFiltersProps) {
+  const { t } = useTranslation();
+  const statusOptions = [
+    { value: '', label: t('client.bookings.filters.allStatuses') },
+    { value: BookingStatus.Requested, label: t('client.bookings.status.requested') },
+    { value: BookingStatus.Confirmed, label: t('client.bookings.status.confirmed') },
+    { value: BookingStatus.Completed, label: t('client.bookings.status.completed') },
+    { value: BookingStatus.Cancelled, label: t('client.bookings.status.cancelled') },
+  ];
+
   return (
     <Group gap="md">
       <DatePickerInput
         type="range"
-        label="Filter by date"
-        placeholder="Select date range"
+        label={t('client.bookings.filters.dateLabel')}
+        placeholder={t('client.bookings.filters.datePlaceholder')}
         value={dateRange}
         onChange={onDateRangeChange}
         clearable
         style={{ flex: 1, maxWidth: 300 }}
       />
       <Select
-        label="Status"
-        placeholder="Filter by status"
-        data={STATUS_OPTIONS}
+        label={t('client.bookings.filters.statusLabel')}
+        placeholder={t('client.bookings.filters.statusPlaceholder')}
+        data={statusOptions}
         value={status}
         onChange={onStatusChange}
         clearable

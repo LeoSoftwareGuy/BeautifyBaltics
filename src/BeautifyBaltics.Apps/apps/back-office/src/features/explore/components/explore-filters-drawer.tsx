@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Drawer,
   Group,
@@ -20,16 +21,18 @@ function FiltersDrawer({
   onClose,
   onPriceChange,
 }: FiltersDrawerProps) {
+  const { t } = useTranslation();
+
   return (
     <Drawer
       opened={opened}
       onClose={onClose}
-      title="Filters"
+      title={t('explore.filters.title')}
       padding="xl"
     >
       <Stack>
         <Text fw={600} size="sm" c="dimmed" mb="xs">
-          Price range
+          {t('explore.filters.priceRange')}
         </Text>
         <RangeSlider
           value={priceRange}

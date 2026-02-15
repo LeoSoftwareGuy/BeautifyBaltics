@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box, Container, Grid, Stack, Text, Title,
 } from '@mantine/core';
@@ -20,6 +21,7 @@ import { ClientDashboardRecentBookings } from './client-dashboard-recent-booking
 export function ClientDashboardOverviewPage() {
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const clientId = user?.id ?? '';
+  const { t } = useTranslation();
 
   const { data: allBookingsData, isLoading: isBookingsLoading } = useFindBookings(
     {
@@ -65,19 +67,19 @@ export function ClientDashboardOverviewPage() {
 
   const stats = [
     {
-      label: 'Upcoming',
+      label: t('client.dashboard.stats.upcoming'),
       value: String(upcomingCount),
       icon: IconCalendarEvent,
       color: 'blue',
     },
     {
-      label: 'Completed',
+      label: t('client.dashboard.stats.completed'),
       value: String(completedCount),
       icon: IconCircleCheck,
       color: 'green',
     },
     {
-      label: 'Total Spent',
+      label: t('client.dashboard.stats.totalSpent'),
       value: `$${totalSpent.toFixed(2)}`,
       icon: IconCurrencyDollar,
       color: 'grape',
@@ -90,8 +92,8 @@ export function ClientDashboardOverviewPage() {
     <Box bg="var(--mantine-color-body)" mih="100vh">
       <Box component="header" bg="var(--mantine-color-default-hover)" px="md" py="sm" mb="lg">
         <Container size="lg">
-          <Title order={2}>Client Dashboard Overview</Title>
-          <Text c="dimmed" size="sm">Manage your sessions and track your service activity.</Text>
+          <Title order={2}>{t('client.dashboard.title')}</Title>
+          <Text c="dimmed" size="sm">{t('client.dashboard.subtitle')}</Text>
         </Container>
       </Box>
 

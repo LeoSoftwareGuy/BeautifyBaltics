@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Box, Text } from '@mantine/core';
 import {
   AdvancedMarker,
@@ -45,6 +46,7 @@ export function ClientBookingLocationMap({
   longitude,
   height = 140,
 }: ClientBookingLocationMapProps) {
+  const { t } = useTranslation();
   if (!GOOGLE_MAPS_API_KEY) {
     return (
       <Box
@@ -57,7 +59,7 @@ export function ClientBookingLocationMap({
           justifyContent: 'center',
         }}
       >
-        <Text size="sm" c="dimmed">Map unavailable</Text>
+        <Text size="sm" c="dimmed">{t('map.unavailableTitle')}</Text>
       </Box>
     );
   }
@@ -74,7 +76,7 @@ export function ClientBookingLocationMap({
           justifyContent: 'center',
         }}
       >
-        <Text size="sm" c="dimmed">Location coordinates not available</Text>
+        <Text size="sm" c="dimmed">{t('map.coordinatesMissing')}</Text>
       </Box>
     );
   }

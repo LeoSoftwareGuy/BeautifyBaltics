@@ -9,8 +9,8 @@ export const Route = createFileRoute('/master/services/')({
 
     return ({
       breadcrumbs: [
-        { title: 'Dashboard', path: '/master' },
-        { title: 'Services', path: '/master/services' },
+        { titleKey: 'navigation.breadcrumbs.masterDashboard', path: '/master' },
+        { titleKey: 'navigation.breadcrumbs.masterServices', path: '/master/services' },
       ],
     });
   },

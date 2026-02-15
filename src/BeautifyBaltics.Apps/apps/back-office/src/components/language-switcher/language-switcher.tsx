@@ -12,7 +12,7 @@ export interface LanguageSwitcherProps {
 }
 
 export default function LanguageSwitcher({ compact }: LanguageSwitcherProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const current = i18n.resolvedLanguage ?? i18n.language;
 
   const handleChange = (value: string) => {
@@ -30,7 +30,7 @@ export default function LanguageSwitcher({ compact }: LanguageSwitcherProps) {
         size="sm"
         value={current}
         onChange={(value) => { if (value) { handleChange(value); } }}
-        aria-label="Switch language"
+        aria-label={t('language.switcherLabel')}
         w={compact ? '100%' : 120}
       />
     </Group>

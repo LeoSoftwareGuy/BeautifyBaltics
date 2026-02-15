@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Card, Stack, Text, Title,
 } from '@mantine/core';
@@ -30,6 +31,7 @@ type BookingsQuery = FindBookingsParams;
 export function ClientDashboardRecentBookings() {
   const { data: user } = useGetUser();
   const clientId = user?.id ?? '';
+  const { t } = useTranslation();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
@@ -81,7 +83,7 @@ export function ClientDashboardRecentBookings() {
   const columns: PagedDataTableColumn<FindBookingsResponse>[] = [
     {
       accessor: 'masterJobTitle',
-      title: 'Service & Master',
+      title: t('client.recentBookings.table.columns.service'),
       render: (booking) => (
         <Stack gap={2}>
           <Text size="sm" fw={500}>{booking.masterJobTitle}</Text>
@@ -91,24 +93,24 @@ export function ClientDashboardRecentBookings() {
     },
     {
       accessor: 'scheduledAt',
-      title: 'Date',
+      title: t('client.recentBookings.table.columns.date'),
       sortKey: 'scheduledAt',
       render: renderScheduledAt,
     },
     {
       accessor: 'duration',
-      title: 'Duration',
+      title: t('client.recentBookings.table.columns.duration'),
       render: renderDuration,
     },
     {
       accessor: 'price',
-      title: 'Price',
+      title: t('client.recentBookings.table.columns.price'),
       sortKey: 'price',
       render: renderPrice,
     },
     {
       accessor: 'status',
-      title: 'Status',
+      title: t('client.recentBookings.table.columns.status'),
       sortKey: 'status',
       render: renderStatus,
     },
@@ -118,8 +120,8 @@ export function ClientDashboardRecentBookings() {
     <Card withBorder radius="md" p="lg">
       <Stack gap="md">
         <div>
-          <Title order={4}>Recent Bookings</Title>
-          <Text c="dimmed" size="sm">Your booking history</Text>
+          <Title order={4}>{t('client.recentBookings.title')}</Title>
+          <Text c="dimmed" size="sm">{t('client.recentBookings.subtitle')}</Text>
         </div>
 
         <ClientBookingsDataTableFilters
@@ -138,7 +140,7 @@ export function ClientDashboardRecentBookings() {
           onRecordsPerPageChange={onRecordsPerPageChange}
           sortStatus={sortStatus}
           onSortStatusChange={(newStatus) => handleSortStatusChange(newStatus, columns)}
-          noRecordsText="No bookings found"
+          noRecordsText={t('client.bookings.empty')}
         />
       </Stack>
     </Card>

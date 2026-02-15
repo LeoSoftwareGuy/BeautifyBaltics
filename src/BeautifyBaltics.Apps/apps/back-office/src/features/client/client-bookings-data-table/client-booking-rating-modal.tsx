@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Button,
@@ -30,6 +31,7 @@ export function ClientBookingRatingModal({
   onClose,
 }: ClientBookingRatingModalProps) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -52,16 +54,16 @@ export function ClientBookingRatingModal({
         ]);
 
         notifications.show({
-          title: 'Rating submitted',
-          message: 'Thank you for your feedback!',
+          title: t('client.ratingModal.successTitle'),
+          message: t('client.ratingModal.successMessage'),
           color: 'green',
         });
       },
       onError: (err: any) => {
-        setError(err?.detail ?? 'Failed to submit rating. Please try again.');
+        setError(err?.detail ?? t('client.ratingModal.errorMessage'));
         notifications.show({
-          title: 'Rating failed',
-          message: err?.detail ?? 'Failed to submit rating',
+          title: t('client.ratingModal.errorTitle'),
+          message: err?.detail ?? t('client.ratingModal.errorFallback'),
           color: 'red',
         });
       },
@@ -93,7 +95,7 @@ export function ClientBookingRatingModal({
       <Modal
         opened={opened}
         onClose={handleClose}
-        title="Rating Submitted"
+        title={t('client.ratingModal.successTitle')}
         centered
       >
         <Stack gap="md" align="center" py="md">
@@ -110,13 +112,13 @@ export function ClientBookingRatingModal({
             <Check size={32} color="var(--mantine-color-green-6)" />
           </div>
           <Text size="lg" fw={500} ta="center">
-            Thank you for your feedback!
+            {t('client.ratingModal.successMessage')}
           </Text>
           <Text size="sm" c="dimmed" ta="center">
-            Your rating helps other clients find great masters.
+            {t('client.ratingModal.successSubtext')}
           </Text>
           <Button onClick={handleClose} fullWidth mt="md">
-            Done
+            {t('actions.done')}
           </Button>
         </Stack>
       </Modal>
@@ -127,7 +129,7 @@ export function ClientBookingRatingModal({
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="Rate your experience"
+      title={t('client.ratingModal.title')}
       centered
     >
       <Stack gap="md">
@@ -141,15 +143,13 @@ export function ClientBookingRatingModal({
           <Stack gap="xs">
             <Text fw={500}>{booking.masterJobTitle}</Text>
             <Text size="sm" c="dimmed">
-              with
-              {' '}
-              {booking.masterName}
+              {t('client.ratingModal.withLabel', { name: booking.masterName })}
             </Text>
           </Stack>
         )}
 
         <Stack gap="xs" align="center" py="md">
-          <Text size="sm" c="dimmed">How would you rate this service?</Text>
+          <Text size="sm" c="dimmed">{t('client.ratingModal.prompt')}</Text>
           <Rating
             value={rating}
             onChange={setRating}
@@ -158,18 +158,13 @@ export function ClientBookingRatingModal({
             fullSymbol={<Star size={32} fill="var(--mantine-color-yellow-5)" />}
           />
           <Text size="sm" c="dimmed">
-            {rating === 0 && 'Select a rating'}
-            {rating === 1 && 'Poor'}
-            {rating === 2 && 'Fair'}
-            {rating === 3 && 'Good'}
-            {rating === 4 && 'Very Good'}
-            {rating === 5 && 'Excellent'}
+            {t(`client.ratingModal.ratingLabels.${rating}` as const)}
           </Text>
         </Stack>
 
         <Textarea
-          label="Comment (optional)"
-          placeholder="Share your experience with this master..."
+          label={t('client.ratingModal.commentLabel')}
+          placeholder={t('client.ratingModal.commentPlaceholder')}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           minRows={3}
@@ -184,7 +179,7 @@ export function ClientBookingRatingModal({
             flex={1}
             disabled={isPending}
           >
-            Cancel
+            {t('actions.cancel')}
           </Button>
           <Button
             onClick={handleSubmit}
@@ -192,7 +187,7 @@ export function ClientBookingRatingModal({
             disabled={isPending || rating === 0}
             leftSection={isPending ? <Loader size={16} /> : null}
           >
-            {isPending ? 'Submitting...' : 'Submit Rating'}
+            {isPending ? t('client.ratingModal.submitting') : t('client.ratingModal.submit')}
           </Button>
         </Group>
       </Stack>

@@ -7,12 +7,14 @@ import {
   Spotlight, spotlight,
 } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import KbdCommands from './kbd-commands';
 import SearchInput from './search-input';
 
 export default function MegaSearch() {
   const theme = useMantineTheme();
+  const { t } = useTranslation();
 
   const [focused, setFocused] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export default function MegaSearch() {
           <Spotlight.Search
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="Search..."
+            placeholder={t('megaSearch.placeholder')}
             value={searchTerm ?? ''}
             leftSection={<IconSearch style={{ width: rem(20), height: rem(20) }} stroke={1.5} />}
           />

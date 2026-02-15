@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Avatar, Group, Menu, Stack, Text,
 } from '@mantine/core';
@@ -13,10 +14,11 @@ import UserButton from './user-button';
 export default function UserMenu() {
   const { user, logout } = useSession();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const displayName = typeof user?.user_metadata?.full_name === 'string'
     ? user?.user_metadata?.full_name
-    : user?.email ?? 'Beautify Baltics user';
+    : user?.email ?? t('navigation.userMenu.fallbackName');
   const displayEmail = user?.email ?? '';
 
   const handleLogout = async () => {
@@ -54,7 +56,7 @@ export default function UserMenu() {
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item component="a" leftSection={<IconLogout size={16} />} onClick={handleLogout}>
-          Log out
+          {t('actions.logout')}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

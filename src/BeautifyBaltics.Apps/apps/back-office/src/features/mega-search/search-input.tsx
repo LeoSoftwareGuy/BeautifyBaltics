@@ -2,14 +2,16 @@ import { Badge, Input } from '@mantine/core';
 import { useOs } from '@mantine/hooks';
 import { spotlight } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 export default function SearchInput() {
   const os = useOs();
+  const { t } = useTranslation();
 
   return (
     <Input
       variant="filled"
-      placeholder="Search..."
+      placeholder={t('megaSearch.placeholder')}
       leftSection={<IconSearch size={16} />}
       rightSection={(
         <Badge radius="xs" variant="subtle" c="gray">

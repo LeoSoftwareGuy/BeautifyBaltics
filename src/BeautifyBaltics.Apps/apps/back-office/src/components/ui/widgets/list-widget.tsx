@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import {
   Divider, Flex, Group, Skeleton, Stack, Text,
 } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 
 import Widget, { WidgetProps } from './widget';
 
@@ -13,6 +14,7 @@ interface ListWidgetProps extends WidgetProps {
 export default function ListWidget({
   fetching, empty, children, ...props
 } :ListWidgetProps) {
+  const { t } = useTranslation();
   const renderLoadingState = () => Array.from({ length: 5 }).map((_, index) => (
     // eslint-disable-next-line react/no-array-index-key
     <Fragment key={index}>
@@ -34,7 +36,7 @@ export default function ListWidget({
     if (empty) {
       return (
         <Flex align="center" justify="center" h="100%">
-          <Text fz="sm" c="gray">No data available</Text>
+          <Text fz="sm" c="gray">{t('general.noData')}</Text>
         </Flex>
       );
     }

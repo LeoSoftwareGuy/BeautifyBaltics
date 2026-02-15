@@ -9,7 +9,7 @@ export const Route = createFileRoute('/home/')({
 
     return ({
       breadcrumbs: [
-        { title: 'Home', path: '/home' },
+        { titleKey: 'navigation.breadcrumbs.home', path: '/home' },
       ],
     });
   },

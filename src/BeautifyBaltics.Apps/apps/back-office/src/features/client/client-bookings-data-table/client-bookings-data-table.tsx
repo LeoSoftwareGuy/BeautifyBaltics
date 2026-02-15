@@ -5,6 +5,7 @@ import {
 import { DatesRangeValue } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
 import {
@@ -41,6 +42,7 @@ export function ClientBookingsDataTable() {
   const { data: user } = useGetUser();
   const clientId = user?.id ?? '';
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
@@ -97,8 +99,8 @@ export function ClientBookingsDataTable() {
     mutation: {
       onSuccess: () => {
         notifications.show({
-          title: 'Booking cancelled',
-          message: 'Your booking has been cancelled successfully.',
+          title: t('client.bookings.notifications.cancelSuccessTitle'),
+          message: t('client.bookings.notifications.cancelSuccessMessage'),
           color: 'green',
         });
         queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
@@ -106,8 +108,8 @@ export function ClientBookingsDataTable() {
       },
       onError: (error: any) => {
         notifications.show({
-          title: 'Failed to cancel booking',
-          message: error.message || 'An error occurred while confirming the booking.',
+          title: t('client.bookings.notifications.cancelErrorTitle'),
+          message: error.message || t('client.bookings.notifications.cancelErrorMessage'),
           color: 'red',
         });
         setCancellingBookingId(null);
@@ -146,45 +148,45 @@ export function ClientBookingsDataTable() {
   const columns: PagedDataTableColumn<FindBookingsResponse>[] = [
     {
       accessor: 'masterName',
-      title: 'Master',
+      title: t('client.bookings.table.columns.master'),
       sortKey: 'masterName',
     },
     {
       accessor: 'masterJobTitle',
-      title: 'Service',
+      title: t('client.bookings.table.columns.service'),
       sortKey: 'masterJobTitle',
     },
     {
       accessor: 'locationCity',
-      title: 'Location',
+      title: t('client.bookings.table.columns.location'),
       render: renderLocation,
     },
     {
       accessor: 'scheduledAt',
-      title: 'Date & Time',
+      title: t('client.bookings.table.columns.scheduledAt'),
       sortKey: 'scheduledAt',
       render: renderScheduledAt,
     },
     {
       accessor: 'duration',
-      title: 'Duration',
+      title: t('client.bookings.table.columns.duration'),
       render: renderDuration,
     },
     {
       accessor: 'price',
-      title: 'Price',
+      title: t('client.bookings.table.columns.price'),
       sortKey: 'price',
       render: renderPrice,
     },
     {
       accessor: 'status',
-      title: 'Status',
+      title: t('client.bookings.table.columns.status'),
       sortKey: 'status',
       render: renderStatus,
     },
     {
       accessor: 'actions',
-      title: 'Actions',
+      title: t('client.bookings.table.columns.actions'),
       render: (booking) => (
         <BookingActionsRenderer
           booking={booking}
@@ -201,8 +203,8 @@ export function ClientBookingsDataTable() {
     <Card withBorder>
       <Stack gap="md">
         <div>
-          <Title order={3}>My Bookings</Title>
-          <Text c="dimmed" fz="sm">View and manage your appointments</Text>
+          <Title order={3}>{t('client.bookings.headerTitle')}</Title>
+          <Text c="dimmed" fz="sm">{t('client.bookings.headerSubtitle')}</Text>
         </div>
 
         <ClientBookingsDataTableFilters
@@ -221,7 +223,7 @@ export function ClientBookingsDataTable() {
           onRecordsPerPageChange={onRecordsPerPageChange}
           sortStatus={sortStatus}
           onSortStatusChange={(newStatus) => handleSortStatusChange(newStatus, columns)}
-          noRecordsText="No bookings found"
+          noRecordsText={t('client.bookings.empty')}
         />
       </Stack>
 

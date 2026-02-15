@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -51,6 +52,7 @@ export function ClientExploreHeader({
   isLoadingJobs,
   onSearch,
 }: ClientExploreHeaderProps) {
+  const { t } = useTranslation();
   return (
     <Box
       component="header"
@@ -65,7 +67,7 @@ export function ClientExploreHeader({
           <Group gap="sm" align="flex-end">
             <TextInput
               flex={1}
-              placeholder="Search services or keywords..."
+              placeholder={t('client.explore.header.searchPlaceholder')}
               leftSection={<IconSearch size={18} />}
               value={searchValue}
               onChange={(e) => onSearchChange(e.currentTarget.value)}
@@ -73,22 +75,22 @@ export function ClientExploreHeader({
             />
             <TextInput
               w={200}
-              placeholder="Location..."
+              placeholder={t('client.explore.header.locationPlaceholder')}
               leftSection={<IconMapPin size={18} />}
               value={locationValue}
               onChange={(e) => onLocationChange(e.currentTarget.value)}
               size="md"
             />
             <Button size="md" onClick={onSearch}>
-              Search
+              {t('client.explore.header.searchButton')}
             </Button>
           </Group>
 
           {/* Filters Row */}
           <Group gap="md" align="flex-end" wrap="wrap">
             <Select
-              label="Category"
-              placeholder="All Categories"
+              label={t('client.explore.header.categoryLabel')}
+              placeholder={t('client.explore.header.categoryPlaceholder')}
               data={categoryOptions}
               value={selectedCategory}
               onChange={onCategoryChange}
@@ -98,8 +100,8 @@ export function ClientExploreHeader({
               w={200}
             />
             <Select
-              label="Service"
-              placeholder="All Services"
+              label={t('client.explore.header.serviceLabel')}
+              placeholder={t('client.explore.header.servicePlaceholder')}
               data={jobOptions}
               value={selectedJob}
               onChange={onJobChange}
@@ -109,7 +111,7 @@ export function ClientExploreHeader({
               w={200}
             />
             <Box w={250}>
-              <Text size="sm" fw={500} mb={4}>Price Range</Text>
+              <Text size="sm" fw={500} mb={4}>{t('client.explore.header.priceRange')}</Text>
               <Group gap="xs" align="center">
                 <Text size="xs" c="dimmed">
                   €

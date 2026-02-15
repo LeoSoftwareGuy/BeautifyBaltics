@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Paper,
@@ -37,7 +38,7 @@ export const Route = createFileRoute('/login/')({
   beforeLoad: async ({ search }) => {
     await redirectIfAuthenticated(search.redirect ?? '/home');
     return {
-      breadcrumbs: [{ title: 'Login', path: '/login' }],
+      breadcrumbs: [{ titleKey: 'navigation.breadcrumbs.login', path: '/login' }],
     };
   },
   component: LoginView,
@@ -48,6 +49,7 @@ function LoginView() {
   const router = useRouter();
   const { isAuthenticated, loading } = useSession();
   const theme = useMantineTheme();
+  const { t } = useTranslation();
 
   const redirectPath = search.redirect || '/home';
   const redirectTo = typeof window !== 'undefined'
@@ -65,14 +67,14 @@ function LoginView() {
       <Paper withBorder p="xl" radius="lg" miw={360}>
         <Stack>
           <div>
-            <Title order={3}>Welcome back</Title>
+            <Title order={3}>{t('auth.login.title')}</Title>
             <Text c="dimmed" fz="sm">
-              Sign in with your Beautify Baltics account to continue.
+              {t('auth.login.subtitle')}
             </Text>
           </div>
           {search.registered ? (
-            <Alert color="teal" title="Registration successful" variant="light">
-              Please log in with your new credentials.
+            <Alert color="teal" title={t('auth.login.registeredTitle')} variant="light">
+              {t('auth.login.registeredMessage')}
             </Alert>
           ) : null}
           <Auth
@@ -98,21 +100,21 @@ function LoginView() {
                   link_text: '',
                 },
                 sign_in: {
-                  email_label: 'Email address',
-                  password_label: 'Password',
+                  email_label: t('auth.shared.emailLabel'),
+                  password_label: t('auth.shared.passwordLabel'),
                 },
               },
             }}
           />
         </Stack>
         <Text c="dimmed" fz="sm" ta="center">
-          Don&apos;t have an account?
+          {t('auth.login.noAccount')}
           {' '}
           <AnchorLink
             to="/register"
             search={() => ({ redirect: redirectPath })}
           >
-            Create one
+            {t('auth.login.createAccountLink')}
           </AnchorLink>
         </Text>
       </Paper>

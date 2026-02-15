@@ -10,7 +10,7 @@ export default function NavigationBreadcrumbs() {
   const { t } = useTranslation();
 
   const breadcrumbs = matches
-    .flatMap(({ context }) => context.breadcrumbs)
+    .flatMap(({ context }) => context.breadcrumbs ?? [])
     .filter((breadcrumb, index, self) => self.findIndex((b) => b.path === breadcrumb.path) === index);
 
   return (
@@ -27,7 +27,7 @@ export default function NavigationBreadcrumbs() {
           key={breadcrumb.path}
           to={breadcrumb.path}
         >
-          {breadcrumb.path === '/' ? t('common:home') : breadcrumb.title}
+          {t(breadcrumb.titleKey)}
         </AnchorLink>
       ))}
     </Breadcrumbs>

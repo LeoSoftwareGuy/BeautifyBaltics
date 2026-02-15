@@ -7,6 +7,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { Filter, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type ExploreHeaderProps = {
   searchValue: string;
@@ -15,6 +16,8 @@ type ExploreHeaderProps = {
 };
 
 function ExploreHeader({ onOpenFilters, onSearchChange, searchValue }: ExploreHeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <Box
       component="header"
@@ -25,9 +28,9 @@ function ExploreHeader({ onOpenFilters, onSearchChange, searchValue }: ExploreHe
     >
       <Container size="lg" py="md">
         <Group gap="lg" align="center" wrap="nowrap">
-          <Text fw={700} fz="xl">Beautify Baltics</Text>
+          <Text fw={700} fz="xl">{t('brand.name')}</Text>
           <TextInput
-            placeholder="Search by service, master, or location..."
+            placeholder={t('explore.header.searchPlaceholder')}
             leftSection={<Search size={16} />}
             radius="xl"
             flex={1}

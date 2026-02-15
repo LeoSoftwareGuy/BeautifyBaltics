@@ -10,12 +10,14 @@ import {
 } from '@mantine/core';
 import { useNavigate } from '@tanstack/react-router';
 import { Search, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const BACKGROUND_PATTERN = "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI0NCwxNjQsMTgwLDAuMSkiLz48L2c+PC9zdmc+')";
-const HIGHLIGHTS = ['Verified Professionals', 'Instant Booking', 'Secure Payments'] as const;
+const HIGHLIGHTS = ['verified', 'instant', 'secure'] as const;
 
 function HeroSection() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Box
@@ -58,19 +60,18 @@ function HeroSection() {
               },
             }}
           >
-            Discover Beauty Professionals Near You
+            {t('home.hero.badge')}
           </Badge>
           <Stack gap="md" ta="center">
             <Title order={1} fw={800} size="clamp(48px, 6vw, 68px)" lh={1.2}>
-              Book Your Perfect
+              {t('home.hero.titleLineOne')}
               <br />
               <Text component="span" inherit c="pink.5">
-                Beauty Experience
+                {t('home.hero.titleHighlight')}
               </Text>
             </Title>
             <Text size="md" maw={600} mx="auto" c="dimmed" lh={1.6}>
-              Connect with talented barbers, tattoo artists, and beauty masters in your city.
-              Browse portfolios, check availability, and book appointments seamlessly.
+              {t('home.hero.subtitle')}
             </Text>
           </Stack>
           <Group gap="md" justify="center" wrap="wrap">
@@ -82,7 +83,7 @@ function HeroSection() {
               onClick={() => navigate({ to: '/explore' })}
               px={24}
             >
-              Explore Masters
+              {t('home.hero.cta')}
             </Button>
           </Group>
           <Group gap="lg" justify="center" wrap="wrap">
@@ -90,7 +91,7 @@ function HeroSection() {
               <Group key={label} gap={6}>
                 <Box w={8} h={8} bg="pink.5" style={{ borderRadius: 999 }} />
                 <Text size="sm" c="dimmed">
-                  {label}
+                  {t(`home.hero.highlights.${label}`)}
                 </Text>
               </Group>
             ))}

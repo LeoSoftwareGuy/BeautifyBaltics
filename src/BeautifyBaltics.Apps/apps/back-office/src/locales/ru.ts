@@ -1,0 +1,349 @@
+import type { CommonLocale } from './en';
+
+const ru: CommonLocale = {
+  brand: {
+    name: 'Beautify Baltics',
+  },
+  language: {
+    switcherLabel: 'Сменить язык',
+  },
+  general: {
+    notFound: 'Страница не найдена',
+    noData: 'Нет данных',
+    today: 'Сегодня',
+  },
+  actions: {
+    logout: 'Выйти',
+    cancel: 'Отмена',
+    done: 'Готово',
+  },
+  cta: {
+    tryAgain: 'Попробовать снова',
+  },
+  navigation: {
+    userMenu: {
+      fallbackName: 'Пользователь Beautify Baltics',
+    },
+    client: {
+      home: 'Главная',
+      dashboard: 'Панель',
+      explore: 'Поиск',
+      bookings: 'Мои бронирования',
+    },
+    master: {
+      dashboard: 'Панель',
+      bookings: 'Бронирования',
+      timeSlots: 'Тайм-слоты',
+      services: 'Услуги',
+      settings: 'Настройки',
+    },
+    breadcrumbs: {
+      brand: 'Beautify Baltics',
+      home: 'Главная',
+      login: 'Вход',
+      register: 'Регистрация',
+      explore: 'Поиск',
+      clientExplore: 'Найти мастеров',
+      clientBookings: 'Мои бронирования',
+      dashboard: 'Панель',
+      masterDashboard: 'Панель мастера',
+      masterBookings: 'Бронирования',
+      masterServices: 'Услуги',
+      masterTimeSlots: 'Тайм-слоты',
+      masterSettings: 'Настройки',
+      masterProfile: 'Профиль мастера',
+    },
+  },
+  auth: {
+    shared: {
+      labels: {
+        firstName: 'Имя',
+        lastName: 'Фамилия',
+        email: 'Электронная почта',
+        password: 'Пароль',
+        phoneNumber: 'Номер телефона',
+      },
+      placeholders: {
+        firstName: 'Анна',
+        lastName: 'Иванова',
+        email: 'vy@primer.ru',
+        password: '••••••••',
+        phoneNumber: '+79991234567',
+      },
+      validation: {
+        firstNameMin: 'Имя должно содержать минимум 3 символа',
+        lastNameMin: 'Фамилия должна содержать минимум 3 символа',
+        emailInvalid: 'Некорректный адрес электронной почты',
+        passwordMin: 'Пароль должен быть не короче 6 символов',
+        phoneRequired: 'Номер телефона обязателен',
+      },
+    },
+    login: {
+      title: 'С возвращением',
+      subtitle: 'Войдите в аккаунт Beautify Baltics, чтобы продолжить.',
+      registeredTitle: 'Регистрация прошла успешно',
+      registeredMessage: 'Пожалуйста, войдите с новыми учетными данными.',
+      noAccount: 'Нет аккаунта?',
+      createAccountLink: 'Зарегистрируйтесь',
+    },
+    register: {
+      title: 'Создать аккаунт',
+      subtitle: 'Зарегистрируйтесь, чтобы пользоваться Beautify Baltics.',
+      accountTypeLabel: 'Тип аккаунта',
+      accountTypeHint: 'Выберите, как вы хотите использовать Beautify Baltics',
+      roleClient: 'Клиент',
+      roleMaster: 'Мастер',
+      submitButton: 'Создать аккаунт',
+      notifications: {
+        checkInboxTitle: 'Проверьте почту',
+        checkInboxMessage: 'Подтвердите адрес электронной почты перед входом.',
+        successTitle: 'Аккаунт создан',
+        successMessage: 'Добро пожаловать в Beautify Baltics!',
+        failureTitle: 'Регистрация не удалась',
+        failureMessage: 'Регистрация не выполнена. Попробуйте ещё раз.',
+      },
+    },
+  },
+  map: {
+    unavailableTitle: 'Карта недоступна',
+    unavailableDescription: 'Ключ Google Maps API не настроен',
+    coordinatesMissing: 'Координаты места недоступны',
+  },
+  explore: {
+    header: {
+      searchPlaceholder: 'Поиск по услуге, мастеру или городу...',
+    },
+    filters: {
+      title: 'Фильтры',
+      priceRange: 'Диапазон цены',
+    },
+    categories: {
+      all: 'Все услуги',
+      unnamed: 'Категория без названия',
+    },
+    masterCard: {
+      unnamed: 'Мастер без имени',
+      locationFallback: 'Адрес не указан',
+      new: 'Новое',
+      ratingLabel: 'Рейтинг',
+      awaitingReviews: 'Ждёт отзывов',
+    },
+    page: {
+      loadingCategories: 'Загружаю категории...',
+      categoriesErrorTitle: 'Не удалось загрузить категории',
+      categoriesErrorMessage: 'Во время загрузки категорий произошла ошибка.',
+      mastersErrorTitle: 'Не удалось загрузить мастеров',
+      mastersErrorMessage: 'Во время загрузки мастеров произошла ошибка.',
+      emptyTitle: 'Мастера не найдены',
+      emptySubtitle: 'Измените фильтры или попробуйте другой поиск.',
+    },
+  },
+  client: {
+    dashboard: {
+      title: 'Панель клиента',
+      subtitle: 'Управляйте своими посещениями и отслеживайте активность.',
+      stats: {
+        upcoming: 'Ближайшие',
+        completed: 'Завершённые',
+        totalSpent: 'Всего потрачено',
+      },
+    },
+    recentBookings: {
+      title: 'Недавние бронирования',
+      subtitle: 'История ваших записей',
+      table: {
+        columns: {
+          service: 'Услуга и мастер',
+          date: 'Дата',
+          duration: 'Длительность',
+          price: 'Цена',
+          status: 'Статус',
+        },
+      },
+    },
+    bookings: {
+      headerTitle: 'Мои бронирования',
+      headerSubtitle: 'Управляйте своими записями',
+      bookCta: 'Забронировать новую услугу',
+      empty: 'Бронирования не найдены',
+      notifications: {
+        cancelSuccessTitle: 'Бронирование отменено',
+        cancelSuccessMessage: 'Ваше бронирование успешно отменено.',
+        cancelErrorTitle: 'Не удалось отменить бронирование',
+        cancelErrorMessage: 'Произошла ошибка при отмене бронирования.',
+      },
+      table: {
+        columns: {
+          master: 'Мастер',
+          service: 'Услуга',
+          location: 'Адрес',
+          scheduledAt: 'Дата и время',
+          duration: 'Длительность',
+          price: 'Цена',
+          status: 'Статус',
+          actions: 'Действия',
+        },
+      },
+      status: {
+        requested: 'Запрос',
+        confirmed: 'Подтверждено',
+        completed: 'Выполнено',
+        cancelled: 'Отменено',
+        rated: 'Оценено',
+      },
+      actions: {
+        cancel: 'Отменить бронирование',
+        rate: 'Оценить бронирование',
+      },
+      locationFallback: 'Адрес не указан',
+      filters: {
+        allStatuses: 'Все статусы',
+        dateLabel: 'Фильтр по дате',
+        datePlaceholder: 'Выберите период',
+        statusLabel: 'Статус',
+        statusPlaceholder: 'Фильтр по статусу',
+      },
+    },
+    ratingModal: {
+      title: 'Оцените услугу',
+      successTitle: 'Оценка отправлена',
+      successMessage: 'Спасибо за отзыв!',
+      successSubtext: 'Ваши оценки помогают другим клиентам выбирать мастеров.',
+      errorTitle: 'Не удалось отправить оценку',
+      errorFallback: 'Не удалось отправить оценку',
+      errorMessage: 'Не удалось отправить оценку. Попробуйте ещё раз.',
+      withLabel: 'у {{name}}',
+      prompt: 'Как вы оцените эту услугу?',
+      ratingLabels: {
+        0: 'Выберите оценку',
+        1: 'Плохо',
+        2: 'Удовлетворительно',
+        3: 'Хорошо',
+        4: 'Очень хорошо',
+        5: 'Отлично',
+      },
+      commentLabel: 'Комментарий (необязательно)',
+      commentPlaceholder: 'Расскажите о впечатлениях от мастера...',
+      submitting: 'Отправляю...',
+      submit: 'Отправить оценку',
+    },
+    nextSession: {
+      title: 'Ваш ближайший визит',
+      emptyTitle: 'Записей нет',
+      emptySubtitle: 'Запишитесь к одному из наших мастеров, чтобы начать.',
+      badges: {
+        today: 'СЕГОДНЯ',
+      },
+      startsInDays_one: 'Начнётся через {{count}} день',
+      startsInDays_other: 'Начнётся через {{count}} дней',
+      startsInHours: 'Начнётся через {{hours}}ч {{minutes}}м',
+      startsInMinutes: 'Начнётся через {{minutes}}м',
+      startingSoon: 'Скоро начнётся',
+      withLabel: 'у {{name}}',
+      viewDetails: 'Подробнее',
+    },
+    bookingDetails: {
+      title: 'Детали бронирования',
+      serviceSection: {
+        service: 'Услуга',
+        price: 'Цена',
+        duration: 'Длительность',
+        date: 'Дата',
+      },
+      locationSection: {
+        title: 'Место оказания услуги',
+      },
+      infoSection: {
+        title: 'Информация о бронировании',
+        scheduledTime: 'Запланированное время',
+        status: 'Статус',
+      },
+      contactSection: {
+        title: 'Контакты',
+        empty: 'Контактные данные отсутствуют',
+      },
+    },
+    explore: {
+      header: {
+        searchPlaceholder: 'Поиск услуг или ключевых слов...',
+        locationPlaceholder: 'Город...',
+        searchButton: 'Искать',
+        categoryLabel: 'Категория',
+        categoryPlaceholder: 'Все категории',
+        serviceLabel: 'Услуга',
+        servicePlaceholder: 'Все услуги',
+        priceRange: 'Диапазон цены',
+      },
+      results: {
+        title: 'Лучшие мастера',
+        subtitle: 'Откройте для себя опытных специалистов',
+        subtitleWithLocation: 'Откройте для себя специалистов рядом с {{location}}',
+        count: 'Показано {{count}} результатов',
+        errorTitle: 'Не удалось загрузить мастеров',
+        errorMessage: 'При загрузке мастеров произошла ошибка.',
+        emptyTitle: 'Мастера не найдены',
+        emptySubtitle: 'Измените фильтры или попробуйте другой поиск.',
+      },
+      card: {
+        viewProfile: 'Смотреть профиль',
+      },
+    },
+  },
+  home: {
+    hero: {
+      badge: 'Найдите мастеров красоты рядом с вами',
+      titleLineOne: 'Забронируйте свою идеальную',
+      titleHighlight: 'бьюти-встречу',
+      subtitle: 'Связывайтесь с талантливыми парикмахерами, тату-мастерами и бьюти-специалистами в вашем городе. Просматривайте портфолио, проверяйте наличие и бронируйте без лишних шагов.',
+      cta: 'Искать мастеров',
+      highlights: {
+        verified: 'Проверенные профессионалы',
+        instant: 'Мгновенное бронирование',
+        secure: 'Безопасные платежи',
+      },
+    },
+    features: {
+      title: 'Почему Beautify Baltics',
+      subtitle: 'Всё, что нужно, чтобы найти и забронировать лучших мастеров красоты рядом с вами.',
+      items: {
+        booking: {
+          title: 'Простое бронирование',
+          description: 'Бронируйте за пару кликов с актуальной доступностью.',
+        },
+        portfolio: {
+          title: 'Портфолио в одном месте',
+          description: 'Просматривайте работы мастеров и выбирайте стиль.',
+        },
+        reviews: {
+          title: 'Проверенные отзывы',
+          description: 'Читайте реальные отзывы клиентов перед записью.',
+        },
+        security: {
+          title: 'Безопасная платформа',
+          description: 'Записывайтесь только к проверенным специалистам.',
+        },
+      },
+    },
+  },
+  megaSearch: {
+    placeholder: 'Поиск...',
+    shortcuts: {
+      navigate: 'для перемещения',
+      select: 'для выбора',
+    },
+  },
+  master: {
+    dashboard: {
+      title: 'Панель',
+      stats: {
+        totalBookings: 'Всего бронирований',
+        monthlyEarnings: 'Доход за месяц',
+        averageRating: 'Средняя оценка',
+        noRatings: 'Нет оценок',
+        reviewsLabel: '{{count}} отзывов',
+      },
+    },
+  },
+} as const;
+
+export default ru;

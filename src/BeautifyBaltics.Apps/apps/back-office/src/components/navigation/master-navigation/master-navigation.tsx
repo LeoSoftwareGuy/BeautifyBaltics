@@ -10,6 +10,7 @@ import {
   IconSparkles,
 } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import { useSession } from '@/contexts/session-context';
 import { useLayout } from '@/layouts';
@@ -20,6 +21,7 @@ export default function MasterNavigation() {
   const { logout } = useSession();
   const navigate = useNavigate();
   const layout = useLayout();
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     try {
@@ -30,11 +32,11 @@ export default function MasterNavigation() {
 
   return (
     <Stack gap={4}>
-      <NavigationItem icon={IconLayoutDashboard} label="Dashboard" href="/master" />
-      <NavigationItem icon={IconCalendarEvent} label="Bookings" href="/master/bookings" />
-      <NavigationItem icon={IconClock} label="Time Slots" href="/master/time-slots" />
-      <NavigationItem icon={IconSparkles} label="Services" href="/master/services" />
-      <NavigationItem icon={IconSettings} label="Settings" href="/master/settings" />
+      <NavigationItem icon={IconLayoutDashboard} label={t('navigation.master.dashboard')} href="/master" />
+      <NavigationItem icon={IconCalendarEvent} label={t('navigation.master.bookings')} href="/master/bookings" />
+      <NavigationItem icon={IconClock} label={t('navigation.master.timeSlots')} href="/master/time-slots" />
+      <NavigationItem icon={IconSparkles} label={t('navigation.master.services')} href="/master/services" />
+      <NavigationItem icon={IconSettings} label={t('navigation.master.settings')} href="/master/settings" />
 
       <UnstyledButton
         onClick={handleLogout}
@@ -45,7 +47,7 @@ export default function MasterNavigation() {
         <Group gap="xs" wrap="nowrap">
           <IconLogout size={18} color="var(--mantine-color-red-6)" />
           {layout.navbar.collapsed ? null : (
-            <Text size="sm" c="red.6">Logout</Text>
+            <Text size="sm" c="red.6">{t('actions.logout')}</Text>
           )}
         </Group>
       </UnstyledButton>

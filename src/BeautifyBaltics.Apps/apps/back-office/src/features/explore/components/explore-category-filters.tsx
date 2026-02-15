@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button, Group, ScrollArea } from '@mantine/core';
 
 import type { FindJobCategoriesResponse } from '@/state/endpoints/api.schemas';
@@ -9,6 +10,8 @@ type CategoryFiltersProps = {
 };
 
 function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProps) {
+  const { t } = useTranslation();
+
   return (
     <ScrollArea type="auto" offsetScrollbars>
       <Group gap="sm" mb="lg" wrap="nowrap">
@@ -18,7 +21,7 @@ function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProp
           radius="xl"
           onClick={() => onSelect(null)}
         >
-          All Services
+          {t('explore.categories.all')}
         </Button>
         {categories.map((category, index) => (
           <Button
@@ -27,7 +30,7 @@ function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProp
             radius="xl"
             onClick={() => onSelect(category.id ?? null)}
           >
-            {category.name ?? 'Unnamed category'}
+            {category.name ?? t('explore.categories.unnamed')}
           </Button>
         ))}
       </Group>

@@ -8,7 +8,7 @@ export const Route = createFileRoute('/client/explore/')({
     await requireAuthenticated(location.pathname ?? '/client/explore');
     return {
       breadcrumbs: [
-        { title: 'Explore', path: '/client/explore' },
+        { titleKey: 'navigation.breadcrumbs.clientExplore', path: '/client/explore' },
       ],
     };
   },

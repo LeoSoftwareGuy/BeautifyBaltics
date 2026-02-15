@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Card,
@@ -13,29 +14,14 @@ import {
 } from 'lucide-react';
 
 const FEATURES = [
-  {
-    icon: Calendar,
-    title: 'Easy Booking',
-    description: 'Book appointments instantly with real-time availability updates.',
-  },
-  {
-    icon: Image,
-    title: 'Portfolio Showcase',
-    description: 'Browse master portfolios to find the perfect match for your style.',
-  },
-  {
-    icon: Star,
-    title: 'Verified Reviews',
-    description: 'Read authentic reviews from real customers to make informed decisions.',
-  },
-  {
-    icon: Shield,
-    title: 'Secure Platform',
-    description: 'Safe and secure booking with verified professionals only.',
-  },
+  { icon: Calendar, key: 'booking' },
+  { icon: Image, key: 'portfolio' },
+  { icon: Star, key: 'reviews' },
+  { icon: Shield, key: 'security' },
 ] as const;
 
 function FeatureCard({ feature }: { feature: typeof FEATURES[number] }) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -68,29 +54,30 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[number] }) {
           <feature.icon size={20} />
         </Box>
         <Text fw={600} size="lg">
-          {feature.title}
+          {t(`home.features.items.${feature.key}.title`)}
         </Text>
-        <Text c="dimmed">{feature.description}</Text>
+        <Text c="dimmed">{t(`home.features.items.${feature.key}.description`)}</Text>
       </Stack>
     </Card>
   );
 }
 
 function FeaturesSection() {
+  const { t } = useTranslation();
   return (
     <Box component="section" bg="gray.0" py={{ base: 64, md: 96 }}>
       <Container size="lg">
         <Stack gap="sm" ta="center" align="center" mb={{ base: 40, md: 64 }}>
           <Title order={2} fw={800} size="clamp(32px, 4vw, 48px)">
-            Why Choose Beautify Baltics
+            {t('home.features.title')}
           </Title>
           <Text size="lg" maw={600} c="dimmed">
-            Everything you need to discover and book the best beauty professionals in your area.
+            {t('home.features.subtitle')}
           </Text>
         </Stack>
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg">
           {FEATURES.map((feature) => (
-            <FeatureCard key={feature.title} feature={feature} />
+            <FeatureCard key={feature.key} feature={feature} />
           ))}
         </SimpleGrid>
       </Container>

@@ -15,7 +15,6 @@ const PAGE_SIZE = 12;
 export function ClientExplorePage() {
   const navigate = useNavigate();
 
-  // Filter states
   const [searchValue, setSearchValue] = useState('');
   const [debouncedSearch] = useDebouncedValue(searchValue, 300);
   const [locationValue, setLocationValue] = useState('');
@@ -27,16 +26,13 @@ export function ClientExplorePage() {
 
   const [minPrice, maxPrice] = priceRange;
 
-  // Fetch job categories
   const { data: jobCategories, isLoading: isLoadingCategories } = useFindJobCategories({ all: true });
 
-  // Fetch jobs based on selected category
   const { data: jobs, isLoading: isLoadingJobs } = useFindJobs(
     { categoryId: selectedCategory ?? undefined, all: true },
     { query: { enabled: true } },
   );
 
-  // Build masters query params
   const findMastersParams = useMemo<FindMastersParams>(() => {
     const params: FindMastersParams & { minPrice?: number; maxPrice?: number } = {
       page: currentPage,
@@ -57,7 +53,6 @@ export function ClientExplorePage() {
       params.jobCategoryId = selectedCategory;
     }
 
-    // Only apply price filter if not at default values
     if (minPrice > 0) {
       params.minPrice = minPrice;
     }
@@ -69,7 +64,6 @@ export function ClientExplorePage() {
     return params;
   }, [debouncedSearch, debouncedLocation, selectedCategory, currentPage, minPrice, maxPrice]);
 
-  // Fetch masters
   const {
     data: mastersData,
     isLoading: isLoadingMasters,
@@ -81,7 +75,6 @@ export function ClientExplorePage() {
     },
   });
 
-  // Build select options
   const categoryOptions = useMemo(() => (
     jobCategories?.items
       ?.filter((cat): cat is typeof cat & { id: string; name: string } => !!cat.id && !!cat.name)
@@ -100,7 +93,6 @@ export function ClientExplorePage() {
       })) ?? []
   ), [jobs?.items]);
 
-  // Handlers
   const handleSelectMaster = (masterId: string) => {
     navigate({ to: '/masters/$masterId', params: { masterId } });
   };

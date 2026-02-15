@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Box, Button, Container, Group, Stack, Text, Title,
 } from '@mantine/core';
@@ -7,6 +8,7 @@ import { ClientBookingsDataTable } from './client-bookings-data-table/client-boo
 
 function ClientDashboardPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Box bg="var(--mantine-color-body)" mih="100vh" p="md">
@@ -14,10 +16,10 @@ function ClientDashboardPage() {
         <Container size="lg">
           <Group justify="space-between">
             <div>
-              <Title order={2}>My Bookings</Title>
-              <Text c="dimmed" size="sm">Manage your appointments</Text>
+              <Title order={2}>{t('client.bookings.headerTitle')}</Title>
+              <Text c="dimmed" size="sm">{t('client.bookings.headerSubtitle')}</Text>
             </div>
-            <Button onClick={() => navigate({ to: '/explore' })}>Book New Appointment</Button>
+            <Button onClick={() => navigate({ to: '/explore' })}>{t('client.bookings.bookCta')}</Button>
           </Group>
         </Container>
       </Box>

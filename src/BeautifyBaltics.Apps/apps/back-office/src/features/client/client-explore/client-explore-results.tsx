@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Button,
@@ -41,44 +42,41 @@ export function ClientExploreResults({
   onPageChange,
   locationFilter,
 }: ClientExploreResultsProps) {
+  const { t } = useTranslation();
+  const subtitle = locationFilter
+    ? t('client.explore.results.subtitleWithLocation', { location: locationFilter })
+    : t('client.explore.results.subtitle');
+
   return (
     <>
-      {/* Results Header */}
       <Group justify="space-between" align="flex-end" mb="lg">
         <div>
-          <Title order={2}>Top Rated Masters</Title>
+          <Title order={2}>{t('client.explore.results.title')}</Title>
           <Text c="dimmed">
-            Discover expert professionals
-            {locationFilter && ` near ${locationFilter}`}
+            {subtitle}
           </Text>
         </div>
         <Text size="sm" c="dimmed">
-          Showing
-          {' '}
-          <Text span c="brand" fw={600}>{totalResults}</Text>
-          {' '}
-          results
+          {t('client.explore.results.count', { count: totalResults })}
         </Text>
       </Group>
 
-      {/* Loading State */}
       {isLoading && !masters && (
         <Center mih={300}>
           <Loader size="lg" />
         </Center>
       )}
 
-      {/* Error State */}
       {isError && (
         <Alert
           icon={<IconAlertCircle size={18} />}
-          title="Unable to load masters"
+          title={t('client.explore.results.errorTitle')}
           color="red"
         >
           <Stack gap="xs">
-            <Text size="sm">Something went wrong while fetching masters.</Text>
+            <Text size="sm">{t('client.explore.results.errorMessage')}</Text>
             <Button variant="light" color="red" size="xs" onClick={onRetry}>
-              Try again
+              {t('cta.tryAgain')}
             </Button>
           </Stack>
         </Alert>
@@ -88,8 +86,8 @@ export function ClientExploreResults({
       {!isLoading && !isError && !masters?.length && (
         <Center mih={300}>
           <Stack align="center" gap="xs">
-            <Text fw={500}>No masters found</Text>
-            <Text c="dimmed" size="sm">Adjust filters or try a different search.</Text>
+            <Text fw={500}>{t('client.explore.results.emptyTitle')}</Text>
+            <Text c="dimmed" size="sm">{t('client.explore.results.emptySubtitle')}</Text>
           </Stack>
         </Center>
       )}
@@ -99,7 +97,12 @@ export function ClientExploreResults({
         <>
           <Grid gutter="lg">
             {masters.map((master) => (
-              <Grid.Col key={master.id} span={{ base: 12, sm: 6, lg: 4 }}>
+              <Grid.Col
+                key={master.id}
+                span={{
+                  base: 12, sm: 6, md: 4, lg: 3,
+                }}
+              >
                 <ClientExploreMasterCard
                   master={master}
                   onSelect={onSelectMaster}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   Group,
@@ -16,9 +17,11 @@ type MasterCardProps = {
 };
 
 function MasterCard({ master, selected, onSelect }: MasterCardProps) {
-  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim() || 'Unnamed master';
+  const { t } = useTranslation();
+  const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim()
+    || t('explore.masterCard.unnamed');
   const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
-  const address = master.city ?? 'Location not specified';
+  const address = master.city ?? t('explore.masterCard.locationFallback');
   const handleSelect = () => {
     if (master.id) {
       onSelect(master.id);
@@ -65,9 +68,9 @@ function MasterCard({ master, selected, onSelect }: MasterCardProps) {
             <Group gap={4}>
               <Star size={16} fill="currentColor" />
               <Text fw={600} c="var(--mantine-color-text)">
-                {ratingValue ?? 'New'}
+                {ratingValue ?? t('explore.masterCard.new')}
               </Text>
-              <Text>{ratingValue ? 'Rating' : 'Awaiting reviews'}</Text>
+              <Text>{ratingValue ? t('explore.masterCard.ratingLabel') : t('explore.masterCard.awaitingReviews')}</Text>
             </Group>
           </Group>
           <Group gap={6} c="dimmed" fz="sm">

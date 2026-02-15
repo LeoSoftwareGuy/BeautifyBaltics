@@ -3,7 +3,12 @@
     "allow": [
       "Bash(xargs cat:*)",
       "Bash(ls:*)",
-      "Bash(npx nx run:*)"
+      "Bash(npx nx run:*)",
+      "Bash(cat:*)",
+      "Bash(az containerapp logs show:*)",
+      "Bash(az containerapp show:*)",
+      "Bash(curl:*)",
+      "Bash(az containerapp exec:*)"
     ]
   }
 }

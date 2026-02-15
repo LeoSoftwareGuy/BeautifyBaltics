@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionIcon, Button, Divider, Group, Popover,
 } from '@mantine/core';
@@ -18,6 +19,7 @@ interface DatePickerPopoverProps {
 function DatePickerPopover({ initialValue, onChange }: DatePickerPopoverProps) {
   const [date, setDate] = useState(dayjs(initialValue).toString() ?? dayjs().toString());
   const [opened, setOpened] = useState(false);
+  const { t } = useTranslation();
 
   const handleDateOnChange = (nextDate: string | null) => {
     onChange(dayjs(nextDate).toDate() ?? undefined);
@@ -60,7 +62,7 @@ function DatePickerPopover({ initialValue, onChange }: DatePickerPopoverProps) {
             <IconChevronRight />
           </ActionIcon>
           <Divider orientation="vertical" my={2} />
-          <Button size="xs" variant="default" onClick={handleOnTodayClick}>Today</Button>
+          <Button size="xs" variant="default" onClick={handleOnTodayClick}>{t('general.today')}</Button>
         </Group>
       </Popover.Target>
 

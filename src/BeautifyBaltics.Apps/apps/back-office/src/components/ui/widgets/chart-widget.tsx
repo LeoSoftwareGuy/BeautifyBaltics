@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DonutChart } from '@mantine/charts';
 import {
   Box,
@@ -20,6 +21,7 @@ interface ChartWidgetProps extends WidgetProps {
 export default function ChartWidget({
   type, fetching, empty, legend, children, ...props
 }: ChartWidgetProps) {
+  const { t } = useTranslation();
   const renderLegend = () => {
     if (!legend) return null;
     return (
@@ -148,7 +150,7 @@ export default function ChartWidget({
     if (type === 'donut') {
       return <DonutChart data={[{ name: 'empty', value: 100, color: 'gray.1' }]} size={160} chartLabel="0" />;
     }
-    return <Text fz="sm" c="gray">No data available</Text>;
+    return <Text fz="sm" c="gray">{t('general.noData')}</Text>;
   };
 
   const renderContent = () => {

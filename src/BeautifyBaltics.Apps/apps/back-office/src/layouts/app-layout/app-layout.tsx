@@ -3,6 +3,7 @@ import {
   AppShell, Box, Divider, Group, ScrollArea, Text, useMantineTheme,
 } from '@mantine/core';
 import { useFavicon, useLocalStorage } from '@mantine/hooks';
+import { useTranslation } from 'react-i18next';
 
 import storageKeygen from '@/utils/storage-keygen';
 
@@ -26,6 +27,7 @@ export default function AppLayout({
   header, navbar, children, devtools,
 }: AppLayoutProps) {
   const theme = useMantineTheme();
+  const { t } = useTranslation();
   const [collapsedNavbar, setCollapsedNavbar] = useLocalStorage({
     key: storageKeygen.create('layout', 'navbar', 'collapsed'),
     defaultValue: true,
@@ -72,7 +74,7 @@ export default function AppLayout({
           <AppShell.Section mb={-1}>
             <Group p="md" gap="xs" h={68} mih={68} align="center" wrap="nowrap">
               <Logo />
-              {collapsedNavbar ? null : <Text fw={700} truncate="end" c={theme.primaryColor}>Beautify Baltics</Text>}
+              {collapsedNavbar ? null : <Text fw={700} truncate="end" c={theme.primaryColor}>{t('brand.name')}</Text>}
             </Group>
           </AppShell.Section>
           <Divider mx="md" />

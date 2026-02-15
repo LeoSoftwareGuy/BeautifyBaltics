@@ -23,6 +23,7 @@ import {
   IconTool,
   IconX,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import { useGetMasterById } from '@/state/endpoints/masters';
@@ -62,6 +63,13 @@ function canCancelBooking(booking: FindBookingsResponse): boolean {
   return hoursUntilBooking >= 24;
 }
 
+const STATUS_LABEL_KEYS: Record<BookingStatus, string> = {
+  [BookingStatus.Confirmed]: 'client.bookings.status.confirmed',
+  [BookingStatus.Requested]: 'client.bookings.status.requested',
+  [BookingStatus.Completed]: 'client.bookings.status.completed',
+  [BookingStatus.Cancelled]: 'client.bookings.status.cancelled',
+};
+
 export function ClientBookingDetailsDrawer({
   opened,
   onClose,
@@ -75,6 +83,8 @@ export function ClientBookingDetailsDrawer({
     { query: { enabled: !!booking?.masterId && opened } },
   );
 
+  const { t } = useTranslation();
+
   if (!booking) {
     return null;
   }
@@ -84,7 +94,7 @@ export function ClientBookingDetailsDrawer({
     booking.locationAddressLine2,
     booking.locationCity,
     booking.locationCountry,
-  ].filter(Boolean).join(', ') || 'Location not specified';
+  ].filter(Boolean).join(', ') || t('client.bookings.locationFallback');
 
   const showCancelButton = canCancelBooking(booking);
 
@@ -122,7 +132,7 @@ export function ClientBookingDetailsDrawer({
               <IconX size={18} />
             </ThemeIcon>
             <div>
-              <Text fw={700} size="lg">Booking Details</Text>
+              <Text fw={700} size="lg">{t('client.bookingDetails.title')}</Text>
               <Group gap="xs">
                 <Box
                   w={8}
@@ -133,7 +143,7 @@ export function ClientBookingDetailsDrawer({
                   }}
                 />
                 <Text size="xs" fw={600} c={getStatusColor(booking.status)} tt="uppercase">
-                  {booking.status}
+                  {t(STATUS_LABEL_KEYS[booking.status])}
                 </Text>
               </Group>
             </div>
@@ -174,7 +184,7 @@ export function ClientBookingDetailsDrawer({
             <Paper p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)">
               <Group gap="xs" mb={4}>
                 <IconTool size={14} color="var(--mantine-color-dimmed)" />
-                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Service</Text>
+                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>{t('client.bookingDetails.serviceSection.service')}</Text>
               </Group>
               <Text fw={700}>{booking.masterJobTitle}</Text>
             </Paper>
@@ -182,7 +192,7 @@ export function ClientBookingDetailsDrawer({
             <Paper p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)">
               <Group gap="xs" mb={4}>
                 <IconCurrencyDollar size={14} color="var(--mantine-color-dimmed)" />
-                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Price</Text>
+                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>{t('client.bookingDetails.serviceSection.price')}</Text>
               </Group>
               <Text fw={700} c="brand">
                 €
@@ -193,7 +203,7 @@ export function ClientBookingDetailsDrawer({
             <Paper p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)">
               <Group gap="xs" mb={4}>
                 <IconClock size={14} color="var(--mantine-color-dimmed)" />
-                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Duration</Text>
+                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>{t('client.bookingDetails.serviceSection.duration')}</Text>
               </Group>
               <Text fw={700}>{booking.duration}</Text>
             </Paper>
@@ -201,7 +211,7 @@ export function ClientBookingDetailsDrawer({
             <Paper p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)">
               <Group gap="xs" mb={4}>
                 <IconCalendar size={14} color="var(--mantine-color-dimmed)" />
-                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Date</Text>
+                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>{t('client.bookingDetails.serviceSection.date')}</Text>
               </Group>
               <Text fw={700}>{datetime.formatDate(booking.scheduledAt)}</Text>
             </Paper>
@@ -210,7 +220,7 @@ export function ClientBookingDetailsDrawer({
 
         {/* Location */}
         <Box px="md" pb="md">
-          <Text size="sm" fw={700} tt="uppercase" mb="sm" c="dimmed">Service Location</Text>
+          <Text size="sm" fw={700} tt="uppercase" mb="sm" c="dimmed">{t('client.bookingDetails.locationSection.title')}</Text>
           <Paper radius="md" withBorder style={{ overflow: 'hidden' }}>
             <ClientBookingLocationMap
               latitude={master?.latitude}
@@ -226,16 +236,16 @@ export function ClientBookingDetailsDrawer({
 
         {/* Booking Info */}
         <Box p="md" bg="var(--mantine-color-gray-0)">
-          <Text size="sm" fw={700} tt="uppercase" mb="sm" c="dimmed">Booking Info</Text>
+          <Text size="sm" fw={700} tt="uppercase" mb="sm" c="dimmed">{t('client.bookingDetails.infoSection.title')}</Text>
           <Stack gap="sm">
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Scheduled Time</Text>
+              <Text size="sm" c="dimmed">{t('client.bookingDetails.infoSection.scheduledTime')}</Text>
               <Text size="sm" fw={500}>{datetime.formatTimeFromDate(booking.scheduledAt)}</Text>
             </Group>
             <Group justify="space-between">
-              <Text size="sm" c="dimmed">Status</Text>
+              <Text size="sm" c="dimmed">{t('client.bookingDetails.infoSection.status')}</Text>
               <Badge color={getStatusColor(booking.status)} variant="light">
-                {booking.status}
+                {t(STATUS_LABEL_KEYS[booking.status])}
               </Badge>
             </Group>
           </Stack>
@@ -245,7 +255,7 @@ export function ClientBookingDetailsDrawer({
 
         {/* Contact Details */}
         <Box p="md" bg="var(--mantine-color-gray-0)">
-          <Text size="sm" fw={700} tt="uppercase" mb="sm" c="dimmed">Contact Details</Text>
+          <Text size="sm" fw={700} tt="uppercase" mb="sm" c="dimmed">{t('client.bookingDetails.contactSection.title')}</Text>
           <Stack gap="sm">
             {isMasterLoading ? (
               <>
@@ -275,7 +285,7 @@ export function ClientBookingDetailsDrawer({
                   </Paper>
                 )}
                 {!master?.email && !master?.phoneNumber && (
-                  <Text size="sm" c="dimmed">No contact details available</Text>
+                  <Text size="sm" c="dimmed">{t('client.bookingDetails.contactSection.empty')}</Text>
                 )}
               </>
             )}
@@ -301,7 +311,7 @@ export function ClientBookingDetailsDrawer({
             onClick={handleCancel}
             loading={isCancelling}
           >
-            Cancel Booking
+            {t('client.bookings.actions.cancel')}
           </Button>
         </Box>
       )}

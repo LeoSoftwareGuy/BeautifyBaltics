@@ -3,6 +3,7 @@ import { Group } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import {
   ClientNavigation,
@@ -19,20 +20,23 @@ import { FileRoutesByFullPath } from '@/routeTree.gen';
 import { UserRole } from '@/state/endpoints/api.schemas';
 import { useGetUser } from '@/state/endpoints/users';
 
+type Breadcrumb = { titleKey: string; path: keyof FileRoutesByFullPath };
+
 interface RouteContext {
   queryClient: QueryClient;
-  breadcrumbs?: ({ title: string, path: keyof FileRoutesByFullPath })[];
+  breadcrumbs?: Breadcrumb[];
 }
 
 export const Route = createRootRouteWithContext<RouteContext>()({
   beforeLoad: () => ({
-    breadcrumbs: [{ title: 'Beautify Baltics', path: '/' }],
+    breadcrumbs: [{ titleKey: 'navigation.breadcrumbs.brand', path: '/' }],
   }),
   component: Root,
-  notFoundComponent: () => <div>Not Found</div>,
+  notFoundComponent: NotFound,
 });
 
 function Root() {
+  const { t } = useTranslation();
   usePageTitle();
   const location = useRouterState({ select: (state) => state.location });
   const isPublicRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');
@@ -80,4 +84,9 @@ function Root() {
       </ModalsProvider>
     </AppLayout>
   );
+}
+
+function NotFound() {
+  const { t } = useTranslation();
+  return <div>{t('general.notFound')}</div>;
 }

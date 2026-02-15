@@ -13,6 +13,7 @@ import {
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconScissors, IconUser } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,6 +35,7 @@ type RegisterFormValues = {
 
 export function RegisterForm({ onRequireEmailVerification, onRegistrationComplete }: RegisterFormProps) {
   const [submitting, setSubmitting] = useState(false);
+  const { t } = useTranslation();
 
   const form = useForm<RegisterFormValues>({
     initialValues: {
@@ -45,11 +47,11 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
       role: 'client',
     },
     validate: {
-      firstName: (value) => (value.trim().length >= 3 ? null : 'First name must be at least 3 characters'),
-      lastName: (value) => (value.trim().length >= 3 ? null : 'Last name must be at least 3 characters'),
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      password: (value) => (value.length >= 6 ? null : 'Password must be at least 6 characters'),
-      phoneNumber: (value) => (value.trim().length ? null : 'Phone number is required'),
+      firstName: (value) => (value.trim().length >= 3 ? null : t('auth.shared.validation.firstNameMin')),
+      lastName: (value) => (value.trim().length >= 3 ? null : t('auth.shared.validation.lastNameMin')),
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : t('auth.shared.validation.emailInvalid')),
+      password: (value) => (value.length >= 6 ? null : t('auth.shared.validation.passwordMin')),
+      phoneNumber: (value) => (value.trim().length ? null : t('auth.shared.validation.phoneRequired')),
     },
   });
 
@@ -85,8 +87,8 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
       const currentSession = data.session ?? (await supabase.auth.getSession()).data.session;
       if (!currentSession) {
         notifications.show({
-          title: 'Check your inbox',
-          message: 'Please confirm your email before signing in.',
+          title: t('auth.register.notifications.checkInboxTitle'),
+          message: t('auth.register.notifications.checkInboxMessage'),
           color: 'yellow',
         });
         onRequireEmailVerification?.();
@@ -94,16 +96,17 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
       }
 
       notifications.show({
-        title: 'Account created',
-        message: 'Welcome to Beautify Baltics!',
+        title: t('auth.register.notifications.successTitle'),
+        message: t('auth.register.notifications.successMessage'),
         color: 'teal',
       });
 
       onRegistrationComplete?.();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Registration failed. Please try again.';
+      const fallbackMessage = t('auth.register.notifications.failureMessage');
+      const message = error instanceof Error ? error.message : fallbackMessage;
       notifications.show({
-        title: 'Registration failed',
+        title: t('auth.register.notifications.failureTitle'),
         message,
         color: 'red',
       });
@@ -124,71 +127,71 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
       >
         <Stack gap="lg">
           <Stack gap="xs" align="center">
-            <Title order={2}>Create an account</Title>
+            <Title order={2}>{t('auth.register.title')}</Title>
             <Text c="dimmed" size="sm">
-              Register to access Beautify Baltics.
+              {t('auth.register.subtitle')}
             </Text>
           </Stack>
 
           <Stack gap="md">
             <Stack gap={4}>
               <Text size="sm" fw={500}>
-                First name
+                {t('auth.shared.labels.firstName')}
                 {' '}
                 <Text component="span" c="red">*</Text>
               </Text>
               <TextInput
-                placeholder="John"
+                placeholder={t('auth.shared.placeholders.firstName')}
                 radius="md"
                 {...form.getInputProps('firstName')}
               />
             </Stack>
             <Stack gap={4}>
               <Text size="sm" fw={500}>
-                Last name
+                {t('auth.shared.labels.lastName')}
                 {' '}
                 <Text component="span" c="red">*</Text>
               </Text>
               <TextInput
-                placeholder="Doe"
+                placeholder={t('auth.shared.placeholders.lastName')}
                 radius="md"
                 {...form.getInputProps('lastName')}
               />
             </Stack>
             <Stack gap={4}>
               <Text size="sm" fw={500}>
-                Email address
+                {t('auth.shared.labels.email')}
                 {' '}
                 <Text component="span" c="red">*</Text>
               </Text>
               <TextInput
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t('auth.shared.placeholders.email')}
                 radius="md"
                 {...form.getInputProps('email')}
               />
             </Stack>
             <Stack gap={4}>
               <Text size="sm" fw={500}>
-                Password
+                {t('auth.shared.labels.password')}
                 {' '}
                 <Text component="span" c="red">*</Text>
               </Text>
               <PasswordInput
-                placeholder="••••••••"
+                placeholder={t('auth.shared.placeholders.password')}
                 radius="md"
                 {...form.getInputProps('password')}
               />
             </Stack>
             <Stack gap={4}>
               <Text size="sm" fw={500}>
-                Phone number
+                {t('auth.shared.labels.phoneNumber')}
                 {' '}
                 <Text component="span" c="red">*</Text>
               </Text>
               <TextInput
                 type="tel"
-                placeholder="+123456789"
+                placeholder={t('auth.shared.placeholders.phoneNumber')}
                 radius="md"
                 {...form.getInputProps('phoneNumber')}
               />
@@ -197,10 +200,10 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
 
           <Stack gap="sm">
             <Text size="sm" fw={500}>
-              Account type
+              {t('auth.register.accountTypeLabel')}
             </Text>
             <Text size="xs" c="dimmed">
-              Choose how you want to use Beautify Baltics
+              {t('auth.register.accountTypeHint')}
             </Text>
             <Grid gutter="md">
               <Grid.Col span={6}>
@@ -220,7 +223,7 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
                 >
                   <Stack gap="xs" align="center">
                     <IconUser size={24} stroke={2} />
-                    <Text fw={600} size="sm">Client</Text>
+                    <Text fw={600} size="sm">{t('auth.register.roleClient')}</Text>
                   </Stack>
                 </UnstyledButton>
               </Grid.Col>
@@ -241,7 +244,7 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
                 >
                   <Stack gap="xs" align="center">
                     <IconScissors size={24} stroke={2} />
-                    <Text fw={600} size="sm">Master</Text>
+                    <Text fw={600} size="sm">{t('auth.register.roleMaster')}</Text>
                   </Stack>
                 </UnstyledButton>
               </Grid.Col>
@@ -249,7 +252,7 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
           </Stack>
 
           <Button type="submit" loading={submitting} size="md" color="pink">
-            Create account
+            {t('auth.register.submitButton')}
           </Button>
         </Stack>
       </Paper>

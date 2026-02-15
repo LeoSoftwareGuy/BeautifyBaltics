@@ -16,7 +16,7 @@ export const Route = createFileRoute('/register/')({
   beforeLoad: async ({ search }) => {
     await redirectIfAuthenticated(search.redirect ?? '/home');
     return {
-      breadcrumbs: [{ title: 'Register', path: '/register' }],
+      breadcrumbs: [{ titleKey: 'navigation.breadcrumbs.register', path: '/register' }],
     };
   },
   component: RegisterView,

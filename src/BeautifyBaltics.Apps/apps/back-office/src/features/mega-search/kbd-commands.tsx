@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next';
 import {
   Flex, Group, Kbd, Text,
 } from '@mantine/core';
 import { IconArrowDown, IconArrowUp, IconCornerDownLeft } from '@tabler/icons-react';
 
 export default function KbdCommands() {
+  const { t } = useTranslation();
   const renderKbd = (icon: typeof IconArrowUp) => {
     const Icon = icon;
     return (
@@ -22,10 +24,10 @@ export default function KbdCommands() {
           {renderKbd(IconArrowUp)}
           {renderKbd(IconArrowDown)}
         </Group>
-        <Text fz="xs" c="dark">to navigate</Text>
+        <Text fz="xs" c="dark">{t('megaSearch.shortcuts.navigate')}</Text>
       </Group>
       <Group gap="xs">
-        <Text fz="xs" c="dark">to select</Text>
+        <Text fz="xs" c="dark">{t('megaSearch.shortcuts.select')}</Text>
         {renderKbd(IconCornerDownLeft)}
       </Group>
     </Group>
