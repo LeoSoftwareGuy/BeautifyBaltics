@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { DatePickerInput, TimeInput } from '@mantine/dates';
 import { IconCalendar, IconCoffee, IconPlus } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType } from '@/state/endpoints/api.schemas';
 
@@ -37,6 +38,7 @@ export function QuickAddSlot({
   onSlotTypeChange,
   onSave,
 }: QuickAddSlotProps) {
+  const { t } = useTranslation();
   const canSave = Boolean(selectedRange[0] && selectedRange[1] && startTimeInput && endTimeInput);
   const isBreak = slotType === AvailabilitySlotType.Break;
 
@@ -46,28 +48,28 @@ export function QuickAddSlot({
         <ThemeIcon size="sm" variant="light" color={isBreak ? 'gray' : 'brand'}>
           {isBreak ? <IconCoffee size={14} /> : <IconPlus size={14} />}
         </ThemeIcon>
-        <Text fw={600}>Quick Add Slot</Text>
+        <Text fw={600}>{t('master.timeSlots.quickAdd.title')}</Text>
       </Group>
 
       <Stack gap="md">
         <div>
           <Text size="xs" fw={500} c="dimmed" mb={4}>
-            SLOT TYPE
+            {t('master.timeSlots.quickAdd.slotTypeLabel')}
           </Text>
           <SegmentedControl
             fullWidth
             value={slotType}
             onChange={(value) => onSlotTypeChange(value as AvailabilitySlotType)}
             data={[
-              { label: 'Availability', value: AvailabilitySlotType.Available },
-              { label: 'Break', value: AvailabilitySlotType.Break },
+              { label: t('master.timeSlots.quickAdd.availability'), value: AvailabilitySlotType.Available },
+              { label: t('master.timeSlots.quickAdd.break'), value: AvailabilitySlotType.Break },
             ]}
           />
         </div>
 
         <div>
           <Text size="xs" fw={500} c="dimmed" mb={4}>
-            DATE RANGE
+            {t('master.timeSlots.quickAdd.dateRangeLabel')}
           </Text>
           <DatePickerInput
             type="range"
@@ -76,20 +78,20 @@ export function QuickAddSlot({
               const rangeValue = (value ?? [null, null]) as [Date | null, Date | null];
               onRangeChange(rangeValue);
             }}
-            placeholder="Select date range"
+            placeholder={t('master.timeSlots.quickAdd.dateRangePlaceholder')}
             minDate={new Date()}
             rightSection={<IconCalendar size={16} />}
             allowSingleDateInRange
           />
           <Text size="xs" c="dimmed" mt={4}>
-            Select the first and last day, or double click for a single-day slot.
+            {t('master.timeSlots.quickAdd.dateRangeHint')}
           </Text>
         </div>
 
         <Group grow>
           <div>
             <Text size="xs" fw={500} c="dimmed" mb={4}>
-              START
+              {t('master.timeSlots.quickAdd.startLabel')}
             </Text>
             <TimeInput
               value={startTimeInput}
@@ -98,7 +100,7 @@ export function QuickAddSlot({
           </div>
           <div>
             <Text size="xs" fw={500} c="dimmed" mb={4}>
-              END
+              {t('master.timeSlots.quickAdd.endLabel')}
             </Text>
             <TimeInput
               value={endTimeInput}
@@ -114,7 +116,7 @@ export function QuickAddSlot({
           loading={isLoading}
           disabled={!canSave}
         >
-          {isBreak ? 'Add Break' : 'Save Availability'}
+          {isBreak ? t('master.timeSlots.quickAdd.saveBreak') : t('master.timeSlots.quickAdd.saveAvailability')}
         </Button>
       </Stack>
     </Card>

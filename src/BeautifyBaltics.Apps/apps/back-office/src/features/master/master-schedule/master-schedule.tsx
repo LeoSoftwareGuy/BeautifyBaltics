@@ -6,6 +6,7 @@ import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType, BookingStatus } from '@/state/endpoints/api.schemas';
 import { useFindBookings } from '@/state/endpoints/bookings';
@@ -25,6 +26,7 @@ export function MasterSchedule() {
   const queryClient = useQueryClient();
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
+  const { t } = useTranslation();
 
   const [selectedRange, setSelectedRange] = useState<[Date | null, Date | null]>([null, null]);
   const [startTimeInput, setStartTimeInput] = useState('');
@@ -70,15 +72,15 @@ export function MasterSchedule() {
       onSuccess: async () => {
         await invalidateAvailabilities();
         notifications.show({
-          title: 'Slot created',
-          message: 'Your availability slot has been added.',
+          title: t('master.timeSlots.notifications.createSuccessTitle'),
+          message: t('master.timeSlots.notifications.createSuccessMessage'),
           color: 'green',
         });
       },
       onError: () => {
         notifications.show({
-          title: 'Failed to create slot',
-          message: 'An error occurred while creating the slot.',
+          title: t('master.timeSlots.notifications.createErrorTitle'),
+          message: t('master.timeSlots.notifications.createErrorMessage'),
           color: 'red',
         });
       },
@@ -90,15 +92,15 @@ export function MasterSchedule() {
       onSuccess: async () => {
         await invalidateAvailabilities();
         notifications.show({
-          title: 'Slot removed',
-          message: 'Your availability slot has been removed.',
+          title: t('master.timeSlots.notifications.deleteSuccessTitle'),
+          message: t('master.timeSlots.notifications.deleteSuccessMessage'),
           color: 'green',
         });
       },
       onError: () => {
         notifications.show({
-          title: 'Failed to remove slot',
-          message: 'An error occurred while removing the slot.',
+          title: t('master.timeSlots.notifications.deleteErrorTitle'),
+          message: t('master.timeSlots.notifications.deleteErrorMessage'),
           color: 'red',
         });
       },
@@ -155,8 +157,8 @@ export function MasterSchedule() {
 
     if (!dayjs(sampleEndAt).isAfter(dayjs(sampleStartAt))) {
       notifications.show({
-        title: 'Invalid time slot',
-        message: 'End time must be after the start time.',
+        title: t('master.timeSlots.notifications.invalidTimeTitle'),
+        message: t('master.timeSlots.notifications.invalidTimeMessage'),
         color: 'red',
       });
       return;
@@ -176,8 +178,10 @@ export function MasterSchedule() {
     while (!cursor.isAfter(endDay)) {
       if (cursor.isBefore(now.startOf('day'))) {
         notifications.show({
-          title: 'Invalid date',
-          message: `Selected date ${cursor.format('MMM D, YYYY')} is in the past.`,
+          title: t('master.timeSlots.notifications.invalidDateTitle'),
+          message: t('master.timeSlots.notifications.invalidDateMessage', {
+            date: cursor.format('MMM D, YYYY'),
+          }),
           color: 'red',
         });
         return;
@@ -187,8 +191,8 @@ export function MasterSchedule() {
       const slotEnd = datetime.createDateTimeFromDateAndTime(cursor.toDate(), endTimeInput);
       if (dayjs(slotStart).isBefore(now)) {
         notifications.show({
-          title: 'Invalid time slot',
-          message: 'Availability slots must start in the future.',
+          title: t('master.timeSlots.notifications.invalidTimeTitle'),
+          message: t('master.timeSlots.notifications.futureTimeMessage'),
           color: 'red',
         });
         return;
@@ -224,15 +228,15 @@ export function MasterSchedule() {
     return (
       <Stack align="center" justify="center" h={300}>
         <Loader size="lg" />
-        <Text c="dimmed">Loading...</Text>
+        <Text c="dimmed">{t('master.timeSlots.loading')}</Text>
       </Stack>
     );
   }
 
   if (!masterId || isAvailabilityError) {
     return (
-      <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red">
-        Failed to load availability data. Please try again later.
+      <Alert icon={<IconAlertCircle size={16} />} title={t('master.timeSlots.error.title')} color="red">
+        {t('master.timeSlots.error.message')}
       </Alert>
     );
   }

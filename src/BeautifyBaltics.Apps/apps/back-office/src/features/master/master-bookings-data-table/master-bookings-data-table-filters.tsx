@@ -3,15 +3,16 @@ import {
 } from '@mantine/core';
 import { DatePickerInput, DatesRangeValue } from '@mantine/dates';
 import { IconCalendar, IconSearch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
 
 const STATUS_TABS = [
-  { value: 'all', label: 'All' },
-  { value: BookingStatus.Requested, label: 'Pending' },
-  { value: BookingStatus.Confirmed, label: 'Confirmed' },
-  { value: BookingStatus.Completed, label: 'Completed' },
-  { value: BookingStatus.Cancelled, label: 'Cancelled' },
+  { value: 'all', labelKey: 'master.bookings.filters.tabs.all' },
+  { value: BookingStatus.Requested, labelKey: 'master.bookings.filters.tabs.requested' },
+  { value: BookingStatus.Confirmed, labelKey: 'master.bookings.filters.tabs.confirmed' },
+  { value: BookingStatus.Completed, labelKey: 'master.bookings.filters.tabs.completed' },
+  { value: BookingStatus.Cancelled, labelKey: 'master.bookings.filters.tabs.cancelled' },
 ];
 
 interface BookingsFiltersProps {
@@ -31,11 +32,13 @@ export function BookingsFilters({
   searchValue,
   onSearchChange,
 }: BookingsFiltersProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       <Group gap="md" justify="space-between" wrap="nowrap">
         <TextInput
-          placeholder="Search by client name or job..."
+          placeholder={t('master.bookings.filters.searchPlaceholder')}
           leftSection={<IconSearch size={16} />}
           value={searchValue}
           onChange={(e) => onSearchChange(e.currentTarget.value)}
@@ -45,7 +48,7 @@ export function BookingsFilters({
         <Group gap="sm" wrap="nowrap">
           <DatePickerInput
             type="range"
-            placeholder="Select date range"
+            placeholder={t('master.bookings.filters.datePlaceholder')}
             value={dateRange}
             onChange={onDateRangeChange}
             clearable
@@ -64,7 +67,7 @@ export function BookingsFilters({
         <Tabs.List>
           {STATUS_TABS.map((tab) => (
             <Tabs.Tab key={tab.value} value={tab.value}>
-              {tab.label}
+              {t(tab.labelKey)}
             </Tabs.Tab>
           ))}
         </Tabs.List>

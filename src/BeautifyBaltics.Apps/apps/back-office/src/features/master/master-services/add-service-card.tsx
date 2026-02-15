@@ -3,6 +3,7 @@ import {
   Card, Stack, Text, ThemeIcon,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 type AddServiceCardProps = {
   onClick: () => void;
@@ -10,6 +11,7 @@ type AddServiceCardProps = {
 
 export function AddServiceCard({ onClick }: AddServiceCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <Card
@@ -47,10 +49,10 @@ export function AddServiceCard({ onClick }: AddServiceCardProps) {
         </ThemeIcon>
         <Stack gap={4} align="center">
           <Text fw={600} c={isHovered ? 'brand.6' : 'dimmed'}>
-            Add New Service
+            {t('master.services.cards.addServiceTitle')}
           </Text>
           <Text size="xs" c="dimmed" ta="center" px="lg">
-            Expand your catalog with a new service
+            {t('master.services.cards.addServiceSubtitle')}
           </Text>
         </Stack>
       </Stack>

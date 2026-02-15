@@ -12,6 +12,7 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconPlus } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import { useFindJobCategories, useFindJobs } from '@/state/endpoints/jobs';
@@ -24,6 +25,7 @@ type MasterServicesFormProps = {
 
 export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormProps) {
   const { translateCategory, translateService } = useTranslateData();
+  const { t } = useTranslation();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -51,16 +53,16 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
         resetForm();
         await queryClient.invalidateQueries({ queryKey: getFindMasterJobsQueryKey(masterId) });
         notifications.show({
-          title: 'Service added',
-          message: 'Your service has been added successfully.',
+          title: t('master.services.notifications.createSuccessTitle'),
+          message: t('master.services.notifications.createSuccessMessage'),
           color: 'green',
         });
         onSuccess?.();
       },
       onError: (error) => {
         notifications.show({
-          title: 'Failed to add service',
-          message: error.detail,
+          title: t('master.services.notifications.createErrorTitle'),
+          message: error.detail ?? t('master.services.notifications.createErrorMessage'),
           color: 'red',
         });
       },
@@ -124,7 +126,7 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
   return (
     <Stack gap="md">
       <Text c="dimmed" size="sm">
-        Select a category first, then choose the service you want to offer
+        {t('master.services.form.description')}
       </Text>
       <SimpleGrid
         cols={{
@@ -137,8 +139,8 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
           <Skeleton height={36} radius="sm" />
         ) : (
           <Select
-            label="Category"
-            placeholder="Select category"
+            label={t('master.services.form.categoryLabel')}
+            placeholder={t('master.services.form.categoryPlaceholder')}
             searchable
             data={categories
               .filter((cat): cat is typeof cat & { id: string; name: string } => Boolean(cat.id && cat.name))
@@ -156,8 +158,10 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
           <Skeleton height={36} radius="sm" />
         ) : (
           <Select
-            label="Service"
-            placeholder={selectedCategoryId ? 'Select service' : 'Select category first'}
+            label={t('master.services.form.serviceLabel')}
+            placeholder={selectedCategoryId
+              ? t('master.services.form.servicePlaceholder')
+              : t('master.services.form.selectCategoryFirst')}
             searchable
             disabled={!selectedCategoryId}
             data={jobs.map((job) => ({
@@ -170,22 +174,22 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
         )}
 
         <TextInput
-          label="Service Title"
-          placeholder="e.g., Classic Haircut"
+          label={t('master.services.form.titleLabel')}
+          placeholder={t('master.services.form.titlePlaceholder')}
           value={title}
           onChange={(event) => setTitle(event.currentTarget.value)}
         />
         <NumberInput
-          label="Price (€)"
-          placeholder="50"
+          label={t('master.services.form.priceLabel')}
+          placeholder={t('master.services.form.pricePlaceholder')}
           min={0}
           decimalScale={2}
           value={price}
           onChange={handlePriceChange}
         />
         <NumberInput
-          label="Duration (min)"
-          placeholder="30"
+          label={t('master.services.form.durationLabel')}
+          placeholder={t('master.services.form.durationPlaceholder')}
           min={5}
           step={5}
           value={duration}
@@ -199,7 +203,7 @@ export function MasterServicesForm({ masterId, onSuccess }: MasterServicesFormPr
         onClick={handleAdd}
         color="brand"
       >
-        Add service
+        {t('master.services.form.submit')}
       </Button>
     </Stack>
   );

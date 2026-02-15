@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import {
   IconCalendarEvent,
-  IconCurrencyDollar,
+  IconCurrencyEuro,
   IconStar,
 } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -142,7 +142,7 @@ function MasterDashboardPage() {
                 value={formatCurrency(statsData?.monthlyEarningsAverage)}
                 change={formatChange(statsData?.monthlyEarningsChange)}
                 changeType={statsData?.monthlyEarningsChange && statsData.monthlyEarningsChange >= 0 ? 'positive' : 'negative'}
-                icon={IconCurrencyDollar}
+                icon={IconCurrencyEuro}
                 iconColor="brand"
               />
             )}

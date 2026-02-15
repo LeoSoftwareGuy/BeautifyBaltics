@@ -10,6 +10,7 @@ import {
   Text,
 } from '@mantine/core';
 import { IconUpload } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
 import { useGetMasterJobImageById } from '@/state/endpoints/masters';
@@ -24,6 +25,7 @@ type MasterJobImageProps = {
 function MasterJobImage({
   masterId, jobId, imageId, alt,
 }: MasterJobImageProps) {
+  const { t } = useTranslation();
   const { data: imageData, isLoading } = useGetMasterJobImageById(masterId, jobId, imageId);
 
   if (isLoading) {
@@ -35,7 +37,7 @@ function MasterJobImage({
   return (
     <Image
       src={imageUrl}
-      alt={alt}
+      alt={alt || t('master.services.upload.imageAlt')}
       radius="md"
       h={120}
       fit="cover"
@@ -60,6 +62,7 @@ export function MasterServicesUploadModal({
   onUpload,
   isUploading,
 }: MasterServicesUploadModalProps) {
+  const { t } = useTranslation();
   const images = service?.images ?? [];
   const serviceName = service?.title ?? service?.jobName ?? '';
 
@@ -67,15 +70,15 @@ export function MasterServicesUploadModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Upload work samples"
+      title={t('master.services.modals.uploadTitle')}
       size="lg"
       centered
     >
       <Stack gap="md">
         <Text c="dimmed" size="sm">
           {service
-            ? `Add images for "${serviceName}"`
-            : 'Select a service to upload media'}
+            ? t('master.services.modals.uploadDescriptionWithName', { name: serviceName })
+            : t('master.services.modals.uploadDescription')}
         </Text>
         <Stack
           gap="sm"
@@ -89,12 +92,12 @@ export function MasterServicesUploadModal({
         >
           <IconUpload size={32} color="var(--mantine-color-gray-5)" />
           <Text c="dimmed" size="sm">
-            Drag and drop images or use the button below
+            {t('master.services.modals.uploadHint')}
           </Text>
           <FileButton onChange={onUpload} accept="image/*" multiple>
             {(props) => (
               <Button variant="outline" loading={isUploading} {...props}>
-                Select images
+                {t('master.services.modals.uploadButton')}
               </Button>
             )}
           </FileButton>
@@ -102,9 +105,7 @@ export function MasterServicesUploadModal({
         {service && images.length > 0 && (
           <Stack gap="sm">
             <Text size="sm" fw={500}>
-              Uploaded Images (
-              {images.length}
-              )
+              {t('master.services.modals.uploadedCount', { count: images.length })}
             </Text>
             <SimpleGrid
               cols={{
@@ -118,7 +119,7 @@ export function MasterServicesUploadModal({
                     masterId={masterId}
                     jobId={service.id}
                     imageId={image.id}
-                    alt={image.fileName ?? `Work sample ${index + 1}`}
+                    alt={image.fileName ?? t('master.services.upload.imageAltWithIndex', { index: index + 1 })}
                   />
                 </Box>
               ))}

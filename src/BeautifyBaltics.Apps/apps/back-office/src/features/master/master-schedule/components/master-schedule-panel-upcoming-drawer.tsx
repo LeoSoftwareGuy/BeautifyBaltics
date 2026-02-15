@@ -7,6 +7,7 @@ import {
   Text,
 } from '@mantine/core';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 import datetime from '@/utils/datetime';
 
@@ -25,6 +26,7 @@ type UpcomingDrawerProps = {
 };
 
 export function MasterSchedulePanelUpcomingDrawer({ opened, onClose, slots }: UpcomingDrawerProps) {
+  const { t } = useTranslation();
   const futureSlots = slots
     .filter((slot) => dayjs(slot.date).isAfter(dayjs()))
     .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
@@ -33,14 +35,14 @@ export function MasterSchedulePanelUpcomingDrawer({ opened, onClose, slots }: Up
     <Drawer
       opened={opened}
       onClose={onClose}
-      title="Upcoming Availability"
+      title={t('master.timeSlots.upcomingDrawer.title')}
       size="lg"
       position="right"
       overlayProps={{ opacity: 0.3 }}
     >
       {futureSlots.length === 0 ? (
         <Text size="sm" c="dimmed">
-          No upcoming availability slots.
+          {t('master.timeSlots.upcomingDrawer.empty')}
         </Text>
       ) : (
         <ScrollArea style={{ height: 'calc(100vh - 160px)' }} type="auto">
@@ -67,9 +69,9 @@ export function MasterSchedulePanelUpcomingDrawer({ opened, onClose, slots }: Up
                     </Text>
                   </div>
                   <Text size="xs" c="dimmed">
-                    Starts in
-                    {' '}
-                    {datetime.formatDuration(datetime.minutesFromNow(slot.date))}
+                    {t('master.timeSlots.upcomingDrawer.startsIn', {
+                      duration: datetime.formatDuration(datetime.minutesFromNow(slot.date)),
+                    })}
                   </Text>
                 </Group>
               </Paper>

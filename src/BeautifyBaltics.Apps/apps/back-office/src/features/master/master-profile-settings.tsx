@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   Alert,
   Avatar,
@@ -19,6 +19,7 @@ import {
 import { hasLength, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle, IconDeviceFloppy, IconPhotoUp } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import type { LocationData } from '@/features/map';
 import { LocationPicker } from '@/features/map';
@@ -28,16 +29,10 @@ import {
 } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
-const validate = {
-  firstName: hasLength({ min: 1, max: 128 }, 'First name is required (1-128 characters)'),
-  lastName: hasLength({ min: 1, max: 128 }, 'Last name is required (1-128 characters)'),
-  email: hasLength({ min: 1 }, 'Email is required'),
-  phoneNumber: hasLength({ min: 1, max: 32 }, 'Phone number is required'),
-};
-
 function MasterProfileSettings() {
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
+  const { t } = useTranslation();
 
   const {
     data: masterData,
@@ -48,6 +43,16 @@ function MasterProfileSettings() {
   } = useGetMasterById(masterId, { id: masterId }, {
     query: { enabled: !!masterId },
   });
+
+  const validate = useMemo(
+    () => ({
+      firstName: hasLength({ min: 1, max: 128 }, t('master.settings.profile.validation.firstName')),
+      lastName: hasLength({ min: 1, max: 128 }, t('master.settings.profile.validation.lastName')),
+      email: hasLength({ min: 1 }, t('master.settings.profile.validation.email')),
+      phoneNumber: hasLength({ min: 1, max: 32 }, t('master.settings.profile.validation.phone')),
+    }),
+    [t],
+  );
 
   const form = useForm<UpdateMasterProfileRequest>({
     mode: 'uncontrolled',
@@ -100,15 +105,15 @@ function MasterProfileSettings() {
       onSuccess: async () => {
         await refetch();
         notifications.show({
-          title: 'Profile updated',
-          message: 'Your profile has been updated successfully.',
+          title: t('master.settings.profile.notifications.updateSuccessTitle'),
+          message: t('master.settings.profile.notifications.updateSuccessMessage'),
           color: 'green',
         });
       },
       onError: (error) => {
         notifications.show({
-          title: 'Update failed',
-          message: error.detail,
+          title: t('master.settings.profile.notifications.updateErrorTitle'),
+          message: error.detail ?? t('master.settings.profile.notifications.updateErrorMessage'),
           color: 'red',
         });
       },
@@ -120,15 +125,15 @@ function MasterProfileSettings() {
       onSuccess: async () => {
         await refetch();
         notifications.show({
-          title: 'Photo uploaded',
-          message: 'Your profile photo has been updated successfully.',
+          title: t('master.settings.profile.notifications.photoSuccessTitle'),
+          message: t('master.settings.profile.notifications.photoSuccessMessage'),
           color: 'green',
         });
       },
       onError: (error) => {
         notifications.show({
-          title: 'Upload failed',
-          message: error.detail,
+          title: t('master.settings.profile.notifications.photoErrorTitle'),
+          message: error.detail ?? t('master.settings.profile.notifications.photoErrorMessage'),
           color: 'red',
         });
       },
@@ -171,15 +176,15 @@ function MasterProfileSettings() {
     return (
       <Stack align="center" justify="center" h={300}>
         <Loader size="lg" />
-        <Text c="dimmed">Loading profile...</Text>
+        <Text c="dimmed">{t('master.settings.profile.loading')}</Text>
       </Stack>
     );
   }
 
   if (isMasterError || !masterId) {
     return (
-      <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red">
-        Failed to load profile data. Please try again later.
+      <Alert icon={<IconAlertCircle size={16} />} title={t('master.settings.profile.error.title')} color="red">
+        {t('master.settings.profile.error.message')}
       </Alert>
     );
   }
@@ -190,8 +195,8 @@ function MasterProfileSettings() {
         <Card withBorder radius="md">
           <Stack gap="xs">
             <div>
-              <Title order={3}>Profile Photo</Title>
-              <Text c="dimmed" fz="sm">Upload a professional photo for your profile</Text>
+              <Title order={3}>{t('master.settings.profile.photo.title')}</Title>
+              <Text c="dimmed" fz="sm">{t('master.settings.profile.photo.subtitle')}</Text>
             </div>
             <Group gap="lg">
               <Avatar
@@ -210,7 +215,7 @@ function MasterProfileSettings() {
                     loading={isUploading}
                     {...props}
                   >
-                    Upload Photo
+                    {t('master.settings.profile.photo.uploadButton')}
                   </Button>
                 )}
               </FileButton>
@@ -221,54 +226,54 @@ function MasterProfileSettings() {
         <Card withBorder radius="md">
           <Stack gap="xs">
             <div>
-              <Title order={4}>Personal Information</Title>
-              <Text c="dimmed" fz="sm">Update your personal details</Text>
+              <Title order={4}>{t('master.settings.profile.personal.title')}</Title>
+              <Text c="dimmed" fz="sm">{t('master.settings.profile.personal.subtitle')}</Text>
             </div>
             <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
               <TextInput
                 withAsterisk
-                label="First name"
-                placeholder="Enter first name"
+                label={t('master.settings.profile.form.firstNameLabel')}
+                placeholder={t('master.settings.profile.form.firstNamePlaceholder')}
                 key={form.key('firstName')}
                 {...form.getInputProps('firstName')}
               />
               <TextInput
                 withAsterisk
-                label="Last name"
-                placeholder="Enter last name"
+                label={t('master.settings.profile.form.lastNameLabel')}
+                placeholder={t('master.settings.profile.form.lastNamePlaceholder')}
                 key={form.key('lastName')}
                 {...form.getInputProps('lastName')}
               />
               <TextInput
                 withAsterisk
                 type="email"
-                label="Email"
-                placeholder="Enter email"
+                label={t('master.settings.profile.form.emailLabel')}
+                placeholder={t('master.settings.profile.form.emailPlaceholder')}
                 key={form.key('email')}
                 {...form.getInputProps('email')}
               />
               <TextInput
                 withAsterisk
-                label="Phone number"
-                placeholder="Enter phone number"
+                label={t('master.settings.profile.form.phoneLabel')}
+                placeholder={t('master.settings.profile.form.phonePlaceholder')}
                 key={form.key('phoneNumber')}
                 {...form.getInputProps('phoneNumber')}
               />
               <NumberInput
-                label="Age"
-                placeholder="Enter age"
+                label={t('master.settings.profile.form.ageLabel')}
+                placeholder={t('master.settings.profile.form.agePlaceholder')}
                 min={18}
                 max={120}
                 key={form.key('age')}
                 {...form.getInputProps('age')}
               />
               <Select
-                label="Gender"
-                placeholder="Select gender"
+                label={t('master.settings.profile.form.genderLabel')}
+                placeholder={t('master.settings.profile.form.genderPlaceholder')}
                 data={[
-                  { value: Gender.Male, label: 'Male' },
-                  { value: Gender.Female, label: 'Female' },
-                  { value: Gender.Other, label: 'Other' },
+                  { value: Gender.Male, label: t('master.settings.profile.form.genderMale') },
+                  { value: Gender.Female, label: t('master.settings.profile.form.genderFemale') },
+                  { value: Gender.Other, label: t('master.settings.profile.form.genderOther') },
                 ]}
                 clearable
                 key={form.key('gender')}
@@ -276,8 +281,8 @@ function MasterProfileSettings() {
               />
             </SimpleGrid>
             <Textarea
-              label="About me"
-              placeholder="Tell clients about yourself, your experience, and specialties..."
+              label={t('master.settings.profile.form.aboutLabel')}
+              placeholder={t('master.settings.profile.form.aboutPlaceholder')}
               minRows={4}
               maxLength={1000}
               key={form.key('description')}
@@ -289,8 +294,8 @@ function MasterProfileSettings() {
         <Card withBorder radius="md">
           <Stack gap="xs">
             <div>
-              <Title order={4}>Location</Title>
-              <Text c="dimmed" fz="sm">Set your work location so clients can find you on the map</Text>
+              <Title order={4}>{t('master.settings.profile.location.title')}</Title>
+              <Text c="dimmed" fz="sm">{t('master.settings.profile.location.subtitle')}</Text>
             </div>
             <LocationPicker
               value={{
@@ -314,7 +319,7 @@ function MasterProfileSettings() {
             loading={isPending}
             disabled={!form.isDirty()}
           >
-            Save changes
+            {t('master.settings.profile.form.submit')}
           </Button>
         </Group>
       </Stack>

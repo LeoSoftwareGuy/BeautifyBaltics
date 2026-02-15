@@ -6,7 +6,7 @@ import {
 import {
   IconCalendarEvent,
   IconCircleCheck,
-  IconCurrencyDollar,
+  IconCurrencyEuro,
 } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 
@@ -81,7 +81,7 @@ export function ClientDashboardOverviewPage() {
     {
       label: t('client.dashboard.stats.totalSpent'),
       value: `$${totalSpent.toFixed(2)}`,
-      icon: IconCurrencyDollar,
+      icon: IconCurrencyEuro,
       color: 'grape',
     },
   ];

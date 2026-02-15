@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { IconRepeat } from '@tabler/icons-react';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 import datetime from '@/utils/datetime';
 
@@ -26,6 +27,7 @@ type UpcomingSlotsProps = {
 };
 
 export function MasterSchedulePanelUpcomingSlots({ slots, onViewAll }: UpcomingSlotsProps) {
+  const { t } = useTranslation();
   const { upcomingSlots, futureCount } = useMemo(() => {
     const now = dayjs();
     const in48Hours = now.add(48, 'hour');
@@ -45,19 +47,17 @@ export function MasterSchedulePanelUpcomingSlots({ slots, onViewAll }: UpcomingS
     <div>
       <Group justify="space-between" mb="md">
         <Text size="xs" fw={600} c="dimmed" tt="uppercase">
-          Upcoming (48H)
+          {t('master.timeSlots.upcoming.title')}
         </Text>
         <Text size="xs" c="dimmed">
-          {upcomingSlots.length}
-          {' '}
-          Slots
+          {t('master.timeSlots.upcoming.count', { count: upcomingSlots.length })}
         </Text>
       </Group>
 
       <Stack gap="sm">
         {upcomingSlots.length === 0 ? (
           <Text size="sm" c="dimmed" ta="center" py="md">
-            No upcoming slots
+            {t('master.timeSlots.upcoming.empty')}
           </Text>
         ) : (
           upcomingSlots.map((slot) => {
@@ -66,8 +66,8 @@ export function MasterSchedulePanelUpcomingSlots({ slots, onViewAll }: UpcomingS
             const startsIn = datetime.minutesFromNow(slot.date);
 
             let dateLabel = datetime.formatDate(slot.date);
-            if (isSlotToday) dateLabel = 'TODAY';
-            else if (isSlotTomorrow) dateLabel = 'TOMORROW';
+            if (isSlotToday) dateLabel = t('master.timeSlots.upcoming.today');
+            else if (isSlotTomorrow) dateLabel = t('master.timeSlots.upcoming.tomorrow');
 
             return (
               <Paper
@@ -95,14 +95,12 @@ export function MasterSchedulePanelUpcomingSlots({ slots, onViewAll }: UpcomingS
                 </Text>
                 {slot.isRecurring && (
                   <Text size="xs" c="brand">
-                    Recurring
+                    {t('master.timeSlots.upcoming.recurring')}
                   </Text>
                 )}
                 {!slot.isRecurring && startsIn > 0 && (
                   <Text size="xs" c="dimmed">
-                    Starts in
-                    {' '}
-                    {datetime.formatDuration(startsIn)}
+                    {t('master.timeSlots.upcoming.startsIn', { duration: datetime.formatDuration(startsIn) })}
                   </Text>
                 )}
               </Paper>
@@ -112,7 +110,7 @@ export function MasterSchedulePanelUpcomingSlots({ slots, onViewAll }: UpcomingS
 
         {futureCount > upcomingSlots.length && (
           <Button variant="subtle" color="brand" size="xs" onClick={onViewAll}>
-            View All Upcoming
+            {t('master.timeSlots.upcoming.viewAll')}
           </Button>
         )}
       </Stack>

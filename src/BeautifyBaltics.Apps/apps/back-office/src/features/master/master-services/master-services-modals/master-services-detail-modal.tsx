@@ -25,6 +25,7 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import { LightboxCarousel } from '@/components/lightbox-carousel';
 import { useTranslateData } from '@/hooks/use-translate-data';
@@ -52,21 +53,22 @@ export function MasterServicesDetailModal({
 }: MasterServicesDetailModalProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { translateService, translateCategory } = useTranslateData();
+  const { t } = useTranslation();
 
   const { mutateAsync: setFeaturedImage, isPending: isSettingFeatured } = useSetMasterJobFeaturedImage({
     mutation: {
       onSuccess: () => {
         onRefetch();
         notifications.show({
-          title: 'Featured image updated',
-          message: 'The featured image has been updated.',
+          title: t('master.services.notifications.featuredSuccessTitle'),
+          message: t('master.services.notifications.featuredSuccessMessage'),
           color: 'green',
         });
       },
       onError: () => {
         notifications.show({
-          title: 'Failed to set featured image',
-          message: 'Please try again.',
+          title: t('master.services.notifications.featuredErrorTitle'),
+          message: t('master.services.notifications.featuredErrorMessage'),
           color: 'red',
         });
       },
@@ -78,15 +80,15 @@ export function MasterServicesDetailModal({
       onSuccess: () => {
         onRefetch();
         notifications.show({
-          title: 'Image deleted',
-          message: 'The image has been removed.',
+          title: t('master.services.notifications.deleteImageSuccessTitle'),
+          message: t('master.services.notifications.deleteImageSuccessMessage'),
           color: 'green',
         });
       },
       onError: () => {
         notifications.show({
-          title: 'Failed to delete image',
-          message: 'Please try again.',
+          title: t('master.services.notifications.deleteImageErrorTitle'),
+          message: t('master.services.notifications.deleteImageErrorMessage'),
           color: 'red',
         });
       },
@@ -218,7 +220,7 @@ export function MasterServicesDetailModal({
                 leftSection={<IconUpload size={16} />}
                 onClick={handleUpload}
               >
-                Upload images
+                {t('master.services.detail.uploadImages')}
               </Button>
               <Button
                 variant="light"
@@ -226,7 +228,7 @@ export function MasterServicesDetailModal({
                 leftSection={<IconEdit size={16} />}
                 onClick={handleEdit}
               >
-                Edit
+                {t('master.services.detail.edit')}
               </Button>
             </Group>
           </Group>
@@ -244,7 +246,7 @@ export function MasterServicesDetailModal({
               <Text c="dimmed">
                 {service.durationMinutes ?? 0}
                 {' '}
-                minutes
+                {t('master.services.detail.minutes')}
               </Text>
             </Group>
           </Group>
@@ -253,7 +255,7 @@ export function MasterServicesDetailModal({
           <Stack gap="sm">
             <Group justify="space-between">
               <Text fw={600}>
-                Work Samples
+                {t('master.services.detail.samples')}
                 {images.length > 0 && ` (${images.length})`}
               </Text>
             </Group>
@@ -270,7 +272,7 @@ export function MasterServicesDetailModal({
                 <Stack align="center" gap="xs">
                   <IconPhoto size={32} color="var(--mantine-color-gray-4)" />
                   <Text c="dimmed" size="sm">
-                    No work samples uploaded yet
+                    {t('master.services.detail.noSamples')}
                   </Text>
                   <Button
                     variant="light"
@@ -279,7 +281,7 @@ export function MasterServicesDetailModal({
                     leftSection={<IconUpload size={14} />}
                     onClick={handleUpload}
                   >
-                    Upload images
+                    {t('master.services.detail.uploadImages')}
                   </Button>
                 </Stack>
               </Box>
@@ -315,7 +317,12 @@ export function MasterServicesDetailModal({
                           e.currentTarget.style.transform = 'scale(1)';
                         }}
                       />
-                      <Tooltip label={isFeatured ? 'Remove as featured' : 'Set as featured'} position="top">
+                      <Tooltip
+                        label={isFeatured
+                          ? t('master.services.detail.removeFeatured')
+                          : t('master.services.detail.setFeatured')}
+                        position="top"
+                      >
                         <ActionIcon
                           variant="filled"
                           color={isFeatured ? 'yellow' : 'dark'}
@@ -334,7 +341,7 @@ export function MasterServicesDetailModal({
                           {isFeatured ? <IconStarFilled size={14} /> : <IconStar size={14} />}
                         </ActionIcon>
                       </Tooltip>
-                      <Tooltip label="Delete image" position="top">
+                      <Tooltip label={t('master.services.detail.deleteImage')} position="top">
                         <ActionIcon
                           variant="filled"
                           color="red"

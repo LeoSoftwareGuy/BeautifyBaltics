@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Card, Stack,
 } from '@mantine/core';
 import { DatesRangeValue } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
 import {
@@ -40,6 +41,7 @@ export function MasterBookingsDataTable() {
   const { data: user } = useGetUser();
   const masterId = user?.id ?? '';
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('all');
@@ -85,8 +87,8 @@ export function MasterBookingsDataTable() {
     mutation: {
       onSuccess: () => {
         notifications.show({
-          title: 'Booking confirmed',
-          message: 'The booking has been confirmed successfully.',
+          title: t('master.bookings.notifications.confirmSuccessTitle'),
+          message: t('master.bookings.notifications.confirmSuccessMessage'),
           color: 'green',
         });
         queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
@@ -94,8 +96,8 @@ export function MasterBookingsDataTable() {
       },
       onError: (error: any) => {
         notifications.show({
-          title: 'Failed to confirm booking',
-          message: error.message || 'An error occurred while confirming the booking.',
+          title: t('master.bookings.notifications.confirmErrorTitle'),
+          message: error.message || t('master.bookings.notifications.confirmErrorMessage'),
           color: 'red',
         });
         setActionBookingId(null);
@@ -107,8 +109,8 @@ export function MasterBookingsDataTable() {
     mutation: {
       onSuccess: () => {
         notifications.show({
-          title: 'Booking cancelled',
-          message: 'The booking has been cancelled successfully.',
+          title: t('master.bookings.notifications.cancelSuccessTitle'),
+          message: t('master.bookings.notifications.cancelSuccessMessage'),
           color: 'green',
         });
         queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
@@ -116,8 +118,8 @@ export function MasterBookingsDataTable() {
       },
       onError: (error: any) => {
         notifications.show({
-          title: 'Failed to cancel booking',
-          message: error.message || 'An error occurred while cancelling the booking.',
+          title: t('master.bookings.notifications.cancelErrorTitle'),
+          message: error.message || t('master.bookings.notifications.cancelErrorMessage'),
           color: 'red',
         });
         setActionBookingId(null);
@@ -156,38 +158,48 @@ export function MasterBookingsDataTable() {
     onPageChange(1);
   };
 
+  const statusLabels = useMemo(
+    () => ({
+      [BookingStatus.Requested]: t('master.bookings.status.requested'),
+      [BookingStatus.Confirmed]: t('master.bookings.status.confirmed'),
+      [BookingStatus.Completed]: t('master.bookings.status.completed'),
+      [BookingStatus.Cancelled]: t('master.bookings.status.cancelled'),
+    }),
+    [t],
+  );
+
   const columns: PagedDataTableColumn<FindBookingsResponse>[] = [
     {
       accessor: 'clientName',
-      title: 'CLIENT',
-      render: renderClient,
+      title: t('master.bookings.table.columns.client'),
+      render: (booking) => renderClient(booking, t('master.bookings.table.clientRoleLabel')),
     },
     {
       accessor: 'masterJobTitle',
-      title: 'JOB DETAILS',
+      title: t('master.bookings.table.columns.jobDetails'),
       render: renderJobDetails,
     },
     {
       accessor: 'scheduledAt',
-      title: 'DATE & TIME',
+      title: t('master.bookings.table.columns.date'),
       sortKey: 'scheduledAt',
       render: renderDateTime,
     },
     {
       accessor: 'price',
-      title: 'PRICING',
+      title: t('master.bookings.table.columns.price'),
       sortKey: 'price',
       render: renderPricing,
     },
     {
       accessor: 'status',
-      title: 'STATUS',
+      title: t('master.bookings.table.columns.status'),
       sortKey: 'status',
-      render: renderStatus,
+      render: (booking) => renderStatus(booking, statusLabels),
     },
     {
       accessor: 'actions',
-      title: 'ACTIONS',
+      title: t('master.bookings.table.columns.actions'),
       render: (booking) => (
         <ActionsRenderer
           booking={booking}
@@ -195,6 +207,11 @@ export function MasterBookingsDataTable() {
           onCancel={handleCancel}
           isConfirming={isConfirming && actionBookingId === booking.id}
           isCancelling={isCancelling && actionBookingId === booking.id}
+          labels={{
+            viewInvoice: t('master.bookings.table.viewInvoice'),
+            confirm: t('master.bookings.table.confirm'),
+            cancel: t('master.bookings.table.cancel'),
+          }}
         />
       ),
     },
@@ -221,7 +238,7 @@ export function MasterBookingsDataTable() {
           onRecordsPerPageChange={onRecordsPerPageChange}
           sortStatus={sortStatus}
           onSortStatusChange={(newStatus) => handleSortStatusChange(newStatus, columns)}
-          noRecordsText="No bookings found"
+          noRecordsText={t('master.bookings.table.noRecords')}
         />
       </Stack>
     </Card>

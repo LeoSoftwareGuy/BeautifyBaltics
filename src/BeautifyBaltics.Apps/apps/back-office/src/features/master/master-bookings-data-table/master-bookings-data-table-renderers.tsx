@@ -21,16 +21,7 @@ export function getStatusColor(status: BookingStatus): string {
   }
 }
 
-export function getStatusLabel(status: BookingStatus): string {
-  switch (status) {
-    case BookingStatus.Requested:
-      return 'PENDING';
-    default:
-      return status.toUpperCase();
-  }
-}
-
-export function renderClient(booking: FindBookingsResponse) {
+export function renderClient(booking: FindBookingsResponse, roleLabel: string) {
   return (
     <Group gap="sm" wrap="nowrap">
       <Avatar
@@ -41,7 +32,7 @@ export function renderClient(booking: FindBookingsResponse) {
       />
       <Stack gap={2}>
         <Text size="sm" fw={500}>{booking.clientName}</Text>
-        <Text size="xs" c="dimmed">Client</Text>
+        <Text size="xs" c="dimmed">{roleLabel}</Text>
       </Stack>
     </Group>
   );
@@ -85,7 +76,10 @@ export function renderPricing(booking: FindBookingsResponse) {
   );
 }
 
-export function renderStatus(booking: FindBookingsResponse) {
+export function renderStatus(
+  booking: FindBookingsResponse,
+  statusLabels: Partial<Record<BookingStatus, string>>,
+) {
   return (
     <Badge
       color={getStatusColor(booking.status)}
@@ -93,7 +87,7 @@ export function renderStatus(booking: FindBookingsResponse) {
       size="sm"
       tt="uppercase"
     >
-      {getStatusLabel(booking.status)}
+      {statusLabels[booking.status] ?? booking.status.toString().toUpperCase()}
     </Badge>
   );
 }
@@ -117,6 +111,11 @@ type ActionsRendererProps = {
   onCancel: (bookingId: string) => void;
   isConfirming: boolean;
   isCancelling: boolean;
+  labels: {
+    viewInvoice: string;
+    confirm: string;
+    cancel: string;
+  };
 };
 
 export function ActionsRenderer({
@@ -125,6 +124,7 @@ export function ActionsRenderer({
   onCancel,
   isConfirming,
   isCancelling,
+  labels,
 }: ActionsRendererProps) {
   const showConfirm = canConfirmBooking(booking);
   const showCancel = canCancelBooking(booking);
@@ -133,7 +133,7 @@ export function ActionsRenderer({
   if (isCompleted) {
     return (
       <Anchor size="xs" c="brand">
-        View Invoice
+        {labels.viewInvoice}
       </Anchor>
     );
   }
@@ -153,7 +153,7 @@ export function ActionsRenderer({
           loading={isConfirming}
           disabled={isCancelling}
         >
-          Confirm
+          {labels.confirm}
         </Button>
       )}
       {showCancel && (
@@ -165,7 +165,7 @@ export function ActionsRenderer({
           loading={isCancelling}
           disabled={isConfirming}
         >
-          Cancel
+          {labels.cancel}
         </Button>
       )}
     </Group>

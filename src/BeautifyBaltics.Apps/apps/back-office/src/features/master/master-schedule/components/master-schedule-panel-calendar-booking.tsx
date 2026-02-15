@@ -3,6 +3,8 @@ import {
   Paper,
   Text,
 } from '@mantine/core';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
@@ -40,6 +42,16 @@ export function MasterSchedulePanelCalendarBooking({
   durationMinutes,
   status,
 }: CalendarBookingProps) {
+  const { t } = useTranslation();
+  const statusLabels = useMemo(
+    () => ({
+      [BookingStatus.Requested]: t('master.bookings.status.requested'),
+      [BookingStatus.Confirmed]: t('master.bookings.status.confirmed'),
+      [BookingStatus.Completed]: t('master.bookings.status.completed'),
+      [BookingStatus.Cancelled]: t('master.bookings.status.cancelled'),
+    }),
+    [t],
+  );
   const startMinutes = datetime.parseTimeToMinutes(startTime);
   const height = (durationMinutes / 60) * HOUR_HEIGHT;
   const minutesPastHour = startMinutes % 60;
@@ -84,7 +96,7 @@ export function MasterSchedulePanelCalendarBooking({
             size="xs"
             style={{ flexShrink: 0 }}
           >
-            {status}
+            {statusLabels[status] ?? status}
           </Badge>
         </div>
         {height > 40 && (

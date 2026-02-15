@@ -77,11 +77,10 @@ export default function AppLayout({
               {collapsedNavbar ? null : <Text fw={700} truncate="end" c={theme.primaryColor}>{t('brand.name')}</Text>}
             </Group>
           </AppShell.Section>
-          <Divider mx="md" />
+
           <AppShell.Section px="md" py="xs">
             {navbar.top}
           </AppShell.Section>
-          <Divider mx="md" mt={-1} />
           <AppShell.Section grow component={ScrollArea}>
             <Box p="md">
               {navbar.upperMiddle}

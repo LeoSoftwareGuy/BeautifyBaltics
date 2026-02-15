@@ -9,6 +9,7 @@ import {
   IconChevronRight,
   IconRefresh,
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import datetime from '@/utils/datetime';
 
@@ -25,6 +26,8 @@ export function MasterSchedulePanelWeekNavigation({
   onNextWeek,
   onRefresh,
 }: WeekNavigationProps) {
+  const { t } = useTranslation();
+
   return (
     <Group justify="space-between" mb="lg">
       <Group gap="sm">
@@ -42,7 +45,7 @@ export function MasterSchedulePanelWeekNavigation({
         leftSection={<IconRefresh size={16} />}
         onClick={onRefresh}
       >
-        Refresh
+        {t('master.timeSlots.weekNavigation.refresh')}
       </Button>
     </Group>
   );

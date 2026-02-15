@@ -18,7 +18,7 @@ import {
 import {
   IconCalendar,
   IconClock,
-  IconCurrencyDollar,
+  IconCurrencyEuro,
   IconMail,
   IconPhone,
   IconTool,
@@ -193,7 +193,7 @@ export function ClientBookingDetailsDrawer({
 
             <Paper p="md" radius="md" withBorder bg="var(--mantine-color-gray-0)">
               <Group gap="xs" mb={4}>
-                <IconCurrencyDollar size={14} color="var(--mantine-color-dimmed)" />
+                <IconCurrencyEuro size={14} color="var(--mantine-color-dimmed)" />
                 <Text size="xs" c="dimmed" tt="uppercase" fw={600}>{t('client.bookingDetails.serviceSection.price')}</Text>
               </Group>
               <Text fw={700} c="brand">

@@ -14,6 +14,7 @@ import {
 import { IconClock, IconMapPin } from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
@@ -59,13 +60,14 @@ function formatDuration(duration: string): string {
 
 export function MasterDashboardTodaysSchedule({ bookings = [], isLoading }: MasterDashboardTodaysScheduleProps) {
   const { translateService } = useTranslateData();
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <Card withBorder radius="md" p="lg" h="100%">
         <Group justify="space-between" mb="md">
-          <Text fw={600} size="lg">Today&apos;s Schedule</Text>
+          <Text fw={600} size="lg">{t('master.dashboard.schedule.title')}</Text>
           <Anchor component={Link} to="/master/time-slots" size="sm" c="brand">
-            View Calendar
+            {t('master.dashboard.schedule.viewCalendar')}
           </Anchor>
         </Group>
         <Stack gap="md">
@@ -100,14 +102,14 @@ export function MasterDashboardTodaysSchedule({ bookings = [], isLoading }: Mast
   return (
     <Card withBorder radius="md" p="lg" h="100%">
       <Group justify="space-between" mb="md">
-        <Text fw={600} size="lg">Today&apos;s Schedule</Text>
+        <Text fw={600} size="lg">{t('master.dashboard.schedule.title')}</Text>
         <Anchor component={Link} to="/master/time-slots" size="sm" c="brand">
-          View Calendar
+          {t('master.dashboard.schedule.viewCalendar')}
         </Anchor>
       </Group>
 
       {sortedBookings.length === 0 ? (
-        <Text c="dimmed" ta="center" py="xl">No bookings scheduled for today</Text>
+        <Text c="dimmed" ta="center" py="xl">{t('master.dashboard.schedule.empty')}</Text>
       ) : (
         <Timeline active={-1} bulletSize={12} lineWidth={2}>
           {sortedBookings.map((booking) => (

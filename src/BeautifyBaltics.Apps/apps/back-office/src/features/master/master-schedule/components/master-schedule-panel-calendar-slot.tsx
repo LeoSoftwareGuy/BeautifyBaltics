@@ -5,6 +5,7 @@ import {
   Text,
 } from '@mantine/core';
 import { IconCoffee, IconDotsVertical, IconTrash } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
@@ -29,6 +30,7 @@ export function MasterSchedulePanelCalendarSlot({
   slotType = AvailabilitySlotType.Available,
   onRemove,
 }: CalendarSlotProps) {
+  const { t } = useTranslation();
   const startMinutes = datetime.parseTimeToMinutes(startTime);
   const endMinutes = datetime.parseTimeToMinutes(endTime);
   const durationMinutes = endMinutes - startMinutes;
@@ -107,12 +109,12 @@ export function MasterSchedulePanelCalendarSlot({
         </Text>
         {isBreak && height > 50 && (
           <Text size="xs" c="dimmed" lh={1}>
-            Break
+            {t('master.timeSlots.calendar.break')}
           </Text>
         )}
         {isRecurring && !isBreak && height > 40 && (
           <Text size="xs" c="brand">
-            Weekly
+            {t('master.timeSlots.calendar.weekly')}
           </Text>
         )}
       </div>
@@ -139,7 +141,7 @@ export function MasterSchedulePanelCalendarSlot({
             leftSection={<IconTrash size={14} />}
             onClick={() => onRemove(id)}
           >
-            Remove slot
+            {t('master.timeSlots.calendar.removeSlot')}
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>

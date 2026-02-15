@@ -12,6 +12,7 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
@@ -32,6 +33,7 @@ export function MasterServicesEditModal({
   service,
 }: MasterServicesEditModalProps) {
   const { translateCategory, translateService } = useTranslateData();
+  const { t } = useTranslation();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -56,16 +58,16 @@ export function MasterServicesEditModal({
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: getFindMasterJobsQueryKey(masterId) });
         notifications.show({
-          title: 'Service updated',
-          message: 'Your service has been updated successfully.',
+          title: t('master.services.notifications.updateSuccessTitle'),
+          message: t('master.services.notifications.updateSuccessMessage'),
           color: 'green',
         });
         onClose();
       },
       onError: (error) => {
         notifications.show({
-          title: 'Failed to update service',
-          message: error.detail,
+          title: t('master.services.notifications.updateErrorTitle'),
+          message: error.detail ?? t('master.services.notifications.updateErrorMessage'),
           color: 'red',
         });
       },
@@ -134,13 +136,13 @@ export function MasterServicesEditModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Edit Service"
+      title={t('master.services.modals.editTitle')}
       size="md"
       centered
     >
       <Stack gap="md">
         <Text c="dimmed" size="sm">
-          Update the service details below
+          {t('master.services.modals.editDescription')}
         </Text>
 
         {/* Category Select */}
@@ -148,8 +150,8 @@ export function MasterServicesEditModal({
           <Skeleton height={36} radius="sm" />
         ) : (
           <Select
-            label="Category"
-            placeholder="Select category"
+            label={t('master.services.form.categoryLabel')}
+            placeholder={t('master.services.form.categoryPlaceholder')}
             searchable
             data={categories
               .filter((cat): cat is typeof cat & { id: string; name: string } => Boolean(cat.id && cat.name))
@@ -167,8 +169,10 @@ export function MasterServicesEditModal({
           <Skeleton height={36} radius="sm" />
         ) : (
           <Select
-            label="Service"
-            placeholder={selectedCategoryId ? 'Select service' : 'Select category first'}
+            label={t('master.services.form.serviceLabel')}
+            placeholder={selectedCategoryId
+              ? t('master.services.form.servicePlaceholder')
+              : t('master.services.form.selectCategoryFirst')}
             searchable
             disabled={!selectedCategoryId}
             data={jobs.map((job) => ({
@@ -181,22 +185,22 @@ export function MasterServicesEditModal({
         )}
 
         <TextInput
-          label="Service Title"
-          placeholder="e.g., Classic Haircut"
+          label={t('master.services.form.titleLabel')}
+          placeholder={t('master.services.form.titlePlaceholder')}
           value={title}
           onChange={(event) => setTitle(event.currentTarget.value)}
         />
         <NumberInput
-          label="Price (€)"
-          placeholder="50"
+          label={t('master.services.form.priceLabel')}
+          placeholder={t('master.services.form.pricePlaceholder')}
           min={0}
           decimalScale={2}
           value={price}
           onChange={handlePriceChange}
         />
         <NumberInput
-          label="Duration (min)"
-          placeholder="30"
+          label={t('master.services.form.durationLabel')}
+          placeholder={t('master.services.form.durationPlaceholder')}
           min={5}
           step={5}
           value={duration}
@@ -204,7 +208,7 @@ export function MasterServicesEditModal({
         />
         <Group justify="flex-end" mt="md">
           <Button variant="default" onClick={onClose}>
-            Cancel
+            {t('actions.cancel')}
           </Button>
           <Button
             color="brand"
@@ -212,7 +216,7 @@ export function MasterServicesEditModal({
             loading={isUpdating}
             onClick={handleSubmit}
           >
-            Save changes
+            {t('master.services.form.saveChanges')}
           </Button>
         </Group>
       </Stack>

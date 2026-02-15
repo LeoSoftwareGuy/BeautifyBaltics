@@ -6,6 +6,8 @@ import {
   Text,
 } from '@mantine/core';
 import dayjs from 'dayjs';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AvailabilitySlotType, BookingStatus } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
@@ -44,6 +46,12 @@ type CalendarGridProps = {
 export function MasterSchedulePanelCalendarGrid({
   weekDates, slots, bookings, onRemoveSlot,
 }: CalendarGridProps) {
+  const { t } = useTranslation();
+  const dayLabels = useMemo(
+    () => datetime.DAYS_OF_WEEK.map((day) => t(`master.timeSlots.calendar.days.${day.toLowerCase()}`)),
+    [t],
+  );
+
   // Get slots for a specific day and hour
   const getSlotsForCell = (date: Date, hour: number) => slots.filter((slot) => {
     const slotHour = parseInt(slot.startTime.split(':')[0], 10);
@@ -95,7 +103,7 @@ export function MasterSchedulePanelCalendarGrid({
                     c={isDateToday ? 'brand' : 'dimmed'}
                     tt="uppercase"
                   >
-                    {datetime.DAYS_OF_WEEK[index]}
+                    {dayLabels[index] ?? datetime.DAYS_OF_WEEK[index]}
                   </Text>
                   <Text
                     size="lg"

@@ -10,6 +10,7 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 import {
   useDeleteMasterJob,
@@ -31,6 +32,7 @@ type MasterServicesListProps = {
 };
 
 export function MasterServicesList({ masterId }: MasterServicesListProps) {
+  const { t } = useTranslation();
   const [addModalOpened, setAddModalOpened] = useState(false);
   const [uploadModalOpened, setUploadModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
@@ -72,15 +74,15 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
       onSuccess: async () => {
         await refetch();
         notifications.show({
-          title: 'Service deleted',
-          message: 'Your service has been deleted successfully.',
+          title: t('master.services.notifications.deleteSuccessTitle'),
+          message: t('master.services.notifications.deleteSuccessMessage'),
           color: 'green',
         });
       },
       onError: (error) => {
         notifications.show({
-          title: 'Failed to delete service',
-          message: error.detail,
+          title: t('master.services.notifications.deleteErrorTitle'),
+          message: error.detail ?? t('master.services.notifications.deleteErrorMessage'),
           color: 'red',
         });
       },
@@ -92,15 +94,15 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
       onSuccess: async () => {
         await refetch();
         notifications.show({
-          title: 'Images uploaded',
-          message: 'Your images have been uploaded successfully.',
+          title: t('master.services.notifications.uploadSuccessTitle'),
+          message: t('master.services.notifications.uploadSuccessMessage'),
           color: 'green',
         });
       },
       onError: (error) => {
         notifications.show({
-          title: 'Failed to upload images',
-          message: error.detail,
+          title: t('master.services.notifications.uploadErrorTitle'),
+          message: error.detail ?? t('master.services.notifications.uploadErrorMessage'),
           color: 'red',
         });
       },
@@ -152,15 +154,15 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
     return (
       <Stack align="center" justify="center" h={300}>
         <Loader size="md" />
-        <Text c="dimmed" size="sm">Loading services...</Text>
+        <Text c="dimmed" size="sm">{t('master.services.loadingServices')}</Text>
       </Stack>
     );
   }
 
   if (isError) {
     return (
-      <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red">
-        Failed to load services. Please try again later.
+      <Alert icon={<IconAlertCircle size={16} />} title={t('master.services.error.title')} color="red">
+        {t('master.services.error.message')}
       </Alert>
     );
   }
@@ -169,14 +171,9 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
     <>
       <Stack gap="lg">
         <div>
-          <Title order={3}>My Services</Title>
+          <Title order={3}>{t('master.services.summary.title')}</Title>
           <Text c="dimmed" size="sm">
-            {allServices.length}
-            {' '}
-            service
-            {allServices.length === 1 ? '' : 's'}
-            {' '}
-            added
+            {t('master.services.summary.count', { count: allServices.length })}
           </Text>
         </div>
 
@@ -211,7 +208,7 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
       <Modal
         opened={addModalOpened}
         onClose={() => setAddModalOpened(false)}
-        title="Add New Service"
+        title={t('master.services.modals.addTitle')}
         size="lg"
         centered
       >

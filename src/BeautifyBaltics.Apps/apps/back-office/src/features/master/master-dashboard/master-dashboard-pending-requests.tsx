@@ -10,6 +10,7 @@ import {
   Text,
 } from '@mantine/core';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import { GetPendingRequestsResponse } from '@/state/endpoints/api.schemas';
@@ -27,6 +28,7 @@ export function MasterDashboardPendingRequests({
   data, isLoading, isConfirming, isCancelling, onConfirm, onCancel,
 }: MasterDashboardPendingRequestsProps) {
   const { translateService } = useTranslateData();
+  const { t } = useTranslation();
   const requests = data?.requests ?? [];
   const totalCount = data?.totalCount ?? 0;
   const displayedCount = requests.length;
@@ -37,7 +39,7 @@ export function MasterDashboardPendingRequests({
       <Card withBorder radius="md" p="lg" h="100%">
         <Group justify="space-between" mb="md">
           <Group gap="xs">
-            <Text fw={600} size="lg">Pending Requests</Text>
+            <Text fw={600} size="lg">{t('master.dashboard.pendingRequests.title')}</Text>
             <Skeleton width={24} height={24} circle />
           </Group>
         </Group>
@@ -71,13 +73,13 @@ export function MasterDashboardPendingRequests({
       <Card withBorder radius="md" p="lg" h="100%">
         <Group justify="space-between" mb="md">
           <Group gap="xs">
-            <Text fw={600} size="lg">Pending Requests</Text>
+            <Text fw={600} size="lg">{t('master.dashboard.pendingRequests.title')}</Text>
             <Badge variant="filled" color="gray" size="sm" circle>
               0
             </Badge>
           </Group>
         </Group>
-        <Text c="dimmed" ta="center" py="xl">No pending requests</Text>
+        <Text c="dimmed" ta="center" py="xl">{t('master.dashboard.pendingRequests.empty')}</Text>
       </Card>
     );
   }
@@ -86,7 +88,7 @@ export function MasterDashboardPendingRequests({
     <Card withBorder radius="md" p="lg" h="100%">
       <Group justify="space-between" mb="md">
         <Group gap="xs">
-          <Text fw={600} size="lg">Pending Requests</Text>
+          <Text fw={600} size="lg">{t('master.dashboard.pendingRequests.title')}</Text>
           <Badge variant="filled" color="brand" size="sm" circle>
             {totalCount}
           </Badge>
@@ -126,7 +128,7 @@ export function MasterDashboardPendingRequests({
                   disabled={isCancelling}
                   onClick={() => onConfirm?.(request.id)}
                 >
-                  Confirm
+                  {t('master.dashboard.pendingRequests.confirm')}
                 </Button>
                 <Button
                   variant="outline"
@@ -137,7 +139,7 @@ export function MasterDashboardPendingRequests({
                   disabled={isConfirming}
                   onClick={() => onCancel?.(request.id)}
                 >
-                  Decline
+                  {t('master.dashboard.pendingRequests.decline')}
                 </Button>
               </Group>
             </Stack>
@@ -151,11 +153,7 @@ export function MasterDashboardPendingRequests({
         <>
           <Divider my="md" />
           <Button variant="subtle" fullWidth color="gray">
-            View
-            {' '}
-            {remainingCount}
-            {' '}
-            more requests
+            {t('master.dashboard.pendingRequests.viewMore', { count: remainingCount })}
           </Button>
         </>
       )}

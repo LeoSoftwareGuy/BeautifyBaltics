@@ -10,6 +10,7 @@ import {
 import { notifications } from '@mantine/notifications';
 import { IconClock, IconDeviceFloppy } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { getGetMasterByIdQueryKey, useGetMasterById, useUpdateMasterBufferTime } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
@@ -19,6 +20,7 @@ export function MasterSchedulingSettings() {
   const { data: user } = useGetUser();
   const masterId = user?.id ?? '';
   const { data: master, isLoading } = useGetMasterById(masterId, { id: masterId }, { query: { enabled: !!masterId } });
+  const { t } = useTranslation();
 
   const [bufferMinutes, setBufferMinutes] = useState<number | ''>(0);
 
@@ -34,15 +36,15 @@ export function MasterSchedulingSettings() {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: getGetMasterByIdQueryKey(masterId, { id: masterId }) });
         notifications.show({
-          title: 'Settings updated',
-          message: 'Buffer time has been updated successfully.',
+          title: t('master.settings.scheduling.notifications.successTitle'),
+          message: t('master.settings.scheduling.notifications.successMessage'),
           color: 'green',
         });
       },
       onError: () => {
         notifications.show({
-          title: 'Failed to update',
-          message: 'An error occurred while updating the buffer time.',
+          title: t('master.settings.scheduling.notifications.errorTitle'),
+          message: t('master.settings.scheduling.notifications.errorMessage'),
           color: 'red',
         });
       },
@@ -60,15 +62,15 @@ export function MasterSchedulingSettings() {
     <Stack gap="md">
       <Group gap="xs">
         <IconClock size={20} />
-        <Title order={4}>Scheduling</Title>
+        <Title order={4}>{t('master.settings.scheduling.title')}</Title>
       </Group>
 
       <Text size="sm" c="dimmed">
-        Set a buffer time between bookings. This gives you time to clean up, prepare, or take a break between clients.
+        {t('master.settings.scheduling.subtitle')}
       </Text>
 
       <NumberInput
-        label="Buffer time between bookings (minutes)"
+        label={t('master.settings.scheduling.bufferLabel')}
         placeholder="0"
         min={0}
         max={60}
@@ -86,7 +88,7 @@ export function MasterSchedulingSettings() {
           loading={isPending}
           disabled={bufferMinutes === ''}
         >
-          Save
+          {t('master.settings.scheduling.save')}
         </Button>
       </Group>
     </Stack>
