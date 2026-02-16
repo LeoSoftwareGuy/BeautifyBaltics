@@ -65,7 +65,12 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[number] }) {
 function FeaturesSection() {
   const { t } = useTranslation();
   return (
-    <Box component="section" bg="gray.0" py={{ base: 64, md: 96 }}>
+    <Box
+      component="section"
+      bg="gray.0"
+      py={{ base: 48, md: 72 }}
+      mt={{ base: -24, md: -40 }}
+    >
       <Container size="lg">
         <Stack gap="sm" ta="center" align="center" mb={{ base: 40, md: 64 }}>
           <Title order={2} fw={800} size="clamp(32px, 4vw, 48px)">

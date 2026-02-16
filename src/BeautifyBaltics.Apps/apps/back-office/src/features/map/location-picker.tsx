@@ -1,8 +1,17 @@
 import {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Box, Button, Card, Group, Loader, Stack, Text,
+  Box,
+  Button,
+  Card,
+  Group,
+  Loader,
+  SimpleGrid,
+  Stack,
+  Text,
+  TextInput,
 } from '@mantine/core';
 import {
   AdvancedMarker,
@@ -49,14 +58,24 @@ type GeocoderAddressComponent = {
 
 type GeocoderResult = {
   address_components: GeocoderAddressComponent[];
+  geometry?: {
+    location?: {
+      lat: number | (() => number);
+      lng: number | (() => number);
+    };
+  };
 };
 
 type GeocoderResponse = {
   results?: GeocoderResult[];
 };
 
+type GeocodeRequest =
+  | { location: { lat: number; lng: number } }
+  | { address: string };
+
 type Geocoder = {
-  geocode: (request: { location: { lat: number; lng: number } }) => Promise<GeocoderResponse>;
+  geocode: (request: GeocodeRequest) => Promise<GeocoderResponse>;
 };
 
 type LocationDetails = {
@@ -82,31 +101,15 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
   const [geocoder, setGeocoder] = useState<Geocoder | null>(null);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<SelectedLocation | null>(null);
-
-  useEffect(() => {
-    if (typeof value?.latitude !== 'number' || typeof value?.longitude !== 'number') {
-      setSelectedLocation(null);
-      return;
-    }
-
-    setSelectedLocation({
-      lat: value.latitude,
-      lng: value.longitude,
-      city: value.city ?? null,
-      country: value.country ?? null,
-      addressLine1: value.addressLine1 ?? null,
-      addressLine2: value.addressLine2 ?? null,
-      postalCode: value.postalCode ?? null,
-    });
-  }, [
-    value?.latitude,
-    value?.longitude,
-    value?.city,
-    value?.country,
-    value?.addressLine1,
-    value?.addressLine2,
-    value?.postalCode,
-  ]);
+  const { t } = useTranslation();
+  const [manualAddress, setManualAddress] = useState<LocationDetails>({
+    city: value?.city ?? null,
+    country: value?.country ?? null,
+    addressLine1: value?.addressLine1 ?? null,
+    addressLine2: value?.addressLine2 ?? null,
+    postalCode: value?.postalCode ?? null,
+  });
+  const [manualError, setManualError] = useState<string | null>(null);
 
   useEffect(() => {
     if (geocodingLib) {
@@ -121,6 +124,48 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
     addressLine2: null,
     postalCode: null,
   }), []);
+
+  const updateManualAddress = useCallback((updates: Partial<LocationDetails>) => {
+    setManualAddress((prev) => ({
+      ...emptyDetails,
+      ...(prev ?? emptyDetails),
+      ...updates,
+    }));
+  }, [emptyDetails]);
+
+  useEffect(() => {
+    if (typeof value?.latitude !== 'number' || typeof value?.longitude !== 'number') {
+      setSelectedLocation(null);
+      return;
+    }
+
+    const syncedDetails: SelectedLocation = {
+      lat: value.latitude,
+      lng: value.longitude,
+      city: value.city ?? null,
+      country: value.country ?? null,
+      addressLine1: value.addressLine1 ?? null,
+      addressLine2: value.addressLine2 ?? null,
+      postalCode: value.postalCode ?? null,
+    };
+    setSelectedLocation(syncedDetails);
+    updateManualAddress({
+      city: syncedDetails.city,
+      country: syncedDetails.country,
+      addressLine1: syncedDetails.addressLine1,
+      addressLine2: syncedDetails.addressLine2,
+      postalCode: syncedDetails.postalCode,
+    });
+  }, [
+    updateManualAddress,
+    value?.addressLine1,
+    value?.addressLine2,
+    value?.city,
+    value?.country,
+    value?.latitude,
+    value?.longitude,
+    value?.postalCode,
+  ]);
 
   const parseLocationDetails = useCallback((components: GeocoderAddressComponent[]): LocationDetails => {
     if (!components.length) {
@@ -194,6 +239,39 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
     [emptyDetails, geocoder, parseLocationDetails],
   );
 
+  const applyLocation = useCallback(
+    (
+      lat: number,
+      lng: number,
+      details: LocationDetails,
+      options?: { pan?: boolean },
+    ) => {
+      setSelectedLocation({
+        lat,
+        lng,
+        ...details,
+      });
+      updateManualAddress({
+        city: details.city ?? null,
+        country: details.country ?? null,
+        addressLine1: details.addressLine1 ?? null,
+        addressLine2: details.addressLine2 ?? null,
+        postalCode: details.postalCode ?? null,
+      });
+
+      if (options?.pan) {
+        map?.panTo({ lat, lng });
+      }
+
+      onChange?.({
+        latitude: lat,
+        longitude: lng,
+        ...details,
+      });
+    },
+    [map, onChange, updateManualAddress],
+  );
+
   const upsertLocation = useCallback(
     (lat: number, lng: number, shouldPan = false) => {
       setIsGeocoding(true);
@@ -201,36 +279,24 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
         .then(({
           city, country, addressLine1, addressLine2, postalCode,
         }) => {
-          const location = {
+          applyLocation(
             lat,
             lng,
-            city,
-            country,
-            addressLine1,
-            addressLine2,
-            postalCode,
-          };
-          setSelectedLocation(location);
-
-          if (shouldPan) {
-            map?.panTo({ lat, lng });
-          }
-
-          onChange?.({
-            latitude: lat,
-            longitude: lng,
-            city,
-            country,
-            addressLine1,
-            addressLine2,
-            postalCode,
-          });
+            {
+              city,
+              country,
+              addressLine1,
+              addressLine2,
+              postalCode,
+            },
+            { pan: shouldPan },
+          );
         })
         .finally(() => {
           setIsGeocoding(false);
         });
     },
-    [map, onChange, reverseGeocode],
+    [applyLocation, reverseGeocode],
   );
 
   const handleMapClick = useCallback(
@@ -331,7 +397,7 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
             </Group>
           ) : (
             <Text size="sm" c="dimmed">
-              Click on the map to set your location
+              {t('map.locationPicker.clickHint')}
             </Text>
           )}
         </Box>
@@ -342,9 +408,146 @@ function LocationPickerContent({ value, onChange }: LocationPickerContentProps) 
           leftSection={<Navigation size={14} />}
           onClick={handleUseMyLocation}
         >
-          Use my location
+          {t('map.locationPicker.useMyLocation')}
         </Button>
       </Group>
+
+      <Card withBorder radius="md" p="md">
+        <Stack gap="xs">
+          <Text fw={600} size="sm">{t('map.locationPicker.manualTitle')}</Text>
+          <Text size="xs" c="dimmed">
+            {t('map.locationPicker.manualDescription')}
+          </Text>
+          <TextInput
+            label={t('map.locationPicker.addressLine1')}
+            value={manualAddress.addressLine1 ?? ''}
+            onChange={(event) => {
+              setManualError(null);
+              updateManualAddress({ addressLine1: event.currentTarget.value || null });
+            }}
+          />
+          <TextInput
+            label={t('map.locationPicker.addressLine2')}
+            value={manualAddress.addressLine2 ?? ''}
+            onChange={(event) => {
+              setManualError(null);
+              updateManualAddress({ addressLine2: event.currentTarget.value || null });
+            }}
+          />
+          <SimpleGrid cols={{ base: 1, sm: 3 }}>
+            <TextInput
+              label={t('map.locationPicker.city')}
+              value={manualAddress.city ?? ''}
+              onChange={(event) => {
+                setManualError(null);
+                updateManualAddress({ city: event.currentTarget.value || null });
+              }}
+            />
+            <TextInput
+              label={t('map.locationPicker.postalCode')}
+              value={manualAddress.postalCode ?? ''}
+              onChange={(event) => {
+                setManualError(null);
+                updateManualAddress({ postalCode: event.currentTarget.value || null });
+              }}
+            />
+            <TextInput
+              label={t('map.locationPicker.country')}
+              value={manualAddress.country ?? ''}
+              onChange={(event) => {
+                setManualError(null);
+                updateManualAddress({ country: event.currentTarget.value || null });
+              }}
+            />
+          </SimpleGrid>
+          {manualError && (
+            <Text size="xs" c="red">
+              {manualError}
+            </Text>
+          )}
+          <Group justify="flex-end">
+            <Button
+              variant="light"
+              size="xs"
+              onClick={() => {
+                updateManualAddress({
+                  city: null,
+                  country: null,
+                  addressLine1: null,
+                  addressLine2: null,
+                  postalCode: null,
+                });
+                setManualError(null);
+              }}
+            >
+              {t('map.locationPicker.clear')}
+            </Button>
+            <Button
+              size="xs"
+              onClick={() => {
+                const segments = [
+                  manualAddress.addressLine1,
+                  manualAddress.addressLine2,
+                  manualAddress.city,
+                  manualAddress.postalCode,
+                  manualAddress.country,
+                ].filter(isNonEmptyString);
+
+                if (segments.length < 2) {
+                  setManualError(t('map.locationPicker.manualErrorMissingFields'));
+                  return;
+                }
+
+                if (!geocoder) {
+                  setManualError(t('map.locationPicker.manualErrorUnavailable'));
+                  return;
+                }
+
+                setIsGeocoding(true);
+                setManualError(null);
+                geocoder
+                  .geocode({ address: segments.join(', ') })
+                  .then((response) => {
+                    const firstResult = response.results?.[0];
+                    const location = firstResult?.geometry?.location;
+                    if (!firstResult || !location) {
+                      throw new Error('NO_RESULT');
+                    }
+
+                    const lat = typeof location.lat === 'function' ? location.lat() : location.lat;
+                    const lng = typeof location.lng === 'function' ? location.lng() : location.lng;
+
+                    const parsedDetails = parseLocationDetails(
+                      firstResult.address_components ?? [],
+                    );
+
+                    applyLocation(
+                      lat,
+                      lng,
+                      {
+                        city: manualAddress.city || parsedDetails.city,
+                        country: manualAddress.country || parsedDetails.country,
+                        addressLine1: manualAddress.addressLine1 || parsedDetails.addressLine1,
+                        addressLine2: manualAddress.addressLine2 || parsedDetails.addressLine2,
+                        postalCode: manualAddress.postalCode || parsedDetails.postalCode,
+                      },
+                      { pan: true },
+                    );
+                  })
+                  .catch(() => {
+                    setManualError(t('map.locationPicker.manualErrorGeocode'));
+                  })
+                  .finally(() => {
+                    setIsGeocoding(false);
+                  });
+              }}
+              loading={isGeocoding}
+            >
+              {t('map.locationPicker.apply')}
+            </Button>
+          </Group>
+        </Stack>
+      </Card>
     </Stack>
   );
 }

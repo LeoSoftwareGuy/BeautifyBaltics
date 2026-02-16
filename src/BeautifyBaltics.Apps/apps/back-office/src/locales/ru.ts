@@ -108,6 +108,22 @@ const ru: CommonLocale = {
     unavailableTitle: 'Карта недоступна',
     unavailableDescription: 'Ключ Google Maps API не настроен',
     coordinatesMissing: 'Координаты места недоступны',
+    locationPicker: {
+      clickHint: 'Нажмите на карту, чтобы указать локацию',
+      useMyLocation: 'Определить по геолокации',
+      manualTitle: 'Указать адрес вручную',
+      manualDescription: 'Если вы находитесь в другом месте, введите адрес ниже, и мы найдём его на карте.',
+      addressLine1: 'Адрес, строка 1',
+      addressLine2: 'Адрес, строка 2',
+      city: 'Город',
+      postalCode: 'Почтовый индекс',
+      country: 'Страна',
+      apply: 'Использовать введённый адрес',
+      clear: 'Очистить',
+      manualErrorMissingFields: 'Укажите как минимум улицу и город.',
+      manualErrorUnavailable: 'Поиск адреса временно недоступен. Повторите попытку позже.',
+      manualErrorGeocode: 'Не удалось найти этот адрес. Уточните данные и попробуйте снова.',
+    },
   },
   explore: {
     header: {

@@ -108,6 +108,22 @@ const et: CommonLocale = {
     unavailableTitle: 'Kaarti ei saa kuvada',
     unavailableDescription: 'Google Maps API võti pole seadistatud',
     coordinatesMissing: 'Asukoha koordinaadid puuduvad',
+    locationPicker: {
+      clickHint: 'Klõpsa kaardil, et märkida asukoht',
+      useMyLocation: 'Kasuta minu asukohta',
+      manualTitle: 'Sisesta aadress käsitsi',
+      manualDescription: 'Kui viibid mujal, sisesta aadress ja otsime selle kaardil üles.',
+      addressLine1: 'Aadressi 1. rida',
+      addressLine2: 'Aadressi 2. rida',
+      city: 'Linn',
+      postalCode: 'Postiindeks',
+      country: 'Riik',
+      apply: 'Kasuta sisestatud aadressi',
+      clear: 'Puhasta',
+      manualErrorMissingFields: 'Sisesta vähemalt tänav ja linn.',
+      manualErrorUnavailable: 'Aadressi otsing pole hetkel saadaval. Proovi hiljem uuesti.',
+      manualErrorGeocode: 'Seda aadressi ei leitud. Täpsusta andmeid ja proovi uuesti.',
+    },
   },
   explore: {
     header: {

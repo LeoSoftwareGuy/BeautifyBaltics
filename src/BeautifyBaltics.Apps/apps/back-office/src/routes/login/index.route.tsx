@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Paper,
@@ -49,7 +48,6 @@ function LoginView() {
   const router = useRouter();
   const { isAuthenticated, loading } = useSession();
   const theme = useMantineTheme();
-  const { t } = useTranslation();
 
   const redirectPath = search.redirect || '/home';
   const redirectTo = typeof window !== 'undefined'
@@ -67,14 +65,14 @@ function LoginView() {
       <Paper withBorder p="xl" radius="lg" miw={360}>
         <Stack>
           <div>
-            <Title order={3}>{t('auth.login.title')}</Title>
+            <Title order={3}>Welcome back</Title>
             <Text c="dimmed" fz="sm">
-              {t('auth.login.subtitle')}
+              Sign in with your Beautify Baltics account to continue.
             </Text>
           </div>
           {search.registered ? (
-            <Alert color="teal" title={t('auth.login.registeredTitle')} variant="light">
-              {t('auth.login.registeredMessage')}
+            <Alert color="teal" title="Registration successful" variant="light">
+              Please log in with your new credentials.
             </Alert>
           ) : null}
           <Auth
@@ -100,21 +98,21 @@ function LoginView() {
                   link_text: '',
                 },
                 sign_in: {
-                  email_label: t('auth.shared.emailLabel'),
-                  password_label: t('auth.shared.passwordLabel'),
+                  email_label: 'Email',
+                  password_label: 'Password',
                 },
               },
             }}
           />
         </Stack>
         <Text c="dimmed" fz="sm" ta="center">
-          {t('auth.login.noAccount')}
+          Don&apos;t have an account?
           {' '}
           <AnchorLink
             to="/register"
             search={() => ({ redirect: redirectPath })}
           >
-            {t('auth.login.createAccountLink')}
+            Create one
           </AnchorLink>
         </Text>
       </Paper>

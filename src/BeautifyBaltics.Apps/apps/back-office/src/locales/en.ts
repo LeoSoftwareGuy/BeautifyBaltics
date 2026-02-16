@@ -106,6 +106,22 @@ const en = {
     unavailableTitle: 'Map unavailable',
     unavailableDescription: 'Google Maps API key is not configured',
     coordinatesMissing: 'Location coordinates not available',
+    locationPicker: {
+      clickHint: 'Click on the map to set your location',
+      useMyLocation: 'Use my location',
+      manualTitle: 'Enter address manually',
+      manualDescription: 'If you are away from the workspace, type the address below and we will locate it for you.',
+      addressLine1: 'Address line 1',
+      addressLine2: 'Address line 2',
+      city: 'City',
+      postalCode: 'Postal code',
+      country: 'Country',
+      apply: 'Use typed address',
+      clear: 'Clear',
+      manualErrorMissingFields: 'Please enter at least the street address and city.',
+      manualErrorUnavailable: 'Address search is temporarily unavailable. Try again shortly.',
+      manualErrorGeocode: 'Unable to find that address. Please refine the details and try again.',
+    },
   },
   explore: {
     header: {

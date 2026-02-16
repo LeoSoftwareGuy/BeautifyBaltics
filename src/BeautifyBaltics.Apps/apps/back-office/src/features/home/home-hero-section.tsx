@@ -23,8 +23,9 @@ function HeroSection() {
     <Box
       component="section"
       pos="relative"
-      h="calc(100vh - 120px)"
+      py={{ base: 48, md: 72 }}
       style={{
+        minHeight: 'min(600px, calc(100vh - 180px))',
         backgroundImage: 'linear-gradient(135deg, rgba(255,255,255,0.4), rgba(250,240,255,0.6))',
         display: 'flex',
         alignItems: 'center',
@@ -103,7 +104,7 @@ function HeroSection() {
         left={0}
         right={0}
         bottom={0}
-        h={120}
+        h={48}
         style={{
           background: 'linear-gradient(0deg, rgba(255,255,255,0.9), transparent)',
         }}
