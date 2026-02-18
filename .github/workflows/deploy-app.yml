@@ -56,7 +56,7 @@ jobs:
               --name beautify-baltics-app \
               --resource-group beautify-baltics \
               --image ${{ env.IMAGE_NAME }}:${{ github.sha }} \
-              --min-replicas 1 \
+              --min-replicas 0 \
               --set-env-vars "BACKEND_URL=${{ env.BACKEND_URL }}"
 
             az containerapp ingress update \
