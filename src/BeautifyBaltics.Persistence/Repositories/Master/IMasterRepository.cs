@@ -5,5 +5,5 @@ namespace BeautifyBaltics.Persistence.Repositories.Master;
 
 public interface IMasterRepository : IQueryRepository<Projections.Master, MasterSearchDTO>
 {
-    Task<Projections.Master?> GetBySupabaseUserIdAsync(string supabaseUserId, CancellationToken cancellationToken = default);
+    Task<Projections.Master?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 }

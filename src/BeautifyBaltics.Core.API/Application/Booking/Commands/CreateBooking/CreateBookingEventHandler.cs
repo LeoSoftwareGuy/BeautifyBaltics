@@ -93,6 +93,23 @@ public class CreateBookingEventHandler(
 
         if (hasConflict) throw DomainException.WithMessage("The requested time conflicts with an existing booking.");
 
+        // Check if the client already has a booking at the same time with another master
+        var clientBookings = await bookingRepository.GetListAsync(
+            new BookingSearchDTO
+            {
+                ClientId = request.ClientId,
+                From = dayStart,
+                To = dayEnd
+            },
+            cancellationToken
+        );
+
+        var hasClientConflict = clientBookings
+            .Where(b => b.Status != BookingStatus.Cancelled)
+            .Any(b => scheduledAt < b.ScheduledAt + b.Duration && bookingEndAt > b.ScheduledAt);
+
+        if (hasClientConflict) throw DomainException.WithMessage("You already have a booking during this time.");
+
         var bookingCreatedEvent = new BookingCreated(
             MasterId: request.MasterId,
             ClientId: request.ClientId,

@@ -14,7 +14,7 @@ public class MasterConfiguration : IConfigureMarten
     {
         options.Schema.For<Master>()
             .DocumentAlias("master")
-            .UniqueIndex(x => x.SupabaseUserId)
+            .UniqueIndex(x => x.UserId)
             .MapProjectionMetadata();
 
         options.Projections.Add<MasterProjection>(ProjectionLifecycle.Inline);

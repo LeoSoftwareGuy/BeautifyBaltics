@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   Button,
   Grid,
-  Paper,
   PasswordInput,
   Stack,
   Text,
@@ -13,8 +12,6 @@ import {
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { IconScissors, IconUser } from '@tabler/icons-react';
-
-import { supabase } from '@/integrations/supabase/client';
 
 type RoleOption = 'client' | 'master';
 
@@ -32,7 +29,7 @@ type RegisterFormValues = {
   role: RoleOption;
 };
 
-export function RegisterForm({ onRequireEmailVerification, onRegistrationComplete }: RegisterFormProps) {
+export function RegisterForm({ onRequireEmailVerification }: RegisterFormProps) {
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<RegisterFormValues>({
@@ -65,41 +62,24 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
         role: values.role,
       };
 
-      const { data, error } = await supabase.auth.signUp({
-        email: trimmed.email,
-        password: trimmed.password,
-        options: {
-          data: {
-            firstName: trimmed.firstName,
-            lastName: trimmed.lastName,
-            phoneNumber: trimmed.phoneNumber,
-            role: trimmed.role,
-          },
-        },
+      const response = await fetch('/api/v1/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(trimmed),
       });
 
-      if (error) {
-        throw error;
-      }
-
-      const currentSession = data.session ?? (await supabase.auth.getSession()).data.session;
-      if (!currentSession) {
-        notifications.show({
-          title: 'Check your inbox',
-          message: 'Please confirm your email before signing in.',
-          color: 'yellow',
-        });
-        onRequireEmailVerification?.();
+      if (response.status === 409) {
+        form.setFieldError('email', 'An account with this email already exists.');
         return;
       }
 
-      notifications.show({
-        title: 'Account created',
-        message: 'Welcome to Beautify Baltics!',
-        color: 'teal',
-      });
+      if (!response.ok) {
+        throw new Error('Registration failed. Please try again.');
+      }
 
-      onRegistrationComplete?.();
+      // Registration always requires email verification
+      onRequireEmailVerification?.();
     } catch (error) {
       const fallbackMessage = 'Registration failed. Please try again.';
       const message = error instanceof Error ? error.message : fallbackMessage;
@@ -114,146 +94,134 @@ export function RegisterForm({ onRequireEmailVerification, onRegistrationComplet
   });
 
   return (
-    <Stack align="center" justify="center" mih="calc(100vh - 120px)" mt="xl">
-      <Paper
-        withBorder
-        p="xl"
-        radius="lg"
-        w={500}
-        component="form"
-        onSubmit={handleSubmit}
-      >
-        <Stack gap="lg">
-          <Stack gap="xs" align="center">
-            <Title order={2}>Create an account</Title>
-            <Text c="dimmed" size="sm">
-              Register to access Beautify Baltics.
-            </Text>
-          </Stack>
-
-          <Stack gap="md">
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>
-                First name
-                {' '}
-                <Text component="span" c="red">*</Text>
-              </Text>
-              <TextInput
-                placeholder="John"
-                radius="md"
-                {...form.getInputProps('firstName')}
-              />
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>
-                Last name
-                {' '}
-                <Text component="span" c="red">*</Text>
-              </Text>
-              <TextInput
-                placeholder="Doe"
-                radius="md"
-                {...form.getInputProps('lastName')}
-              />
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>
-                Email address
-                {' '}
-                <Text component="span" c="red">*</Text>
-              </Text>
-              <TextInput
-                type="email"
-                placeholder="you@example.com"
-                radius="md"
-                {...form.getInputProps('email')}
-              />
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>
-                Password
-                {' '}
-                <Text component="span" c="red">*</Text>
-              </Text>
-              <PasswordInput
-                placeholder="••••••••"
-                radius="md"
-                {...form.getInputProps('password')}
-              />
-            </Stack>
-            <Stack gap={4}>
-              <Text size="sm" fw={500}>
-                Phone number
-                {' '}
-                <Text component="span" c="red">*</Text>
-              </Text>
-              <TextInput
-                type="tel"
-                placeholder="+1234567890"
-                radius="md"
-                {...form.getInputProps('phoneNumber')}
-              />
-            </Stack>
-          </Stack>
-
-          <Stack gap="sm">
-            <Text size="sm" fw={500}>
-              Account type
-            </Text>
-            <Text size="xs" c="dimmed">
-              Choose how you want to use Beautify Baltics
-            </Text>
-            <Grid gutter="md">
-              <Grid.Col span={6}>
-                <UnstyledButton
-                  onClick={() => form.setFieldValue('role', 'client')}
-                  style={{
-                    width: '100%',
-                    padding: '20px',
-                    borderRadius: '8px',
-                    border: '2px solid',
-                    borderColor: form.values.role === 'client' ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-3)',
-                    backgroundColor: form.values.role === 'client' ? 'var(--mantine-color-pink-6)' : 'transparent',
-                    color: form.values.role === 'client' ? 'white' : 'var(--mantine-color-gray-7)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  <Stack gap="xs" align="center">
-                    <IconUser size={24} stroke={2} />
-                    <Text fw={600} size="sm">Client</Text>
-                  </Stack>
-                </UnstyledButton>
-              </Grid.Col>
-              <Grid.Col span={6}>
-                <UnstyledButton
-                  onClick={() => form.setFieldValue('role', 'master')}
-                  style={{
-                    width: '100%',
-                    padding: '20px',
-                    borderRadius: '8px',
-                    border: '2px solid',
-                    borderColor: form.values.role === 'master' ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-3)',
-                    backgroundColor: form.values.role === 'master' ? 'var(--mantine-color-pink-6)' : 'transparent',
-                    color: form.values.role === 'master' ? 'white' : 'var(--mantine-color-gray-7)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  <Stack gap="xs" align="center">
-                    <IconScissors size={24} stroke={2} />
-                    <Text fw={600} size="sm">Master</Text>
-                  </Stack>
-                </UnstyledButton>
-              </Grid.Col>
-            </Grid>
-          </Stack>
-
-          <Button type="submit" loading={submitting} size="md" color="pink">
-            Create account
-          </Button>
+    <form onSubmit={handleSubmit}>
+      <Stack gap="lg">
+        <Stack gap="xs">
+          <Title order={2} style={{ fontFamily: '"Playfair Display", serif' }}>Create an account</Title>
+          <Text c="dimmed" size="sm">
+            Register to access Beautify Baltics.
+          </Text>
         </Stack>
-      </Paper>
-    </Stack>
+        <Stack gap="sm">
+          <Text size="sm" fw={500}>
+            Account type
+          </Text>
+          <Text size="xs" c="dimmed">
+            Choose how you want to use Beautify Baltics
+          </Text>
+          <Grid gutter="md">
+            <Grid.Col span={6}>
+              <UnstyledButton
+                onClick={() => form.setFieldValue('role', 'client')}
+                style={{
+                  width: '100%',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  border: '2px solid',
+                  borderColor: form.values.role === 'client' ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-3)',
+                  backgroundColor: form.values.role === 'client' ? 'var(--mantine-color-pink-6)' : 'transparent',
+                  color: form.values.role === 'client' ? 'white' : 'var(--mantine-color-gray-7)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Stack gap="xs" align="center">
+                  <IconUser size={24} stroke={2} />
+                  <Text fw={600} size="sm">Client</Text>
+                </Stack>
+              </UnstyledButton>
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <UnstyledButton
+                onClick={() => form.setFieldValue('role', 'master')}
+                style={{
+                  width: '100%',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  border: '2px solid',
+                  borderColor: form.values.role === 'master' ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-3)',
+                  backgroundColor: form.values.role === 'master' ? 'var(--mantine-color-pink-6)' : 'transparent',
+                  color: form.values.role === 'master' ? 'white' : 'var(--mantine-color-gray-7)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <Stack gap="xs" align="center">
+                  <IconScissors size={24} stroke={2} />
+                  <Text fw={600} size="sm">Master</Text>
+                </Stack>
+              </UnstyledButton>
+            </Grid.Col>
+          </Grid>
+        </Stack>
+        <Stack gap="md">
+          <Stack gap={4}>
+            <Text size="sm" fw={500}>
+              First name
+              {' '}
+              <Text component="span" c="red">*</Text>
+            </Text>
+            <TextInput
+              placeholder="John"
+              radius="md"
+              {...form.getInputProps('firstName')}
+            />
+          </Stack>
+          <Stack gap={4}>
+            <Text size="sm" fw={500}>
+              Last name
+              {' '}
+              <Text component="span" c="red">*</Text>
+            </Text>
+            <TextInput
+              placeholder="Doe"
+              radius="md"
+              {...form.getInputProps('lastName')}
+            />
+          </Stack>
+          <Stack gap={4}>
+            <Text size="sm" fw={500}>
+              Email address
+              {' '}
+              <Text component="span" c="red">*</Text>
+            </Text>
+            <TextInput
+              type="email"
+              placeholder="you@example.com"
+              radius="md"
+              {...form.getInputProps('email')}
+            />
+          </Stack>
+          <Stack gap={4}>
+            <Text size="sm" fw={500}>
+              Password
+              {' '}
+              <Text component="span" c="red">*</Text>
+            </Text>
+            <PasswordInput
+              placeholder="••••••••"
+              radius="md"
+              {...form.getInputProps('password')}
+            />
+          </Stack>
+          <Stack gap={4}>
+            <Text size="sm" fw={500}>
+              Phone number
+              {' '}
+              <Text component="span" c="red">*</Text>
+            </Text>
+            <TextInput
+              type="tel"
+              placeholder="+1234567890"
+              radius="md"
+              {...form.getInputProps('phoneNumber')}
+            />
+          </Stack>
+        </Stack>
+        <Button type="submit" loading={submitting} size="md" radius="md" color="brand" fullWidth>
+          Create account
+        </Button>
+      </Stack>
+    </form>
   );
 }

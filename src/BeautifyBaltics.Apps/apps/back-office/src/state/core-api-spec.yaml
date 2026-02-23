@@ -4,6 +4,107 @@ info:
   description: Beautify Baltics Core API for back-office operations
   version: v1
 paths:
+  /api/v1/api/v1/auth/register:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Created
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/api/v1/auth/login:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/api/v1/auth/logout:
+    post:
+      tags:
+        - Auth
+      responses:
+        '204':
+          description: No Content
+  /api/v1/api/v1/auth/verify-email:
+    get:
+      tags:
+        - Auth
+      parameters:
+        - name: token
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/api/v1/auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: OK
+  /api/v1/api/v1/auth/reset-password:
+    post:
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/bookings:
     get:
       tags:
@@ -2728,6 +2829,13 @@ components:
             $ref: '#/components/schemas/FindMastersResponse'
           description: Items
       additionalProperties: false
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+      additionalProperties: false
     Gender:
       enum:
         - Male
@@ -2979,6 +3087,31 @@ components:
           minimum: 1
           type: integer
           format: int32
+      additionalProperties: false
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+        password:
+          type: string
+          nullable: true
+      additionalProperties: false
+    LoginResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          nullable: true
+        role:
+          $ref: '#/components/schemas/UserRole'
+        fullName:
+          type: string
+          nullable: true
       additionalProperties: false
     MasterAvailabilitySlotCommandDTO:
       required:
@@ -3403,6 +3536,28 @@ components:
           description: When the rating was submitted
           format: date-time
       additionalProperties: false
+    RegisterRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        password:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+      additionalProperties: false
     RescheduleBookingRequest:
       required:
         - bookingId
@@ -3432,6 +3587,16 @@ components:
           type: string
           description: Id of created booking
           format: uuid
+      additionalProperties: false
+    ResetPasswordRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          nullable: true
+        newPassword:
+          type: string
+          nullable: true
       additionalProperties: false
     SetMasterJobFeaturedImageBody:
       type: object
@@ -3633,6 +3798,7 @@ components:
       enum:
         - Client
         - Master
+        - Admin
       type: string
     ValidationProblemDetails:
       type: object

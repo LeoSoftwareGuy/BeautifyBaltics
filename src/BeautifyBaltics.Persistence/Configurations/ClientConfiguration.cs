@@ -14,7 +14,7 @@ public class ClientConfiguration : IConfigureMarten
     {
         options.Schema.For<Client>()
             .DocumentAlias("client")
-            .UniqueIndex(x => x.SupabaseUserId)
+            .UniqueIndex(x => x.UserId)
             .UniqueIndex(x => x.Email)
             .UniqueIndex(x => x.PhoneNumber)
             .MapProjectionMetadata();

@@ -10,7 +10,7 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.UpdateClientProfi
     public class UpdateClientProfileEventHandler()
     {
         [AggregateHandler]
-        public async Task<(Events, OutgoingMessages)> Handle(UpdateClientProfileRequest request, ClientAggregate client, CancellationToken cancellationToken)
+        public (Events, OutgoingMessages) Handle(UpdateClientProfileRequest request, ClientAggregate client, CancellationToken cancellationToken)
         {
             if (client == null) throw NotFoundException.For<ClientAggregate>(request.ClientID);
 

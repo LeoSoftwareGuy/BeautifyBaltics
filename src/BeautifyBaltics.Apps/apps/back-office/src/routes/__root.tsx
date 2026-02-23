@@ -38,7 +38,7 @@ export const Route = createRootRouteWithContext<RouteContext>()({
 function Root() {
   usePageTitle();
   const location = useRouterState({ select: (state) => state.location });
-  const isPublicRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register');
+  const isPublicRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || location.pathname.startsWith('/reset-password');
   const { data: user } = useGetUser({ query: { enabled: !isPublicRoute } });
   const isMaster = user?.role === UserRole.Master;
 

@@ -16,15 +16,13 @@ export default function UserMenu() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const displayName = typeof user?.user_metadata?.full_name === 'string'
-    ? user?.user_metadata?.full_name
-    : user?.email ?? t('navigation.userMenu.fallbackName');
+  const displayName = user?.fullName ?? user?.email ?? t('navigation.userMenu.fallbackName');
   const displayEmail = user?.email ?? '';
 
   const handleLogout = async () => {
     try {
       await logout();
-      navigate({ to: '/login', search: { redirect: '/home', registered: false }, replace: true });
+      navigate({ to: '/login', search: { redirect: '/home' }, replace: true });
     } catch (error) { /* empty */ }
   };
 

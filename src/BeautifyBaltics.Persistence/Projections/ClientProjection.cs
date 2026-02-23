@@ -8,7 +8,7 @@ namespace BeautifyBaltics.Persistence.Projections;
 
 public record Client(Guid Id) : Projection
 {
-    public string SupabaseUserId { get; init; } = string.Empty;
+    public Guid UserId { get; init; }
     public string FirstName { get; init; } = string.Empty;
     public string LastName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
@@ -25,7 +25,7 @@ public class ClientProjection : SingleStreamProjection<Client, Guid>
     {
         return new Client(@event.StreamId)
         {
-            SupabaseUserId = @event.Data.SupabaseUserId,
+            UserId = @event.Data.UserId,
             FirstName = @event.Data.FirstName,
             LastName = @event.Data.LastName,
             Email = @event.Data.Contacts.Email,

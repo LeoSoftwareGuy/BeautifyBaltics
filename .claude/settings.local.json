@@ -8,7 +8,10 @@
       "Bash(az containerapp logs show:*)",
       "Bash(az containerapp show:*)",
       "Bash(curl:*)",
-      "Bash(az containerapp exec:*)"
+      "Bash(az containerapp exec:*)",
+      "Bash(az containerapp env show:*)",
+      "Bash(getent:*)",
+      "Bash(python3:*)"
     ]
   }
 }

@@ -1,25 +1,7 @@
 import type { ApiClientRequest } from '@beautify-baltics-apps/api-client';
 import { apiClient } from '@beautify-baltics-apps/api-client';
 
-import { supabase } from '@/integrations/supabase/client';
-
 /**
- * Wraps the shared apiClient and injects the Supabase JWT into every request.
+ * Wraps the shared apiClient. Cookies are sent automatically for same-origin requests.
  */
-export const customClient = async <T>(options: ApiClientRequest) => {
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-
-  const headers = {
-    ...options.headers,
-  };
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  return apiClient<T>({
-    ...options,
-    headers,
-  });
-};
+export const customClient = async <T>(options: ApiClientRequest) => apiClient<T>(options);

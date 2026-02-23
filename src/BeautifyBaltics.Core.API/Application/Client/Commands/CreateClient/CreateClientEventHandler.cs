@@ -7,7 +7,7 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient
 {
     public class CreateClientEventHandler(ICommandRepository commandRepository)
     {
-        public async Task<CreateClientResponse> Handle(CreateClientRequest request, CancellationToken cancellationToken)
+        public CreateClientResponse Handle(CreateClientRequest request, CancellationToken cancellationToken)
         {
             var contacts = new ContactInformation(request.Email, request.PhoneNumber);
 
@@ -15,7 +15,7 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient
              FirstName: request.FirstName,
              LastName: request.LastName,
              Contacts: contacts,
-             SupabaseUserId: request.SupabaseUserId
+             UserId: request.UserId
             );
 
             var id = commandRepository.StartStream<ClientAggregate>(@event);

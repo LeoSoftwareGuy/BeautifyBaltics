@@ -1,7 +1,7 @@
 import { redirect } from '@tanstack/react-router';
 
-import { supabase } from '@/integrations/supabase/client';
 import type { FileRouteTypes } from '@/routeTree.gen';
+import { getUser } from '@/state/endpoints/users';
 
 type RoutePath = FileRouteTypes['to'];
 const LOGIN_ROUTE: RoutePath = '/login';
@@ -20,13 +20,10 @@ export const normalizeRoutePath = (target?: string): RoutePath => {
 
 export const requireAuthenticated = async (redirectPath: string) => {
   const target = normalizeRoutePath(redirectPath);
-  const { data, error } = await supabase.auth.getSession();
-
-  if (error) {
-    throw error;
-  }
-
-  if (!data.session) {
+  try {
+    const user = await getUser();
+    return user;
+  } catch {
     throw redirect({
       to: LOGIN_ROUTE,
       search: {
@@ -34,17 +31,18 @@ export const requireAuthenticated = async (redirectPath: string) => {
       },
     });
   }
-
-  return data.session;
 };
 
 export const redirectIfAuthenticated = async (destination: RoutePath = DEFAULT_DESTINATION) => {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) {
-    return;
+  let isAuthenticated = false;
+  try {
+    await getUser();
+    isAuthenticated = true;
+  } catch {
+    // getUser failed (likely 401) — user not authenticated, stay on page
   }
 
-  if (data.session) {
+  if (isAuthenticated) {
     throw redirect({ to: normalizeRoutePath(destination) });
   }
 };

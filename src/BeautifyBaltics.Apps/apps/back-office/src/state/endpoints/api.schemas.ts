@@ -403,6 +403,11 @@ export type FindMastersResponsePagedResponse = {
   items: FindMastersResponse[];
 };
 
+export type ForgotPasswordRequest = {
+  /** @nullable */
+  email?: string | null;
+};
+
 export enum Gender {
   Male = 'Male',
   Female = 'Female',
@@ -555,6 +560,22 @@ export type JobDTO = {
    * @maximum 1440
    */
   durationMinutes: number;
+};
+
+export type LoginRequest = {
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  password?: string | null;
+};
+
+export type LoginResponse = {
+  id?: string;
+  /** @nullable */
+  email?: string | null;
+  role?: UserRole;
+  /** @nullable */
+  fullName?: string | null;
 };
 
 export type MasterAvailabilitySlotCommandDTO = {
@@ -847,6 +868,21 @@ export type RatingDTO = {
   submittedAt: Date;
 };
 
+export type RegisterRequest = {
+  /** @nullable */
+  firstName?: string | null;
+  /** @nullable */
+  lastName?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  password?: string | null;
+  /** @nullable */
+  phoneNumber?: string | null;
+  /** @nullable */
+  role?: string | null;
+};
+
 export type RescheduleBookingRequest = {
   /** Booking ID */
   bookingId: string;
@@ -859,6 +895,13 @@ export type RescheduleBookingRequest = {
 export type RescheduleBookingResponse = {
   /** Id of created booking */
   id: string;
+};
+
+export type ResetPasswordRequest = {
+  /** @nullable */
+  token?: string | null;
+  /** @nullable */
+  newPassword?: string | null;
 };
 
 export type SetMasterJobFeaturedImageBody = {
@@ -965,6 +1008,7 @@ export type UploadMasterProfileImageResponse = {
 export enum UserRole {
   Client = 'Client',
   Master = 'Master',
+  Admin = 'Admin',
 
 }
 /**

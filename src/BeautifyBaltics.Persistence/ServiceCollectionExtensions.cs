@@ -26,6 +26,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigureMarten, JobCategoryConfiguration>();
         services.AddSingleton<IConfigureMarten, JobCategoryConfiguration>();
         services.AddSingleton<IConfigureMarten, RatingConfiguration>();
+        services.AddSingleton<IConfigureMarten, UserAccountConfiguration>();
+        services.AddSingleton<IConfigureMarten, UserSessionConfiguration>();
 
         return services;
     }

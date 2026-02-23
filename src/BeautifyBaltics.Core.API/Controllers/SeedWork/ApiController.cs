@@ -8,8 +8,7 @@ namespace BeautifyBaltics.Core.API.Controllers.SeedWork;
 [Authorize]
 public abstract class ApiController : ControllerBase
 {
-    protected string UserId => User.FindFirstValue(ClaimTypes.Email)
-                                   ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
-                                   ?? User.FindFirstValue("sub")
-                                   ?? throw new InvalidOperationException("User ID not found in the current context");
+    protected Guid UserId => Guid.Parse(
+        User.FindFirstValue(ClaimTypes.NameIdentifier)
+        ?? throw new InvalidOperationException("User ID not found in the current context"));
 }

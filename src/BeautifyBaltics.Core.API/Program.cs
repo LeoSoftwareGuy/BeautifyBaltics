@@ -1,7 +1,7 @@
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using BeautifyBaltics.Core.API.Application.Auth.Services;
+using Azure.Storage.Blobs;
 using BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
@@ -18,9 +18,9 @@ using JasperFx;
 using JasperFx.CodeGeneration;
 using JasperFx.Resources;
 using Mapster;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Wolverine;
@@ -51,13 +51,6 @@ internal class Program
         });
 
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddHttpClient();
-        builder.Services.AddHttpClient(nameof(SupabaseSigningKeysProvider), client =>
-        {
-            client.Timeout = TimeSpan.FromSeconds(15);
-        });
-
-        builder.Services.AddSingleton<ISupabaseSigningKeysProvider, SupabaseSigningKeysProvider>();
 
         // Register Mapster in the IoC container
         builder.Services.AddMapster();
@@ -93,7 +86,6 @@ internal class Program
 
         builder.Services.AddPersistenceServices();
         builder.Services.AddInfrastructureServices();
-        builder.Services.AddScoped<IUserProvisioningService, UserProvisioningService>();
 
         builder.Services.AddHostedService<BookingCompletionBackgroundService>();
         builder.Services.AddHostedService<BookingExpirationBackgroundService>();
@@ -110,51 +102,51 @@ internal class Program
         {
             x.ApplicationAssembly = typeof(Program).Assembly;
 
-            x.Production.GeneratedCodeMode = TypeLoadMode.Auto; // TODO: switch to Static if codegen write issues are resolved
+            x.Production.GeneratedCodeMode = TypeLoadMode.Auto;
             x.Production.ResourceAutoCreate = AutoCreate.CreateOrUpdate;
             x.Production.SourceCodeWritingEnabled = false;
         });
 
+        // Cookie authentication with server-side session store
+        builder.Services.AddScoped<CustomCookieAuthenticationEvents>();
+        builder.Services.AddSingleton<ITicketStore, UserSessionTicketStore>();
+
         builder.Services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer();
-
-        builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-            .Configure<ISupabaseSigningKeysProvider, IConfiguration>((options, signingKeysProvider, configuration) =>
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                var issuer = configuration["Authentication:ValidIssuer"];
-                if (string.IsNullOrWhiteSpace(issuer))
-                {
-                    throw new InvalidOperationException("Missing Authentication:ValidIssuer configuration value.");
-                }
-
-                var audience = configuration["Authentication:ValidAudience"];
-                if (string.IsNullOrWhiteSpace(audience))
-                {
-                    throw new InvalidOperationException("Missing Authentication:ValidAudience configuration value.");
-                }
-
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidAudience = audience,
-                    ValidIssuer = issuer,
-                    IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-                    {
-                        try
-                        {
-                            return signingKeysProvider.GetSigningKeysAsync().GetAwaiter().GetResult();
-                        }
-                        catch (Exception)
-                        {
-                            return Array.Empty<SecurityKey>();
-                        }
-                    }
-                };
+                options.Cookie.Name = "bb.auth.session";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = true;
+                options.EventsType = typeof(CustomCookieAuthenticationEvents);
             });
+
+        // Wire SessionTicketStore after registration
+        builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
+            .Configure<ITicketStore>((o, store) => o.SessionStore = store);
+
+        // Data Protection — keys persisted to Azure Blob Storage
+        var dataProtectionBuilder = builder.Services.AddDataProtection()
+            .SetApplicationName("BeautifyBaltics");
+
+        if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("blobs")))
+        {
+            dataProtectionBuilder.PersistKeysToAzureBlobStorage(sp =>
+            {
+                var blobServiceClient = sp.GetRequiredService<BlobServiceClient>();
+                return blobServiceClient.GetBlobContainerClient("data-protection").GetBlobClient("keys.xml");
+            });
+        }
+
+        if (builder.Environment.IsProduction())
+        {
+            var keyVaultUri = builder.Configuration.GetConnectionString("key-vault")!;
+            var credential = new DefaultAzureCredential();
+            dataProtectionBuilder.ProtectKeysWithAzureKeyVault(new Uri($"{keyVaultUri.TrimEnd('/')}/keys/data-protection"), credential);
+        }
 
         builder.Services.AddAuthorization();
 
@@ -192,21 +184,6 @@ internal class Program
 
         var app = builder.Build();
 
-        // Pre-load JWKS signing keys at startup to diagnose outbound connectivity
-        {
-            var jwksProvider = app.Services.GetRequiredService<ISupabaseSigningKeysProvider>();
-            var startupLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
-            try
-            {
-                var keys = await jwksProvider.GetSigningKeysAsync();
-                startupLogger.LogInformation("JWKS pre-loaded successfully: {KeyCount} key(s)", keys.Count);
-            }
-            catch (Exception ex)
-            {
-                startupLogger.LogError(ex, "Failed to pre-load JWKS from Supabase. Authenticated requests will fail until keys are fetched.");
-            }
-        }
-
         if (!builder.Environment.IsProduction())
         {
             var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(Program));
@@ -214,10 +191,6 @@ internal class Program
             if (!string.IsNullOrWhiteSpace(testSecret))
             {
                 logger.LogInformation("Key Vault secret 'test-secret' read successfully (length {Length}).", testSecret.Length);
-            }
-            else
-            {
-                logger.LogWarning("Key Vault secret 'test-secret' not found in configuration.");
             }
         }
 
@@ -240,7 +213,6 @@ internal class Program
         app.UseRouting();
 
         app.UseAuthentication();
-        app.UseMiddleware<UserProvisioningMiddleware>();
         app.UseAuthorization();
 
         app.UseRequestTimeouts();

@@ -60,6 +60,8 @@ public class SampleDataSeeder : IInitialData
 
             var availabilityByMaster = await SeedMastersAsync(session, cancellation, masterProfileBlobStorage, masterJobImageBlobStorage);
 
+            await SeedUserAccountsAsync(session, cancellation);
+
             await session.SaveChangesAsync(cancellation);
 
             if (availabilityByMaster.Count > 0)
@@ -105,6 +107,26 @@ public class SampleDataSeeder : IInitialData
         }
     }
 
+    private async Task SeedUserAccountsAsync(IDocumentSession session, CancellationToken cancellation)
+    {
+        if (await session.Query<UserAccount>().AnyAsync(cancellation)) return;
+
+        var devPasswordHash = BCrypt.Net.BCrypt.HashPassword("Dev@12345!");
+
+        foreach (var master in _masters)
+        {
+            var account = new UserAccount(master.UserId, master.Email, devPasswordHash, UserRole.Master, master.FirstName, master.LastName, master.PhoneNumber);
+            account.SetEmailVerified();
+            session.Store(account);
+        }
+
+        var adminId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+        var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@12345!");
+        var adminAccount = new UserAccount(adminId, "admin@dev.local", adminPasswordHash, UserRole.Admin, "Admin", "User", string.Empty);
+        adminAccount.SetEmailVerified();
+        session.Store(adminAccount);
+    }
+
     private async Task<IReadOnlyDictionary<Guid, List<MasterAvailabilitySlotCreated>>> SeedMastersAsync(
         IDocumentSession session,
         CancellationToken cancellation,
@@ -119,7 +141,7 @@ public class SampleDataSeeder : IInitialData
         {
             var events = new List<object>
             {
-                new MasterCreated(master.FirstName, master.LastName, new ContactInformation(master.Email, master.PhoneNumber), master.SupabaseUserId),
+                new MasterCreated(master.FirstName, master.LastName, new ContactInformation(master.Email, master.PhoneNumber), master.UserId),
                 new MasterProfileUpdated(
                     master.Id,
                     master.FirstName,
@@ -510,13 +532,13 @@ public class SampleDataSeeder : IInitialData
         public JobCategory ToDocument() => new(Id, Name);
     }
 
-    private sealed record MasterSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, string SupabaseUserId, int Age, Domain.Enumerations.Gender Gender, string? Description, IReadOnlyList<JobOffering> JobOfferings)
+    private sealed record MasterSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, Guid UserId, int Age, Domain.Enumerations.Gender Gender, string? Description, IReadOnlyList<JobOffering> JobOfferings)
     {
         public static MasterSeed Create(string firstName, string lastName, string email, string phoneNumber, Domain.Enumerations.Gender gender, int age, string? description, IReadOnlyList<JobOffering> jobOfferings) =>
-            new(Guid.NewGuid(), firstName, lastName, email, phoneNumber, Guid.NewGuid().ToString(), age, gender, description, jobOfferings);
+            new(Guid.NewGuid(), firstName, lastName, email, phoneNumber, Guid.NewGuid(), age, gender, description, jobOfferings);
     }
 
     private sealed record JobOffering(Guid JobId, decimal? Price = null, TimeSpan? Duration = null, string? Title = null);
 
-    private sealed record ClientSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, string SupabaseUserId);
+    private sealed record ClientSeed(Guid Id, string FirstName, string LastName, string Email, string PhoneNumber, Guid UserId);
 }

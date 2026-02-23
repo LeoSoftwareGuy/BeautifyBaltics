@@ -10,7 +10,7 @@ namespace BeautifyBaltics.Core.API.Application.Booking.Commands.ConfirmBooking
     public class ConfirmBookingEventHandler
     {
         [AggregateHandler]
-        public async Task<(Events, OutgoingMessages)> Handle(
+        public (Events, OutgoingMessages) Handle(
             ConfirmBookingRequest request,
             [ReadAggregate(nameof(request.BookingId))]
             BookingAggregate booking,

@@ -6,18 +6,22 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Session as SupabaseSession, User } from '@supabase/supabase-js';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { supabase } from '@/integrations/supabase/client';
+import { UserRole } from '@/state/endpoints/api.schemas';
+
+type AuthUser = {
+  id: string;
+  email: string;
+  role: UserRole;
+  fullName: string | null;
+};
 
 type SessionContextValue = {
-  user: User | null;
-  session: SupabaseSession | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   loading: boolean;
   login: (credentials: { email: string; password: string }) => Promise<void>;
-  register: (params: { email: string; password: string; name?: string }) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -28,75 +32,75 @@ interface SessionProviderProps {
 }
 
 function SessionProvider({ children }: SessionProviderProps) {
-  const [session, setSession] = useState<SupabaseSession | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     let mounted = true;
 
-    const loadSession = async () => {
-      setLoading(true);
-      const { data } = await supabase.auth.getSession();
-      if (!mounted) return;
-
-      setSession(data?.session ?? null);
-      setLoading(false);
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/v1/users', { credentials: 'include' });
+        if (!mounted) return;
+        if (response.ok) {
+          const data = await response.json();
+          setUser({
+            id: data.id, email: data.email, role: data.role, fullName: data.fullName ?? null,
+          });
+        } else {
+          setUser(null);
+        }
+      } catch {
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      if (!mounted) return;
-      setSession(currentSession);
-      setLoading(false);
-    });
+    checkAuth();
 
-    loadSession();
-
-    return () => {
-      mounted = false;
-      authListener?.subscription.unsubscribe();
-    };
+    return () => { mounted = false; };
   }, []);
-
-  useEffect(() => {
-    queryClient.clear();
-  }, [queryClient, session?.user?.id]);
 
   const login = useCallback(async ({ email, password }: { email: string; password: string }) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-  }, []);
+    const response = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
 
-  const register = useCallback(
-    async ({ email, password, name }: { email: string; password: string; name?: string }) => {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: name ? { full_name: name } : undefined,
-        },
-      });
-      if (error) throw error;
-    },
-    [],
-  );
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw data;
+    }
+
+    const data = await response.json();
+    setUser({
+      id: data.id, email: data.email, role: data.role, fullName: data.fullName ?? null,
+    });
+    queryClient.clear();
+  }, [queryClient]);
 
   const logout = useCallback(async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  }, []);
+    await fetch('/api/v1/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+    setUser(null);
+    queryClient.clear();
+  }, [queryClient]);
 
   const contextValue = useMemo<SessionContextValue>(
     () => ({
-      user: session?.user ?? null,
-      session,
-      isAuthenticated: Boolean(session?.access_token),
+      user,
+      isAuthenticated: user !== null,
       loading,
       login,
-      register,
       logout,
     }),
-    [session, loading, login, register, logout],
+    [user, loading, login, logout],
   );
 
   return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;

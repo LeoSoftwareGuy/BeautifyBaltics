@@ -9,9 +9,7 @@ export default function SidebarFooter() {
   const { user } = useSession();
   const layout = useLayout();
 
-  const displayName = typeof user?.user_metadata?.full_name === 'string'
-    ? user?.user_metadata?.full_name
-    : user?.email ?? '';
+  const displayName = user?.fullName ?? user?.email ?? '';
   const displayEmail = user?.email ?? '';
 
   if (!user) return null;

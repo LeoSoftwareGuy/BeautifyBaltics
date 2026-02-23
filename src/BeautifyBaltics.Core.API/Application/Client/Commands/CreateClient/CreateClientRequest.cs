@@ -6,6 +6,6 @@ namespace BeautifyBaltics.Core.API.Application.Client.Commands.CreateClient
     public record CreateClientRequest : ClientCommandDTO
     {
         [JsonIgnore]
-        public string SupabaseUserId { get; init; } = string.Empty;
+        public Guid UserId { get; init; }
     }
 }

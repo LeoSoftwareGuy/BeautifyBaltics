@@ -6,7 +6,7 @@ namespace BeautifyBaltics.Domain.Aggregates.Client;
 
 public partial class ClientAggregate : Aggregate
 {
-    public string SupabaseUserId { get; private set; } = string.Empty;
+    public Guid UserId { get; private set; }
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public ContactInformation Contacts { get; private set; } = new(string.Empty, string.Empty);
@@ -16,7 +16,7 @@ public partial class ClientAggregate : Aggregate
 
     public ClientAggregate(ClientCreated @event) : this()
     {
-        SupabaseUserId = @event.SupabaseUserId;
+        UserId = @event.UserId;
         FirstName = @event.FirstName;
         LastName = @event.LastName;
         Contacts = @event.Contacts;

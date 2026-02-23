@@ -8,4 +8,11 @@ public interface IEmailService
         object templateData,
         CancellationToken cancellationToken = default
     );
+
+    Task<bool> SendHtmlAsync(
+        string toEmail,
+        string subject,
+        string htmlContent,
+        CancellationToken cancellationToken = default
+    );
 }

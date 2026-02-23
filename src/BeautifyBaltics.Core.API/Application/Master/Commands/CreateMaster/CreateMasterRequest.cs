@@ -6,5 +6,5 @@ namespace BeautifyBaltics.Core.API.Application.Master.Commands.CreateMaster;
 public record CreateMasterRequest : MasterProfileCommandDTO
 {
     [JsonIgnore]
-    public string SupabaseUserId { get; init; } = string.Empty;
+    public Guid UserId { get; init; }
 }

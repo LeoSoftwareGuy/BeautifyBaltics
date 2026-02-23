@@ -89,4 +89,46 @@ public class SendGridEmailService : IEmailService
             return false;
         }
     }
+
+    public async Task<bool> SendHtmlAsync(
+        string toEmail,
+        string subject,
+        string htmlContent,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_options.Enabled)
+        {
+            _logger.LogInformation("Email service is disabled, skipping email to {ToEmail}", toEmail);
+            return true;
+        }
+
+        if (_client is null)
+        {
+            _logger.LogWarning("SendGrid client not configured, cannot send email to {ToEmail}", toEmail);
+            return false;
+        }
+
+        try
+        {
+            var from = new EmailAddress(_options.FromEmail, _options.FromName);
+            var to = new EmailAddress(toEmail);
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, string.Empty, htmlContent);
+            var response = await _client.SendEmailAsync(msg, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("Email sent successfully to {ToEmail} with subject {Subject}", toEmail, subject);
+                return true;
+            }
+
+            var responseBody = await response.Body.ReadAsStringAsync(cancellationToken);
+            _logger.LogError("Failed to send email to {ToEmail}. Status: {StatusCode}, Body: {ResponseBody}", toEmail, response.StatusCode, responseBody);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending email to {ToEmail}", toEmail);
+            return false;
+        }
+    }
 }
