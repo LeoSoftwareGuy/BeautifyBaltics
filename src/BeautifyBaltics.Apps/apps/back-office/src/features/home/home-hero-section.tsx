@@ -12,12 +12,17 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 import { Search, Sparkles } from 'lucide-react';
 
+import { useSession } from '@/contexts/session-context';
+import { UserRole } from '@/state/endpoints/api.schemas';
+
 const BACKGROUND_PATTERN = "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI0NCwxNjQsMTgwLDAuMSkiLz48L2c+PC9zdmc+')";
 const HIGHLIGHTS = ['verified', 'instant', 'secure'] as const;
 
 function HeroSection() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useSession();
+  const isMaster = user?.role === UserRole.Master;
 
   return (
     <Box
@@ -75,18 +80,20 @@ function HeroSection() {
               {t('home.hero.subtitle')}
             </Text>
           </Stack>
-          <Group gap="md" justify="center" wrap="wrap">
-            <Button
-              size="md"
-              radius="md"
-              color="pink"
-              leftSection={<Search size={18} />}
-              onClick={() => navigate({ to: '/explore' })}
-              px={24}
-            >
-              {t('home.hero.cta')}
-            </Button>
-          </Group>
+          {!isMaster && (
+            <Group gap="md" justify="center" wrap="wrap">
+              <Button
+                size="md"
+                radius="md"
+                color="pink"
+                leftSection={<Search size={18} />}
+                onClick={() => navigate({ to: '/explore' })}
+                px={24}
+              >
+                {t('home.hero.cta')}
+              </Button>
+            </Group>
+          )}
           <Group gap="lg" justify="center" wrap="wrap">
             {HIGHLIGHTS.map((label) => (
               <Group key={label} gap={6}>

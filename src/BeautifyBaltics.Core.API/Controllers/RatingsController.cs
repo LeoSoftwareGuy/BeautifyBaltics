@@ -3,6 +3,7 @@ using BeautifyBaltics.Core.API.Application.Rating.Queries.FindMasterRatings;
 using BeautifyBaltics.Core.API.Application.Rating.Queries.GetMasterRatings;
 using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
@@ -36,6 +37,7 @@ public class RatingsController(IMessageBus bus) : ApiController
     /// </summary>
     /// <param name="request">Find ratings request</param>
     /// <returns>Paged response of ratings</returns>
+    [AllowAnonymous]
     [HttpGet(Name = "FindRatings")]
     [ProducesResponseType(typeof(PagedResponse<FindMasterRatingsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
@@ -51,6 +53,7 @@ public class RatingsController(IMessageBus bus) : ApiController
     /// <param name="masterId">Master ID</param>
     /// <param name="request">Request parameters</param>
     /// <returns>Paged response of ratings</returns>
+    [AllowAnonymous]
     [HttpGet("master/{masterId:guid}", Name = "GetMasterRatings")]
     [ProducesResponseType(typeof(PagedResponse<GetMasterRatingsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]

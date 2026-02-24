@@ -27,6 +27,7 @@ using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterAvailability;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -39,6 +40,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="request">Find masters request</param>
     /// <returns>Paged response of masters</returns>
     [HttpGet(Name = "FindMasters")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(PagedResponse<FindMastersResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
@@ -55,6 +57,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="request">Request paramters</param>
     /// <returns>Master of 404 if not found</returns>
     [HttpGet("{id:guid}", Name = "GetMasterById")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetMasterByIdResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetMasterByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetMasterByIdRequest request)
@@ -117,6 +120,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="id">Master id</param>
     /// <returns>Master jobs</returns>
     [HttpGet("{id:guid}/jobs", Name = "FindMasterJobs")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(FindMasterJobsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
@@ -132,6 +136,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="id">Master id</param>
     /// <returns>All images with base64 data for the master's jobs</returns>
     [HttpGet("{id:guid}/images", Name = "FindMasterJobImages")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(FindMasterJobImagesResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FindMasterJobImagesResponse>> FindMasterJobImages([FromRoute] Guid id)
@@ -211,6 +216,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="id">Master id</param>
     /// <param name="request">Find masters availability request params</param>
     /// <returns>Paged master availabilities</returns>
+    [AllowAnonymous]
     [HttpGet("{id:guid}/availability", Name = "FindMasterAvailabilities")]
     [ProducesResponseType(typeof(PagedResponse<FindMasterAvailabilitiesResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -227,6 +233,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="id">Master id</param>
     /// <param name="availabilityId">Availability id</param>
     /// <returns>Master availability</returns>
+    [AllowAnonymous]
     [HttpGet("{id:guid}/availability/{availabilityId:guid}", Name = "GetMasterAvailability")]
     [ProducesResponseType(typeof(GetMasterAvailabilityResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -243,6 +250,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="request">Request with date and service duration</param>
     /// <returns>List of available time slots</returns>
     [HttpGet("{id:guid}/available-slots", Name = "GetAvailableTimeSlots")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetAvailableTimeSlotsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
@@ -294,6 +302,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="id">Master id</param>
     /// <returns>Master profile image</returns>
     [HttpGet("{id:guid}/profile-image", Name = "GetMasterProfileImage")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetProfileImage([FromRoute] Guid id)
@@ -329,6 +338,7 @@ public class MastersController(IMessageBus bus) : ApiController
     /// <param name="jobId">Job id</param>
     /// <param name="imageId">Image id</param>
     /// <returns>Master job image as JSON with base64 encoded data</returns>
+    [AllowAnonymous]
     [HttpGet("{masterId:guid}/jobs/{jobId:guid}/images/{imageId:guid}", Name = "GetMasterJobImageById")]
     [ProducesResponseType(typeof(GetMasterJobImageByIdResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -38,11 +38,20 @@ export const Route = createRootRouteWithContext<RouteContext>()({
 function Root() {
   usePageTitle();
   const location = useRouterState({ select: (state) => state.location });
-  const isPublicRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || location.pathname.startsWith('/reset-password');
-  const { data: user } = useGetUser({ query: { enabled: !isPublicRoute } });
-  const isMaster = user?.role === UserRole.Master;
+  const isAuthOnlyRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || location.pathname.startsWith('/reset-password');
+  const isHomePage = location.pathname === '/' || location.pathname.startsWith('/home');
 
-  if (isPublicRoute) {
+  const { data: user } = useGetUser({ query: { enabled: !isAuthOnlyRoute } });
+  const isMaster = user?.role === UserRole.Master;
+  let navContent = null;
+  if (user) {
+    navContent = isMaster ? <MasterNavigation /> : <ClientNavigation />;
+  }
+
+  // Minimal layout: auth pages always, home page only when not logged in
+  const showMinimalLayout = isAuthOnlyRoute || (isHomePage && !user);
+
+  if (showMinimalLayout) {
     return (
       <>
         <NavigationLoadingIndicator />
@@ -66,7 +75,7 @@ function Root() {
       }}
       navbar={{
         top: null,
-        upperMiddle: isMaster ? <MasterNavigation /> : <ClientNavigation />,
+        upperMiddle: navContent,
         lowerMiddle: null,
         bottom: <SidebarFooter />,
       }}

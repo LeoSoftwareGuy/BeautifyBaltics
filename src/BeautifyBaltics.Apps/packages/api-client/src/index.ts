@@ -4,5 +4,6 @@ export {
   BadRequestApiError,
   NotFoundApiError,
   ServerErrorApiError,
+  UnauthorizedApiError,
   UnprocessableEntityApiError,
 } from './errors';

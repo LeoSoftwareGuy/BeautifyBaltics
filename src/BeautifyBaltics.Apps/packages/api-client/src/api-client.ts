@@ -5,6 +5,7 @@ import {
   BadRequestApiError,
   NotFoundApiError,
   ServerErrorApiError,
+  UnauthorizedApiError,
   UnprocessableEntityApiError,
 } from './errors';
 import { StatusCodes } from './status-codes';
@@ -59,6 +60,7 @@ export const apiClient = async <T>({
   });
 
   if (response.status >= 400 && response.status < 500) {
+    if (response.status === StatusCodes.Unauthorized) throw new UnauthorizedApiError();
     const text = await response.text();
     if (response.status === StatusCodes.UnprocessableEntity) {
       const content = JSON.parse(text) as ValidationProblemDetails;

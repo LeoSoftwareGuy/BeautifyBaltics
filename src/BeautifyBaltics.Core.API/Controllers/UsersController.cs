@@ -13,6 +13,7 @@ public class UsersController(IMessageBus bus) : ApiController
     /// Gets user
     /// </summary>
     /// <returns>Returns user</returns>
+    
     [HttpGet(Name = "GetUser")]
     [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

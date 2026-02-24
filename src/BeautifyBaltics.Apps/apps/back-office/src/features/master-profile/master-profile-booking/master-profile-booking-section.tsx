@@ -11,6 +11,7 @@ import {
   Title,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
+import { useNavigate } from '@tanstack/react-router';
 import { Briefcase, Calendar, Clock } from 'lucide-react';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
@@ -35,6 +36,7 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
   const { t } = useTranslation();
   const { translateService } = useTranslateData();
   const { data: user } = useGetUser();
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [selectedScheduledAt, setSelectedScheduledAt] = useState<Date | null>(null);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
@@ -119,6 +121,10 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
   }
 
   const handleBook = () => {
+    if (!user) {
+      navigate({ to: '/login', search: { redirect: '/home' } });
+      return;
+    }
     if (selectedScheduledAt && selectedJob) {
       onBook({
         scheduledAt: selectedScheduledAt,

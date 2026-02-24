@@ -8,6 +8,7 @@ using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 using BeautifyBaltics.Core.API.Application.Job.Queries.FindJobCategories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -20,6 +21,7 @@ public class JobsController(IMessageBus bus) : ApiController
     /// <param name="request">Find jobs request</param>
     /// <returns>Paged response of jobs</returns>
     [HttpGet(Name = "FindJobs")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(PagedResponse<FindJobsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<PagedResponse<FindJobsResponse>>> Find([FromQuery] FindJobsRequest request)
@@ -34,6 +36,7 @@ public class JobsController(IMessageBus bus) : ApiController
     /// <param name="request">Find categories request</param>
     /// <returns>Paged response of categories</returns>
     [HttpGet("categories", Name = "FindJobCategories")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(PagedResponse<FindJobCategoriesResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<PagedResponse<FindJobCategoriesResponse>>> FindCategories([FromQuery] FindJobCategoriesRequest request)
@@ -49,6 +52,7 @@ public class JobsController(IMessageBus bus) : ApiController
     /// <param name="request">Request parameters</param>
     /// <returns>Job or not found</returns>
     [HttpGet("{id:guid}", Name = "GetJobById")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetJobByIdResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetJobByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetJobByIdRequest request)
