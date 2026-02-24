@@ -1,6 +1,6 @@
-namespace BeautifyBaltics.Domain.Documents;
+namespace BeautifyBaltics.Domain.Documents.User;
 
-public class EmailVerificationToken
+public class PasswordResetToken
 {
     public Guid Id { get; init; }
     public Guid UserId { get; init; }
@@ -8,9 +8,9 @@ public class EmailVerificationToken
     public DateTimeOffset ExpiresAt { get; init; }
     public bool Used { get; private set; }
 
-    private EmailVerificationToken() { }
+    private PasswordResetToken() { }
 
-    public EmailVerificationToken(Guid id, Guid userId, string token, DateTimeOffset expiresAt)
+    public PasswordResetToken(Guid id, Guid userId, string token, DateTimeOffset expiresAt)
     {
         Id = id;
         UserId = userId;

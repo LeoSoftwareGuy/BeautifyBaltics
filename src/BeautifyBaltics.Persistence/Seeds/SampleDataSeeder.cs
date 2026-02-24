@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MasterJobImage = BeautifyBaltics.Domain.Aggregates.Master.MasterJobImage;
+using BeautifyBaltics.Domain.Documents.User;
 
 namespace BeautifyBaltics.Persistence.Seeds;
 
@@ -109,20 +110,20 @@ public class SampleDataSeeder : IInitialData
 
     private async Task SeedUserAccountsAsync(IDocumentSession session, CancellationToken cancellation)
     {
-        if (await session.Query<UserAccount>().AnyAsync(cancellation)) return;
+        if (await session.Query<User>().AnyAsync(cancellation)) return;
 
         var devPasswordHash = BCrypt.Net.BCrypt.HashPassword("Dev@12345!");
 
         foreach (var master in _masters)
         {
-            var account = new UserAccount(master.UserId, master.Email, devPasswordHash, UserRole.Master, master.FirstName, master.LastName, master.PhoneNumber);
+            var account = new User(master.UserId, master.Email, devPasswordHash, UserRole.Master, master.FirstName, master.LastName, master.PhoneNumber);
             account.SetEmailVerified();
             session.Store(account);
         }
 
         var adminId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@12345!");
-        var adminAccount = new UserAccount(adminId, "admin@dev.local", adminPasswordHash, UserRole.Admin, "Admin", "User", string.Empty);
+        var adminAccount = new User(adminId, "admin@dev.local", adminPasswordHash, UserRole.Admin, "Admin", "User", string.Empty);
         adminAccount.SetEmailVerified();
         session.Store(adminAccount);
     }

@@ -1,4 +1,4 @@
-namespace BeautifyBaltics.Domain.Documents;
+namespace BeautifyBaltics.Domain.Documents.User;
 
 public class UserSession
 {

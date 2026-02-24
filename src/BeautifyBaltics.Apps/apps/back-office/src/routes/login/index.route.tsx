@@ -105,11 +105,11 @@ function LoginView() {
       await login({ email: values.email.trim(), password: values.password });
       router.navigate({ to: redirectPath, replace: true });
     } catch (error) {
-      if (error && typeof error === 'object' && 'error' in error) {
-        if (error.error === 'email_not_verified') {
+      if (error && typeof error === 'object' && 'detail' in error) {
+        if (error.detail === 'email_not_verified') {
           setEmailNotVerified(true);
         } else {
-          notifications.show({ title: 'Sign in failed', message: String(error.error), color: 'red' });
+          notifications.show({ title: 'Sign in failed', message: String(error.detail), color: 'red' });
         }
       } else {
         const message = error instanceof Error ? error.message : 'Sign in failed. Please try again.';

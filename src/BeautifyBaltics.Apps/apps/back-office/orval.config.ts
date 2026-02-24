@@ -16,10 +16,6 @@ const infiniteOperationNames = [
 export default defineConfig({
   'core-api': {
     input: {
-      filters: {
-        mode: 'exclude',
-        tags: ['Auth'],
-      },
       target: './src/state/core-api-spec.yaml',
       validation: false,
     },

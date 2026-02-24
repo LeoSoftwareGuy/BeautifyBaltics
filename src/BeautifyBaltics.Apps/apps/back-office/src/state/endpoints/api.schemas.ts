@@ -404,8 +404,8 @@ export type FindMastersResponsePagedResponse = {
 };
 
 export type ForgotPasswordRequest = {
-  /** @nullable */
-  email?: string | null;
+  /** @minLength 1 */
+  email: string;
 };
 
 export enum Gender {
@@ -563,10 +563,10 @@ export type JobDTO = {
 };
 
 export type LoginRequest = {
-  /** @nullable */
-  email?: string | null;
-  /** @nullable */
-  password?: string | null;
+  /** @minLength 1 */
+  email: string;
+  /** @minLength 1 */
+  password: string;
 };
 
 export type LoginResponse = {
@@ -868,19 +868,18 @@ export type RatingDTO = {
   submittedAt: Date;
 };
 
-export type RegisterRequest = {
-  /** @nullable */
-  firstName?: string | null;
-  /** @nullable */
-  lastName?: string | null;
-  /** @nullable */
-  email?: string | null;
-  /** @nullable */
-  password?: string | null;
-  /** @nullable */
-  phoneNumber?: string | null;
-  /** @nullable */
-  role?: string | null;
+export type RegisterUserRequest = {
+  /** @minLength 1 */
+  firstName: string;
+  /** @minLength 1 */
+  lastName: string;
+  /** @minLength 1 */
+  email: string;
+  /** @minLength 1 */
+  password: string;
+  /** @minLength 1 */
+  phoneNumber: string;
+  role: UserRole;
 };
 
 export type RescheduleBookingRequest = {
@@ -898,10 +897,10 @@ export type RescheduleBookingResponse = {
 };
 
 export type ResetPasswordRequest = {
-  /** @nullable */
-  token?: string | null;
-  /** @nullable */
-  newPassword?: string | null;
+  /** @minLength 1 */
+  token: string;
+  /** @minLength 1 */
+  newPassword: string;
 };
 
 export type SetMasterJobFeaturedImageBody = {

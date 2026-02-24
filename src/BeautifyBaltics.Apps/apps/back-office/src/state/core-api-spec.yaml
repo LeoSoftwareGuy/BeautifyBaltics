@@ -4,18 +4,21 @@ info:
   description: Beautify Baltics Core API for back-office operations
   version: v1
 paths:
-  /api/v1/api/v1/auth/register:
+  /api/v1/auth/register:
     post:
       tags:
         - Auth
+      summary: Register user
+      operationId: Register
       requestBody:
+        description: Register user request
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: '#/components/schemas/RegisterUserRequest'
           application/*+json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: '#/components/schemas/RegisterUserRequest'
       responses:
         '201':
           description: Created
@@ -25,11 +28,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-  /api/v1/api/v1/auth/login:
+  /api/v1/auth/login:
     post:
       tags:
         - Auth
+      summary: Login user
+      operationId: Login
       requestBody:
+        description: Login user request
         content:
           application/json:
             schema:
@@ -50,30 +56,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
-  /api/v1/api/v1/auth/logout:
+  /api/v1/auth/logout:
     post:
       tags:
         - Auth
+      summary: Logout user
+      operationId: Logout
       responses:
         '204':
           description: No Content
-  /api/v1/api/v1/auth/verify-email:
+  /api/v1/auth/verify-email:
     get:
       tags:
         - Auth
+      summary: Verify email address
+      operationId: Verify-email
       parameters:
         - name: token
           in: query
+          description: Verification email token
           schema:
             type: string
       responses:
-        '200':
-          description: OK
-  /api/v1/api/v1/auth/forgot-password:
+        '302':
+          description: Found
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/auth/forgot-password:
     post:
       tags:
         - Auth
+      summary: Forgot password
+      operationId: Forgot-password
       requestBody:
+        description: Forgot password request
         content:
           application/json:
             schema:
@@ -84,11 +104,14 @@ paths:
       responses:
         '200':
           description: OK
-  /api/v1/api/v1/auth/reset-password:
+  /api/v1/auth/reset-password:
     post:
       tags:
         - Auth
+      summary: Reset password
+      operationId: Reset-password
       requestBody:
+        description: Reset request
         content:
           application/json:
             schema:
@@ -2830,11 +2853,13 @@ components:
           description: Items
       additionalProperties: false
     ForgotPasswordRequest:
+      required:
+        - email
       type: object
       properties:
         email:
+          minLength: 1
           type: string
-          nullable: true
       additionalProperties: false
     Gender:
       enum:
@@ -3089,14 +3114,17 @@ components:
           format: int32
       additionalProperties: false
     LoginRequest:
+      required:
+        - email
+        - password
       type: object
       properties:
         email:
+          minLength: 1
           type: string
-          nullable: true
         password:
+          minLength: 1
           type: string
-          nullable: true
       additionalProperties: false
     LoginResponse:
       type: object
@@ -3536,27 +3564,33 @@ components:
           description: When the rating was submitted
           format: date-time
       additionalProperties: false
-    RegisterRequest:
+    RegisterUserRequest:
+      required:
+        - email
+        - firstName
+        - lastName
+        - password
+        - phoneNumber
+        - role
       type: object
       properties:
         firstName:
+          minLength: 1
           type: string
-          nullable: true
         lastName:
+          minLength: 1
           type: string
-          nullable: true
         email:
+          minLength: 1
           type: string
-          nullable: true
         password:
+          minLength: 1
           type: string
-          nullable: true
         phoneNumber:
+          minLength: 1
           type: string
-          nullable: true
         role:
-          type: string
-          nullable: true
+          $ref: '#/components/schemas/UserRole'
       additionalProperties: false
     RescheduleBookingRequest:
       required:
@@ -3589,14 +3623,17 @@ components:
           format: uuid
       additionalProperties: false
     ResetPasswordRequest:
+      required:
+        - newPassword
+        - token
       type: object
       properties:
         token:
+          minLength: 1
           type: string
-          nullable: true
         newPassword:
+          minLength: 1
           type: string
-          nullable: true
       additionalProperties: false
     SetMasterJobFeaturedImageBody:
       type: object

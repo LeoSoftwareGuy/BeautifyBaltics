@@ -1,8 +1,9 @@
+using System.Text.Json.Serialization;
 using BeautifyBaltics.Domain.Enumerations;
 
-namespace BeautifyBaltics.Domain.Documents;
+namespace BeautifyBaltics.Domain.Documents.User;
 
-public class UserAccount
+public class User
 {
     public Guid Id { get; init; }
     public string Email { get; private set; } = string.Empty;
@@ -14,9 +15,21 @@ public class UserAccount
     public bool EmailVerified { get; private set; }
     public DateTimeOffset CreatedAt { get; init; }
 
-    private UserAccount() { }
+    [JsonConstructor]
+    private User(Guid id, string email, string passwordHash, UserRole role, string firstName, string lastName, string phoneNumber, bool emailVerified, DateTimeOffset createdAt)
+    {
+        Id = id;
+        Email = email;
+        PasswordHash = passwordHash;
+        Role = role;
+        FirstName = firstName;
+        LastName = lastName;
+        PhoneNumber = phoneNumber;
+        EmailVerified = emailVerified;
+        CreatedAt = createdAt;
+    }
 
-    public UserAccount(Guid id, string email, string passwordHash, UserRole role, string firstName, string lastName, string phoneNumber)
+    public User(Guid id, string email, string passwordHash, UserRole role, string firstName, string lastName, string phoneNumber)
     {
         Id = id;
         Email = email;

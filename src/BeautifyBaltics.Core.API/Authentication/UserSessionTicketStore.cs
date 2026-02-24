@@ -1,5 +1,4 @@
-using BeautifyBaltics.Domain.Documents;
-
+using BeautifyBaltics.Domain.Documents.User;
 using Marten;
 
 using Microsoft.AspNetCore.Authentication;

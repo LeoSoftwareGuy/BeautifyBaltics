@@ -6,7 +6,7 @@ using BeautifyBaltics.Persistence.Repositories.Job;
 using BeautifyBaltics.Persistence.Repositories.Master;
 using BeautifyBaltics.Persistence.Repositories.Rating;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
-
+using BeautifyBaltics.Persistence.Repositories.User;
 using Marten;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +43,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJobRepository, JobRepository>();
         services.AddScoped<IJobCategoryRepository, JobCategoryRepository>();
         services.AddScoped<IRatingRepository, RatingRepository>();
+        services.AddScoped<ISessionRepository, SessionRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

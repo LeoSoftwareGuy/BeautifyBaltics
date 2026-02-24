@@ -1,5 +1,4 @@
-using BeautifyBaltics.Domain.Documents;
-
+using BeautifyBaltics.Domain.Documents.User;
 using Marten;
 
 namespace BeautifyBaltics.Persistence.Configurations;
