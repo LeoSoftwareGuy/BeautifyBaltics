@@ -76,6 +76,10 @@ const en = {
         phoneRequired: 'Phone number is required',
       },
     },
+    quickAccess: {
+      signIn: 'Sign in',
+      createAccount: 'Create account',
+    },
     login: {
       title: 'Welcome back',
       subtitle: 'Sign in with your Beautify Baltics account to continue.',

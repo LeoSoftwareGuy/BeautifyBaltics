@@ -7,6 +7,7 @@ import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/re
 
 import { LanguageSwitcher } from '@/components/language-switcher';
 import {
+  AuthQuickActions,
   ClientNavigation,
   MasterNavigation,
   NavigationBreadcrumbs,
@@ -55,6 +56,7 @@ function Root() {
     return (
       <>
         <NavigationLoadingIndicator />
+        <AuthQuickActions />
         <ModalsProvider>
           <Outlet />
         </ModalsProvider>

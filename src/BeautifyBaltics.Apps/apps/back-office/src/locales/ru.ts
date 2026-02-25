@@ -78,6 +78,10 @@ const ru: CommonLocale = {
         phoneRequired: 'Номер телефона обязателен',
       },
     },
+    quickAccess: {
+      signIn: 'Войти',
+      createAccount: 'Создать аккаунт',
+    },
     login: {
       title: 'С возвращением',
       subtitle: 'Войдите в аккаунт Beautify Baltics, чтобы продолжить.',

@@ -78,6 +78,10 @@ const et: CommonLocale = {
         phoneRequired: 'Telefoninumber on kohustuslik',
       },
     },
+    quickAccess: {
+      signIn: 'Logi sisse',
+      createAccount: 'Loo konto',
+    },
     login: {
       title: 'Tere tulemast tagasi',
       subtitle: 'Logi Beautify Balticsi kontoga jätkamiseks.',
