@@ -4,7 +4,6 @@ import {
 } from '@mantine/core';
 import {
   IconCalendarEvent,
-  IconCompass,
   IconDashboard,
   IconHome,
   IconLogout,
