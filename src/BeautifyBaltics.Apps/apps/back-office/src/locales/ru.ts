@@ -50,6 +50,7 @@ const ru: CommonLocale = {
       clientExplore: 'Найти мастеров',
       clientBookings: 'Мои бронирования',
       topMasters: 'Топ мастера',
+      topMasters: 'Топ мастера',
       dashboard: 'Панель',
       howTo: 'How It Works',
       masterDashboard: 'Панель мастера',
@@ -58,6 +59,7 @@ const ru: CommonLocale = {
       masterTimeSlots: 'Тайм-слоты',
       masterSettings: 'Настройки',
       masterProfile: 'Профиль мастера',
+      topMasters: 'Топ мастера',
     },
   },
   auth: {

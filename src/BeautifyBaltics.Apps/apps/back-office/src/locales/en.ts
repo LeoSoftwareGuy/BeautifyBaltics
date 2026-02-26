@@ -48,6 +48,7 @@ const en = {
       clientExplore: 'Discover Masters',
       clientBookings: 'My Bookings',
       topMasters: 'Top Masters',
+      topMasters: 'Top Masters',
       dashboard: 'Dashboard',
       howTo: 'How It Works',
       masterDashboard: 'Master Dashboard',
@@ -56,6 +57,7 @@ const en = {
       masterTimeSlots: 'Time Slots',
       masterSettings: 'Settings',
       masterProfile: 'Master Profile',
+      topMasters: 'Top Masters',
     },
   },
   auth: {

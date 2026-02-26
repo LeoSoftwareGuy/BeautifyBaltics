@@ -50,6 +50,7 @@ const et: CommonLocale = {
       clientExplore: 'Avasta meistreid',
       clientBookings: 'Minu broneeringud',
       topMasters: 'Parimad meistrid',
+      topMasters: 'Parimad meistrid',
       dashboard: 'Töölaud',
       howTo: 'How It Works',
       masterDashboard: 'Meistri töölaud',
@@ -58,6 +59,7 @@ const et: CommonLocale = {
       masterTimeSlots: 'Ajaaknad',
       masterSettings: 'Seaded',
       masterProfile: 'Meistri profiil',
+      topMasters: 'Parimad meistrid',
     },
   },
   auth: {
