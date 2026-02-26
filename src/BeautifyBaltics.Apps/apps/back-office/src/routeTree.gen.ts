@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteRouteImport } from './routes/index.route'
+import { Route as TopMastersIndexRouteRouteImport } from './routes/top-masters/index.route'
 import { Route as ResetPasswordIndexRouteRouteImport } from './routes/reset-password/index.route'
 import { Route as RegisterIndexRouteRouteImport } from './routes/register/index.route'
 import { Route as MasterIndexRouteRouteImport } from './routes/master/index.route'
@@ -29,6 +30,11 @@ import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bo
 const IndexRouteRoute = IndexRouteRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TopMastersIndexRouteRoute = TopMastersIndexRouteRouteImport.update({
+  id: '/top-masters/',
+  path: '/top-masters/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordIndexRouteRoute = ResetPasswordIndexRouteRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/master': typeof MasterIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
   '/reset-password': typeof ResetPasswordIndexRouteRoute
+  '/top-masters': typeof TopMastersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/master': typeof MasterIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
   '/reset-password': typeof ResetPasswordIndexRouteRoute
+  '/top-masters': typeof TopMastersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/master/': typeof MasterIndexRouteRoute
   '/register/': typeof RegisterIndexRouteRoute
   '/reset-password/': typeof ResetPasswordIndexRouteRoute
+  '/top-masters/': typeof TopMastersIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
   '/client/explore/': typeof ClientExploreIndexRouteRoute
   '/master/bookings/': typeof MasterBookingsIndexRouteRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/master'
     | '/register'
     | '/reset-password'
+    | '/top-masters'
     | '/client/bookings'
     | '/client/explore'
     | '/master/bookings'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/master'
     | '/register'
     | '/reset-password'
+    | '/top-masters'
     | '/client/bookings'
     | '/client/explore'
     | '/master/bookings'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/master/'
     | '/register/'
     | '/reset-password/'
+    | '/top-masters/'
     | '/client/bookings/'
     | '/client/explore/'
     | '/master/bookings/'
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   MasterIndexRouteRoute: typeof MasterIndexRouteRoute
   RegisterIndexRouteRoute: typeof RegisterIndexRouteRoute
   ResetPasswordIndexRouteRoute: typeof ResetPasswordIndexRouteRoute
+  TopMastersIndexRouteRoute: typeof TopMastersIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
   ClientExploreIndexRouteRoute: typeof ClientExploreIndexRouteRoute
   MasterBookingsIndexRouteRoute: typeof MasterBookingsIndexRouteRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/top-masters/': {
+      id: '/top-masters/'
+      path: '/top-masters'
+      fullPath: '/top-masters'
+      preLoaderRoute: typeof TopMastersIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password/': {
@@ -371,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   MasterIndexRouteRoute: MasterIndexRouteRoute,
   RegisterIndexRouteRoute: RegisterIndexRouteRoute,
   ResetPasswordIndexRouteRoute: ResetPasswordIndexRouteRoute,
+  TopMastersIndexRouteRoute: TopMastersIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,
   ClientExploreIndexRouteRoute: ClientExploreIndexRouteRoute,
   MasterBookingsIndexRouteRoute: MasterBookingsIndexRouteRoute,

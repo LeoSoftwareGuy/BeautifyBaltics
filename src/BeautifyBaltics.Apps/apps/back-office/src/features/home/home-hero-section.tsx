@@ -87,7 +87,7 @@ function HeroSection() {
                 radius="md"
                 color="pink"
                 leftSection={<Search size={18} />}
-                onClick={() => navigate({ to: '/explore' })}
+                onClick={() => navigate({ to: '/top-masters' })}
                 px={24}
               >
                 {t('home.hero.cta')}
