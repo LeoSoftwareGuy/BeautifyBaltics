@@ -10,14 +10,18 @@ import type { FileRouteTypes } from '@/routeTree.gen';
 import { normalizeRoutePath } from '@/utils/auth';
 
 type RoutePath = FileRouteTypes['to'];
+type RoleOption = 'client' | 'master';
 type RegisterSearch = {
   redirect: RoutePath;
+  role?: RoleOption;
 };
 
 export const Route = createFileRoute('/register/')({
-  validateSearch: (search: Record<string, unknown>): RegisterSearch => ({
-    redirect: normalizeRoutePath(typeof search.redirect === 'string' ? search.redirect : undefined),
-  }),
+  validateSearch: (search: Record<string, unknown>): RegisterSearch => {
+    const redirect = normalizeRoutePath(typeof search.redirect === 'string' ? search.redirect : undefined);
+    const role = search.role === 'master' || search.role === 'client' ? search.role : undefined;
+    return { redirect, role };
+  },
   beforeLoad: () => ({
     breadcrumbs: [{ titleKey: 'navigation.breadcrumbs.register', path: '/register' }],
   }),
@@ -29,6 +33,7 @@ function RegisterView() {
   const router = useRouter();
   const { isAuthenticated, loading } = useSession();
   const redirectPath: RoutePath = search.redirect;
+  const defaultRole: RoleOption = search.role ?? 'client';
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
@@ -57,7 +62,7 @@ function RegisterView() {
           width: '50%',
           position: 'relative',
           overflow: 'hidden',
-          backgroundImage: 'url(/register-bg.jpg)',
+          backgroundImage: 'url(/shop.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           flexShrink: 0,
@@ -149,6 +154,7 @@ function RegisterView() {
           <RegisterForm
             onRequireEmailVerification={handleEmailVerificationRequired}
             onRegistrationComplete={handleRegistrationComplete}
+            defaultRole={defaultRole}
           />
           <Text c="dimmed" fz="sm" ta="center" mt="xl">
             Already have an account?

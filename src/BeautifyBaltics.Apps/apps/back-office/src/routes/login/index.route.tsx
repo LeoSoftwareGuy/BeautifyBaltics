@@ -141,23 +141,19 @@ function LoginView() {
 
   return (
     <Box style={{ display: 'flex', minHeight: '100vh', background: '#fff' }}>
-      {/* Left: Image Panel */}
       <Box
         visibleFrom="lg"
         style={{
           width: '50%',
           position: 'relative',
           overflow: 'hidden',
-          backgroundImage: 'url(/login-bg.jpg)',
+          backgroundImage: 'url(/salon.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           flexShrink: 0,
         }}
       >
-        {/* Dark overlay */}
         <Box style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)' }} />
-
-        {/* Top-left branding */}
         <Group
           gap="xs"
           style={{
@@ -182,8 +178,6 @@ function LoginView() {
             Beautify Baltics
           </Text>
         </Group>
-
-        {/* Bottom quote */}
         <Box style={{
           position: 'absolute', bottom: 48, left: 40, right: 40, zIndex: 1,
         }}

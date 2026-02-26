@@ -1,9 +1,18 @@
 import { Stack } from '@mantine/core';
 
+import { useSession } from '@/contexts/session-context';
+import { HowToPage } from '@/features/how-to';
+
 import FeaturesSection from './home-features-section';
 import HeroSection from './home-hero-section';
 
-function Index() {
+function HomePage() {
+  const { user } = useSession();
+
+  if (user) {
+    return <HowToPage />;
+  }
+
   return (
     <Stack component="main" gap={0} bg="var(--mantine-color-body)">
       <HeroSection />
@@ -12,4 +21,4 @@ function Index() {
   );
 }
 
-export default Index;
+export default HomePage;

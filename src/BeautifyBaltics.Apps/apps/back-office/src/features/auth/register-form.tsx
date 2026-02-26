@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button,
   Grid,
@@ -18,6 +18,7 @@ type RoleOption = 'client' | 'master';
 type RegisterFormProps = {
   onRequireEmailVerification?: () => void;
   onRegistrationComplete?: () => void;
+  defaultRole?: RoleOption;
 };
 
 type RegisterFormValues = {
@@ -29,7 +30,7 @@ type RegisterFormValues = {
   role: RoleOption;
 };
 
-export function RegisterForm({ onRequireEmailVerification }: RegisterFormProps) {
+export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client' }: RegisterFormProps) {
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<RegisterFormValues>({
@@ -39,7 +40,7 @@ export function RegisterForm({ onRequireEmailVerification }: RegisterFormProps) 
       email: '',
       password: '',
       phoneNumber: '',
-      role: 'client',
+      role: defaultRole,
     },
     validate: {
       firstName: (value) => (value.trim().length >= 3 ? null : 'First name must be at least 3 characters'),
@@ -92,6 +93,13 @@ export function RegisterForm({ onRequireEmailVerification }: RegisterFormProps) 
       setSubmitting(false);
     }
   });
+
+  useEffect(() => {
+    if (form.values.role !== defaultRole) {
+      form.setFieldValue('role', defaultRole);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultRole]);
 
   return (
     <form onSubmit={handleSubmit}>

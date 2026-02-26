@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { DevtoolsContainer, TanStackQueryDevtools, TanStackRouterDevtools } from '@beautify-baltics-apps/devtools';
-import { Group } from '@mantine/core';
+import { Affix, Group, Paper } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
@@ -40,7 +40,7 @@ function Root() {
   usePageTitle();
   const location = useRouterState({ select: (state) => state.location });
   const isAuthOnlyRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/register') || location.pathname.startsWith('/reset-password');
-  const isHomePage = location.pathname === '/' || location.pathname.startsWith('/home');
+  const isMarketingRoute = location.pathname === '/' || location.pathname.startsWith('/home') || location.pathname.startsWith('/how-to');
 
   const { data: user } = useGetUser({ query: { enabled: !isAuthOnlyRoute } });
   const isMaster = user?.role === UserRole.Master;
@@ -50,13 +50,28 @@ function Root() {
   }
 
   // Minimal layout: auth pages always, home page only when not logged in
-  const showMinimalLayout = isAuthOnlyRoute || (isHomePage && !user);
+  const showMinimalLayout = isAuthOnlyRoute || (isMarketingRoute && !user);
 
   if (showMinimalLayout) {
     return (
       <>
         <NavigationLoadingIndicator />
         <AuthQuickActions />
+        <Affix position={{ top: 16, left: 16 }} zIndex={201}>
+          <Paper
+            withBorder
+            px="sm"
+            py="xs"
+            radius="xl"
+            style={{
+              backdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(255,255,255,0.92)',
+              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
+            }}
+          >
+            <LanguageSwitcher compact />
+          </Paper>
+        </Affix>
         <ModalsProvider>
           <Outlet />
         </ModalsProvider>

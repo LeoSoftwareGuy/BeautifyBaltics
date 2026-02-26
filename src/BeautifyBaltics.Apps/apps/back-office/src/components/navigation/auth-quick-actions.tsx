@@ -60,6 +60,15 @@ export default function AuthQuickActions() {
           >
             {t('auth.quickAccess.createAccount')}
           </ButtonLink>
+          <ButtonLink
+            to="/how-to"
+            variant="subtle"
+            size="xs"
+            radius="xl"
+            color="pink"
+          >
+            {t('navigation.client.howTo')}
+          </ButtonLink>
         </Group>
       </Paper>
     </Affix>

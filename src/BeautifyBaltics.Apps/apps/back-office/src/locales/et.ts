@@ -29,6 +29,7 @@ const et: CommonLocale = {
       dashboard: 'Töölaud',
       explore: 'Avasta',
       bookings: 'Minu broneeringud',
+      howTo: 'How It Works',
     },
     master: {
       dashboard: 'Töölaud',
@@ -36,6 +37,7 @@ const et: CommonLocale = {
       timeSlots: 'Ajaaknad',
       services: 'Teenused',
       settings: 'Seaded',
+      howTo: 'How It Works',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -46,6 +48,7 @@ const et: CommonLocale = {
       clientExplore: 'Avasta meistreid',
       clientBookings: 'Minu broneeringud',
       dashboard: 'Töölaud',
+      howTo: 'How It Works',
       masterDashboard: 'Meistri töölaud',
       masterBookings: 'Broneeringud',
       masterServices: 'Teenused',
@@ -729,6 +732,90 @@ const et: CommonLocale = {
         failTitle: 'Broneerimine ebaõnnestus',
         failMessage: 'Broneeringu loomine ebaõnnestus',
       },
+    },
+  },
+  howTo: {
+    hero: {
+      badge: 'Meie protsess',
+      title: 'Anname meistritele jõu, innustame kliente',
+      description: 'Ühendame Baltikumi andekaimad iluprofid nõudlike klientidega ning selgitame, kuidas platvorm mõlemale poolele töötab.',
+      ctaMasters: 'Meistritele',
+      ctaClients: 'Klientidele',
+    },
+    status: {
+      requested: 'Taotletud',
+      confirmed: 'Kinnitatud',
+      completed: 'Lõpetatud',
+    },
+    masters: {
+      scope: 'Professionaalsetele meistritele',
+      title: 'Professionaalsetele meistritele',
+      steps: {
+        register: {
+          title: 'Registreeri ja loo profiil',
+          description: 'Täida biograafia, kinnitatud kontaktid ja töökohatähis kaardil. Lisa professionaalne foto, et võita kohe usaldust.',
+          imageAlt: 'Meister seab stuudiot fotode jaoks',
+        },
+        services: {
+          title: 'Teenuste vitriin',
+          description: 'Vali kategooriad, lisa selged hinnad ja kestused ning näita galerii kaudu oma käekirja.',
+        },
+        availability: {
+          title: 'Halda saadavust',
+          description: 'Ajaakende halduris saad määrata tööperioodid, pausid ja puhvrid, et kliendid näeksid täpseid vabu aegu.',
+        },
+        bookings: {
+          title: 'Broneeringute haldus',
+          description: 'Vaata uusi taotlusi, kinnita või lükka tagasi, tõsta ümber või tühista (vähemalt 24 tundi varem). Ainult meister saab broneeringu kinnitada. Staatuse kulg: Taotletud → Kinnitatud → Lõpetatud/Tühistatud. Vastuseta taotlused aeguvad ~3 tunniga ja lõpetatud külastused märgitakse automaatselt lõpetatuks, et statistika oleks täpne.',
+        },
+      },
+    },
+    clients: {
+      scope: 'Nõudlikele klientidele',
+      title: 'Kaunitele klientidele',
+      steps: {
+        discover: {
+          title: 'Avasta ja võrdle',
+          description: 'Otsi teenuse, kategooria või asukoha järgi ning kontrolli meistreid portfooliote, saadavuse ja arvustuste põhjal.',
+          imageAlt: 'Moodsa ilusalongi interjöör',
+        },
+        booking: {
+          title: 'Sujuv broneerimine',
+          description: 'Unusta telefonikõned – vali sobiv teenus ja aeg vastavalt meistri tegelikule graafikule.',
+        },
+        management: {
+          title: 'Broneeringute haldus',
+          description: 'Jälgi kõiki aegu ühest kohast, tõsta ümber või tühista vähemalt 24 tundi ette ning saa teavitusi.',
+        },
+        reviews: {
+          title: 'Hinnangud ja tagasiside',
+          description: 'Pärast visiiti anna 1–5 tärni ja jaga muljeid, et kogukond kasvaks.',
+        },
+      },
+    },
+    dashboard: {
+      title: 'Dünaamiline ülevaade',
+      subtitle: 'Kõik vajalik, et hoida oma ilurutiini kontrolli all.',
+      cards: {
+        upcoming: {
+          title: 'Tulekul',
+          description: 'Ole kursis järgmiste kohtumiste ja detailidega.',
+        },
+        completed: {
+          title: 'Lõpetatud',
+          description: 'Vaata kogu oma varasemate hoolduste arhiivi.',
+        },
+        totalSpent: {
+          title: 'Kokku kulutatud',
+          description: 'Näe selgelt, kui palju investeerid iseenda eest hoolitsemisse.',
+        },
+      },
+    },
+    cta: {
+      title: 'Valmis alustama?',
+      subtitle: 'Vali roll ja alusta mõne minutiga broneerimise või teenuste pakkumisega.',
+      master: 'Liitu meistrina',
+      client: 'Broneeri kliendina',
     },
   },
   data: {

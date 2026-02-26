@@ -14,6 +14,7 @@ import { Route as ResetPasswordIndexRouteRouteImport } from './routes/reset-pass
 import { Route as RegisterIndexRouteRouteImport } from './routes/register/index.route'
 import { Route as MasterIndexRouteRouteImport } from './routes/master/index.route'
 import { Route as LoginIndexRouteRouteImport } from './routes/login/index.route'
+import { Route as HowToIndexRouteRouteImport } from './routes/how-to/index.route'
 import { Route as HomeIndexRouteRouteImport } from './routes/home/index.route'
 import { Route as ExploreIndexRouteRouteImport } from './routes/explore/index.route'
 import { Route as DashboardIndexRouteRouteImport } from './routes/dashboard/index.route'
@@ -48,6 +49,11 @@ const MasterIndexRouteRoute = MasterIndexRouteRouteImport.update({
 const LoginIndexRouteRoute = LoginIndexRouteRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowToIndexRouteRoute = HowToIndexRouteRouteImport.update({
+  id: '/how-to/',
+  path: '/how-to/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeIndexRouteRoute = HomeIndexRouteRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardIndexRouteRoute
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
+  '/how-to': typeof HowToIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
   '/master': typeof MasterIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRouteRoute
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
+  '/how-to': typeof HowToIndexRouteRoute
   '/login': typeof LoginIndexRouteRoute
   '/master': typeof MasterIndexRouteRoute
   '/register': typeof RegisterIndexRouteRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRouteRoute
   '/explore/': typeof ExploreIndexRouteRoute
   '/home/': typeof HomeIndexRouteRoute
+  '/how-to/': typeof HowToIndexRouteRoute
   '/login/': typeof LoginIndexRouteRoute
   '/master/': typeof MasterIndexRouteRoute
   '/register/': typeof RegisterIndexRouteRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/home'
+    | '/how-to'
     | '/login'
     | '/master'
     | '/register'
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/home'
+    | '/how-to'
     | '/login'
     | '/master'
     | '/register'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/explore/'
     | '/home/'
+    | '/how-to/'
     | '/login/'
     | '/master/'
     | '/register/'
@@ -218,6 +230,7 @@ export interface RootRouteChildren {
   DashboardIndexRouteRoute: typeof DashboardIndexRouteRoute
   ExploreIndexRouteRoute: typeof ExploreIndexRouteRoute
   HomeIndexRouteRoute: typeof HomeIndexRouteRoute
+  HowToIndexRouteRoute: typeof HowToIndexRouteRoute
   LoginIndexRouteRoute: typeof LoginIndexRouteRoute
   MasterIndexRouteRoute: typeof MasterIndexRouteRoute
   RegisterIndexRouteRoute: typeof RegisterIndexRouteRoute
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-to/': {
+      id: '/how-to/'
+      path: '/how-to'
+      fullPath: '/how-to'
+      preLoaderRoute: typeof HowToIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home/': {
@@ -346,6 +366,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardIndexRouteRoute: DashboardIndexRouteRoute,
   ExploreIndexRouteRoute: ExploreIndexRouteRoute,
   HomeIndexRouteRoute: HomeIndexRouteRoute,
+  HowToIndexRouteRoute: HowToIndexRouteRoute,
   LoginIndexRouteRoute: LoginIndexRouteRoute,
   MasterIndexRouteRoute: MasterIndexRouteRoute,
   RegisterIndexRouteRoute: RegisterIndexRouteRoute,

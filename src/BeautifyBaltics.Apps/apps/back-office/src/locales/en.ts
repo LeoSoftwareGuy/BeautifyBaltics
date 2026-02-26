@@ -27,6 +27,7 @@ const en = {
       dashboard: 'Dashboard',
       explore: 'Explore',
       bookings: 'My Bookings',
+      howTo: 'How It Works',
     },
     master: {
       dashboard: 'Dashboard',
@@ -34,6 +35,7 @@ const en = {
       timeSlots: 'Time Slots',
       services: 'Services',
       settings: 'Settings',
+      howTo: 'How It Works',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -44,6 +46,7 @@ const en = {
       clientExplore: 'Discover Masters',
       clientBookings: 'My Bookings',
       dashboard: 'Dashboard',
+      howTo: 'How It Works',
       masterDashboard: 'Master Dashboard',
       masterBookings: 'Bookings',
       masterServices: 'Services',
@@ -727,6 +730,90 @@ const en = {
         failTitle: 'Booking failed',
         failMessage: 'Failed to create booking',
       },
+    },
+  },
+  howTo: {
+    hero: {
+      badge: 'Our Process',
+      title: 'Empowering Masters, Inspiring Clients',
+      description: 'Connecting the Baltic region’s most talented beauty professionals with clients seeking excellence, and showing both sides exactly how the platform works.',
+      ctaMasters: 'For Masters',
+      ctaClients: 'For Clients',
+    },
+    status: {
+      requested: 'Requested',
+      confirmed: 'Confirmed',
+      completed: 'Completed',
+    },
+    masters: {
+      scope: 'For professional masters',
+      title: 'For Professional Masters',
+      steps: {
+        register: {
+          title: 'Register & Profile',
+          description: 'Build your digital presence with a complete bio, verified contacts, and a pinned workspace. Upload a professional headshot to build trust instantly.',
+          imageAlt: 'Beauty professional preparing a studio desk for onboarding',
+        },
+        services: {
+          title: 'Showcase Services',
+          description: 'Pick specialized categories, set transparent pricing and durations, and publish featured galleries so clients understand your style at a glance.',
+        },
+        availability: {
+          title: 'Manage Availability',
+          description: 'Use the Availability Manager to plan working windows, breaks, and buffer times so clients always see accurate slots.',
+        },
+        bookings: {
+          title: 'Handle Bookings',
+          description: 'Review pending requests, confirm or decline them, reschedule appointments, or cancel (minimum 24-hour notice). Only masters can confirm bookings. Status flow: Requested → Confirmed → Completed/Cancelled. Pending requests expire automatically after about 3 hours, and finished visits auto-complete so your dashboard stats stay accurate.',
+        },
+      },
+    },
+    clients: {
+      scope: 'For curious clients',
+      title: 'For Beautiful Clients',
+      steps: {
+        discover: {
+          title: 'Explore & Discover',
+          description: 'Search by service type, category, or location, then validate masters through portfolios, availability, and verified reviews.',
+          imageAlt: 'High-end beauty salon interior with warm lighting',
+        },
+        booking: {
+          title: 'Seamless Booking',
+          description: 'No phone calls required—choose the service and time slot that fits your schedule using real-time master availability.',
+        },
+        management: {
+          title: 'Manage Bookings',
+          description: 'Track every appointment from one dashboard, reschedule or cancel with at least 24 hours notice, and stay on top of reminders.',
+        },
+        reviews: {
+          title: 'Ratings & Reviews',
+          description: 'Share your 1–5 star rating and detailed comments once a session is completed to help the whole community thrive.',
+        },
+      },
+    },
+    dashboard: {
+      title: 'Dashboard Tracking',
+      subtitle: 'Everything you need to keep your beauty regimen on track.',
+      cards: {
+        upcoming: {
+          title: 'Upcoming',
+          description: 'Stay informed about your next appointments and session details.',
+        },
+        completed: {
+          title: 'Completed',
+          description: 'Browse a full archive of past beauty transformations and treatments.',
+        },
+        totalSpent: {
+          title: 'Total Spent',
+          description: 'Track how much you invest in self-care with clear spending insights.',
+        },
+      },
+    },
+    cta: {
+      title: 'Ready to start your journey?',
+      subtitle: 'Choose the role that fits you best and start booking in minutes.',
+      master: 'Join as a Master',
+      client: 'Book as a Client',
     },
   },
   data: {
