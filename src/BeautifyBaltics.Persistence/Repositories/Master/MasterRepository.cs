@@ -25,6 +25,11 @@ public class MasterRepository(IQuerySession session) : QueryRepository<Projectio
     {
         var query = _session.Query<Projections.Master>().AsQueryable();
 
+        if (!string.IsNullOrWhiteSpace(search.ExcludeEmail))
+        {
+            query = query.Where(x => x.Email != search.ExcludeEmail);
+        }
+
         if (!string.IsNullOrWhiteSpace(search.Text))
         {
             query = query.Where(x => x.FirstName.NgramSearch(search.Text) || x.LastName.NgramSearch(search.Text));
