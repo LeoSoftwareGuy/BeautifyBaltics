@@ -18,16 +18,16 @@ public class CreateMasterJobEventHandler(IJobRepository jobRepository)
                             ?? throw NotFoundException.For<Domain.Documents.Job>(request.Job.JobId);
 
         var @event = new MasterJobCreated(
-            request.MasterId,
-            request.Job.JobId,
-            request.Job.Price,
-            TimeSpan.FromMinutes(request.Job.DurationMinutes),
-            request.Job.Title,
-            jobDefinition.CategoryId,
-            jobDefinition.CategoryName,
-            jobDefinition.Name
+            MasterId: request.MasterId,
+            JobId: request.Job.JobId,
+            Price: request.Job.Price,
+            Duration: TimeSpan.FromMinutes(request.Job.DurationMinutes),
+            Title: request.Job.Title,
+            JobCategoryId: jobDefinition.CategoryId,
+            JobCategoryName: jobDefinition.CategoryName,
+            JobName: jobDefinition.Name
         );
 
-        return ([ @event ], [ new CreateMasterJobResponse(request.MasterId, @event.MasterJobId) ]);
+        return ([@event], [new CreateMasterJobResponse(request.MasterId, @event.MasterJobId)]);
     }
 }

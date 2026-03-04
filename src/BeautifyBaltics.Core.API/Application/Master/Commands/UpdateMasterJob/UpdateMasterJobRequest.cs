@@ -6,13 +6,22 @@ namespace BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterJob;
 
 public record UpdateMasterJobRequest
 {
+    /// <summary>
+    /// Master identifier
+    /// </summary>
     [Identity]
     [Required]
     public Guid MasterId { get; init; }
 
+    /// <summary>
+    /// Master job identifier
+    /// </summary>
     [Required]
     public Guid MasterJobId { get; init; }
 
+    /// <summary>
+    /// Master job service details
+    /// </summary>
     [Required]
     public MasterJobOfferingCommandDTO Job { get; init; } = null!;
 }

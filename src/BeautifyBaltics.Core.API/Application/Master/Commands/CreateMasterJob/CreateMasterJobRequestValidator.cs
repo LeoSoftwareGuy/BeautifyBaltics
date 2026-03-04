@@ -7,8 +7,7 @@ public class CreateMasterJobRequestValidator : AbstractValidator<CreateMasterJob
 {
     public CreateMasterJobRequestValidator()
     {
-        RuleFor(v => v.MasterId)
-            .NotEqual(Guid.Empty);
+        RuleFor(v => v.MasterId).NotEqual(Guid.Empty);
 
         RuleFor(v => v.Job)
             .NotNull()

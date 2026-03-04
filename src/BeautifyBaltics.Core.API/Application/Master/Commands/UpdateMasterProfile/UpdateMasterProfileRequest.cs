@@ -6,6 +6,9 @@ namespace BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterProfi
 
 public record UpdateMasterProfileRequest : MasterProfileCommandDTO
 {
+    /// <summary>
+    /// Master identifier
+    /// </summary>
     [Required]
     [Identity]
     public Guid MasterId { get; init; }

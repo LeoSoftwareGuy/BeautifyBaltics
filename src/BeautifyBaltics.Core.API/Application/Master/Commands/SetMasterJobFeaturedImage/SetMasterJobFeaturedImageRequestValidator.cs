@@ -6,23 +6,23 @@ public class SetMasterJobFeaturedImageRequestValidator : AbstractValidator<SetMa
 {
     public SetMasterJobFeaturedImageRequestValidator()
     {
-        RuleFor(x => x.MasterId).NotEqual(Guid.Empty);
-        RuleFor(x => x.MasterJobId).NotEqual(Guid.Empty);
-        RuleFor(x => x.MasterJobImageId)
+        RuleFor(v => v.MasterId).NotEqual(Guid.Empty);
+        RuleFor(v => v.MasterJobId).NotEqual(Guid.Empty);
+        RuleFor(v => v.MasterJobImageId)
             .NotNull()
             .WithMessage("Master job image id is required.")
             .NotEqual(Guid.Empty)
-            .When(x => x.MasterJobImageId.HasValue);
+            .When(v => v.MasterJobImageId.HasValue);
 
-        RuleFor(x => x.FocusX)
+        RuleFor(v => v.FocusX)
             .InclusiveBetween(0, 1)
-            .When(x => x.FocusX.HasValue);
+            .When(v => v.FocusX.HasValue);
 
-        RuleFor(x => x.FocusY)
+        RuleFor(v => v.FocusY)
             .InclusiveBetween(0, 1)
-            .When(x => x.FocusY.HasValue);
+            .When(v => v.FocusY.HasValue);
 
-        RuleFor(x => x.Zoom)
+        RuleFor(v => v.Zoom)
             .InclusiveBetween(0.4, 3)
             .When(x => x.Zoom.HasValue);
     }

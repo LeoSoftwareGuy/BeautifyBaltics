@@ -15,20 +15,20 @@ public class UpdateMasterProfileEventHandler
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
         var updated = new MasterProfileUpdated(
-            request.MasterId,
-            request.FirstName,
-            request.LastName,
-            request.Age,
-            request.Gender,
-            request.Description,
+            MasterId: request.MasterId,
+            FirstName: request.FirstName,
+            LastName: request.LastName,
+            Age: request.Age,
+            Gender: request.Gender,
+            Description: request.Description,
             new ContactInformation(request.Email, request.PhoneNumber),
-            request.Latitude,
-            request.Longitude,
-            request.City,
-            request.Country,
-            request.AddressLine1,
-            request.AddressLine2,
-            request.PostalCode
+            Latitude: request.Latitude,
+            Longitude: request.Longitude,
+            City: request.City,
+            Country: request.Country,
+            AddressLine1: request.AddressLine1,
+            AddressLine2: request.AddressLine2,
+            PostalCode: request.PostalCode
         );
 
         return Task.FromResult<(Events, OutgoingMessages)>(([updated], [new UpdateMasterProfileResponse(request.MasterId)]));

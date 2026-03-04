@@ -5,48 +5,77 @@ namespace BeautifyBaltics.Core.API.Application.Master.Commands.Shared;
 
 public record MasterProfileCommandDTO
 {
+    /// <summary>
+    /// First name
+    /// </summary>
     [Required]
-    [MaxLength(128)]
     public required string FirstName { get; init; }
 
+    /// <summary>
+    /// Last name
+    /// </summary>
     [Required]
-    [MaxLength(128)]
     public required string LastName { get; init; }
 
-    [Range(18, 120)]
+    /// <summary>
+    /// Age
+    /// </summary>
     public int? Age { get; init; }
 
+    /// <summary>
+    /// Gender
+    /// </summary>
     public Gender? Gender { get; init; }
 
-    [MaxLength(1000)]
+    /// <summary>
+    /// Description
+    /// </summary>
     public string? Description { get; init; }
 
+    /// <summary>
+    /// Email address
+    /// </summary>
     [Required]
-    [EmailAddress]
     public required string Email { get; init; }
 
+    /// <summary>
+    /// Phone number
+    /// </summary>
     [Required]
-    [MaxLength(32)]
     public required string PhoneNumber { get; init; }
 
-    [Range(-90, 90)]
+    /// <summary>
+    /// Latitude of the service lcoation
+    /// </summary>
     public double? Latitude { get; init; }
 
-    [Range(-180, 180)]
+    /// <summary>
+    /// Longitude of the service lcoation
+    /// </summary>
     public double? Longitude { get; init; }
 
-    [MaxLength(128)]
+    /// <summary>
+    /// City of the service lcoation
+    /// </summary>
     public string? City { get; init; }
 
-    [MaxLength(128)]
+    /// <summary>
+    /// Country of the service lcoation
+    /// </summary>
     public string? Country { get; init; }
 
-    [MaxLength(256)]
+    /// <summary>
+    /// Address line 1
+    /// </summary>
     public string? AddressLine1 { get; init; }
 
-    [MaxLength(256)]
+    /// <summary>
+    /// Address line 2
+    /// </summary>
     public string? AddressLine2 { get; init; }
 
-    [MaxLength(32)]
+    /// <summary>
+    /// Postal code
+    /// </summary>
     public string? PostalCode { get; init; }
 }
