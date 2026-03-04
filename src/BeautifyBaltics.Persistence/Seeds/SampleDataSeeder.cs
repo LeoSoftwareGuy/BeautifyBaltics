@@ -1,5 +1,8 @@
+using BeautifyBaltics.Domain.Aggregates.Client;
+using BeautifyBaltics.Domain.Aggregates.Client.Events;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using JasperFx.Core;
 using BeautifyBaltics.Domain.Documents;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.ValueObjects;
@@ -115,9 +118,21 @@ public class SampleDataSeeder : IInitialData
 
         foreach (var master in _masters)
         {
-            var account = new User(master.UserId, master.Email, devPasswordHash, UserRole.Master, master.FirstName, master.LastName, master.PhoneNumber);
-            account.SetEmailVerified();
-            session.Store(account);
+            var masterAccount = new User(master.UserId, master.Email, devPasswordHash, UserRole.Master, master.FirstName, master.LastName, master.PhoneNumber);
+            masterAccount.SetEmailVerified();
+            session.Store(masterAccount);
+
+            var clientUserId = CombGuidIdGeneration.NewGuid();
+            var clientAccount = new User(clientUserId, master.Email, devPasswordHash, UserRole.Client, master.FirstName, master.LastName, master.PhoneNumber);
+            clientAccount.SetEmailVerified();
+            session.Store(clientAccount);
+
+            session.Events.StartStream<ClientAggregate>(new ClientCreated(
+                FirstName: master.FirstName,
+                LastName: master.LastName,
+                Contacts: new ContactInformation(master.Email, master.PhoneNumber),
+                UserId: clientUserId
+            ));
         }
 
         var adminId = Guid.Parse("00000000-0000-0000-0000-000000000001");

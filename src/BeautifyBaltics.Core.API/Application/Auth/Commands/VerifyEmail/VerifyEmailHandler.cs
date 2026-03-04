@@ -1,5 +1,6 @@
 using BeautifyBaltics.Core.API.Authentication.SeedWork;
 using BeautifyBaltics.Domain.Documents.User;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using Marten;
 
@@ -27,6 +28,19 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.VerifyEmail
 
             session.Update(userAccount);
             session.Update(verificationToken);
+
+            if (userAccount.Role == UserRole.Master)
+            {
+                var clientAccount = await session.Query<User>()
+                    .FirstOrDefaultAsync(x => x.Email == userAccount.Email && x.Role == UserRole.Client, cancellationToken);
+
+                if (clientAccount is not null && !clientAccount.EmailVerified)
+                {
+                    clientAccount.SetEmailVerified();
+                    session.Update(clientAccount);
+                }
+            }
+
             await session.SaveChangesAsync(cancellationToken);
 
             var appUrl = Helpers.GetAppUrl(configuration, httpContextAccessor);

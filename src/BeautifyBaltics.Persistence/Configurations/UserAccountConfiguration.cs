@@ -9,6 +9,6 @@ public class UserAccountConfiguration : IConfigureMarten
     {
         options.Schema.For<User>()
             .DocumentAlias("user_account")
-            .UniqueIndex(x => x.Email);
+            .UniqueIndex(x => x.Email, x => x.Role);
     }
 }

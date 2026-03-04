@@ -65,6 +65,31 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
                );
 
                 session.Events.StartStream<MasterAggregate>(masterCreatedEvent);
+
+                var existingClientAccount = await userRepository.GetByEmailAsync(normalizedEmail, UserRole.Client, cancellationToken);
+                if (existingClientAccount is null)
+                {
+                    var clientUserId = CombGuidIdGeneration.NewGuid();
+
+                    var clientUserAccount = new User(
+                        id: clientUserId,
+                        email: normalizedEmail,
+                        passwordHash: passwordHash,
+                        role: UserRole.Client,
+                        firstName: request.FirstName,
+                        lastName: request.LastName,
+                        phoneNumber: request.PhoneNumber
+                    );
+
+                    session.Insert(clientUserAccount);
+
+                    session.Events.StartStream<ClientAggregate>(new ClientCreated(
+                        FirstName: request.FirstName,
+                        LastName: request.LastName,
+                        Contacts: new Domain.ValueObjects.ContactInformation(normalizedEmail, request.PhoneNumber),
+                        UserId: clientUserId
+                    ));
+                }
             }
 
             var token = Helpers.GenerateSecureToken();
