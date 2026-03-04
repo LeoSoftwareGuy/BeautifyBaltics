@@ -1,5 +1,6 @@
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Enumerations;
+using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Domain.SeedWork;
 using BeautifyBaltics.Domain.ValueObjects;
 
@@ -153,20 +154,40 @@ public partial class MasterAggregate : Aggregate
         job.SetFeaturedImage(@event.FeaturedImageId);
     }
 
+    internal void Apply(MasterJobFeaturedImageFramed @event)
+    {
+        if (!_jobs.TryGetValue(@event.MasterJobId, out var job)) return;
+
+        job.UpdateFeaturedImageFraming(@event.FocusX, @event.FocusY, @event.Zoom);
+    }
+
     internal void Apply(MasterBufferTimeUpdated @event)
     {
         BufferMinutes = @event.BufferMinutes;
     }
 
+
+   
     public bool IsAvailable(DateTime startAt, DateTime endAt)
     {
-        return !_availabilities.Any(v =>
-            v.Value.StartAt < endAt && v.Value.EndAt > startAt);
+        return !_availabilities.Any(v => v.Value.StartAt < endAt && v.Value.EndAt > startAt);
     }
 
     public bool HasOverlappingAvailability(DateTime startAt, DateTime endAt)
     {
         return _availabilities.Values.Any(slot =>
             slot.StartAt < endAt && slot.EndAt > startAt);
+    }
+
+    public MasterJob GetJobOrThrow(Guid masterJobId)
+    {
+        if (_jobs.TryGetValue(masterJobId, out var job)) return job;
+        throw NotFoundException.For<MasterJob>(masterJobId);
+    }
+
+    public void EnsureJobImageExists(MasterJob job, Guid imageId)
+    {
+        var exists = job.Images.Any(i => i.MasterJobImageId == imageId);
+        if (!exists) throw NotFoundException.For<MasterJobImage>(imageId);
     }
 }

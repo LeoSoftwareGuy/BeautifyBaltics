@@ -59,8 +59,9 @@ import type {
   GetMasterJobImageByIdResponse,
   GetPendingRequestsResponse,
   ProblemDetails,
-  SetMasterJobFeaturedImageBody,
+  SetMasterJobFeaturedImageRequest,
   SetMasterJobFeaturedImageResponse,
+  UnsetMasterJobFeaturedImageResponse,
   UpdateMasterAvailabilityRequest,
   UpdateMasterAvailabilityResponse,
   UpdateMasterBufferTimeRequest,
@@ -2042,19 +2043,19 @@ export const useDeleteMasterJobImage = <TError = ProblemDetails | ProblemDetails
 export const setMasterJobFeaturedImage = (
   masterId: string,
   jobId: string,
-  setMasterJobFeaturedImageBody: SetMasterJobFeaturedImageBody,
+  setMasterJobFeaturedImageRequest: SetMasterJobFeaturedImageRequest,
 ) => customClient<SetMasterJobFeaturedImageResponse>(
   {
     url: `/api/v1/masters/${masterId}/jobs/${jobId}/featured-image`,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    data: setMasterJobFeaturedImageBody,
+    data: setMasterJobFeaturedImageRequest,
   },
 );
 
 export const getSetMasterJobFeaturedImageMutationOptions = <TError = ProblemDetails | ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }, TContext>, },
-  ): UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageRequest }, TContext> => {
   const mutationKey = ['setMasterJobFeaturedImage'];
   const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
@@ -2062,7 +2063,7 @@ export const getSetMasterJobFeaturedImageMutationOptions = <TError = ProblemDeta
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }> = (props) => {
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageRequest }> = (props) => {
     const { masterId, jobId, data } = props ?? {};
 
     return setMasterJobFeaturedImage(masterId, jobId, data);
@@ -2072,21 +2073,69 @@ export const getSetMasterJobFeaturedImageMutationOptions = <TError = ProblemDeta
 };
 
 export type SetMasterJobFeaturedImageMutationResult = NonNullable<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>>;
-export type SetMasterJobFeaturedImageMutationBody = SetMasterJobFeaturedImageBody;
+export type SetMasterJobFeaturedImageMutationBody = SetMasterJobFeaturedImageRequest;
 export type SetMasterJobFeaturedImageMutationError = ProblemDetails | ProblemDetails;
 
 /**
  * @summary Set or unset the featured image for a master job
  */
 export const useSetMasterJobFeaturedImage = <TError = ProblemDetails | ProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody }, TContext>, },
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string;data: SetMasterJobFeaturedImageRequest }, TContext>, },
     queryClient?: QueryClient): UseMutationResult<
   Awaited<ReturnType<typeof setMasterJobFeaturedImage>>,
   TError,
-  { masterId: string;jobId: string;data: SetMasterJobFeaturedImageBody },
+  { masterId: string;jobId: string;data: SetMasterJobFeaturedImageRequest },
   TContext
   > => {
   const mutationOptions = getSetMasterJobFeaturedImageMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Remove the featured image for a master job
+ */
+export const unsetMasterJobFeaturedImage = (
+  masterId: string,
+  jobId: string,
+) => customClient<UnsetMasterJobFeaturedImageResponse>(
+  { url: `/api/v1/masters/${masterId}/jobs/${jobId}/featured-image`, method: 'DELETE' },
+);
+
+export const getUnsetMasterJobFeaturedImageMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsetMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof unsetMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string }, TContext> => {
+  const mutationKey = ['unsetMasterJobFeaturedImage'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof unsetMasterJobFeaturedImage>>, { masterId: string;jobId: string }> = (props) => {
+    const { masterId, jobId } = props ?? {};
+
+    return unsetMasterJobFeaturedImage(masterId, jobId);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UnsetMasterJobFeaturedImageMutationResult = NonNullable<Awaited<ReturnType<typeof unsetMasterJobFeaturedImage>>>;
+
+export type UnsetMasterJobFeaturedImageMutationError = ProblemDetails;
+
+/**
+ * @summary Remove the featured image for a master job
+ */
+export const useUnsetMasterJobFeaturedImage = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsetMasterJobFeaturedImage>>, TError, { masterId: string;jobId: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof unsetMasterJobFeaturedImage>>,
+  TError,
+  { masterId: string;jobId: string },
+  TContext
+  > => {
+  const mutationOptions = getUnsetMasterJobFeaturedImageMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

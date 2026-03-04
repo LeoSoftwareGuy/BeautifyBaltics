@@ -31,7 +31,7 @@ const et: CommonLocale = {
       topMasters: 'Parimad meistrid',
       mapExplore: 'Kaardivaade',
       bookings: 'Minu broneeringud',
-      howTo: 'How It Works',
+      howTo: 'Kuidas see toimib',
     },
     master: {
       dashboard: 'Töölaud',
@@ -39,7 +39,7 @@ const et: CommonLocale = {
       timeSlots: 'Ajaaknad',
       services: 'Teenused',
       settings: 'Seaded',
-      howTo: 'How It Works',
+      howTo: 'Kuidas see toimib',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -50,16 +50,14 @@ const et: CommonLocale = {
       clientExplore: 'Avasta meistreid',
       clientBookings: 'Minu broneeringud',
       topMasters: 'Parimad meistrid',
-      topMasters: 'Parimad meistrid',
       dashboard: 'Töölaud',
-      howTo: 'How It Works',
+      howTo: 'Kuidas see toimib',
       masterDashboard: 'Meistri töölaud',
       masterBookings: 'Broneeringud',
       masterServices: 'Teenused',
       masterTimeSlots: 'Ajaaknad',
       masterSettings: 'Seaded',
       masterProfile: 'Meistri profiil',
-      topMasters: 'Parimad meistrid',
     },
   },
   auth: {
@@ -93,6 +91,10 @@ const et: CommonLocale = {
     login: {
       title: 'Tere tulemast tagasi',
       subtitle: 'Logi Beautify Balticsi kontoga jätkamiseks.',
+      accountTypeLabel: 'Konto tüüp',
+      accountTypeHint: 'Vali, millist keskkonda soovid kasutada',
+      roleClient: 'Klient',
+      roleMaster: 'Meister',
       registeredTitle: 'Registreerimine õnnestus',
       registeredMessage: 'Palun logi sisse oma uute andmetega.',
       noAccount: 'Pole kontot?',
@@ -586,6 +588,17 @@ const et: CommonLocale = {
         removeFeatured: 'Eemalda kaanepildist',
         setFeatured: 'Määra kaanepildiks',
         deleteImage: 'Kustuta pilt',
+        adjustFeatured: 'Kohanda kaanepildi kadreeringut',
+        adjustModal: {
+          title: 'Kohanda kaanepilti',
+          description: 'Kasuta liugureid, et sättida kaardil kuvatava pildi fookust.',
+          horizontalLabel: 'Horisontaalne fookus',
+          verticalLabel: 'Vertikaalne fookus',
+          zoomLabel: 'Suurendus',
+          previewLabel: 'Eelvaade',
+          reset: 'Taasta',
+          save: 'Salvesta kadreering',
+        },
       },
       modals: {
         addTitle: 'Lisa teenus',
@@ -667,6 +680,8 @@ const et: CommonLocale = {
         title: 'Ajakava seaded',
         subtitle: 'Sea broneeringute vahele puhver ettevalmistuseks ja puhkehetkeks.',
         bufferLabel: 'Puhveraeg broneeringute vahel (min)',
+        limitDescription: 'Vali väärtus 0 ja 60 minuti vahel, et vältida järjestikuseid broneeringuid.',
+        limitMaxWarning: 'Puhveraeg võib olla maksimaalselt 60 minutit.',
         save: 'Salvesta',
         notifications: {
           successTitle: 'Seaded uuendatud',
@@ -691,6 +706,8 @@ const et: CommonLocale = {
       awaitingReviews: 'Ootab arvustusi',
       noBio: 'See meister pole veel enda kohta kirjutanud. Vaata hiljem uuesti.',
       locationFallback: 'Asukoht täpsustamata',
+      addressLabel: 'Salongi aadress',
+      mapLabel: 'Kaardi asukoht',
       phoneFallback: 'Telefon täpsustamata',
       emailFallback: 'E-post täpsustamata',
     },
@@ -753,8 +770,8 @@ const et: CommonLocale = {
       completed: 'Lõpetatud',
     },
     masters: {
-      scope: 'Professionaalsetele meistritele',
-      title: 'Professionaalsetele meistritele',
+      scope: 'Meisrite teekart',
+      title: 'Ilumeistritele',
       steps: {
         register: {
           title: 'Registreeri ja loo profiil',
@@ -776,7 +793,7 @@ const et: CommonLocale = {
       },
     },
     clients: {
-      scope: 'Nõudlikele klientidele',
+      scope: 'Klientide teekart',
       title: 'Kaunitele klientidele',
       steps: {
         discover: {

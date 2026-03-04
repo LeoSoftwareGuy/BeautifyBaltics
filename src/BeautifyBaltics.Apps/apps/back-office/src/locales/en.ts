@@ -48,7 +48,6 @@ const en = {
       clientExplore: 'Discover Masters',
       clientBookings: 'My Bookings',
       topMasters: 'Top Masters',
-      topMasters: 'Top Masters',
       dashboard: 'Dashboard',
       howTo: 'How It Works',
       masterDashboard: 'Master Dashboard',
@@ -57,7 +56,6 @@ const en = {
       masterTimeSlots: 'Time Slots',
       masterSettings: 'Settings',
       masterProfile: 'Master Profile',
-      topMasters: 'Top Masters',
     },
   },
   auth: {
@@ -91,6 +89,10 @@ const en = {
     login: {
       title: 'Welcome back',
       subtitle: 'Sign in with your Beautify Baltics account to continue.',
+      accountTypeLabel: 'Account type',
+      accountTypeHint: 'Choose which workspace you want to access',
+      roleClient: 'Client',
+      roleMaster: 'Master',
       registeredTitle: 'Registration successful',
       registeredMessage: 'Please log in with your new credentials.',
       noAccount: 'Don\'t have an account?',
@@ -584,6 +586,17 @@ const en = {
         removeFeatured: 'Remove as featured',
         setFeatured: 'Set as featured',
         deleteImage: 'Delete image',
+        adjustFeatured: 'Adjust featured framing',
+        adjustModal: {
+          title: 'Adjust featured image',
+          description: 'Use the sliders to choose the perfect framing for the featured card image.',
+          horizontalLabel: 'Horizontal focus',
+          verticalLabel: 'Vertical focus',
+          zoomLabel: 'Zoom',
+          previewLabel: 'Preview',
+          reset: 'Reset',
+          save: 'Save framing',
+        },
       },
       modals: {
         addTitle: 'Add New Service',
@@ -665,6 +678,8 @@ const en = {
         title: 'Scheduling',
         subtitle: 'Set a buffer time between bookings. This gives you time to clean up, prepare, or take a break between clients.',
         bufferLabel: 'Buffer time between bookings (minutes)',
+        limitDescription: 'Choose any value between 0 and 60 minutes to prevent back-to-back bookings.',
+        limitMaxWarning: 'You can set at most 60 minutes of buffer time.',
         save: 'Save',
         notifications: {
           successTitle: 'Settings updated',
@@ -689,6 +704,8 @@ const en = {
       awaitingReviews: 'Awaiting reviews',
       noBio: 'This master has not provided a bio yet. Check back later for more details.',
       locationFallback: 'Location not provided',
+      addressLabel: 'Salon address',
+      mapLabel: 'Map location',
       phoneFallback: 'Phone not provided',
       emailFallback: 'Email not provided',
     },
@@ -751,8 +768,8 @@ const en = {
       completed: 'Completed',
     },
     masters: {
-      scope: 'For professional masters',
-      title: 'For Professional Masters',
+      scope: 'Masters Roadmap',
+      title: 'For Beauty Masters',
       steps: {
         register: {
           title: 'Register & Profile',
@@ -774,7 +791,7 @@ const en = {
       },
     },
     clients: {
-      scope: 'For curious clients',
+      scope: 'Clients roadmap',
       title: 'For Beautiful Clients',
       steps: {
         discover: {

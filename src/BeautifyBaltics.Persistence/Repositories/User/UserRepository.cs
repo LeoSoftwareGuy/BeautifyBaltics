@@ -1,4 +1,5 @@
-﻿using BeautifyBaltics.Persistence.Repositories.User.DTOs;
+﻿using BeautifyBaltics.Domain.Enumerations;
+using BeautifyBaltics.Persistence.Repositories.User.DTOs;
 using Marten;
 using Marten.Pagination;
 
@@ -19,15 +20,34 @@ namespace BeautifyBaltics.Persistence.Repositories.User
             return query.ToPagedListAsync(search.Page, search.PageSize, cancellationToken);
         }
 
-        public async Task<Domain.Documents.User.User?> GetByEmail(string email, CancellationToken cancellationToken)
+        public async Task<Domain.Documents.User.User?> GetByEmailAsync(string email, UserRole? role = null, CancellationToken cancellationToken = default)
         {
-            return await _session.Query<Domain.Documents.User.User>()
-                .Where(x => x.Email != null && x.Email.Equals(email, StringComparison.InvariantCulture))
-                .FirstOrDefaultAsync(cancellationToken);
+            var normalized = NormalizeEmail(email);
+            var query = _session.Query<Domain.Documents.User.User>()
+                .Where(x => x.Email != null && x.Email.Equals(normalized, StringComparison.InvariantCulture));
+
+            if (role is not null)
+            {
+                query = query.Where(x => x.Role == role);
+            }
+
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default) =>
-            _session.Query<Domain.Documents.User.User>().Where(x => x.Email != null && x.Email.Equals(email, StringComparison.InvariantCulture))
-                .AnyAsync(cancellationToken);
+        public Task<bool> ExistsByEmailAsync(string email, UserRole? role = null, CancellationToken cancellationToken = default)
+        {
+            var normalized = NormalizeEmail(email);
+            var query = _session.Query<Domain.Documents.User.User>()
+                .Where(x => x.Email != null && x.Email.Equals(normalized, StringComparison.InvariantCulture));
+
+            if (role is not null)
+            {
+                query = query.Where(x => x.Role == role);
+            }
+
+            return query.AnyAsync(cancellationToken);
+        }
+
+        private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
     }
 }

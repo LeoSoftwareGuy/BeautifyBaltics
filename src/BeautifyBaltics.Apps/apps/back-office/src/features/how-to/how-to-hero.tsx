@@ -10,6 +10,13 @@ import {
   Title,
 } from '@mantine/core';
 
+type AudienceFocus = 'all' | 'masters' | 'clients';
+
+type HowToHeroProps = {
+  selectedAudience: AudienceFocus;
+  onAudienceChange: (target: 'masters' | 'clients') => void;
+};
+
 const HERO_DECORATIONS = [
   {
     top: 40, left: 80, size: 140, opacity: 0.2,
@@ -22,8 +29,10 @@ const HERO_DECORATIONS = [
   },
 ];
 
-function HowToHero() {
+function HowToHero({ selectedAudience, onAudienceChange }: HowToHeroProps) {
   const { t } = useTranslation();
+  const mastersActive = selectedAudience === 'masters';
+  const clientsActive = selectedAudience === 'clients';
 
   return (
     <Box component="section" pos="relative" py={{ base: 48, md: 80 }} bg="var(--mantine-color-gray-0)">
@@ -49,21 +58,24 @@ function HowToHero() {
           </Text>
           <Group gap="sm" justify="center" wrap="wrap">
             <Button
-              component="a"
-              href="#masters"
+              type="button"
               color="pink"
               size="md"
               radius="xl"
+              variant={mastersActive ? 'filled' : 'light'}
+              aria-pressed={mastersActive}
+              onClick={() => onAudienceChange('masters')}
             >
               {t('howTo.hero.ctaMasters')}
             </Button>
             <Button
-              component="a"
-              href="#clients"
-              variant="subtle"
+              type="button"
+              variant={clientsActive ? 'filled' : 'subtle'}
               size="md"
               radius="xl"
               color="pink"
+              aria-pressed={clientsActive}
+              onClick={() => onAudienceChange('clients')}
             >
               {t('howTo.hero.ctaClients')}
             </Button>

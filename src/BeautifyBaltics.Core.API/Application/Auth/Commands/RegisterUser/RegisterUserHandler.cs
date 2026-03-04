@@ -23,9 +23,10 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
     {
         public async Task<(RegisterUserResponse, OutgoingMessages)> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
         {
-            var existingUser = await userRepository.GetByEmail(request.Email, cancellationToken);
+            var normalizedEmail = request.Email.Trim();
+            var existingUser = await userRepository.GetByEmailAsync(normalizedEmail, request.Role, cancellationToken);
 
-            if (existingUser is not null) throw DomainException.WithMessage("An account with this email already exists.");
+            if (existingUser is not null) throw DomainException.WithMessage("An account with this email already exists for this account type.");
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -33,7 +34,7 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
 
             var userAccount = new User(
                 id: userId,
-                email: request.Email,
+                email: normalizedEmail,
                 passwordHash: passwordHash,
                 role: request.Role,
                 firstName: request.FirstName,
@@ -48,7 +49,7 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
                 var clientCreatedEvent = new ClientCreated(
                     FirstName: request.FirstName,
                     LastName: request.LastName,
-                    Contacts: new Domain.ValueObjects.ContactInformation(request.Email, request.PhoneNumber),
+                    Contacts: new Domain.ValueObjects.ContactInformation(normalizedEmail, request.PhoneNumber),
                     UserId: userId
                 );
 
@@ -59,7 +60,7 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
                 var masterCreatedEvent = new MasterCreated(
                    FirstName: request.FirstName,
                    LastName: request.LastName,
-                   Contacts: new Domain.ValueObjects.ContactInformation(request.Email, request.PhoneNumber),
+                   Contacts: new Domain.ValueObjects.ContactInformation(normalizedEmail, request.PhoneNumber),
                    UserId: userId
                );
 

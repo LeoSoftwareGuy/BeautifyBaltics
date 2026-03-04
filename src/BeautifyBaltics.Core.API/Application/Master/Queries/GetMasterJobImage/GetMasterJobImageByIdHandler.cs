@@ -7,7 +7,7 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterJobImage;
 
 public class GetMasterJobImageByIdHandler(
     IMasterJobRepository masterJobRepository,
-    IBlobStorageService<MasterJobImage> blobStorageService
+    IBlobStorageService<MasterAggregate.MasterJobImage> blobStorageService
 )
 {
     public async Task<GetMasterJobImageByIdResponse> Handle(GetMasterJobImageByIdRequest request, CancellationToken cancellationToken)
@@ -18,7 +18,7 @@ public class GetMasterJobImageByIdHandler(
         if (job.MasterId != request.MasterId) throw NotFoundException.For<Persistence.Projections.MasterJob>(request.MasterJobId);
 
         var image = job.Images?.FirstOrDefault(i => i.Id == request.MasterJobImageId)
-                    ?? throw NotFoundException.For<MasterJobImage>(request.MasterJobImageId);
+                    ?? throw NotFoundException.For<MasterAggregate.MasterJobImage>(request.MasterJobImageId);
 
         return new GetMasterJobImageByIdResponse
         {

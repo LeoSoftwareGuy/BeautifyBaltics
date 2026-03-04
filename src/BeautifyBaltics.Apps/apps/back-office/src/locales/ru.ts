@@ -31,7 +31,7 @@ const ru: CommonLocale = {
       topMasters: 'Топ мастера',
       mapExplore: 'Карта мастеров',
       bookings: 'Мои бронирования',
-      howTo: 'How It Works',
+      howTo: 'Как это работает',
     },
     master: {
       dashboard: 'Панель',
@@ -39,7 +39,7 @@ const ru: CommonLocale = {
       timeSlots: 'Тайм-слоты',
       services: 'Услуги',
       settings: 'Настройки',
-      howTo: 'How It Works',
+      howTo: 'Как это работает',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -50,16 +50,14 @@ const ru: CommonLocale = {
       clientExplore: 'Найти мастеров',
       clientBookings: 'Мои бронирования',
       topMasters: 'Топ мастера',
-      topMasters: 'Топ мастера',
       dashboard: 'Панель',
-      howTo: 'How It Works',
+      howTo: 'Как это работает',
       masterDashboard: 'Панель мастера',
       masterBookings: 'Бронирования',
       masterServices: 'Услуги',
       masterTimeSlots: 'Тайм-слоты',
       masterSettings: 'Настройки',
       masterProfile: 'Профиль мастера',
-      topMasters: 'Топ мастера',
     },
   },
   auth: {
@@ -93,6 +91,10 @@ const ru: CommonLocale = {
     login: {
       title: 'С возвращением',
       subtitle: 'Войдите в аккаунт Beautify Baltics, чтобы продолжить.',
+      accountTypeLabel: 'Тип аккаунта',
+      accountTypeHint: 'Выберите нужный кабинет',
+      roleClient: 'Клиент',
+      roleMaster: 'Мастер',
       registeredTitle: 'Регистрация прошла успешно',
       registeredMessage: 'Пожалуйста, войдите с новыми учетными данными.',
       noAccount: 'Нет аккаунта?',
@@ -586,6 +588,17 @@ const ru: CommonLocale = {
         removeFeatured: 'Убрать из обложки',
         setFeatured: 'Сделать обложкой',
         deleteImage: 'Удалить фото',
+        adjustFeatured: 'Настроить отображение обложки',
+        adjustModal: {
+          title: 'Настройка обложки',
+          description: 'Используйте ползунки, чтобы выбрать, какая часть снимка будет на карточке.',
+          horizontalLabel: 'Горизонтальный фокус',
+          verticalLabel: 'Вертикальный фокус',
+          zoomLabel: 'Масштаб',
+          previewLabel: 'Предпросмотр',
+          reset: 'Сбросить',
+          save: 'Сохранить кадрирование',
+        },
       },
       modals: {
         addTitle: 'Добавить услугу',
@@ -667,6 +680,8 @@ const ru: CommonLocale = {
         title: 'Настройки расписания',
         subtitle: 'Установите буфер между записями для подготовки и отдыха.',
         bufferLabel: 'Буфер между бронированиями (мин)',
+        limitDescription: 'Выберите значение от 0 до 60 минут, чтобы избежать записей вплотную.',
+        limitMaxWarning: 'Максимальный буфер — 60 минут.',
         save: 'Сохранить',
         notifications: {
           successTitle: 'Настройки сохранены',
@@ -691,6 +706,8 @@ const ru: CommonLocale = {
       awaitingReviews: 'Ждёт отзывов',
       noBio: 'Мастер ещё не добавил описание. Загляните позже.',
       locationFallback: 'Адрес не указан',
+      addressLabel: 'Адрес студии',
+      mapLabel: 'Расположение на карте',
       phoneFallback: 'Телефон не указан',
       emailFallback: 'Почта не указана',
     },
@@ -753,8 +770,8 @@ const ru: CommonLocale = {
       completed: 'Завершено',
     },
     masters: {
-      scope: 'Для профессиональных мастеров',
-      title: 'Для профессиональных мастеров',
+      scope: 'Мастерам',
+      title: 'Для умелых мастеров',
       steps: {
         register: {
           title: 'Регистрация и профиль',
@@ -776,7 +793,7 @@ const ru: CommonLocale = {
       },
     },
     clients: {
-      scope: 'Для требовательных клиентов',
+      scope: 'Клиентам',
       title: 'Для прекрасных клиентов',
       steps: {
         discover: {

@@ -21,5 +21,6 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared
         public string? AddressLine2 { get; init; }
         public string? PostalCode { get; init; }
         public string? ProfileImageUrl { get; init; }
+        public int BufferMinutes { get; init; }
     }
 }

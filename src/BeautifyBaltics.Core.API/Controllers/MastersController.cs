@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterAvailability;
 using Microsoft.AspNetCore.Authorization;
+using BeautifyBaltics.Core.API.Application.Master.Commands.UnsetMasterJobFeatureImage;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -387,13 +388,30 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(SetMasterJobFeaturedImageResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> SetMasterJobFeaturedImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromBody] SetMasterJobFeaturedImageBody request)
+    public async Task<ActionResult> SetMasterJobFeaturedImage([FromRoute] Guid masterId, [FromRoute] Guid jobId, [FromBody] SetMasterJobFeaturedImageRequest request)
     {
-        var response = await bus.InvokeAsync<SetMasterJobFeaturedImageResponse>(new SetMasterJobFeaturedImageRequest
+        var response = await bus.InvokeAsync<SetMasterJobFeaturedImageResponse>(request with
         {
             MasterId = masterId,
-            MasterJobId = jobId,
-            MasterJobImageId = request.ImageId
+            MasterJobId = jobId
+        });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Remove the featured image for a master job
+    /// </summary>
+    /// <param name="masterId"></param>
+    /// <param name="jobId"></param>
+    [HttpDelete("{masterId:guid}/jobs/{jobId:guid}/featured-image", Name = "UnsetMasterJobFeaturedImage")]
+    [ProducesResponseType(typeof(UnsetMasterJobFeaturedImageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> UnsetMasterJobFeaturedImage([FromRoute] Guid masterId, [FromRoute] Guid jobId)
+    {
+        var response = await bus.InvokeAsync<UnsetMasterJobFeaturedImageResponse>(new UnsetMasterJobFeaturedImageRequest
+        {
+            MasterId = masterId,
+            MasterJobId = jobId
         });
         return Ok(response);
     }

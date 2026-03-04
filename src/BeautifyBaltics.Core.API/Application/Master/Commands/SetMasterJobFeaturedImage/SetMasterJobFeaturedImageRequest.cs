@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Marten.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Commands.SetMasterJobFeaturedImage;
 
@@ -13,4 +13,10 @@ public record SetMasterJobFeaturedImageRequest
     public Guid MasterJobId { get; init; }
 
     public Guid? MasterJobImageId { get; init; }
+
+    public double? FocusX { get; init; }
+
+    public double? FocusY { get; init; }
+
+    public double? Zoom { get; init; }
 }

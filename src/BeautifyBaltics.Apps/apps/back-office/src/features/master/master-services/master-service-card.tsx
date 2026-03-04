@@ -39,6 +39,11 @@ export function MasterServiceCard({
     ? service.images?.find((img) => img.id === service.featuredImageId)
     : null;
   const backgroundImage = featuredImage?.url ?? service.images?.[0]?.url;
+  const focusXPercent = Math.round(((service.featuredImageFocusX ?? 0.5) * 100));
+  const focusYPercent = Math.round(((service.featuredImageFocusY ?? 0.5) * 100));
+  const featuredZoom = service.featuredImageZoom ?? 1;
+  const previewScale = featuredZoom * (isHovered ? 1.02 : 1);
+  const transformOrigin = `${focusXPercent}% ${focusYPercent}%`;
 
   return (
     <Card
@@ -76,7 +81,10 @@ export function MasterServiceCard({
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition: 'center',
+              objectPosition: `${focusXPercent}% ${focusYPercent}%`,
+              transform: `scale(${previewScale})`,
+              transformOrigin,
+              transition: 'transform 150ms ease, object-position 150ms ease',
             }}
           />
         ) : (

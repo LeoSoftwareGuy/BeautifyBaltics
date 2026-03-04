@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BeautifyBaltics.Domain.Enumerations;
 
 namespace BeautifyBaltics.Core.API.Application.Auth.Commands.Login
 {
@@ -9,5 +10,8 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.Login
 
         [Required]
         public required string Password { get; init; }
+
+        [Required]
+        public required UserRole Role { get; init; }
     }
 }

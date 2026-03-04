@@ -4,6 +4,133 @@ info:
   description: Beautify Baltics Core API for back-office operations
   version: v1
 paths:
+  /api/v1/admin/job-categories:
+    post:
+      tags:
+        - Admin
+      operationId: AdminCreateJobCategory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobCategoryRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateJobCategoryRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateJobCategoryResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/admin/jobs:
+    post:
+      tags:
+        - Admin
+      operationId: AdminCreateJob
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateJobResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/admin/jobs/{id}':
+    put:
+      tags:
+        - Admin
+      operationId: AdminUpdateJob
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateJobResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/admin/stats/masters:
+    get:
+      tags:
+        - Admin
+      operationId: GetMasterStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMasterStatisticsResponse'
+  /api/v1/admin/stats/clients:
+    get:
+      tags:
+        - Admin
+      operationId: GetClientStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetClientStatisticsResponse'
   /api/v1/auth/register:
     post:
       tags:
@@ -894,6 +1021,11 @@ paths:
           in: query
           schema:
             type: string
+        - name: jobId
+          in: query
+          schema:
+            type: string
+            format: uuid
         - name: jobCategoryId
           in: query
           schema:
@@ -1844,10 +1976,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SetMasterJobFeaturedImageBody'
+              $ref: '#/components/schemas/SetMasterJobFeaturedImageRequest'
           application/*+json:
             schema:
-              $ref: '#/components/schemas/SetMasterJobFeaturedImageBody'
+              $ref: '#/components/schemas/SetMasterJobFeaturedImageRequest'
       responses:
         '200':
           description: OK
@@ -1863,6 +1995,39 @@ paths:
                 $ref: '#/components/schemas/ProblemDetails'
         '400':
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+    delete:
+      tags:
+        - Masters
+      summary: Remove the featured image for a master job
+      operationId: UnsetMasterJobFeaturedImage
+      parameters:
+        - name: masterId
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsetMasterJobFeaturedImageResponse'
+        '404':
+          description: Not Found
           content:
             application/json:
               schema:
@@ -2458,6 +2623,26 @@ components:
           description: Id
           format: uuid
       additionalProperties: false
+    CreateJobCategoryRequest:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          maxLength: 128
+          minLength: 1
+          type: string
+      additionalProperties: false
+    CreateJobCategoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
+      additionalProperties: false
     CreateJobRequest:
       allOf:
         - $ref: '#/components/schemas/JobCommandDTO'
@@ -2855,11 +3040,14 @@ components:
     ForgotPasswordRequest:
       required:
         - email
+        - role
       type: object
       properties:
         email:
           minLength: 1
           type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
       additionalProperties: false
     Gender:
       enum:
@@ -2888,6 +3076,25 @@ components:
         - $ref: '#/components/schemas/ClientDTO'
         - type: object
           additionalProperties: false
+    GetClientStatisticsResponse:
+      type: object
+      properties:
+        totalClients:
+          type: integer
+          format: int32
+        newClientsThisMonth:
+          type: integer
+          format: int32
+        activeClientsLast30Days:
+          type: integer
+          format: int32
+        totalBookingsLast30Days:
+          type: integer
+          format: int32
+        totalCompletedBookingValue:
+          type: number
+          format: double
+      additionalProperties: false
     GetDashboardStatsResponse:
       required:
         - monthlyEarningsAverage
@@ -3013,6 +3220,25 @@ components:
             $ref: '#/components/schemas/GetMasterRatingsResponse'
           description: Items
       additionalProperties: false
+    GetMasterStatisticsResponse:
+      type: object
+      properties:
+        totalMasters:
+          type: integer
+          format: int32
+        newMastersThisMonth:
+          type: integer
+          format: int32
+        activeMastersLast30Days:
+          type: integer
+          format: int32
+        totalBookingsLast30Days:
+          type: integer
+          format: int32
+        pendingRequests:
+          type: integer
+          format: int32
+      additionalProperties: false
     GetPendingRequestsResponse:
       required:
         - totalCount
@@ -3117,6 +3343,7 @@ components:
       required:
         - email
         - password
+        - role
       type: object
       properties:
         email:
@@ -3125,6 +3352,8 @@ components:
         password:
           minLength: 1
           type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
       additionalProperties: false
     LoginResponse:
       type: object
@@ -3246,6 +3475,9 @@ components:
         profileImageUrl:
           type: string
           nullable: true
+        bufferMinutes:
+          type: integer
+          format: int32
       additionalProperties: false
     MasterJobDTO:
       required:
@@ -3297,6 +3529,18 @@ components:
           description: Featured image identifier
           format: uuid
           nullable: true
+        featuredImageFocusX:
+          type: number
+          description: Horizontal focal point for featured image (0-1)
+          format: double
+        featuredImageFocusY:
+          type: number
+          description: Vertical focal point for featured image (0-1)
+          format: double
+        featuredImageZoom:
+          type: number
+          description: Zoom level for featured image
+          format: double
         images:
           type: array
           items:
@@ -3635,12 +3879,33 @@ components:
           minLength: 1
           type: string
       additionalProperties: false
-    SetMasterJobFeaturedImageBody:
+    SetMasterJobFeaturedImageRequest:
+      required:
+        - masterId
+        - masterJobId
       type: object
       properties:
-        imageId:
+        masterId:
           type: string
           format: uuid
+        masterJobId:
+          type: string
+          format: uuid
+        masterJobImageId:
+          type: string
+          format: uuid
+          nullable: true
+        focusX:
+          type: number
+          format: double
+          nullable: true
+        focusY:
+          type: number
+          format: double
+          nullable: true
+        zoom:
+          type: number
+          format: double
           nullable: true
       additionalProperties: false
     SetMasterJobFeaturedImageResponse:
@@ -3656,6 +3921,16 @@ components:
           type: string
           format: uuid
           nullable: true
+      additionalProperties: false
+    UnsetMasterJobFeaturedImageResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
       additionalProperties: false
     UpdateClientProfileRequest:
       allOf:

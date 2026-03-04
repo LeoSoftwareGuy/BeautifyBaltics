@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Anchor,
@@ -18,6 +19,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 
 import { useSession } from '@/contexts/session-context';
 import type { FileRouteTypes } from '@/routeTree.gen';
+import { UserRole } from '@/state/endpoints/api.schemas';
 import { normalizeRoutePath } from '@/utils/auth';
 
 import { AnchorLink } from '../../components/navigation';
@@ -57,6 +59,7 @@ type ResetFormValues = {
 function LoginView() {
   const search = Route.useSearch();
   const router = useRouter();
+  const { t } = useTranslation();
   const { login, isAuthenticated, loading } = useSession();
   const [submitting, setSubmitting] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
@@ -64,6 +67,8 @@ function LoginView() {
   const [showRegistered] = useState(search.registered === true);
   const [showVerified] = useState(search.verified === true);
   const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const [accountRole, setAccountRole] = useState<UserRole>(UserRole.Client);
+  const [resetRole, setResetRole] = useState<UserRole>(UserRole.Client);
   const redirectPath: RoutePath = search.redirect;
 
   useEffect(() => {
@@ -102,7 +107,11 @@ function LoginView() {
     setSubmitting(true);
     setEmailNotVerified(false);
     try {
-      await login({ email: values.email.trim(), password: values.password });
+      await login({
+        email: values.email.trim(),
+        password: values.password,
+        role: accountRole,
+      });
       router.navigate({ to: redirectPath, replace: true });
     } catch (error) {
       if (error && typeof error === 'object' && 'detail' in error) {
@@ -127,7 +136,7 @@ function LoginView() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ email: values.email.trim() }),
+        body: JSON.stringify({ email: values.email.trim(), role: resetRole }),
       });
       if (!response.ok) throw new Error('Failed to send reset email.');
       setResetSent(true);
@@ -248,6 +257,28 @@ function LoginView() {
               ) : (
                 <form onSubmit={handleResetPassword}>
                   <Stack gap="md">
+                    <Stack gap={4}>
+                      <Text size="sm" fw={600}>{t('auth.login.accountTypeLabel')}</Text>
+                      <Text size="xs" c="dimmed">{t('auth.login.accountTypeHint')}</Text>
+                      <Group gap="xs">
+                        <Button
+                          type="button"
+                          variant={resetRole === UserRole.Client ? 'filled' : 'outline'}
+                          color="pink"
+                          onClick={() => setResetRole(UserRole.Client)}
+                        >
+                          {t('auth.login.roleClient')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={resetRole === UserRole.Master ? 'filled' : 'outline'}
+                          color="pink"
+                          onClick={() => setResetRole(UserRole.Master)}
+                        >
+                          {t('auth.login.roleMaster')}
+                        </Button>
+                      </Group>
+                    </Stack>
                     <TextInput
                       label="Email Address"
                       placeholder="name@example.com"
@@ -307,6 +338,29 @@ function LoginView() {
 
               <form onSubmit={handleSubmit}>
                 <Stack gap="md">
+                  <Stack gap={4}>
+                    <Text size="sm" fw={600}>{t('auth.login.accountTypeLabel')}</Text>
+                    <Text size="xs" c="dimmed">{t('auth.login.accountTypeHint')}</Text>
+                    <Group gap="xs">
+                      <Button
+                        type="button"
+                        variant={accountRole === UserRole.Client ? 'filled' : 'outline'}
+                        color="pink"
+                        onClick={() => setAccountRole(UserRole.Client)}
+                      >
+                        {t('auth.login.roleClient')}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={accountRole === UserRole.Master ? 'filled' : 'outline'}
+                        color="pink"
+                        onClick={() => setAccountRole(UserRole.Master)}
+                      >
+                        {t('auth.login.roleMaster')}
+                      </Button>
+                    </Group>
+                  </Stack>
+
                   <TextInput
                     label="Email Address"
                     placeholder="name@example.com"

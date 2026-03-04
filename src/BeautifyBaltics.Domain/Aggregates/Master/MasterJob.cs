@@ -24,6 +24,9 @@ public partial class MasterAggregate
         public string JobCategoryName { get; private set; } = jobCategoryName;
         public string JobName { get; private set; } = jobName;
         public Guid? FeaturedImageId { get; private set; }
+        public double FeaturedImageFocusX { get; private set; } = 0.5;
+        public double FeaturedImageFocusY { get; private set; } = 0.5;
+        public double FeaturedImageZoom { get; private set; } = 1;
         public IReadOnlyCollection<MasterJobImage> Images => [.. _images.Values];
 
         public void Update(Guid jobId, decimal price, TimeSpan duration, string title, Guid jobCategoryId, string jobCategoryName, string jobName)
@@ -45,13 +48,30 @@ public partial class MasterAggregate
         public void RemoveImage(Guid masterJobImageId)
         {
             _images.Remove(masterJobImageId);
-            if (FeaturedImageId == masterJobImageId)
-                FeaturedImageId = null;
+            if (FeaturedImageId == masterJobImageId) FeaturedImageId = null;
         }
 
         public void SetFeaturedImage(Guid? imageId)
         {
             FeaturedImageId = imageId;
+            if (imageId is null)
+            {
+                ResetFeaturedImageFraming();
+            }
+        }
+
+        public void UpdateFeaturedImageFraming(double focusX, double focusY, double zoom)
+        {
+            FeaturedImageFocusX = Math.Clamp(focusX, 0, 1);
+            FeaturedImageFocusY = Math.Clamp(focusY, 0, 1);
+            FeaturedImageZoom = Math.Clamp(zoom, 0.4, 3);
+        }
+
+        private void ResetFeaturedImageFraming()
+        {
+            FeaturedImageFocusX = 0.5;
+            FeaturedImageFocusY = 0.5;
+            FeaturedImageZoom = 1;
         }
     }
 }

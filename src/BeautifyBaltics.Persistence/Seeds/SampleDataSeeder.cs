@@ -10,7 +10,6 @@ using Marten.Schema;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MasterJobImage = BeautifyBaltics.Domain.Aggregates.Master.MasterJobImage;
 using BeautifyBaltics.Domain.Documents.User;
 
 namespace BeautifyBaltics.Persistence.Seeds;

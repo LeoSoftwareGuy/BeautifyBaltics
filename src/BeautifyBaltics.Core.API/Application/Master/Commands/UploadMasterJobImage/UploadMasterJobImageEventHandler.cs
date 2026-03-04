@@ -7,7 +7,7 @@ using Wolverine.Marten;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Commands.UploadMasterJobImage;
 
-public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterJobImage> blobStorageService)
+public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterAggregate.MasterJobImage> blobStorageService)
 {
     [AggregateHandler]
     public async Task<(Events, OutgoingMessages)> Handle(

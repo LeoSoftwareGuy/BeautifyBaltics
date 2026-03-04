@@ -9,7 +9,7 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobs;
 public class FindMasterJobsHandler(
     IMasterRepository masterRepository,
     IMasterJobRepository masterJobRepository,
-    IBlobStorageService<MasterJobImage> blobStorageService
+    IBlobStorageService<MasterAggregate.MasterJobImage> blobStorageService
 )
 {
     public async Task<FindMasterJobsResponse> Handle(FindMasterJobsRequest request, CancellationToken cancellationToken)
@@ -31,6 +31,9 @@ public class FindMasterJobsHandler(
                 Price = job.Price,
                 DurationMinutes = (int)job.Duration.TotalMinutes,
                 FeaturedImageId = job.FeaturedImageId,
+                FeaturedImageFocusX = job.FeaturedImageFocusX,
+                FeaturedImageFocusY = job.FeaturedImageFocusY,
+                FeaturedImageZoom = job.FeaturedImageZoom,
                 Images = job.Images?.Select(image => new MasterJobImageDTO
                 {
                     Id = image.Id,

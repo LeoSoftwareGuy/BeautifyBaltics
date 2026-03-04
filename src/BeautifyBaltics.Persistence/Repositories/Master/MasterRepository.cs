@@ -35,19 +35,21 @@ public class MasterRepository(IQuerySession session) : QueryRepository<Projectio
             query = query.Where(x => x.City.NgramSearch(search.City));
         }
 
-        if (search.JobCategoryId is not null|| search.MinPrice is not null || search.MaxPrice is not null)
+        if (search.JobCategoryId is not null || search.MinPrice is not null || search.MaxPrice is not null || search.JobId is not null)
         {
             var jobQuery = _session.Query<MasterJob>().AsQueryable();
 
             if (search.JobCategoryId is not null) jobQuery = jobQuery.Where(job => job.JobCategoryId == search.JobCategoryId);
-
+            if (search.JobId is not null) jobQuery = jobQuery.Where(job => job.JobId == search.JobId);
             if (search.MinPrice is not null) jobQuery = jobQuery.Where(job => job.Price >= search.MinPrice);
-
             if (search.MaxPrice is not null) jobQuery = jobQuery.Where(job => job.Price <= search.MaxPrice);
 
-            var masterIds = jobQuery.Select(job => job.MasterId).ToList();
+            var masterIds = jobQuery
+                .Select(job => job.MasterId)
+                .Distinct()
+                .ToList();
 
-            query = query.Where(x => masterIds.Contains(x.Id));
+            query = query.Where(master => masterIds.Contains(master.Id));
         }
 
         return query;

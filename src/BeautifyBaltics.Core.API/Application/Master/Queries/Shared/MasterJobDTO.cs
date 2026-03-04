@@ -58,6 +58,21 @@ public record MasterJobDTO
     public Guid? FeaturedImageId { get; init; }
 
     /// <summary>
+    /// Horizontal focal point for featured image (0-1)
+    /// </summary>
+    public double FeaturedImageFocusX { get; init; } = 0.5;
+
+    /// <summary>
+    /// Vertical focal point for featured image (0-1)
+    /// </summary>
+    public double FeaturedImageFocusY { get; init; } = 0.5;
+
+    /// <summary>
+    /// Zoom level for featured image
+    /// </summary>
+    public double FeaturedImageZoom { get; init; } = 1;
+
+    /// <summary>
     /// Job images
     /// </summary>
     [Required]

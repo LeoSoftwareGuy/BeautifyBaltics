@@ -19,8 +19,9 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.ForgotPassword
         {
             var outgoing = new OutgoingMessages();
 
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
             var userAccount = await session.Query<User>()
-                .FirstOrDefaultAsync(x => x.Email == request.Email.ToLowerInvariant(), cancellationToken);
+                .FirstOrDefaultAsync(x => x.Email == normalizedEmail && x.Role == request.Role, cancellationToken);
 
             // Always return success to prevent email enumeration
             if (userAccount is null) return (new ForgotPasswordResponse(GenericMessage), outgoing);

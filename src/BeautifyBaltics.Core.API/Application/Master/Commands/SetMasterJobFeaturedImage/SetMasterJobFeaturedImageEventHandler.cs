@@ -13,18 +13,37 @@ public class SetMasterJobFeaturedImageEventHandler
     public (Events, OutgoingMessages) Handle(SetMasterJobFeaturedImageRequest request, MasterAggregate master)
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
+        if (request.MasterJobImageId is null) throw DomainException.WithMessage("Featured image id must be provided.");
 
-        var job = master.Jobs.FirstOrDefault(j => j.MasterJobId == request.MasterJobId)
-            ?? throw NotFoundException.For<MasterJob>(request.MasterJobId);
+        var job = master.GetJobOrThrow(request.MasterJobId);
+        master.EnsureJobImageExists(job, request.MasterJobImageId.Value);
 
-        if (request.MasterJobImageId.HasValue)
+        var events = new Events();
+
+        if (job.FeaturedImageId != request.MasterJobImageId)
         {
-            var image = job.Images.FirstOrDefault(i => i.MasterJobImageId == request.MasterJobImageId.Value)
-                ?? throw NotFoundException.For<MasterJobImage>(request.MasterJobImageId.Value);
+            events.Add(new MasterJobFeaturedImageSet(request.MasterId, request.MasterJobId, request.MasterJobImageId));
         }
 
-        var @event = new MasterJobFeaturedImageSet(request.MasterId, request.MasterJobId, request.MasterJobImageId);
+        if (HasFramingChanges(request))
+        {
+            var (focusX, focusY, zoom) = NormalizeFraming(job, request);
+            events.Add(new MasterJobFeaturedImageFramed(request.MasterId, request.MasterJobId, focusX, focusY, zoom));
+        }
 
-        return ([@event], [new SetMasterJobFeaturedImageResponse(request.MasterId, request.MasterJobId, request.MasterJobImageId)]);
+        var response = new SetMasterJobFeaturedImageResponse(request.MasterId, request.MasterJobId, request.MasterJobImageId);
+        return (events, [response]);
+    }
+
+    private static bool HasFramingChanges(SetMasterJobFeaturedImageRequest request) =>
+        request.FocusX.HasValue || request.FocusY.HasValue || request.Zoom.HasValue;
+
+    private static (double FocusX, double FocusY, double Zoom) NormalizeFraming(MasterJob job, SetMasterJobFeaturedImageRequest request)
+    {
+        var focusX = Math.Clamp(request.FocusX ?? job.FeaturedImageFocusX, 0, 1);
+        var focusY = Math.Clamp(request.FocusY ?? job.FeaturedImageFocusY, 0, 1); 
+        var zoom = Math.Clamp(request.Zoom ?? job.FeaturedImageZoom, 0.4, 3);
+
+        return (focusX, focusY, zoom);
     }
 }

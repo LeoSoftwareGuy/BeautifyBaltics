@@ -16,6 +16,9 @@ public record MasterJob(Guid Id, Guid MasterId) : Projection
     public decimal Price { get; init; }
     public TimeSpan Duration { get; init; }
     public Guid? FeaturedImageId { get; init; }
+    public double FeaturedImageFocusX { get; init; } = 0.5;
+    public double FeaturedImageFocusY { get; init; } = 0.5;
+    public double FeaturedImageZoom { get; init; } = 1;
     public IReadOnlyCollection<MasterJobImage> Images { get; init; } = [];
 }
 
@@ -29,6 +32,7 @@ public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
         Identity<MasterJobImageUploaded>(e => e.MasterJobId);
         Identity<MasterJobImageDeleted>(e => e.MasterJobId);
         Identity<MasterJobFeaturedImageSet>(e => e.MasterJobId);
+        Identity<MasterJobFeaturedImageFramed>(e => e.MasterJobId);
 
         DeleteEvent<MasterJobDeleted>();
     }
@@ -92,5 +96,19 @@ public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
     }
 
     public static MasterJob Apply(MasterJobFeaturedImageSet @event, MasterJob current) =>
-        current with { FeaturedImageId = @event.FeaturedImageId };
+        current with
+        {
+            FeaturedImageId = @event.FeaturedImageId,
+            FeaturedImageFocusX = 0.5,
+            FeaturedImageFocusY = 0.5,
+            FeaturedImageZoom = 1
+        };
+
+    public static MasterJob Apply(MasterJobFeaturedImageFramed @event, MasterJob current) =>
+        current with
+        {
+            FeaturedImageFocusX = @event.FocusX,
+            FeaturedImageFocusY = @event.FocusY,
+            FeaturedImageZoom = @event.Zoom
+        };
 }

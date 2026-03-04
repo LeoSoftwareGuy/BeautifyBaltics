@@ -55,6 +55,10 @@ export function ClientExplorePage() {
       params.jobCategoryId = selectedCategory;
     }
 
+    if (selectedJob) {
+      params.jobId = selectedJob;
+    }
+
     if (minPrice > 0) {
       params.minPrice = minPrice;
     }
@@ -64,7 +68,7 @@ export function ClientExplorePage() {
     }
 
     return params;
-  }, [debouncedSearch, debouncedLocation, selectedCategory, currentPage, minPrice, maxPrice]);
+  }, [debouncedSearch, debouncedLocation, selectedCategory, selectedJob, currentPage, minPrice, maxPrice]);
 
   const {
     data: mastersData,

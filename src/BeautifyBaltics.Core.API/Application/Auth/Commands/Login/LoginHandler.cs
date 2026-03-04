@@ -12,8 +12,9 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.Login
     {
         public async Task<LoginResponse> Handle(LoginRequest request, CancellationToken cancellationToken)
         {
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
             var userAccount = await querySession.Query<User>()
-                .FirstOrDefaultAsync(x => x.Email == request.Email.ToLowerInvariant(), cancellationToken);
+                .FirstOrDefaultAsync(x => x.Email == normalizedEmail && x.Role == request.Role, cancellationToken);
 
             if (userAccount is null || !BCrypt.Net.BCrypt.Verify(request.Password, userAccount.PasswordHash))
                 throw new UnauthorizedAccessException("Invalid email or password.");

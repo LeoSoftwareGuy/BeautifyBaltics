@@ -122,30 +122,41 @@ function JourneyColumn({
   );
 }
 
-function HowToJourneySection() {
+type HowToJourneySectionProps = {
+  focus: 'all' | 'masters' | 'clients';
+};
+
+function HowToJourneySection({ focus }: HowToJourneySectionProps) {
   const { t } = useTranslation();
+  const showMasters = focus !== 'clients';
+  const showClients = focus !== 'masters';
+
   return (
-    <Box component="section" py={{ base: 48, md: 72 }}>
+    <Box component="section" py={{ base: 48, md: 72 }} id="how-to-journey">
       <Container size="lg">
         <Grid gutter={{ base: 32, md: 48 }}>
-          <Grid.Col span={{ base: 12, lg: 6 }}>
-            <JourneyColumn
-              id="masters"
-              title={t('howTo.masters.title')}
-              scopeLabel={t('howTo.masters.scope')}
-              titleAccent="var(--mantine-color-pink-4)"
-              steps={MASTER_STEPS}
-            />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, lg: 6 }}>
-            <JourneyColumn
-              id="clients"
-              title={t('howTo.clients.title')}
-              scopeLabel={t('howTo.clients.scope')}
-              titleAccent="var(--mantine-color-indigo-4)"
-              steps={CLIENT_STEPS}
-            />
-          </Grid.Col>
+          {showMasters && (
+            <Grid.Col span={{ base: 12, lg: showClients ? 6 : 12 }}>
+              <JourneyColumn
+                id="masters"
+                title={t('howTo.masters.title')}
+                scopeLabel={t('howTo.masters.scope')}
+                titleAccent="var(--mantine-color-pink-4)"
+                steps={MASTER_STEPS}
+              />
+            </Grid.Col>
+          )}
+          {showClients && (
+            <Grid.Col span={{ base: 12, lg: showMasters ? 6 : 12 }}>
+              <JourneyColumn
+                id="clients"
+                title={t('howTo.clients.title')}
+                scopeLabel={t('howTo.clients.scope')}
+                titleAccent="var(--mantine-color-indigo-4)"
+                steps={CLIENT_STEPS}
+              />
+            </Grid.Col>
+          )}
         </Grid>
       </Container>
     </Box>

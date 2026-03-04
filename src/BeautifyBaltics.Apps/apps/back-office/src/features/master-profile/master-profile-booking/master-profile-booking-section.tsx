@@ -5,6 +5,7 @@ import {
   Card,
   Grid,
   Group,
+  Indicator,
   Select,
   Stack,
   Text,
@@ -12,11 +13,12 @@ import {
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useNavigate } from '@tanstack/react-router';
+import dayjs from 'dayjs';
 import { Briefcase, Calendar, Clock } from 'lucide-react';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
-import { MasterJobDTO, UserRole } from '@/state/endpoints/api.schemas';
-import { useFindMasterJobs, useGetAvailableTimeSlots } from '@/state/endpoints/masters';
+import { AvailabilitySlotType, MasterJobDTO, UserRole } from '@/state/endpoints/api.schemas';
+import { useFindMasterAvailabilities, useFindMasterJobs, useGetAvailableTimeSlots } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
@@ -31,6 +33,8 @@ type MasterBookingSectionProps = {
   masterId: string;
   onBook: (data: BookingData) => void;
 };
+
+const isDateInstance = (value: unknown): value is Date => value instanceof Date;
 
 function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
   const { t } = useTranslation();
@@ -77,6 +81,35 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
       },
     },
   );
+
+  const availabilityQueryRange = useMemo(() => {
+    const start = dayjs().startOf('day');
+    return {
+      masterId,
+      startAt: start.toDate(),
+      endAt: start.add(2, 'month').endOf('day').toDate(),
+      page: 1,
+      pageSize: 100,
+      all: true,
+    };
+  }, [masterId]);
+
+  const { data: availabilityCalendar } = useFindMasterAvailabilities(
+    masterId,
+    availabilityQueryRange,
+    { query: { enabled: !!masterId } },
+  );
+
+  const highlightedDays = useMemo(() => {
+    const items = availabilityCalendar?.items ?? [];
+    const dates = new Set<string>();
+    items.forEach((slot) => {
+      if ((slot.slotType as AvailabilitySlotType) !== AvailabilitySlotType.Available) return;
+      const key = dayjs(slot.startAt).format('YYYY-MM-DD');
+      dates.add(key);
+    });
+    return dates;
+  }, [availabilityCalendar?.items]);
 
   const availableSlots = useMemo(() => {
     if (!slotsData?.slots) return [];
@@ -204,13 +237,26 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
                   <DatePicker
                     value={selectedDate}
                     onChange={(value) => {
-                      if (typeof value === 'string') {
-                        setSelectedDate(new Date(value));
-                      } else {
+                      if (isDateInstance(value) || value === null) {
                         setSelectedDate(value);
+                      } else if (typeof value === 'string' || typeof value === 'number') {
+                        const parsed = new Date(value);
+                        setSelectedDate(Number.isNaN(parsed.getTime()) ? null : parsed);
                       }
                     }}
                     minDate={new Date()}
+                    renderDay={(rawDate) => {
+                      const dateObj = isDateInstance(rawDate) ? rawDate : new Date(rawDate as number | string);
+                      const isValidDate = isDateInstance(dateObj) && !Number.isNaN(dateObj.getTime());
+                      const dayKey = isValidDate ? dayjs(dateObj).format('YYYY-MM-DD') : '';
+                      const hasAvailability = isValidDate ? highlightedDays.has(dayKey) : false;
+
+                      return (
+                        <Indicator size={6} offset={-4} color="pink" disabled={!hasAvailability}>
+                          <div>{isValidDate ? dateObj.getDate() : ''}</div>
+                        </Indicator>
+                      );
+                    }}
                   />
                 </div>
               </div>

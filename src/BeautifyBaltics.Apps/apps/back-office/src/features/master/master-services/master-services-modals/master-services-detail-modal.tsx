@@ -16,6 +16,7 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
+  IconAdjustmentsHorizontal,
   IconClock,
   IconCurrencyEuro,
   IconEdit,
@@ -30,7 +31,9 @@ import {
 import { LightboxCarousel } from '@/components/lightbox-carousel';
 import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
-import { useDeleteMasterJobImage, useSetMasterJobFeaturedImage } from '@/state/endpoints/masters';
+import { useDeleteMasterJobImage, useSetMasterJobFeaturedImage, useUnsetMasterJobFeaturedImage } from '@/state/endpoints/masters';
+
+import { MasterServicesFeaturedImageModal } from './master-services-featured-image-modal';
 
 type MasterServicesDetailModalProps = {
   opened: boolean;
@@ -54,8 +57,29 @@ export function MasterServicesDetailModal({
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { translateService, translateCategory } = useTranslateData();
   const { t } = useTranslation();
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
 
   const { mutateAsync: setFeaturedImage, isPending: isSettingFeatured } = useSetMasterJobFeaturedImage({
+    mutation: {
+      onSuccess: () => {
+        onRefetch();
+        notifications.show({
+          title: t('master.services.notifications.featuredSuccessTitle'),
+          message: t('master.services.notifications.featuredSuccessMessage'),
+          color: 'green',
+        });
+      },
+      onError: () => {
+        notifications.show({
+          title: t('master.services.notifications.featuredErrorTitle'),
+          message: t('master.services.notifications.featuredErrorMessage'),
+          color: 'red',
+        });
+      },
+    },
+  });
+
+  const { mutateAsync: unsetFeaturedImage, isPending: isUnsettingFeatured } = useUnsetMasterJobFeaturedImage({
     mutation: {
       onSuccess: () => {
         onRefetch();
@@ -103,6 +127,10 @@ export function MasterServicesDetailModal({
     ? images.find((img) => img.id === service.featuredImageId)
     : null;
   const headerImageUrl = featuredImage?.url ?? images[0]?.url;
+  const featuredFocusX = service.featuredImageFocusX ?? 0.5;
+  const featuredFocusY = service.featuredImageFocusY ?? 0.5;
+  const featuredZoom = service.featuredImageZoom ?? 1;
+  const featuredTransformOrigin = `${featuredFocusX * 100}% ${featuredFocusY * 100}%`;
 
   const handleEdit = () => {
     onClose();
@@ -115,13 +143,22 @@ export function MasterServicesDetailModal({
   };
 
   const handleToggleFeatured = async (imageId: string) => {
-    const newFeaturedId = service.featuredImageId === imageId ? null : imageId;
-    await setFeaturedImage({ masterId, jobId: service.id, data: { imageId: newFeaturedId } });
+    if (service.featuredImageId === imageId) {
+      await unsetFeaturedImage({ masterId, jobId: service.id });
+    } else {
+      await setFeaturedImage({
+        masterId,
+        jobId: service.id,
+        data: { masterJobImageId: imageId },
+      });
+    }
   };
 
   const handleDeleteImage = async (imageId: string) => {
     await deleteImage({ masterId, jobId: service.id, imageId });
   };
+
+  const isFeaturedMutationRunning = isSettingFeatured || isUnsettingFeatured;
 
   return (
     <>
@@ -155,7 +192,9 @@ export function MasterServicesDetailModal({
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                objectPosition: 'center',
+                objectPosition: `${featuredFocusX * 100}% ${featuredFocusY * 100}%`,
+                transform: `scale(${featuredZoom})`,
+                transformOrigin: featuredTransformOrigin,
               }}
             />
           ) : (
@@ -307,16 +346,27 @@ export function MasterServicesDetailModal({
                         h="100%"
                         w="100%"
                         fit="cover"
-                        style={{
-                          transition: 'transform 150ms ease',
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                        }}
                       />
+                      {isFeatured && (
+                        <Tooltip label={t('master.services.detail.adjustFeatured')} position="top-start">
+                          <ActionIcon
+                            variant="filled"
+                            color="teal"
+                            radius="xl"
+                            size="sm"
+                            pos="absolute"
+                            top={6}
+                            left={6}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAdjustModalOpen(true);
+                            }}
+                            style={{ opacity: 0.85 }}
+                          >
+                            <IconAdjustmentsHorizontal size={14} />
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
                       <Tooltip
                         label={isFeatured
                           ? t('master.services.detail.removeFeatured')
@@ -331,7 +381,7 @@ export function MasterServicesDetailModal({
                           pos="absolute"
                           top={6}
                           right={6}
-                          loading={isSettingFeatured}
+                          loading={isFeaturedMutationRunning}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleToggleFeatured(image.id);
@@ -368,6 +418,18 @@ export function MasterServicesDetailModal({
           </Stack>
         </Stack>
       </Modal>
+
+      {service.featuredImageId ? (
+        <MasterServicesFeaturedImageModal
+          opened={adjustModalOpen}
+          onClose={() => setAdjustModalOpen(false)}
+          masterId={masterId}
+          service={service}
+          isSaving={isSettingFeatured}
+          setFeaturedImage={setFeaturedImage}
+          onRefetch={onRefetch}
+        />
+      ) : null}
 
       <LightboxCarousel
         opened={lightboxIndex !== null}

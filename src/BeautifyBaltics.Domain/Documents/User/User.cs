@@ -19,7 +19,7 @@ public class User
     private User(Guid id, string email, string passwordHash, UserRole role, string firstName, string lastName, string phoneNumber, bool emailVerified, DateTimeOffset createdAt)
     {
         Id = id;
-        Email = email;
+        Email = NormalizeEmail(email);
         PasswordHash = passwordHash;
         Role = role;
         FirstName = firstName;
@@ -32,7 +32,7 @@ public class User
     public User(Guid id, string email, string passwordHash, UserRole role, string firstName, string lastName, string phoneNumber)
     {
         Id = id;
-        Email = email;
+        Email = NormalizeEmail(email);
         PasswordHash = passwordHash;
         Role = role;
         FirstName = firstName;
@@ -47,4 +47,6 @@ public class User
     public void UpdatePasswordHash(string newPasswordHash) => PasswordHash = newPasswordHash;
 
     public string FullName => $"{FirstName} {LastName}".Trim();
+
+    private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
 }

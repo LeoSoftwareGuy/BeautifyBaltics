@@ -199,6 +199,20 @@ export type CreateClientResponse = {
   id: string;
 };
 
+export type CreateJobCategoryRequest = {
+  /**
+   * @minLength 1
+   * @maxLength 128
+   */
+  name: string;
+};
+
+export type CreateJobCategoryResponse = {
+  id?: string;
+  /** @nullable */
+  name?: string | null;
+};
+
 export type CreateJobRequestAllOf = { [key: string]: unknown };
 
 export type CreateJobRequest = JobCommandDTO & CreateJobRequestAllOf;
@@ -406,6 +420,7 @@ export type FindMastersResponsePagedResponse = {
 export type ForgotPasswordRequest = {
   /** @minLength 1 */
   email: string;
+  role: UserRole;
 };
 
 export enum Gender {
@@ -426,6 +441,14 @@ export type GetBookingByIdResponse = BookingDTO & GetBookingByIdResponseAllOf;
 export type GetClientByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetClientByIdResponse = ClientDTO & GetClientByIdResponseAllOf;
+
+export type GetClientStatisticsResponse = {
+  totalClients?: number;
+  newClientsThisMonth?: number;
+  activeClientsLast30Days?: number;
+  totalBookingsLast30Days?: number;
+  totalCompletedBookingValue?: number;
+};
 
 export type GetDashboardStatsResponse = {
   /** Total number of bookings (excluding cancelled) */
@@ -500,6 +523,14 @@ export type GetMasterRatingsResponsePagedResponse = {
   items: GetMasterRatingsResponse[];
 };
 
+export type GetMasterStatisticsResponse = {
+  totalMasters?: number;
+  newMastersThisMonth?: number;
+  activeMastersLast30Days?: number;
+  totalBookingsLast30Days?: number;
+  pendingRequests?: number;
+};
+
 export type GetPendingRequestsResponse = {
   /**
    * List of pending booking requests
@@ -567,6 +598,7 @@ export type LoginRequest = {
   email: string;
   /** @minLength 1 */
   password: string;
+  role: UserRole;
 };
 
 export type LoginResponse = {
@@ -635,6 +667,7 @@ export type MasterDTO = {
   postalCode?: string | null;
   /** @nullable */
   profileImageUrl?: string | null;
+  bufferMinutes?: number;
 };
 
 export type MasterJobDTO = {
@@ -668,6 +701,12 @@ export type MasterJobDTO = {
    * @nullable
    */
   featuredImageId?: string | null;
+  /** Horizontal focal point for featured image (0-1) */
+  featuredImageFocusX?: number;
+  /** Vertical focal point for featured image (0-1) */
+  featuredImageFocusY?: number;
+  /** Zoom level for featured image */
+  featuredImageZoom?: number;
   /** Job images */
   images: MasterJobImageDTO[];
 };
@@ -903,9 +942,17 @@ export type ResetPasswordRequest = {
   newPassword: string;
 };
 
-export type SetMasterJobFeaturedImageBody = {
+export type SetMasterJobFeaturedImageRequest = {
+  masterId: string;
+  masterJobId: string;
   /** @nullable */
-  imageId?: string | null;
+  masterJobImageId?: string | null;
+  /** @nullable */
+  focusX?: number | null;
+  /** @nullable */
+  focusY?: number | null;
+  /** @nullable */
+  zoom?: number | null;
 };
 
 export type SetMasterJobFeaturedImageResponse = {
@@ -913,6 +960,11 @@ export type SetMasterJobFeaturedImageResponse = {
   masterJobId?: string;
   /** @nullable */
   featuredImageId?: string | null;
+};
+
+export type UnsetMasterJobFeaturedImageResponse = {
+  masterId?: string;
+  masterJobId?: string;
 };
 
 export type UpdateClientProfileRequestAllOf = {
@@ -1029,6 +1081,13 @@ export type ValidationProblemDetails = {
   /** @nullable */
   errors?: ValidationProblemDetailsErrors;
   [key: string]: unknown;
+};
+
+export type VerifyEmailParams = {
+/**
+ * Verification email token
+ */
+  token?: string;
 };
 
 export type FindBookingsParams = {
@@ -1196,6 +1255,7 @@ export type GetJobByIdParams = {
 export type FindMastersParams = {
   text?: string;
   city?: string;
+  jobId?: string;
   jobCategoryId?: string;
   minPrice?: number;
   maxPrice?: number;

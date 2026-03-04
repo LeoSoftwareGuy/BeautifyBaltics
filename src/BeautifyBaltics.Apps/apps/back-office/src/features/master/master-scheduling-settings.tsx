@@ -23,6 +23,7 @@ export function MasterSchedulingSettings() {
   const { t } = useTranslation();
 
   const [bufferMinutes, setBufferMinutes] = useState<number | ''>(0);
+  const isMaxLimit = typeof bufferMinutes === 'number' && bufferMinutes >= 60;
 
   useEffect(() => {
     const value = master?.bufferMinutes as number | undefined;
@@ -76,6 +77,8 @@ export function MasterSchedulingSettings() {
         max={60}
         step={5}
         value={bufferMinutes}
+        description={t('master.settings.scheduling.limitDescription')}
+        error={isMaxLimit ? t('master.settings.scheduling.limitMaxWarning') : undefined}
         onChange={(value) => setBufferMinutes(value === '' || value === null ? '' : Number(value))}
         w={300}
       />

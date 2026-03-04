@@ -1,7 +1,7 @@
-using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Integrations.BlobStorage;
 using BeautifyBaltics.Persistence.Repositories.Master;
+using static BeautifyBaltics.Domain.Aggregates.Master.MasterAggregate;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Queries.FindMasterJobImages;
 

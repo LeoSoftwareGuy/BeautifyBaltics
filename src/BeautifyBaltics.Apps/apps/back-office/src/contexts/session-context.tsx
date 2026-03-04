@@ -21,7 +21,7 @@ type SessionContextValue = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   loading: boolean;
-  login: (credentials: { email: string; password: string }) => Promise<void>;
+  login: (credentials: { email: string; password: string; role: UserRole }) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -63,12 +63,12 @@ function SessionProvider({ children }: SessionProviderProps) {
     return () => { mounted = false; };
   }, []);
 
-  const login = useCallback(async ({ email, password }: { email: string; password: string }) => {
+  const login = useCallback(async ({ email, password, role }: { email: string; password: string; role: UserRole }) => {
     const response = await fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, role }),
     });
 
     if (!response.ok) {
