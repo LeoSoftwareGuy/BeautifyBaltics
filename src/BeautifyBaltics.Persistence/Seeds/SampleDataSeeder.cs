@@ -56,7 +56,7 @@ public class SampleDataSeeder : IInitialData
 
             await using var scope = _scopeFactory.CreateAsyncScope();
             var masterProfileBlobStorage = scope.ServiceProvider.GetRequiredService<IBlobStorageService<MasterAggregate.MasterProfileImage>>();
-            var masterJobImageBlobStorage = scope.ServiceProvider.GetRequiredService<IBlobStorageService<MasterJobImage>>();
+            var masterJobImageBlobStorage = scope.ServiceProvider.GetRequiredService<IBlobStorageService<MasterAggregate.MasterJobImage>>();
 
             var availabilityByMaster = await SeedMastersAsync(session, cancellation, masterProfileBlobStorage, masterJobImageBlobStorage);
 
@@ -131,7 +131,7 @@ public class SampleDataSeeder : IInitialData
         IDocumentSession session,
         CancellationToken cancellation,
         IBlobStorageService<MasterAggregate.MasterProfileImage> masterProfileBlobStorage,
-        IBlobStorageService<MasterJobImage> masterJobImageBlobStorage
+        IBlobStorageService<MasterAggregate.MasterJobImage> masterJobImageBlobStorage
     )
     {
         var jobLookup = _jobs.ToDictionary(j => j.Id);
@@ -235,7 +235,7 @@ public class SampleDataSeeder : IInitialData
         MasterSeed master,
         MasterJobCreated masterJobCreated,
         JobSeed jobDefinition,
-        IBlobStorageService<MasterJobImage> masterJobImageBlobStorage,
+        IBlobStorageService<MasterAggregate.MasterJobImage> masterJobImageBlobStorage,
         CancellationToken cancellation
     )
     {
