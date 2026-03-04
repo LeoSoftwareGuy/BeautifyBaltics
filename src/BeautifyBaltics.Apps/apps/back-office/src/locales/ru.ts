@@ -6,6 +6,7 @@ const ru: CommonLocale = {
   },
   language: {
     switcherLabel: 'Сменить язык',
+    select: 'Выберите язык',
   },
   general: {
     notFound: 'Страница не найдена',

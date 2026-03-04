@@ -6,6 +6,7 @@ const et: CommonLocale = {
   },
   language: {
     switcherLabel: 'Vaheta keelt',
+    select: 'Vali keel',
   },
   general: {
     notFound: 'Lehte ei leitud',

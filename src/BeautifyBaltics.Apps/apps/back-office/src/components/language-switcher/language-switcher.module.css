@@ -1,0 +1,11 @@
+.optionDark:hover,
+.optionDark[data-hovered] {
+  background-color: var(--mantine-color-pink-6) !important;
+  color: #ffffff !important;
+}
+
+.optionLight:hover,
+.optionLight[data-hovered] {
+  background-color: var(--mantine-color-pink-6) !important;
+  color: #1a1a1a !important;
+}

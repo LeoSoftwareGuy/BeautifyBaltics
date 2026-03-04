@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { DevtoolsContainer, TanStackQueryDevtools, TanStackRouterDevtools } from '@beautify-baltics-apps/devtools';
-import { Affix, Group, Paper } from '@mantine/core';
+import { Affix, Group } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
@@ -58,19 +58,7 @@ function Root() {
         <NavigationLoadingIndicator />
         <AuthQuickActions />
         <Affix position={{ top: 16, left: 16 }} zIndex={201}>
-          <Paper
-            withBorder
-            px="sm"
-            py="xs"
-            radius="xl"
-            style={{
-              backdropFilter: 'blur(8px)',
-              backgroundColor: 'rgba(255,255,255,0.92)',
-              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)',
-            }}
-          >
-            <LanguageSwitcher compact />
-          </Paper>
+          <LanguageSwitcher compact variant={isMarketingRoute ? 'light' : 'dark'} />
         </Affix>
         <ModalsProvider>
           <Outlet />
@@ -85,7 +73,7 @@ function Root() {
         start: <NavigationBreadcrumbs />,
         end: (
           <Group gap="md" align="center" wrap="nowrap">
-            <LanguageSwitcher />
+            <LanguageSwitcher variant="light" />
             <MegaSearch />
           </Group>
         ),

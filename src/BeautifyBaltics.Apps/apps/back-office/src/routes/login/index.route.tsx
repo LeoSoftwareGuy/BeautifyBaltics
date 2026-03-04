@@ -163,30 +163,6 @@ function LoginView() {
         }}
       >
         <Box style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)' }} />
-        <Group
-          gap="xs"
-          style={{
-            position: 'absolute', top: 40, left: 40, zIndex: 1,
-          }}
-        >
-          <Box
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 8,
-              background: 'rgba(255,255,255,0.2)',
-              backdropFilter: 'blur(8px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <IconSparkles size={18} color="#fff" />
-          </Box>
-          <Text fw={700} fz="lg" c="white" style={{ letterSpacing: '-0.3px' }}>
-            Beautify Baltics
-          </Text>
-        </Group>
         <Box style={{
           position: 'absolute', bottom: 48, left: 40, right: 40, zIndex: 1,
         }}

@@ -4,6 +4,7 @@ const en = {
   },
   language: {
     switcherLabel: 'Switch language',
+    select: 'Choose language',
   },
   general: {
     notFound: 'Not Found',
