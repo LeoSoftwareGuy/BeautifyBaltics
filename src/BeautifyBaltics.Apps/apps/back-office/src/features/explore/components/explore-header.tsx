@@ -15,7 +15,7 @@ type ExploreHeaderProps = {
   onOpenFilters: () => void;
 };
 
-function ExploreHeader({ onOpenFilters, onSearchChange, searchValue }: ExploreHeaderProps) {
+export function ExploreHeader({ onOpenFilters, onSearchChange, searchValue }: ExploreHeaderProps) {
   const { t } = useTranslation();
 
   return (
@@ -49,5 +49,3 @@ function ExploreHeader({ onOpenFilters, onSearchChange, searchValue }: ExploreHe
     </Box>
   );
 }
-
-export default ExploreHeader;

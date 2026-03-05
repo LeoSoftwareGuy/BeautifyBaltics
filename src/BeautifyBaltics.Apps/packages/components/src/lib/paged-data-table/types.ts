@@ -9,3 +9,10 @@ export type PagedDataTableColumnFilter<T> = {
   initialValue?: any;
   onChange?: (key: keyof T, value: any) => void;
 };
+
+export interface PaginationParams<TData> {
+  items?: TData[] | null;
+  page?: number | null;
+  pageSize?: number | null;
+  totalItemCount?: number | null;
+}

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@beautify-baltics-apps/components';
 import {
   Card, Stack,
 } from '@mantine/core';
@@ -7,7 +8,6 @@ import { DatesRangeValue } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
 import {
   BookingStatus,
   FindBookingsParams,
@@ -26,16 +26,16 @@ import datetime from '@/utils/datetime';
 import { BookingsFilters } from './master-bookings-data-table-filters';
 import {
   ActionsRenderer,
+  JobDetailsCell,
   renderClient,
   renderDateTime,
-  renderJobDetails,
   renderPricing,
   renderStatus,
 } from './master-bookings-data-table-renderers';
 
 const DEFAULT_PAGE_SIZE = 10;
 
-type BookingsQuery = FindBookingsParams;
+type BookingsQuery = Omit<FindBookingsParams, 'status'> & { status?: BookingStatus | 'all' };
 
 export function MasterBookingsDataTable() {
   const { data: user } = useGetUser();
@@ -43,9 +43,6 @@ export function MasterBookingsDataTable() {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
-  const [status, setStatus] = useState<string>('all');
-  const [searchValue, setSearchValue] = useState('');
   const [actionBookingId, setActionBookingId] = useState<string | null>(null);
 
   const {
@@ -53,13 +50,20 @@ export function MasterBookingsDataTable() {
     sortStatus,
     onPageChange,
     onRecordsPerPageChange,
+    onFilterChange,
     handleSortStatusChange,
   } = usePagedTableQuery<BookingsQuery, FindBookingsResponse>({
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     sortBy: 'scheduledAt',
     ascending: false,
+    status: 'all' as BookingStatus | 'all',
+    from: undefined as Date | undefined,
+    to: undefined as Date | undefined,
+    search: undefined as string | undefined,
   });
+
+  const dateRange: DatesRangeValue = [query.from ?? null, query.to ?? null];
 
   const {
     data: bookingsData,
@@ -71,10 +75,10 @@ export function MasterBookingsDataTable() {
       pageSize: query.pageSize,
       sortBy: query.sortBy,
       ascending: query.ascending,
-      status: status && status !== 'all' ? (status as BookingStatus) : undefined,
-      from: datetime.toDate(dateRange[0]),
-      to: datetime.toDate(dateRange[1]),
-      search: searchValue || undefined,
+      status: query.status && query.status !== 'all' ? (query.status as BookingStatus) : undefined,
+      from: query.from,
+      to: query.to,
+      search: query.search || undefined,
     },
     {
       query: {
@@ -144,18 +148,16 @@ export function MasterBookingsDataTable() {
   };
 
   const handleDateRangeChange = (value: DatesRangeValue) => {
-    setDateRange(value);
-    onPageChange(1);
+    onFilterChange('from', datetime.toDate(value[0]));
+    onFilterChange('to', datetime.toDate(value[1]));
   };
 
   const handleStatusChange = (value: string | null) => {
-    setStatus(value ?? 'all');
-    onPageChange(1);
+    onFilterChange('status', value ?? 'all');
   };
 
   const handleSearchChange = (value: string) => {
-    setSearchValue(value);
-    onPageChange(1);
+    onFilterChange('search', value || undefined);
   };
 
   const statusLabels = useMemo(
@@ -177,7 +179,7 @@ export function MasterBookingsDataTable() {
     {
       accessor: 'masterJobTitle',
       title: t('master.bookings.table.columns.jobDetails'),
-      render: renderJobDetails,
+      render: JobDetailsCell,
     },
     {
       accessor: 'scheduledAt',
@@ -223,9 +225,9 @@ export function MasterBookingsDataTable() {
         <BookingsFilters
           dateRange={dateRange}
           onDateRangeChange={handleDateRangeChange}
-          status={status}
+          status={query.status ?? 'all'}
           onStatusChange={handleStatusChange}
-          searchValue={searchValue}
+          searchValue={query.search ?? ''}
           onSearchChange={handleSearchChange}
         />
 

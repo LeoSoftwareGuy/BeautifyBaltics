@@ -38,18 +38,14 @@ export function renderClient(booking: FindBookingsResponse, roleLabel: string) {
   );
 }
 
-function JobDetailsCell({ booking }: { booking: FindBookingsResponse }) {
+export function JobDetailsCell({ masterJobTitle, masterJobCategoryName }: FindBookingsResponse) {
   const { translateService, translateCategory } = useTranslateData();
   return (
     <Stack gap={2}>
-      <Text size="sm" fw={500}>{translateService(booking.masterJobTitle)}</Text>
-      <Text size="xs" c="dimmed">{translateCategory(booking.masterJobCategoryName)}</Text>
+      <Text size="sm" fw={500}>{translateService(masterJobTitle)}</Text>
+      <Text size="xs" c="dimmed">{translateCategory(masterJobCategoryName)}</Text>
     </Stack>
   );
-}
-
-export function renderJobDetails(booking: FindBookingsResponse) {
-  return <JobDetailsCell booking={booking} />;
 }
 
 export function renderDateTime(booking: FindBookingsResponse) {

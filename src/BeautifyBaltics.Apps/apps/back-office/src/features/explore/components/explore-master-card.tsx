@@ -16,7 +16,7 @@ type MasterCardProps = {
   onSelect: (id: string) => void;
 };
 
-function MasterCard({ master, selected, onSelect }: MasterCardProps) {
+export function MasterCard({ master, selected, onSelect }: MasterCardProps) {
   const { t } = useTranslation();
   const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim()
     || t('explore.masterCard.unnamed');
@@ -82,5 +82,3 @@ function MasterCard({ master, selected, onSelect }: MasterCardProps) {
     </Card>
   );
 }
-
-export default MasterCard;

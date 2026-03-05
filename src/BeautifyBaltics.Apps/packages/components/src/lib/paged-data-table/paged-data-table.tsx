@@ -9,20 +9,13 @@ import {
   useDataTableColumns,
 } from 'mantine-datatable';
 
-import { PagedDataTableColumn } from './types';
+import { PagedDataTableColumn, PaginationParams } from './types';
 
 import classes from './PagedDataTable.module.css';
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_RECORDS_PER_PAGE = 10;
 const RECORDS_PER_PAGE_OPTIONS = [10, 20, 40, 80];
-
-interface PaginationParams<TData> {
-  items?: TData[] | null;
-  page?: number | null;
-  pageSize?: number | null;
-  totalItemCount?: number | null;
-}
 
 export interface PagedDataTableProps<TParams extends PaginationParams<TData>, TData> {
   idAccessor?: (keyof TData | (string & NonNullable<unknown>)) | ((record: TData) => React.Key);
@@ -47,6 +40,7 @@ export interface PagedDataTableProps<TParams extends PaginationParams<TData>, TD
   selectedRecords?: TData[];
   onSelectedRecordsChange?: (records: TData[]) => void;
   isRecordSelectable?: (record: TData) => boolean;
+  noRecordsText?: string;
 }
 
 export default function PagedDataTable<TParams extends PaginationParams<TData>, TData>({
@@ -72,6 +66,7 @@ export default function PagedDataTable<TParams extends PaginationParams<TData>, 
   selectedRecords,
   onSelectedRecordsChange,
   isRecordSelectable,
+  noRecordsText,
 }: PagedDataTableProps<TParams, TData>) {
   const theme = useMantineTheme();
   const { height: viewportHeight } = useViewportSize();
@@ -140,6 +135,7 @@ export default function PagedDataTable<TParams extends PaginationParams<TData>, 
       rowExpansion={rowExpansion}
       pinFirstColumn={pinFirstColumn}
       pinLastColumn={pinLastColumn}
+      noRecordsText={noRecordsText}
       {...paginationProps}
       {...sortingProps}
       {...selectionProps}

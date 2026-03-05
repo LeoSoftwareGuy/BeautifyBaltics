@@ -1,1 +1,1 @@
-export { default as ExplorePage } from './explore-page';
+export { ExplorePage } from './explore-page';

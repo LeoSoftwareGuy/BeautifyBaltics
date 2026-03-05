@@ -1,15 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { z } from 'zod';
 
 import { ExplorePage } from '@/features/explore';
 
-type ExploreSearch = {
-  procedure?: string;
-};
-
 export const Route = createFileRoute('/explore/')({
-  validateSearch: (search: Record<string, unknown>): ExploreSearch => ({
-    procedure: typeof search.procedure === 'string' ? search.procedure : undefined,
-  }),
+  validateSearch: z.object({
+    procedure: z.string().optional(),
+    search: z.string().optional(),
+    categoryId: z.string().optional(),
+    minPrice: z.number().optional(),
+    maxPrice: z.number().optional(),
+  }).catch({}),
   beforeLoad: () => ({
     breadcrumbs: [
       { titleKey: 'navigation.breadcrumbs.explore', path: '/explore' },
@@ -19,6 +20,5 @@ export const Route = createFileRoute('/explore/')({
 });
 
 function ExploreView() {
-  const search = Route.useSearch();
-  return <ExplorePage initialProcedureId={search.procedure} />;
+  return <ExplorePage />;
 }

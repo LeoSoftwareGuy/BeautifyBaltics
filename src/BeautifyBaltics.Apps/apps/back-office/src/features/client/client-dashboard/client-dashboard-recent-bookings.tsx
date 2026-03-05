@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@beautify-baltics-apps/components';
 import {
   Card, Stack, Text, Title,
 } from '@mantine/core';
 import { DatesRangeValue } from '@mantine/dates';
 
-import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
 import { useTranslateData } from '@/hooks/use-translate-data';
 import {
   BookingStatus,
@@ -19,10 +19,10 @@ import datetime from '@/utils/datetime';
 
 import { ClientBookingsDataTableFilters } from '../client-bookings-data-table/client-bookings-data-table-filters';
 import {
+  BookingStatusBadge,
   renderDuration,
   renderPrice,
   renderScheduledAt,
-  renderStatus,
 } from '../client-bookings-data-table/client-bookings-data-table-renderers';
 
 const DEFAULT_PAGE_SIZE = 5;
@@ -49,7 +49,7 @@ export function ClientDashboardRecentBookings() {
     pageSize: DEFAULT_PAGE_SIZE,
     sortBy: 'scheduledAt',
     ascending: false,
-  });
+  }, false);
 
   const {
     data: bookingsData,
@@ -114,7 +114,7 @@ export function ClientDashboardRecentBookings() {
       accessor: 'status',
       title: t('client.recentBookings.table.columns.status'),
       sortKey: 'status',
-      render: renderStatus,
+      render: BookingStatusBadge,
     },
   ];
 

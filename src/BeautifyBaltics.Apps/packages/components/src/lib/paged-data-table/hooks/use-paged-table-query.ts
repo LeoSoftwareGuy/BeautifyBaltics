@@ -46,14 +46,14 @@ export default function usePagedTableQuery<T extends Record<string, any>, TSort 
 
   const handleSortStatusChange = (
     newSortStatus: DataTableSortStatus<TSort>,
-    columns: { accessor: string; sortKey?: string; sortable?: boolean }[],
+    columns: { accessor: string | number | (string & {}); sortKey?: string; sortable?: boolean }[],
   ) => {
     const column = columns.find((col) => col.accessor === newSortStatus.columnAccessor);
     if (column) {
       const key = column.sortKey || (column.sortable ? column.accessor : undefined);
       if (key) {
         setSortStatus(newSortStatus);
-        onSortStatusChange(key, newSortStatus.direction === 'asc');
+        onSortStatusChange(String(key), newSortStatus.direction === 'asc');
       }
     }
   };

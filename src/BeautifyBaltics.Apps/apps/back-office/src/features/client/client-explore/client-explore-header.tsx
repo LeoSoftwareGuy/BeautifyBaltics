@@ -28,6 +28,7 @@ interface ClientExploreHeaderProps {
   onJobChange: (value: string | null) => void;
   priceRange: [number, number];
   onPriceRangeChange: (value: [number, number]) => void;
+  onPriceRangeChangeEnd: (value: [number, number]) => void;
   categoryOptions: SelectOption[];
   jobOptions: SelectOption[];
   isLoadingCategories: boolean;
@@ -46,6 +47,7 @@ export function ClientExploreHeader({
   onJobChange,
   priceRange,
   onPriceRangeChange,
+  onPriceRangeChangeEnd,
   categoryOptions,
   jobOptions,
   isLoadingCategories,
@@ -124,6 +126,7 @@ export function ClientExploreHeader({
                   step={10}
                   value={priceRange}
                   onChange={onPriceRangeChange}
+                  onChangeEnd={onPriceRangeChangeEnd}
                   size="sm"
                   marks={[
                     { value: 0, label: '' },

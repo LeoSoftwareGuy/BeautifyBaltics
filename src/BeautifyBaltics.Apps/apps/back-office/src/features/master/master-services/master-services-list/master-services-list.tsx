@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Loader,
-  Modal,
   SimpleGrid,
   Stack,
   Text,
@@ -15,15 +14,11 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import {
   useDeleteMasterJob,
   useFindMasterJobs,
-  useUploadMasterJobImage,
 } from '@/state/endpoints/masters';
 
 import { AddServiceCard } from '../add-service-card';
 import { MasterServiceCard } from '../master-service-card';
-import { MasterServicesForm } from '../master-services-form';
-import {
-  MasterServicesDetailModal, MasterServicesEditModal, MasterServicesUploadModal,
-} from '../master-services-modals';
+import { MasterServicesDetailModal } from '../master-services-modals';
 
 import { MasterServicesListFilter } from './master-services-list-filter';
 
@@ -33,9 +28,6 @@ type MasterServicesListProps = {
 
 export function MasterServicesList({ masterId }: MasterServicesListProps) {
   const { t } = useTranslation();
-  const [addModalOpened, setAddModalOpened] = useState(false);
-  const [uploadModalOpened, setUploadModalOpened] = useState(false);
-  const [editModalOpened, setEditModalOpened] = useState(false);
   const [detailModalOpened, setDetailModalOpened] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string | null>(null);
@@ -51,7 +43,6 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
 
   const allServices = useMemo(() => jobsData?.jobs ?? [], [jobsData?.jobs]);
 
-  // Get unique categories from the master's services
   const availableCategories = useMemo(() => {
     const categoryMap = new Map<string, string>();
     allServices.forEach((service) => {
@@ -89,65 +80,14 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
     },
   });
 
-  const { mutateAsync: uploadImage, isPending: isUploading } = useUploadMasterJobImage({
-    mutation: {
-      onSuccess: async () => {
-        await refetch();
-        notifications.show({
-          title: t('master.services.notifications.uploadSuccessTitle'),
-          message: t('master.services.notifications.uploadSuccessMessage'),
-          color: 'green',
-        });
-      },
-      onError: (error) => {
-        notifications.show({
-          title: t('master.services.notifications.uploadErrorTitle'),
-          message: error.detail ?? t('master.services.notifications.uploadErrorMessage'),
-          color: 'red',
-        });
-      },
-    },
-  });
-
   const handleDelete = async (jobId: string) => {
-    if (selectedJobId === jobId) {
-      setSelectedJobId(null);
-      setUploadModalOpened(false);
-    }
+    if (selectedJobId === jobId) setSelectedJobId(null);
     await deleteJob({ id: masterId, jobId });
-  };
-
-  const handleOpenUploadModal = (jobId: string) => {
-    setSelectedJobId(jobId);
-    setUploadModalOpened(true);
-  };
-
-  const handleOpenEditModal = (jobId: string) => {
-    setSelectedJobId(jobId);
-    setEditModalOpened(true);
   };
 
   const handleOpenDetailModal = (jobId: string) => {
     setSelectedJobId(jobId);
     setDetailModalOpened(true);
-  };
-
-  const handleImageUpload = async (files: File[] | null) => {
-    if (!selectedJobId || !files || files.length === 0) return;
-
-    await uploadImage({
-      masterId,
-      jobId: selectedJobId,
-      data: {
-        masterId,
-        masterJobId: selectedJobId,
-        files,
-      },
-    });
-  };
-
-  const handleServiceAdded = () => {
-    setAddModalOpened(false);
   };
 
   if (isLoading) {
@@ -192,56 +132,22 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
           {services.map((service) => (
             <MasterServiceCard
               key={service.id}
+              masterId={masterId}
               service={service}
               onClick={handleOpenDetailModal}
-              onEdit={handleOpenEditModal}
               onDelete={handleDelete}
-              onUploadImage={handleOpenUploadModal}
               isDeleting={isDeleting}
             />
           ))}
-          <AddServiceCard onClick={() => setAddModalOpened(true)} />
+          <AddServiceCard masterId={masterId} />
         </SimpleGrid>
       </Stack>
 
-      {/* Add Service Modal */}
-      <Modal
-        opened={addModalOpened}
-        onClose={() => setAddModalOpened(false)}
-        title={t('master.services.modals.addTitle')}
-        size="lg"
-        centered
-      >
-        <MasterServicesForm masterId={masterId} onSuccess={handleServiceAdded} />
-      </Modal>
-
-      {/* Upload Images Modal */}
-      <MasterServicesUploadModal
-        opened={uploadModalOpened}
-        onClose={() => setUploadModalOpened(false)}
-        masterId={masterId}
-        service={selectedJob}
-        onUpload={handleImageUpload}
-        isUploading={isUploading}
-      />
-
-      {/* Edit Service Modal */}
-      <MasterServicesEditModal
-        opened={editModalOpened}
-        onClose={() => setEditModalOpened(false)}
-        masterId={masterId}
-        service={selectedJob}
-      />
-
-      {/* Service Detail Modal */}
       <MasterServicesDetailModal
         opened={detailModalOpened}
         onClose={() => setDetailModalOpened(false)}
         masterId={masterId}
         service={selectedJob}
-        onEdit={handleOpenEditModal}
-        onUploadImage={handleOpenUploadModal}
-        onRefetch={refetch}
       />
     </>
   );

@@ -1,11 +1,15 @@
+import { Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ActionIcon, Badge, Group, Stack, Text, Tooltip,
+  ActionIcon, Badge, Drawer, Group, Stack, Text, Tooltip,
 } from '@mantine/core';
 import { IconStar, IconX } from '@tabler/icons-react';
 
+import useRoutedModal from '@/hooks/use-routed-modal';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
 import datetime from '@/utils/datetime';
+
+import { ClientBookingRatingForm } from './client-booking-rating-form';
 
 const isNonEmpty = (value?: string | null): value is string => !!value && value.trim().length > 0;
 
@@ -50,14 +54,6 @@ export function renderPrice(booking: FindBookingsResponse) {
   );
 }
 
-export function renderLocation(booking: FindBookingsResponse) {
-  return <BookingLocationCell booking={booking} />;
-}
-
-export function renderStatus(booking: FindBookingsResponse) {
-  return <BookingStatusBadge booking={booking} />;
-}
-
 function canCancelBooking(booking: FindBookingsResponse): boolean {
   if (booking.status === BookingStatus.Cancelled || booking.status === BookingStatus.Completed) {
     return false;
@@ -74,7 +70,6 @@ function canRateBooking(booking: FindBookingsResponse): boolean {
 type BookingActionsRendererProps = {
   booking: FindBookingsResponse;
   onCancel: (bookingId: string) => void;
-  onRate: (booking: FindBookingsResponse) => void;
   isCancelling: boolean;
   isRated?: boolean;
 };
@@ -82,55 +77,71 @@ type BookingActionsRendererProps = {
 export function BookingActionsRenderer({
   booking,
   onCancel,
-  onRate,
   isCancelling,
   isRated,
 }: BookingActionsRendererProps) {
   const { t } = useTranslation();
   const showCancel = canCancelBooking(booking);
   const showRate = canRateBooking(booking) && !isRated;
+  const { onOpen: onOpenRating, opened: ratingOpened, onClose: onCloseRating } = useRoutedModal(`rate-booking-${booking.id}`);
 
   if (!showCancel && !showRate) {
     return <Text size="sm" c="dimmed">{isRated ? t('client.bookings.status.rated') : '-'}</Text>;
   }
 
   return (
-    <Group gap="xs">
-      {showCancel && (
-        <Tooltip label={t('client.bookings.actions.cancel')}>
-          <ActionIcon
-            variant="light"
-            color="red"
-            size="sm"
-            onClick={() => onCancel(booking.id)}
-            loading={isCancelling}
-          >
-            <IconX size={16} />
-          </ActionIcon>
-        </Tooltip>
-      )}
-      {showRate && (
-        <Tooltip label={t('client.bookings.actions.rate')}>
-          <ActionIcon
-            variant="light"
-            color="yellow"
-            size="sm"
-            onClick={() => onRate(booking)}
-          >
-            <IconStar size={16} />
-          </ActionIcon>
-        </Tooltip>
-      )}
-    </Group>
+    <>
+      <Group gap="xs">
+        {showCancel && (
+          <Tooltip label={t('client.bookings.actions.cancel')}>
+            <ActionIcon
+              variant="light"
+              color="red"
+              size="sm"
+              onClick={() => onCancel(booking.id)}
+              loading={isCancelling}
+            >
+              <IconX size={16} />
+            </ActionIcon>
+          </Tooltip>
+        )}
+        {showRate && (
+          <Tooltip label={t('client.bookings.actions.rate')}>
+            <ActionIcon
+              variant="light"
+              color="yellow"
+              size="sm"
+              onClick={onOpenRating}
+            >
+              <IconStar size={16} />
+            </ActionIcon>
+          </Tooltip>
+        )}
+      </Group>
+
+      <Drawer
+        opened={ratingOpened}
+        onClose={onCloseRating}
+        title={t('client.ratingModal.title')}
+      >
+        <Suspense fallback={null}>
+          {ratingOpened ? (
+            <ClientBookingRatingForm booking={booking} onCancel={onCloseRating} />
+          ) : null}
+        </Suspense>
+      </Drawer>
+    </>
   );
 }
 
-function BookingLocationCell({ booking }: { booking: FindBookingsResponse }) {
+export function BookingLocationCell({
+  locationAddressLine1, locationAddressLine2, locationPostalCode, locationCity, locationCountry,
+}: FindBookingsResponse) {
   const { t } = useTranslation();
-  const lineOne = [booking.locationAddressLine1, booking.locationAddressLine2]
+  const lineOne = [locationAddressLine1, locationAddressLine2]
     .filter(isNonEmpty)
     .join(', ');
-  const lineTwo = [booking.locationPostalCode, booking.locationCity, booking.locationCountry]
+  const lineTwo = [locationPostalCode, locationCity, locationCountry]
     .filter(isNonEmpty)
     .join(', ');
 
@@ -157,11 +168,11 @@ const BOOKING_STATUS_KEYS: Record<BookingStatus, string> = {
   [BookingStatus.Cancelled]: 'client.bookings.status.cancelled',
 };
 
-function BookingStatusBadge({ booking }: { booking: FindBookingsResponse }) {
+export function BookingStatusBadge({ status }: FindBookingsResponse) {
   const { t } = useTranslation();
   return (
-    <Badge color={getStatusColor(booking.status)} variant="light">
-      {t(BOOKING_STATUS_KEYS[booking.status] ?? 'client.bookings.status.requested')}
+    <Badge color={getStatusColor(status)} variant="light">
+      {t(BOOKING_STATUS_KEYS[status] ?? 'client.bookings.status.requested')}
     </Badge>
   );
 }

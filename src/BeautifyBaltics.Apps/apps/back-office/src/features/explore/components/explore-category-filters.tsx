@@ -10,7 +10,7 @@ type CategoryFiltersProps = {
   onSelect: (categoryId: string | null) => void;
 };
 
-function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProps) {
+export function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProps) {
   const { t } = useTranslation();
   const { translateCategory } = useTranslateData();
 
@@ -39,5 +39,3 @@ function CategoryFilters({ categories, selected, onSelect }: CategoryFiltersProp
     </ScrollArea>
   );
 }
-
-export default CategoryFilters;

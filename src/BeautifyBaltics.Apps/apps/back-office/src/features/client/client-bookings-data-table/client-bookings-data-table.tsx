@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@beautify-baltics-apps/components';
 import {
   Card, Stack, Text, Title,
 } from '@mantine/core';
@@ -7,7 +8,6 @@ import { DatesRangeValue } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@/components/paged-data-table';
 import { useTranslateData } from '@/hooks/use-translate-data';
 import {
   BookingStatus,
@@ -24,15 +24,14 @@ import { useFindRatings } from '@/state/endpoints/ratings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
-import { ClientBookingRatingModal } from './client-booking-rating-modal';
 import { ClientBookingsDataTableFilters } from './client-bookings-data-table-filters';
 import {
   BookingActionsRenderer,
+  BookingLocationCell,
+  BookingStatusBadge,
   renderDuration,
-  renderLocation,
   renderPrice,
   renderScheduledAt,
-  renderStatus,
 } from './client-bookings-data-table-renderers';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -46,24 +45,26 @@ export function ClientBookingsDataTable() {
   const { t } = useTranslation();
   const { translateService } = useTranslateData();
 
-  const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
-  const [status, setStatus] = useState<string>('');
   const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
-  const [ratingModalOpen, setRatingModalOpen] = useState(false);
-  const [bookingToRate, setBookingToRate] = useState<FindBookingsResponse | null>(null);
 
   const {
     query,
     sortStatus,
     onPageChange,
     onRecordsPerPageChange,
+    onFilterChange,
     handleSortStatusChange,
   } = usePagedTableQuery<BookingsQuery, FindBookingsResponse>({
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     sortBy: 'scheduledAt',
     ascending: false,
+    status: undefined as BookingStatus | undefined,
+    from: undefined as Date | undefined,
+    to: undefined as Date | undefined,
   });
+
+  const dateRange: DatesRangeValue = [query.from ?? null, query.to ?? null];
 
   const {
     data: bookingsData,
@@ -75,9 +76,9 @@ export function ClientBookingsDataTable() {
       pageSize: query.pageSize,
       sortBy: query.sortBy,
       ascending: query.ascending,
-      status: status ? (status as BookingStatus) : undefined,
-      from: datetime.toDate(dateRange[0]),
-      to: datetime.toDate(dateRange[1]),
+      status: query.status ? (query.status as BookingStatus) : undefined,
+      from: query.from,
+      to: query.to,
     },
     {
       query: {
@@ -91,7 +92,6 @@ export function ClientBookingsDataTable() {
     { query: { enabled: !!clientId } },
   );
 
-  // Filter ratings for this client's bookings
   const clientBookingIds = new Set(bookingsData?.items?.map((b) => b.id) ?? []);
   const ratedBookingIds = new Set(
     ratingsData?.items?.filter((r) => clientBookingIds.has(r.bookingId)).map((r) => r.bookingId) ?? [],
@@ -128,23 +128,12 @@ export function ClientBookingsDataTable() {
   };
 
   const handleDateRangeChange = (value: DatesRangeValue) => {
-    setDateRange(value);
-    onPageChange(1);
+    onFilterChange('from', datetime.toDate(value[0]));
+    onFilterChange('to', datetime.toDate(value[1]));
   };
 
   const handleStatusChange = (value: string | null) => {
-    setStatus(value ?? '');
-    onPageChange(1);
-  };
-
-  const handleRate = (booking: FindBookingsResponse) => {
-    setBookingToRate(booking);
-    setRatingModalOpen(true);
-  };
-
-  const handleRatingModalClose = () => {
-    setRatingModalOpen(false);
-    setBookingToRate(null);
+    onFilterChange('status', value || undefined);
   };
 
   const columns: PagedDataTableColumn<FindBookingsResponse>[] = [
@@ -162,7 +151,7 @@ export function ClientBookingsDataTable() {
     {
       accessor: 'locationCity',
       title: t('client.bookings.table.columns.location'),
-      render: renderLocation,
+      render: BookingLocationCell,
     },
     {
       accessor: 'scheduledAt',
@@ -185,7 +174,7 @@ export function ClientBookingsDataTable() {
       accessor: 'status',
       title: t('client.bookings.table.columns.status'),
       sortKey: 'status',
-      render: renderStatus,
+      render: BookingStatusBadge,
     },
     {
       accessor: 'actions',
@@ -194,7 +183,6 @@ export function ClientBookingsDataTable() {
         <BookingActionsRenderer
           booking={booking}
           onCancel={handleCancel}
-          onRate={handleRate}
           isCancelling={isCancelling && cancellingBookingId === booking.id}
           isRated={ratedBookingIds.has(booking.id)}
         />
@@ -213,7 +201,7 @@ export function ClientBookingsDataTable() {
         <ClientBookingsDataTableFilters
           dateRange={dateRange}
           onDateRangeChange={handleDateRangeChange}
-          status={status}
+          status={query.status ?? ''}
           onStatusChange={handleStatusChange}
         />
 
@@ -230,11 +218,6 @@ export function ClientBookingsDataTable() {
         />
       </Stack>
 
-      <ClientBookingRatingModal
-        opened={ratingModalOpen}
-        booking={bookingToRate}
-        onClose={handleRatingModalClose}
-      />
     </Card>
   );
 }

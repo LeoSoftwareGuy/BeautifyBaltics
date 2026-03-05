@@ -12,14 +12,16 @@ type FiltersDrawerProps = {
   opened: boolean;
   priceRange: [number, number];
   onPriceChange: (value: [number, number]) => void;
+  onPriceChangeEnd: (value: [number, number]) => void;
   onClose: () => void;
 };
 
-function FiltersDrawer({
+export function FiltersDrawer({
   opened,
   priceRange,
   onClose,
   onPriceChange,
+  onPriceChangeEnd,
 }: FiltersDrawerProps) {
   const { t } = useTranslation();
 
@@ -37,6 +39,7 @@ function FiltersDrawer({
         <RangeSlider
           value={priceRange}
           onChange={(value) => onPriceChange(value as [number, number])}
+          onChangeEnd={(value) => onPriceChangeEnd(value as [number, number])}
           min={0}
           max={200}
           step={5}
@@ -57,5 +60,3 @@ function FiltersDrawer({
     </Drawer>
   );
 }
-
-export default FiltersDrawer;

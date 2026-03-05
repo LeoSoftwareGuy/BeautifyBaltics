@@ -71,6 +71,8 @@ export function MasterServicesFeaturedImageModal({
       masterId,
       jobId: service.id,
       data: {
+        masterId,
+        masterJobId: service.id,
         masterJobImageId: service.featuredImageId,
         focusX,
         focusY,

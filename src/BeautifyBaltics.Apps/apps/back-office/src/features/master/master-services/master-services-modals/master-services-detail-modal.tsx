@@ -27,11 +27,18 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { LightboxCarousel } from '@/components/lightbox-carousel';
+import useRoutedModal from '@/hooks/use-routed-modal';
 import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
-import { useDeleteMasterJobImage, useSetMasterJobFeaturedImage, useUnsetMasterJobFeaturedImage } from '@/state/endpoints/masters';
+import {
+  getFindMasterJobsQueryKey,
+  useDeleteMasterJobImage,
+  useSetMasterJobFeaturedImage,
+  useUnsetMasterJobFeaturedImage,
+} from '@/state/endpoints/masters';
 
 import { MasterServicesFeaturedImageModal } from './master-services-featured-image-modal';
 
@@ -40,9 +47,6 @@ type MasterServicesDetailModalProps = {
   onClose: () => void;
   masterId: string;
   service: MasterJobDTO | null;
-  onEdit: (id: string) => void;
-  onUploadImage: (id: string) => void;
-  onRefetch: () => void;
 };
 
 export function MasterServicesDetailModal({
@@ -50,19 +54,22 @@ export function MasterServicesDetailModal({
   onClose,
   masterId,
   service,
-  onEdit,
-  onUploadImage,
-  onRefetch,
 }: MasterServicesDetailModalProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { translateService, translateCategory } = useTranslateData();
   const { t } = useTranslation();
   const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { onOpen: onOpenEdit } = useRoutedModal(`edit-service-${service?.id ?? ''}`);
+  const { onOpen: onOpenUpload } = useRoutedModal(`upload-service-${service?.id ?? ''}`);
+
+  const invalidateJobs = () => queryClient.invalidateQueries({ queryKey: getFindMasterJobsQueryKey(masterId) });
 
   const { mutateAsync: setFeaturedImage, isPending: isSettingFeatured } = useSetMasterJobFeaturedImage({
     mutation: {
       onSuccess: () => {
-        onRefetch();
+        invalidateJobs();
         notifications.show({
           title: t('master.services.notifications.featuredSuccessTitle'),
           message: t('master.services.notifications.featuredSuccessMessage'),
@@ -82,7 +89,7 @@ export function MasterServicesDetailModal({
   const { mutateAsync: unsetFeaturedImage, isPending: isUnsettingFeatured } = useUnsetMasterJobFeaturedImage({
     mutation: {
       onSuccess: () => {
-        onRefetch();
+        invalidateJobs();
         notifications.show({
           title: t('master.services.notifications.featuredSuccessTitle'),
           message: t('master.services.notifications.featuredSuccessMessage'),
@@ -102,7 +109,7 @@ export function MasterServicesDetailModal({
   const { mutateAsync: deleteImage, isPending: isDeleting } = useDeleteMasterJobImage({
     mutation: {
       onSuccess: () => {
-        onRefetch();
+        invalidateJobs();
         notifications.show({
           title: t('master.services.notifications.deleteImageSuccessTitle'),
           message: t('master.services.notifications.deleteImageSuccessMessage'),
@@ -134,12 +141,12 @@ export function MasterServicesDetailModal({
 
   const handleEdit = () => {
     onClose();
-    onEdit(service.id);
+    onOpenEdit();
   };
 
   const handleUpload = () => {
     onClose();
-    onUploadImage(service.id);
+    onOpenUpload();
   };
 
   const handleToggleFeatured = async (imageId: string) => {
@@ -149,7 +156,7 @@ export function MasterServicesDetailModal({
       await setFeaturedImage({
         masterId,
         jobId: service.id,
-        data: { masterJobImageId: imageId },
+        data: { masterId, masterJobId: service.id, masterJobImageId: imageId },
       });
     }
   };
@@ -211,7 +218,6 @@ export function MasterServicesDetailModal({
             </Box>
           )}
 
-          {/* Category Badge */}
           {service.jobCategoryName && (
             <Badge
               variant="filled"
@@ -225,7 +231,6 @@ export function MasterServicesDetailModal({
             </Badge>
           )}
 
-          {/* Close Button */}
           <Button
             variant="filled"
             color="dark"
@@ -243,7 +248,6 @@ export function MasterServicesDetailModal({
 
         {/* Content */}
         <Stack p="xl" gap="lg">
-          {/* Title and Actions */}
           <Group justify="space-between" align="flex-start">
             <Stack gap={4}>
               <Title order={3}>{displayTitle}</Title>
@@ -272,7 +276,6 @@ export function MasterServicesDetailModal({
             </Group>
           </Group>
 
-          {/* Price and Duration */}
           <Group gap="xl">
             <Group gap="xs">
               <IconCurrencyEuro size={20} color="var(--mantine-color-brand-6)" />
@@ -290,7 +293,6 @@ export function MasterServicesDetailModal({
             </Group>
           </Group>
 
-          {/* Work Samples Gallery */}
           <Stack gap="sm">
             <Group justify="space-between">
               <Text fw={600}>
@@ -427,7 +429,7 @@ export function MasterServicesDetailModal({
           service={service}
           isSaving={isSettingFeatured}
           setFeaturedImage={setFeaturedImage}
-          onRefetch={onRefetch}
+          onRefetch={invalidateJobs}
         />
       ) : null}
 
