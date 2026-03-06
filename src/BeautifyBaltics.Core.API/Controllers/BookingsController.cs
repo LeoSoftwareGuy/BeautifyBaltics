@@ -6,13 +6,17 @@ using BeautifyBaltics.Core.API.Application.Booking.Queries.FindBookings;
 using BeautifyBaltics.Core.API.Application.Booking.Queries.GetBookingId;
 using BeautifyBaltics.Core.API.Application.SeedWork;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
+using BeautifyBaltics.Domain.Aggregates.Booking;
+using BeautifyBaltics.Domain.Aggregates.Booking.Events;
+using BeautifyBaltics.Domain.Enumerations;
+using Marten;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
 [Route("bookings")]
-public class BookingsController(IMessageBus bus) : ApiController
+public class BookingsController(IMessageBus bus, IWebHostEnvironment env) : ApiController
 {
     /// <summary>
     /// Find bookings
@@ -114,5 +118,30 @@ public class BookingsController(IMessageBus bus) : ApiController
     {
         var response = await bus.InvokeAsync<ConfirmBookingResponse>(request with { BookingId = id });
         return Ok(response);
+    }
+
+    /// <summary>
+    /// [DEV ONLY] Force-complete a booking, bypassing the scheduled time check.
+    /// </summary>
+    [HttpPost("{id:guid}/force-complete", Name = "ForceCompleteBooking")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> ForceComplete([FromRoute] Guid id, [FromServices] IDocumentSession session)
+    {
+        if (!env.IsDevelopment())
+            return NotFound();
+
+        var booking = await session.Events.AggregateStreamAsync<BookingAggregate>(id);
+        if (booking is null)
+            return NotFound();
+
+        if (booking.Status != BookingStatus.Confirmed)
+            return BadRequest($"Booking is '{booking.Status}', must be Confirmed.");
+
+        session.Events.Append(id, new BookingCompleted(BookingId: id, CompletedAt: DateTime.UtcNow));
+        await session.SaveChangesAsync();
+
+        return NoContent();
     }
 }

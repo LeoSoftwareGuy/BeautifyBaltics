@@ -20,6 +20,7 @@ import {
   useCancelBooking,
   useFindBookings,
 } from '@/state/endpoints/bookings';
+import { useForceCompleteBooking } from '@/state/endpoints/bookings-dev';
 import { useFindRatings } from '@/state/endpoints/ratings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
@@ -96,6 +97,14 @@ export function ClientBookingsDataTable() {
   const ratedBookingIds = new Set(
     ratingsData?.items?.filter((r) => clientBookingIds.has(r.bookingId)).map((r) => r.bookingId) ?? [],
   );
+
+  const { mutate: forceComplete, isPending: isForceCompleting } = useForceCompleteBooking({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+      },
+    },
+  });
 
   const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
     mutation: {
@@ -185,6 +194,8 @@ export function ClientBookingsDataTable() {
           onCancel={handleCancel}
           isCancelling={isCancelling && cancellingBookingId === booking.id}
           isRated={ratedBookingIds.has(booking.id)}
+          onForceComplete={(id) => forceComplete(id)}
+          isForceCompleting={isForceCompleting}
         />
       ),
     },

@@ -3,10 +3,11 @@ import { useTranslation } from 'react-i18next';
 import {
   ActionIcon, Badge, Drawer, Group, Stack, Text, Tooltip,
 } from '@mantine/core';
-import { IconStar, IconX } from '@tabler/icons-react';
+import { IconCheck, IconStar, IconX } from '@tabler/icons-react';
 
 import useRoutedModal from '@/hooks/use-routed-modal';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
+import { useForceCompleteBooking } from '@/state/endpoints/bookings-dev';
 import datetime from '@/utils/datetime';
 
 import { ClientBookingRatingForm } from './client-booking-rating-form';
@@ -72,6 +73,8 @@ type BookingActionsRendererProps = {
   onCancel: (bookingId: string) => void;
   isCancelling: boolean;
   isRated?: boolean;
+  onForceComplete?: (bookingId: string) => void;
+  isForceCompleting?: boolean;
 };
 
 export function BookingActionsRenderer({
@@ -79,19 +82,35 @@ export function BookingActionsRenderer({
   onCancel,
   isCancelling,
   isRated,
+  onForceComplete,
+  isForceCompleting,
 }: BookingActionsRendererProps) {
   const { t } = useTranslation();
   const showCancel = canCancelBooking(booking);
   const showRate = canRateBooking(booking) && !isRated;
+  const showForceComplete = import.meta.env.DEV && booking.status === BookingStatus.Confirmed;
   const { onOpen: onOpenRating, opened: ratingOpened, onClose: onCloseRating } = useRoutedModal(`rate-booking-${booking.id}`);
 
-  if (!showCancel && !showRate) {
+  if (!showCancel && !showRate && !showForceComplete) {
     return <Text size="sm" c="dimmed">{isRated ? t('client.bookings.status.rated') : '-'}</Text>;
   }
 
   return (
     <>
       <Group gap="xs">
+        {showForceComplete && (
+          <Tooltip label="[DEV] Force complete">
+            <ActionIcon
+              variant="light"
+              color="teal"
+              size="sm"
+              onClick={() => onForceComplete?.(booking.id)}
+              loading={isForceCompleting}
+            >
+              <IconCheck size={16} />
+            </ActionIcon>
+          </Tooltip>
+        )}
         {showCancel && (
           <Tooltip label={t('client.bookings.actions.cancel')}>
             <ActionIcon

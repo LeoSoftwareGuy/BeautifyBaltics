@@ -6,13 +6,14 @@ namespace BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 
 public class BookingCompletionBackgroundService(
     IServiceScopeFactory serviceScopeFactory,
-    ILogger<BookingCompletionBackgroundService> logger
+    ILogger<BookingCompletionBackgroundService> logger,
+    IConfiguration configuration
 ) : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
     private readonly ILogger<BookingCompletionBackgroundService> _logger = logger;
-    private readonly TimeSpan _interval = TimeSpan.FromHours(6);
-    private readonly TimeSpan _completionThreshold = TimeSpan.FromHours(3);
+    private readonly TimeSpan _interval = TimeSpan.FromMinutes(configuration.GetValue("BookingCompletion:IntervalMinutes", 360));
+    private readonly TimeSpan _completionThreshold = TimeSpan.FromMinutes(configuration.GetValue("BookingCompletion:ThresholdMinutes", 180));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

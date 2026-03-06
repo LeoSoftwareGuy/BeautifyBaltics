@@ -6,13 +6,14 @@ namespace BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 
 public class BookingExpirationBackgroundService(
     IServiceScopeFactory serviceScopeFactory,
-    ILogger<BookingExpirationBackgroundService> logger
+    ILogger<BookingExpirationBackgroundService> logger,
+    IConfiguration configuration
 ) : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
     private readonly ILogger<BookingExpirationBackgroundService> _logger = logger;
-    private readonly TimeSpan _pollInterval = TimeSpan.FromMinutes(15);
-    private readonly TimeSpan _requestExpirationWindow = TimeSpan.FromHours(3);
+    private readonly TimeSpan _pollInterval = TimeSpan.FromMinutes(configuration.GetValue("BookingExpiration:PollIntervalMinutes", 15));
+    private readonly TimeSpan _requestExpirationWindow = TimeSpan.FromMinutes(configuration.GetValue("BookingExpiration:ExpirationWindowMinutes", 180));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
