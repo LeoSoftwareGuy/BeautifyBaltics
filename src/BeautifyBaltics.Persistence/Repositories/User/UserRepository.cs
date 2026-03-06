@@ -48,6 +48,13 @@ namespace BeautifyBaltics.Persistence.Repositories.User
             return query.AnyAsync(cancellationToken);
         }
 
+        public Task<bool> ExistsByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default)
+        {
+            var query = _session.Query<Domain.Documents.User.User>().Where(x => x.PhoneNumber == phoneNumber);
+
+            return query.AnyAsync(cancellationToken);
+        }
+
         private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
     }
 }

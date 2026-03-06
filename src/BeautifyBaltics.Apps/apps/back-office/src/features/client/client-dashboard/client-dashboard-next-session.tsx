@@ -135,11 +135,10 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
       <Card radius="md" p={0} style={{ overflow: 'hidden' }}>
         <Group gap={0} align="stretch" wrap="nowrap">
           <Image
-            src={null}
+            src="/salon.jpg"
             w={220}
             h={160}
             alt={translateService(booking.masterJobTitle)}
-            fallbackSrc="https://placehold.co/180x160/e9ecef/868e96?text=Session"
             style={{ objectFit: 'cover', flexShrink: 0 }}
           />
 

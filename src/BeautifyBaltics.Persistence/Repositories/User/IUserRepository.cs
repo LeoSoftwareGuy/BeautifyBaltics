@@ -21,5 +21,13 @@ namespace BeautifyBaltics.Persistence.Repositories.User
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns>True if a user with the email exists, otherwise false</returns>
         Task<bool> ExistsByEmailAsync(string email, UserRole? role = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Chceks if a user with the specified phone number exists.
+        /// </summary>
+        /// <param name="phoneNumber">Phone number to check for existence</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>True if a user with the same phone number exists, otherwise false.</returns>
+        Task<bool> ExistsByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default);
     }
 }

@@ -22,5 +22,6 @@ public class MasterConfiguration : IConfigureMarten
         options.Events.AddEventType(typeof(MasterCreated));
         options.Events.AddEventType(typeof(MasterProfileUpdated));
         options.Events.AddEventType(typeof(MasterProfileImageUploaded));
+        options.Events.AddEventType(typeof(MasterRatingUpdated));
     }
 }

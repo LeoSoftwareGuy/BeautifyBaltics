@@ -94,4 +94,6 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
     }
 
     public static Master Apply(MasterBufferTimeUpdated @event, Master current) => current with { BufferMinutes = @event.BufferMinutes };
+
+    public static Master Apply(MasterRatingUpdated @event, Master current) => current with { Rating = @event.AverageRating };
 }

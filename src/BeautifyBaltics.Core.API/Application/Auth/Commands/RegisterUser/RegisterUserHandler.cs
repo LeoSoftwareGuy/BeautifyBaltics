@@ -24,9 +24,15 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
         public async Task<(RegisterUserResponse, OutgoingMessages)> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
         {
             var normalizedEmail = request.Email.Trim();
+
             var existingUser = await userRepository.GetByEmailAsync(normalizedEmail, request.Role, cancellationToken);
 
             if (existingUser is not null) throw DomainException.WithMessage("An account with this email already exists for this account type.");
+
+            if (await userRepository.ExistsByPhoneNumberAsync(request.PhoneNumber, cancellationToken))
+            {
+                throw DomainException.WithMessage("An account with this phone number already exists.");
+            }
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 

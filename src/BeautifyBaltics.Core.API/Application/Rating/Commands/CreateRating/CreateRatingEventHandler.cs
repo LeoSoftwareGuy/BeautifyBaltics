@@ -1,4 +1,6 @@
 using BeautifyBaltics.Domain.Aggregates.Booking;
+using BeautifyBaltics.Domain.Aggregates.Master;
+using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Aggregates.Rating;
 using BeautifyBaltics.Domain.Aggregates.Rating.Events;
 using BeautifyBaltics.Domain.Enumerations;
@@ -36,6 +38,10 @@ public class CreateRatingEventHandler(
         );
 
         var ratingId = commandRepository.StartStream<RatingAggregate>(ratingSubmittedEvent);
+
+        var (currentAverage, currentCount) = await ratingRepository.GetMasterRatingStatsAsync(booking.MasterId, cancellationToken);
+        var newAverage = Math.Round((currentAverage * currentCount + request.Value) / (currentCount + 1), 2);
+        commandRepository.Append<MasterAggregate>(booking.MasterId, new MasterRatingUpdated(booking.MasterId, newAverage));
 
         return new CreateRatingResponse(ratingId);
     }
