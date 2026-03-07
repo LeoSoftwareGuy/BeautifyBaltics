@@ -9,6 +9,7 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import {
   AuthQuickActions,
   ClientNavigation,
+  MasterBottomNav,
   MasterNavigation,
   NavigationBreadcrumbs,
   NavigationLoadingIndicator,
@@ -84,6 +85,7 @@ function Root() {
         lowerMiddle: null,
         bottom: <SidebarFooter />,
       }}
+      mobileBottomNav={isMaster ? <MasterBottomNav /> : undefined}
       devtools={(
         <DevtoolsContainer>
           <TanStackRouterDevtools key="router-devtools" enabled={import.meta.env.DEV} />

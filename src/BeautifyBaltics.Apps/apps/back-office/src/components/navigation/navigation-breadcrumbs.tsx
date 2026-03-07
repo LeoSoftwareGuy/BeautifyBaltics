@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Breadcrumbs } from '@mantine/core';
+import { Box, Breadcrumbs } from '@mantine/core';
 import { IconChevronRight } from '@tabler/icons-react';
 import { useMatches } from '@tanstack/react-router';
 
@@ -14,22 +14,24 @@ export default function NavigationBreadcrumbs() {
     .filter((breadcrumb, index, self) => self.findIndex((b) => b.path === breadcrumb.path) === index);
 
   return (
-    <Breadcrumbs
-      styles={{ root: { flexWrap: 'nowrap' } }}
-      separator={<IconChevronRight size={16} />}
-      separatorMargin="xs"
-    >
-      {breadcrumbs.map((breadcrumb) => (
-        <AnchorLink
-          activeOptions={{ exact: true, includeSearch: false, includeHash: false }}
-          activeProps={{ c: 'dark' }}
-          c="gray"
-          key={breadcrumb.path}
-          to={breadcrumb.path}
-        >
-          {t(breadcrumb.titleKey)}
-        </AnchorLink>
-      ))}
-    </Breadcrumbs>
+    <Box visibleFrom="md">
+      <Breadcrumbs
+        styles={{ root: { flexWrap: 'nowrap' } }}
+        separator={<IconChevronRight size={16} />}
+        separatorMargin="xs"
+      >
+        {breadcrumbs.map((breadcrumb) => (
+          <AnchorLink
+            activeOptions={{ exact: true, includeSearch: false, includeHash: false }}
+            activeProps={{ c: 'dark' }}
+            c="gray"
+            key={breadcrumb.path}
+            to={breadcrumb.path}
+          >
+            {t(breadcrumb.titleKey)}
+          </AnchorLink>
+        ))}
+      </Breadcrumbs>
+    </Box>
   );
 }

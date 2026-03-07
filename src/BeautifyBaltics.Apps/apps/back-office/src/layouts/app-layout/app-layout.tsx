@@ -21,10 +21,11 @@ interface AppLayoutProps {
   };
   children: React.ReactNode;
   devtools: React.ReactNode[] | React.ReactNode;
+  mobileBottomNav?: React.ReactNode;
 }
 
 export default function AppLayout({
-  header, navbar, children, devtools,
+  header, navbar, children, devtools, mobileBottomNav,
 }: AppLayoutProps) {
   const theme = useMantineTheme();
   const { t } = useTranslation();
@@ -56,7 +57,8 @@ export default function AppLayout({
           width: collapsedNavbar
             ? theme.other.navbar.collapsedWidth
             : theme.other.navbar.width,
-          breakpoint: 0,
+          breakpoint: 'md',
+          collapsed: { mobile: true },
         }}
         bg={theme.other.backgroundColor}
       >
@@ -94,9 +96,10 @@ export default function AppLayout({
             {navbar.bottom}
           </AppShell.Section>
         </AppShell.Navbar>
-        <AppShell.Main>
+        <AppShell.Main pb={mobileBottomNav ? { base: 80, md: 0 } : undefined}>
           {children}
         </AppShell.Main>
+        {mobileBottomNav}
         {devtools}
       </AppShell>
     </AppLayoutContext.Provider>
