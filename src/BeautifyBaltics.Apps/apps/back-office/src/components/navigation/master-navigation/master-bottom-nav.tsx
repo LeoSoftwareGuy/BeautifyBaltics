@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Box, Group, Stack, Text, UnstyledButton,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconCalendarEvent,
   IconClock,
@@ -24,13 +25,16 @@ const NAV_ITEMS: { icon: typeof IconLayoutDashboard; labelKey: string; href: key
 ];
 
 export default function MasterBottomNav() {
+  const isMobile = useMediaQuery('(max-width: 61.9375em)');
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // isMobile is undefined during SSR/initial render — treat as mobile to avoid flash
+  if (isMobile === false) return null;
+
   return (
     <Box
-      hiddenFrom="md"
       pos="fixed"
       bottom={0}
       left={0}

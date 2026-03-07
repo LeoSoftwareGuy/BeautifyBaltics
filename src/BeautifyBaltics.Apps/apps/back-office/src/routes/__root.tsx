@@ -85,7 +85,7 @@ function Root() {
         lowerMiddle: null,
         bottom: <SidebarFooter />,
       }}
-      mobileBottomNav={isMaster ? <MasterBottomNav /> : undefined}
+      mobileBottomNav={isMaster || location.pathname.startsWith('/master') ? <MasterBottomNav /> : undefined}
       devtools={(
         <DevtoolsContainer>
           <TanStackRouterDevtools key="router-devtools" enabled={import.meta.env.DEV} />
