@@ -8,6 +8,7 @@ import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/re
 import { LanguageSwitcher } from '@/components/language-switcher';
 import {
   AuthQuickActions,
+  ClientBottomNav,
   ClientNavigation,
   MasterBottomNav,
   MasterNavigation,
@@ -85,7 +86,7 @@ function Root() {
         lowerMiddle: null,
         bottom: <SidebarFooter />,
       }}
-      mobileBottomNav={isMaster || location.pathname.startsWith('/master') ? <MasterBottomNav /> : undefined}
+      mobileBottomNav={isMaster || location.pathname === '/master' || location.pathname.startsWith('/master/') ? <MasterBottomNav /> : <ClientBottomNav />}
       devtools={(
         <DevtoolsContainer>
           <TanStackRouterDevtools key="router-devtools" enabled={import.meta.env.DEV} />

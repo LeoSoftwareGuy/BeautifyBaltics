@@ -4,34 +4,41 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
-  IconCalendarEvent,
-  IconClock,
-  IconLayoutDashboard,
-  IconSettings,
-  IconSparkles,
+  IconDashboard,
+  IconHome,
+  IconLogout,
+  IconMap2,
+  IconStar,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 
+import { useSession } from '@/contexts/session-context';
 import { FileRoutesByTo } from '@/routeTree.gen';
 
-const NAV_ITEMS: { icon: typeof IconLayoutDashboard; labelKey: string; href: keyof FileRoutesByTo; exact?: boolean }[] = [
+const NAV_ITEMS: { icon: typeof IconHome; labelKey: string; href: keyof FileRoutesByTo; exact?: boolean }[] = [
   {
-    icon: IconLayoutDashboard, labelKey: 'navigation.master.dashboard', href: '/master', exact: true,
+    icon: IconHome, labelKey: 'navigation.client.home', href: '/home', exact: true,
   },
-  { icon: IconCalendarEvent, labelKey: 'navigation.master.bookings', href: '/master/bookings' },
-  { icon: IconClock, labelKey: 'navigation.master.timeSlots', href: '/master/time-slots' },
-  { icon: IconSparkles, labelKey: 'navigation.master.services', href: '/master/services' },
-  { icon: IconSettings, labelKey: 'navigation.master.settings', href: '/master/settings' },
+  { icon: IconDashboard, labelKey: 'navigation.client.dashboard', href: '/dashboard' },
+  { icon: IconStar, labelKey: 'navigation.client.topMasters', href: '/top-masters' },
+  { icon: IconMap2, labelKey: 'navigation.client.mapExplore', href: '/explore' },
 ];
 
-export default function MasterBottomNav() {
+export default function ClientBottomNav() {
   const isMobile = useMediaQuery('(max-width: 61.9375em)', true);
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useSession();
   const { t } = useTranslation();
 
-  // isMobile is undefined during SSR/initial render — treat as mobile to avoid flash
   if (isMobile === false) return null;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate({ to: '/login', search: { redirect: '/home', registered: false }, replace: true });
+    } catch { /* empty */ }
+  };
 
   return (
     <Box
@@ -47,9 +54,7 @@ export default function MasterBottomNav() {
       }}
     >
       <Group grow gap={0} px="xs" py={6}>
-        {NAV_ITEMS.map(({
-          icon: Icon, labelKey, href, exact,
-        }) => {
+        {NAV_ITEMS.map(({ icon: Icon, labelKey, href, exact }) => {
           const isActive = exact
             ? location.pathname === href || location.pathname === `${href}/`
             : location.pathname.startsWith(href);
@@ -64,18 +69,22 @@ export default function MasterBottomNav() {
                   size={22}
                   color={isActive ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-5)'}
                 />
-                <Text
-                  size="xs"
-                  c={isActive ? 'pink' : 'dimmed'}
-                  fw={isActive ? 700 : 400}
-                  lh={1}
-                >
+                <Text size="xs" c={isActive ? 'pink' : 'dimmed'} fw={isActive ? 700 : 400} lh={1}>
                   {t(labelKey)}
                 </Text>
               </Stack>
             </UnstyledButton>
           );
         })}
+
+        <UnstyledButton onClick={handleLogout}>
+          <Stack gap={2} align="center" py={4}>
+            <IconLogout size={22} color="var(--mantine-color-red-5)" />
+            <Text size="xs" c="red.5" lh={1}>
+              {t('actions.logout')}
+            </Text>
+          </Stack>
+        </UnstyledButton>
       </Group>
     </Box>
   );
