@@ -64,8 +64,10 @@ export default function AppLayout({
       >
         <AppShell.Header p="md">
           <Group gap="xs" align="center" h="100%" wrap="nowrap">
-            <ToggleNavbarButton onClick={handleToggleNavbar} />
-            <Divider orientation="vertical" my="xs" />
+            <Box visibleFrom="md">
+              <ToggleNavbarButton onClick={handleToggleNavbar} />
+            </Box>
+            <Divider orientation="vertical" my="xs" visibleFrom="md" />
             <Group ml={6} justify="space-between" align="center" h="100%" w="100%" grow wrap="nowrap">
               {header.start}
               {header.end}
@@ -99,9 +101,9 @@ export default function AppLayout({
         <AppShell.Main pb={mobileBottomNav ? { base: 80, md: 0 } : undefined}>
           {children}
         </AppShell.Main>
-        {mobileBottomNav}
         {devtools}
       </AppShell>
+      {mobileBottomNav}
     </AppLayoutContext.Provider>
   );
 }

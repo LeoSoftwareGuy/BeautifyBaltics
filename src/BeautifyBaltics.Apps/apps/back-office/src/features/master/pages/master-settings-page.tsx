@@ -1,9 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import {
-  ActionIcon, Box, Card, Group, Stack, Title,
+  ActionIcon, Box, Button, Card, Group, Stack, Title,
 } from '@mantine/core';
-import { IconArrowLeft } from '@tabler/icons-react';
+import { IconArrowLeft, IconLogout } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
+
+import { useSession } from '@/contexts/session-context';
 
 import MasterProfileSettings from '../master-profile-settings';
 import { MasterSchedulingSettings } from '../master-scheduling-settings';
@@ -11,6 +13,14 @@ import { MasterSchedulingSettings } from '../master-scheduling-settings';
 function MasterSettingsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { logout } = useSession();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate({ to: '/login', search: { redirect: '/home', registered: false }, replace: true });
+    } catch { /* empty */ }
+  };
 
   return (
     <Box bg="var(--mantine-color-body)" mih="100vh">
@@ -55,6 +65,18 @@ function MasterSettingsPage() {
         <Card withBorder>
           <MasterSchedulingSettings />
         </Card>
+
+        <Button
+          hiddenFrom="md"
+          variant="light"
+          color="red"
+          size="md"
+          radius="xl"
+          leftSection={<IconLogout size={18} />}
+          onClick={handleLogout}
+        >
+          {t('actions.logout')}
+        </Button>
       </Stack>
     </Box>
   );
