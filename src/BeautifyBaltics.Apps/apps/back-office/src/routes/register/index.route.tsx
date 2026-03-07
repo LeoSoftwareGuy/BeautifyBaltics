@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { Box, Group, Text } from '@mantine/core';
-import { IconSparkles } from '@tabler/icons-react';
+import { Box, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 
 import { AnchorLink } from '@/components/navigation';
@@ -34,6 +34,7 @@ function RegisterView() {
   const { isAuthenticated, loading } = useSession();
   const redirectPath: RoutePath = search.redirect;
   const defaultRole: RoleOption = search.role ?? 'client';
+  const isDesktop = useMediaQuery('(min-width: 75em)');
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
@@ -54,89 +55,100 @@ function RegisterView() {
   };
 
   return (
-    <Box style={{ display: 'flex', minHeight: '100vh', background: '#fff' }}>
-      {/* Left: Image Panel */}
+    <Box style={{
+      minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column',
+    }}
+    >
+
+      {/* Mobile hero image with gradient overlay */}
       <Box
-        visibleFrom="lg"
+        hiddenFrom="lg"
         style={{
-          width: '50%',
-          position: 'relative',
-          overflow: 'hidden',
+          width: '100%',
+          height: 288,
           backgroundImage: 'url(/shop.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          position: 'relative',
           flexShrink: 0,
         }}
       >
-        {/* Dark overlay */}
-        <Box style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.30)' }} />
-
-        {/* Bottom quote */}
-        <Box style={{
-          position: 'absolute', bottom: 48, left: 40, right: 40, zIndex: 1,
-        }}
+        <Box style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #fff, transparent)' }} />
+        <Text
+          fw={700}
+          fz="sm"
+          c="brand"
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            background: 'rgba(255,255,255,0.85)',
+            backdropFilter: 'blur(4px)',
+            borderRadius: 9999,
+            padding: '4px 12px',
+          }}
         >
-          <Text
-            fz={32}
-            c="white"
-            lh={1.3}
-            mb="xs"
-            style={{ fontFamily: '"Playfair Display", serif', fontStyle: 'italic' }}
-          >
-            &ldquo;Your journey to premium beauty starts here.&rdquo;
-          </Text>
-          <Text fz="xs" c="white" fw={500} style={{ opacity: 0.8, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            Premium Aesthetics &amp; Wellness
-          </Text>
-        </Box>
+          EN ▾
+        </Text>
       </Box>
 
-      {/* Right: Form Panel */}
-      <Box
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '3rem 1.5rem',
-          background: '#fff',
-          overflowY: 'auto',
-        }}
-      >
-        {/* Mobile branding */}
-        <Group gap="xs" mb="xl" hiddenFrom="lg" style={{ alignSelf: 'flex-start' }}>
-          <Box
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 8,
-              background: 'var(--mantine-color-brand-5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <IconSparkles size={18} color="#fff" />
-          </Box>
-          <Text fw={700} fz="lg" c="dark">
-            Beautify Baltics
-          </Text>
-        </Group>
+      {/* Desktop split + mobile form */}
+      <Box style={{ display: 'flex', flex: 1 }}>
 
-        <Box w="100%" maw={480}>
-          <RegisterForm
-            onRequireEmailVerification={handleEmailVerificationRequired}
-            onRegistrationComplete={handleRegistrationComplete}
-            defaultRole={defaultRole}
-          />
-          <Text c="dimmed" fz="sm" ta="center" mt="xl">
-            Already have an account?
-            {' '}
-            <AnchorLink to="/login" search={() => ({ redirect: redirectPath })}>
-              Sign in
-            </AnchorLink>
-          </Text>
+        {/* Desktop left image panel */}
+        <Box
+          visibleFrom="lg"
+          style={{
+            width: '50%',
+            flexShrink: 0,
+            backgroundImage: 'url(/shop.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <Box style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.30)' }} />
+          <Box style={{
+            position: 'absolute', bottom: 48, left: 40, right: 40, zIndex: 1,
+          }}
+          >
+            <Text fz={32} c="white" lh={1.3} mb="xs" style={{ fontFamily: '"Playfair Display", serif', fontStyle: 'italic' }}>
+              &ldquo;Your journey to premium beauty starts here.&rdquo;
+            </Text>
+            <Text fz="xs" c="white" fw={500} style={{ opacity: 0.8, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              Premium Aesthetics &amp; Wellness
+            </Text>
+          </Box>
+        </Box>
+
+        {/* Form panel */}
+        <Box
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: isDesktop ? 'center' : 'flex-start',
+            padding: isDesktop ? '3rem 1.5rem' : '0 1.5rem 2.5rem',
+            background: '#fff',
+            overflowY: 'auto',
+          }}
+        >
+          <Box w="100%" maw={480}>
+            <RegisterForm
+              onRequireEmailVerification={handleEmailVerificationRequired}
+              onRegistrationComplete={handleRegistrationComplete}
+              defaultRole={defaultRole}
+            />
+            <Text c="dimmed" fz="sm" ta="center" mt="xl">
+              Already have an account?
+              {' '}
+              <AnchorLink to="/login" search={() => ({ redirect: redirectPath })}>
+                Sign in
+              </AnchorLink>
+            </Text>
+          </Box>
         </Box>
       </Box>
     </Box>

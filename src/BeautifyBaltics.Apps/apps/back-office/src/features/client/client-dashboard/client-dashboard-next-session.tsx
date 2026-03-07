@@ -12,6 +12,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconCalendarEvent, IconMapPin } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -31,6 +32,7 @@ interface ClientDashboardNextSessionProps {
 
 export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboardNextSessionProps) {
   const [drawerOpened, setDrawerOpened] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 62em)');
   const { data: user } = useGetUser();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -126,34 +128,40 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
   ].filter(Boolean).join(', ') || location;
 
   return (
-    <Card withBorder radius="md" p="lg">
+    <Card
+      radius="md"
+      p="lg"
+      style={{ background: 'linear-gradient(135deg, #d8557a 0%, #e8738f 100%)', overflow: 'hidden' }}
+    >
       <Group gap="xs" mb="md">
-        <IconCalendarEvent size={20} />
-        <Title order={4}>{t('client.nextSession.title')}</Title>
+        <IconCalendarEvent size={20} color="#fff" style={{ opacity: 0.85 }} />
+        <Title order={4} style={{ color: '#fff' }}>{t('client.nextSession.title')}</Title>
       </Group>
 
-      <Card radius="md" p={0} style={{ overflow: 'hidden' }}>
+      <Box style={{ borderRadius: 12, overflow: 'hidden', background: 'rgba(255,255,255,0.15)' }}>
         <Group gap={0} align="stretch" wrap="nowrap">
-          <Image
-            src="/salon.jpg"
-            w={220}
-            h={160}
-            alt={translateService(booking.masterJobTitle)}
-            style={{ objectFit: 'cover', flexShrink: 0 }}
-          />
+          {!isMobile && (
+            <Image
+              src="/salon.jpg"
+              w={220}
+              h={160}
+              alt={translateService(booking.masterJobTitle)}
+              style={{ objectFit: 'cover', flexShrink: 0 }}
+            />
+          )}
 
           <Stack gap="sm" p="md" style={{ flex: 1 }}>
             <Group gap="xs">
-              <Badge color="blue" variant="filled" size="sm">
+              <Badge variant="white" color="pink" size="sm">
                 {t('client.nextSession.badges.today')}
               </Badge>
-              <Badge color="dark" variant="filled" size="sm">
+              <Badge style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: 'none' }} size="sm">
                 {timeUntil}
               </Badge>
             </Group>
 
             <div>
-              <Text fw={600} size="md">
+              <Text fw={600} size="md" style={{ color: '#fff' }}>
                 {translateService(booking.masterJobTitle)}
                 {' '}
                 {t('client.nextSession.withLabel', { name: booking.masterName })}
@@ -161,14 +169,14 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
             </div>
 
             <Group gap="xs">
-              <IconMapPin size={16} color="var(--mantine-color-dimmed)" />
-              <Text size="sm" c="dimmed">{fullLocation}</Text>
+              <IconMapPin size={16} color="#fff" style={{ opacity: 0.75 }} />
+              <Text size="sm" style={{ color: 'rgba(255,255,255,0.8)' }}>{fullLocation}</Text>
             </Group>
 
             <Group gap="sm" mt="auto">
               <Button
-                variant="filled"
-                color="brand"
+                variant="white"
+                color="pink"
                 size="sm"
                 onClick={() => setDrawerOpened(true)}
               >
@@ -177,7 +185,7 @@ export function ClientDashboardNextSession({ booking, isLoading }: ClientDashboa
             </Group>
           </Stack>
         </Group>
-      </Card>
+      </Box>
 
       <ClientBookingDetailsDrawer
         opened={drawerOpened}

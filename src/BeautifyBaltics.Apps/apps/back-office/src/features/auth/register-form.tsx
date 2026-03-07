@@ -10,6 +10,7 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useMediaQuery } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { IconScissors, IconUser } from '@tabler/icons-react';
 
@@ -32,6 +33,7 @@ type RegisterFormValues = {
 
 export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client' }: RegisterFormProps) {
   const [submitting, setSubmitting] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 75em)');
 
   const form = useForm<RegisterFormValues>({
     initialValues: {
@@ -163,30 +165,36 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
           </Grid>
         </Stack>
         <Stack gap="md">
-          <Stack gap={4}>
-            <Text size="sm" fw={500}>
-              First name
-              {' '}
-              <Text component="span" c="red">*</Text>
-            </Text>
-            <TextInput
-              placeholder="John"
-              radius="md"
-              {...form.getInputProps('firstName')}
-            />
-          </Stack>
-          <Stack gap={4}>
-            <Text size="sm" fw={500}>
-              Last name
-              {' '}
-              <Text component="span" c="red">*</Text>
-            </Text>
-            <TextInput
-              placeholder="Doe"
-              radius="md"
-              {...form.getInputProps('lastName')}
-            />
-          </Stack>
+          <Grid gutter="md">
+            <Grid.Col span={isDesktop ? 6 : 12}>
+              <Stack gap={4}>
+                <Text size="sm" fw={500}>
+                  First name
+                  {' '}
+                  <Text component="span" c="red">*</Text>
+                </Text>
+                <TextInput
+                  placeholder="John"
+                  radius="md"
+                  {...form.getInputProps('firstName')}
+                />
+              </Stack>
+            </Grid.Col>
+            <Grid.Col span={isDesktop ? 6 : 12}>
+              <Stack gap={4}>
+                <Text size="sm" fw={500}>
+                  Last name
+                  {' '}
+                  <Text component="span" c="red">*</Text>
+                </Text>
+                <TextInput
+                  placeholder="Doe"
+                  radius="md"
+                  {...form.getInputProps('lastName')}
+                />
+              </Stack>
+            </Grid.Col>
+          </Grid>
           <Stack gap={4}>
             <Text size="sm" fw={500}>
               Email address

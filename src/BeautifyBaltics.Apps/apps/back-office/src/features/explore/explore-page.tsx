@@ -13,7 +13,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue, useMediaQuery } from '@mantine/hooks';
 import { getRouteApi, useNavigate } from '@tanstack/react-router';
 import { AlertCircle } from 'lucide-react';
 
@@ -28,7 +28,8 @@ import { FiltersDrawer } from './components/explore-filters-drawer';
 import { ExploreHeader } from './components/explore-header';
 import { MasterCard } from './components/explore-master-card';
 
-const MAP_HEIGHT = 600;
+const MAP_HEIGHT_DESKTOP = 600;
+const MAP_HEIGHT_MOBILE = 280;
 const routeApi = getRouteApi('/explore/');
 
 export function ExplorePage() {
@@ -49,6 +50,7 @@ export function ExplorePage() {
     navigate({ search: { ...searchRef.current, search: debouncedSearch || undefined } as never, replace: true });
   }, [debouncedSearch, navigate]);
 
+  const isMobile = useMediaQuery('(max-width: 62em)');
   const [selectedMaster, setSelectedMaster] = useState<string | null>(null);
 
   const { data: procedureJob } = useGetJobById(search.procedure ?? '', undefined, {
@@ -139,21 +141,20 @@ export function ExplorePage() {
           </Alert>
         ) : null}
 
-        <Box
-          display="grid"
-          style={{
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 24,
-          }}
-        >
-          <ScrollArea h={MAP_HEIGHT} type="always" offsetScrollbars>
-            <Stack gap="md" pr="sm">
+        {isMobile ? (
+          <Stack gap="md">
+            <MastersMap
+              masters={data?.items ?? []}
+              selectedMasterId={selectedMaster}
+              onSelectMaster={handleSelectMaster}
+              height={MAP_HEIGHT_MOBILE}
+            />
+            <Stack gap="md">
               {(isLoading && !data) ? (
-                <Center mih={240}>
+                <Center mih={200}>
                   <Loader />
                 </Center>
               ) : null}
-
               {isError ? (
                 <Alert
                   icon={<AlertCircle size={16} />}
@@ -168,14 +169,12 @@ export function ExplorePage() {
                   </Stack>
                 </Alert>
               ) : null}
-
               {!isLoading && !isError && !data?.items?.length ? (
                 <Stack align="center" gap={4} py="xl">
                   <Text fw={500}>{t('explore.page.emptyTitle')}</Text>
                   <Text c="dimmed">{t('explore.page.emptySubtitle')}</Text>
                 </Stack>
               ) : null}
-
               {data?.items?.map((master, index) => (
                 <MasterCard
                   key={master.id ?? `master-${index}`}
@@ -185,15 +184,64 @@ export function ExplorePage() {
                 />
               ))}
             </Stack>
-          </ScrollArea>
+          </Stack>
+        ) : (
+          <Box
+            display="grid"
+            style={{
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: 24,
+            }}
+          >
+            <ScrollArea h={MAP_HEIGHT_DESKTOP} type="always" offsetScrollbars>
+              <Stack gap="md" pr="sm">
+                {(isLoading && !data) ? (
+                  <Center mih={240}>
+                    <Loader />
+                  </Center>
+                ) : null}
 
-          <MastersMap
-            masters={data?.items ?? []}
-            selectedMasterId={selectedMaster}
-            onSelectMaster={handleSelectMaster}
-            height={MAP_HEIGHT}
-          />
-        </Box>
+                {isError ? (
+                  <Alert
+                    icon={<AlertCircle size={16} />}
+                    title={t('explore.page.mastersErrorTitle')}
+                    color="red"
+                  >
+                    <Stack gap={4}>
+                      <Text>{t('explore.page.mastersErrorMessage')}</Text>
+                      <Button variant="light" color="red" onClick={() => refetch()}>
+                        {t('common.cta.tryAgain')}
+                      </Button>
+                    </Stack>
+                  </Alert>
+                ) : null}
+
+                {!isLoading && !isError && !data?.items?.length ? (
+                  <Stack align="center" gap={4} py="xl">
+                    <Text fw={500}>{t('explore.page.emptyTitle')}</Text>
+                    <Text c="dimmed">{t('explore.page.emptySubtitle')}</Text>
+                  </Stack>
+                ) : null}
+
+                {data?.items?.map((master, index) => (
+                  <MasterCard
+                    key={master.id ?? `master-${index}`}
+                    master={master}
+                    selected={selectedMaster === master.id}
+                    onSelect={handleSelectMaster}
+                  />
+                ))}
+              </Stack>
+            </ScrollArea>
+
+            <MastersMap
+              masters={data?.items ?? []}
+              selectedMasterId={selectedMaster}
+              onSelectMaster={handleSelectMaster}
+              height={MAP_HEIGHT_DESKTOP}
+            />
+          </Box>
+        )}
       </Container>
 
       <FiltersDrawer

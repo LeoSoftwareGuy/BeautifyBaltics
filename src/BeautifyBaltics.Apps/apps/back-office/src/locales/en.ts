@@ -226,7 +226,8 @@ const en = {
       },
       locationFallback: 'Location not provided',
       filters: {
-        allStatuses: 'All statuses',
+        allStatuses: 'All',
+        searchPlaceholder: 'Search by master or service...',
         dateLabel: 'Filter by date',
         datePlaceholder: 'Select date range',
         statusLabel: 'Status',

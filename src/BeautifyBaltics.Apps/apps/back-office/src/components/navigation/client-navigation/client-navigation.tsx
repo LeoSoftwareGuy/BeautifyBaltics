@@ -3,7 +3,6 @@ import {
   Group, Stack, Text, UnstyledButton,
 } from '@mantine/core';
 import {
-  IconCalendarEvent,
   IconDashboard,
   IconHome,
   IconLogout,
@@ -36,7 +35,6 @@ export default function ClientNavigation() {
       <NavigationItem icon={IconDashboard} label={t('navigation.client.dashboard')} href="/dashboard" />
       <NavigationItem icon={IconStar} label={t('navigation.client.topMasters')} href="/top-masters" />
       <NavigationItem icon={IconMap2} label={t('navigation.client.mapExplore')} href="/explore" />
-      <NavigationItem icon={IconCalendarEvent} label={t('navigation.client.bookings')} href="/client/bookings" />
       <UnstyledButton
         onClick={handleLogout}
         px="xs"

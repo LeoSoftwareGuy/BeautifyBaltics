@@ -11,6 +11,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconAlertCircle } from '@tabler/icons-react';
 
 import type { FindMastersResponse } from '@/state/endpoints/api.schemas';
@@ -43,23 +44,26 @@ export function ClientExploreResults({
   locationFilter,
 }: ClientExploreResultsProps) {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery('(max-width: 62em)');
   const subtitle = locationFilter
     ? t('client.explore.results.subtitleWithLocation', { location: locationFilter })
     : t('client.explore.results.subtitle');
 
   return (
     <>
-      <Group justify="space-between" align="flex-end" mb="lg">
-        <div>
-          <Title order={2}>{t('client.explore.results.title')}</Title>
-          <Text c="dimmed">
-            {subtitle}
+      {!isMobile && (
+        <Group justify="space-between" align="flex-end" mb="lg">
+          <div>
+            <Title order={2}>{t('client.explore.results.title')}</Title>
+            <Text c="dimmed">
+              {subtitle}
+            </Text>
+          </div>
+          <Text size="sm" c="dimmed">
+            {t('client.explore.results.count', { count: totalResults })}
           </Text>
-        </div>
-        <Text size="sm" c="dimmed">
-          {t('client.explore.results.count', { count: totalResults })}
-        </Text>
-      </Group>
+        </Group>
+      )}
 
       {isLoading && !masters && (
         <Center mih={300}>
@@ -82,7 +86,6 @@ export function ClientExploreResults({
         </Alert>
       )}
 
-      {/* Empty State */}
       {!isLoading && !isError && !masters?.length && (
         <Center mih={300}>
           <Stack align="center" gap="xs">
@@ -92,7 +95,6 @@ export function ClientExploreResults({
         </Center>
       )}
 
-      {/* Masters Grid */}
       {masters && masters.length > 0 && (
         <>
           <Grid gutter="lg">
@@ -111,7 +113,6 @@ export function ClientExploreResults({
             ))}
           </Grid>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <Center mt="xl">
               <Pagination

@@ -8,6 +8,7 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconMapPin, IconStar } from '@tabler/icons-react';
 
 import type { FindMastersResponse } from '@/state/endpoints/api.schemas';
@@ -19,16 +20,97 @@ interface ClientExploreMasterCardProps {
 
 export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMasterCardProps) {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery('(max-width: 62em)');
+
   const fullName = [master.firstName, master.lastName].filter(Boolean).join(' ').trim()
     || t('explore.masterCard.unnamed');
   const ratingValue = typeof master.rating === 'number' ? master.rating.toFixed(1) : null;
   const location = master.city ?? t('explore.masterCard.locationFallback');
 
   const handleClick = () => {
-    if (master.id) {
-      onSelect(master.id);
-    }
+    if (master.id) onSelect(master.id);
   };
+
+  if (isMobile) {
+    return (
+      <Card
+        radius="lg"
+        withBorder
+        p="sm"
+        style={{ cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+        onClick={handleClick}
+      >
+        <Group gap="sm" align="flex-start" wrap="nowrap">
+          <Box pos="relative" style={{ flexShrink: 0 }}>
+            <Image
+              src={master.profileImageUrl}
+              alt={fullName}
+              w={80}
+              h={80}
+              radius="md"
+              fit="cover"
+              style={{ objectPosition: 'center top' }}
+              fallbackSrc="https://placehold.co/200x200/e9ecef/868e96?text=M"
+            />
+            {ratingValue && (
+              <Box
+                pos="absolute"
+                top={-8}
+                right={-8}
+                style={{
+                  background: '#d8557a',
+                  color: '#fff',
+                  borderRadius: 9999,
+                  padding: '2px 7px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  boxShadow: '0 2px 6px rgba(216,85,122,0.4)',
+                }}
+              >
+                ★
+                {' '}
+                {ratingValue}
+              </Box>
+            )}
+          </Box>
+
+          {/* Info */}
+          <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
+            <Text fw={700} size="sm" truncate="end">{fullName}</Text>
+            {master.description && (
+              <Text
+                size="xs"
+                fw={600}
+                lineClamp={1}
+                style={{ color: '#d8557a', textTransform: 'uppercase', letterSpacing: '0.04em' }}
+              >
+                {master.description}
+              </Text>
+            )}
+            <Group gap={4} c="dimmed">
+              <IconMapPin size={12} />
+              <Text size="xs" truncate="end">{location}</Text>
+            </Group>
+          </Stack>
+        </Group>
+
+        <Button
+          variant="default"
+          fullWidth
+          size="xs"
+          mt="sm"
+          radius="md"
+          onClick={(e) => { e.stopPropagation(); handleClick(); }}
+          styles={{ root: { borderColor: '#d8557a', color: '#d8557a' } }}
+        >
+          {t('client.explore.card.viewProfile')}
+        </Button>
+      </Card>
+    );
+  }
 
   return (
     <Card
@@ -50,7 +132,6 @@ export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMaste
       }}
       onClick={handleClick}
     >
-      {/* Image Section */}
       <Box pos="relative" h={180}>
         <Image
           src={master.profileImageUrl}
@@ -61,7 +142,6 @@ export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMaste
           style={{ objectPosition: 'center top' }}
           fallbackSrc="https://placehold.co/400x300/e9ecef/868e96?text=Master"
         />
-        {/* Rating Badge */}
         {ratingValue && (
           <Box
             pos="absolute"
@@ -70,10 +150,7 @@ export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMaste
             bg="rgba(255, 255, 255, 0.95)"
             px="xs"
             py={4}
-            style={{
-              borderRadius: 'var(--mantine-radius-md)',
-              backdropFilter: 'blur(4px)',
-            }}
+            style={{ borderRadius: 'var(--mantine-radius-md)', backdropFilter: 'blur(4px)' }}
           >
             <Group gap={4}>
               <IconStar size={14} fill="var(--mantine-color-yellow-5)" color="var(--mantine-color-yellow-5)" />
@@ -83,42 +160,22 @@ export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMaste
         )}
       </Box>
 
-      {/* Content Section */}
       <Stack gap="sm" p="md">
         <div>
-          <Text fw={700} size="lg" lineClamp={1}>
-            {fullName}
-          </Text>
+          <Text fw={700} size="lg" lineClamp={1}>{fullName}</Text>
           {master.description && (
-            <Text size="sm" c="dimmed" lineClamp={2} mt={4}>
-              {master.description}
-            </Text>
+            <Text size="sm" c="dimmed" lineClamp={2} mt={4}>{master.description}</Text>
           )}
         </div>
-
         <Group gap="xs" c="dimmed">
           <IconMapPin size={16} />
           <Text size="sm">{location}</Text>
         </Group>
-
         <Button
           variant="default"
           fullWidth
           mt="xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleClick();
-          }}
-          styles={{
-            root: {
-              transition: 'all 200ms ease',
-              '&:hover': {
-                backgroundColor: 'var(--mantine-color-brand-6)',
-                color: 'white',
-                borderColor: 'var(--mantine-color-brand-6)',
-              },
-            },
-          }}
+          onClick={(e) => { e.stopPropagation(); handleClick(); }}
         >
           {t('client.explore.card.viewProfile')}
         </Button>

@@ -10,6 +10,7 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconMapPin, IconSearch } from '@tabler/icons-react';
 
 interface SelectOption {
@@ -55,6 +56,50 @@ export function ClientExploreHeader({
   onSearch,
 }: ClientExploreHeaderProps) {
   const { t } = useTranslation();
+  const isMobile = useMediaQuery('(max-width: 62em)');
+
+  if (isMobile) {
+    return (
+      <Box
+        component="header"
+        bg="white"
+        style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}
+        py="sm"
+        px="md"
+      >
+        <Stack gap="xs">
+          <TextInput
+            placeholder={t('client.explore.header.searchPlaceholder')}
+            leftSection={<IconSearch size={16} color="#94a3b8" />}
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.currentTarget.value)}
+            radius="xl"
+            styles={{ input: { border: 'none', background: '#f8fafc', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' } }}
+          />
+          <Group gap="xs">
+            <TextInput
+              flex={1}
+              placeholder={t('client.explore.header.locationPlaceholder')}
+              leftSection={<IconMapPin size={16} color="#94a3b8" />}
+              value={locationValue}
+              onChange={(e) => onLocationChange(e.currentTarget.value)}
+              radius="xl"
+              styles={{ input: { border: 'none', background: '#f8fafc', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' } }}
+            />
+            <Button
+              size="sm"
+              radius="xl"
+              onClick={onSearch}
+              style={{ background: '#d8557a', flexShrink: 0 }}
+            >
+              {t('client.explore.header.searchButton')}
+            </Button>
+          </Group>
+        </Stack>
+      </Box>
+    );
+  }
+
   return (
     <Box
       component="header"

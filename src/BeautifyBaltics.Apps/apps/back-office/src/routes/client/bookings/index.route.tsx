@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 
-import { ClientDashboardPage } from '@/features/client';
+import { ClientDashboardOverviewPage } from '@/features/client';
 import { requireAuthenticated } from '@/utils/auth';
 
 export const Route = createFileRoute('/client/bookings/')({
@@ -26,5 +26,5 @@ export const Route = createFileRoute('/client/bookings/')({
 });
 
 function ClientBookingsRoute() {
-  return <ClientDashboardPage />;
+  return <ClientDashboardOverviewPage />;
 }
