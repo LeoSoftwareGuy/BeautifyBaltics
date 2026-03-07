@@ -1,8 +1,10 @@
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  ActionIcon,
   Alert,
   Avatar,
+  Box,
   Button,
   Card,
   FileButton,
@@ -19,7 +21,9 @@ import {
 } from '@mantine/core';
 import { hasLength, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
-import { IconAlertCircle, IconDeviceFloppy, IconPhotoUp } from '@tabler/icons-react';
+import {
+  IconAlertCircle, IconCamera, IconDeviceFloppy, IconPhotoUp,
+} from '@tabler/icons-react';
 
 import type { LocationData } from '@/features/map';
 import { LocationPicker } from '@/features/map';
@@ -198,7 +202,47 @@ function MasterProfileSettings() {
               <Title order={3}>{t('master.settings.profile.photo.title')}</Title>
               <Text c="dimmed" fz="sm">{t('master.settings.profile.photo.subtitle')}</Text>
             </div>
-            <Group gap="lg">
+
+            {/* Mobile: centered with camera icon overlay */}
+            <Stack hiddenFrom="sm" align="center" gap="md">
+              <Box pos="relative" style={{ display: 'inline-block' }}>
+                <Avatar
+                  size={128}
+                  radius="xl"
+                  src={masterData?.profileImageUrl}
+                >
+                  {(form.getValues().firstName?.[0] ?? '')}
+                  {(form.getValues().lastName?.[0] ?? '')}
+                </Avatar>
+                <ActionIcon
+                  size="md"
+                  radius="xl"
+                  color="pink"
+                  variant="filled"
+                  style={{
+                    position: 'absolute', bottom: 4, right: 4, pointerEvents: 'none',
+                  }}
+                >
+                  <IconCamera size={14} />
+                </ActionIcon>
+              </Box>
+              <FileButton onChange={handleFileUpload} accept="image/png,image/jpeg,image/webp">
+                {(props) => (
+                  <Button
+                    variant="light"
+                    color="pink"
+                    leftSection={<IconPhotoUp size={16} />}
+                    loading={isUploading}
+                    {...props}
+                  >
+                    {t('master.settings.profile.photo.uploadButton')}
+                  </Button>
+                )}
+              </FileButton>
+            </Stack>
+
+            {/* Desktop: side by side */}
+            <Group visibleFrom="sm" gap="lg">
               <Avatar
                 size={96}
                 radius="xl"
@@ -312,7 +356,18 @@ function MasterProfileSettings() {
           </Stack>
         </Card>
 
-        <Group justify="flex-end">
+        <Button
+          type="submit"
+          fullWidth
+          size="md"
+          hiddenFrom="sm"
+          leftSection={<IconDeviceFloppy size={16} />}
+          loading={isPending}
+          disabled={!form.isDirty()}
+        >
+          {t('master.settings.profile.form.submit')}
+        </Button>
+        <Group justify="flex-end" visibleFrom="sm">
           <Button
             type="submit"
             leftSection={<IconDeviceFloppy size={16} />}

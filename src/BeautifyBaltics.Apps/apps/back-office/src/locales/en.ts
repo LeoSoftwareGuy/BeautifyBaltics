@@ -397,6 +397,11 @@ const en = {
           yearly: 'Yearly',
         },
       },
+      mobile: {
+        actionRequired: 'Action required for {{count}} clients',
+        viewAll: 'View All',
+        incomeDynamics: 'Income Dynamics',
+      },
     },
     bookings: {
       page: {
@@ -515,6 +520,13 @@ const en = {
         break: 'Break',
         weekly: 'Weekly',
         removeSlot: 'Remove slot',
+      },
+      mobile: {
+        schedule: 'Schedule',
+        slotsActive: '{{count}} Active',
+        noSlots: 'No slots for this day',
+        addSlot: 'Add Slot',
+        booking: 'Booking',
       },
     },
     services: {

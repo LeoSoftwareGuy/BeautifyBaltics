@@ -7,7 +7,7 @@ import { IconCalendar, IconSearch } from '@tabler/icons-react';
 
 import { BookingStatus } from '@/state/endpoints/api.schemas';
 
-const STATUS_TABS = [
+export const STATUS_TABS = [
   { value: 'all', labelKey: 'master.bookings.filters.tabs.all' },
   { value: BookingStatus.Requested, labelKey: 'master.bookings.filters.tabs.requested' },
   { value: BookingStatus.Confirmed, labelKey: 'master.bookings.filters.tabs.confirmed' },

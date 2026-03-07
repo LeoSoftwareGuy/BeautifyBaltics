@@ -229,6 +229,7 @@ const ru: CommonLocale = {
       locationFallback: 'Адрес не указан',
       filters: {
         allStatuses: 'Все статусы',
+        searchPlaceholder: 'Поиск по мастеру или услуге...',
         dateLabel: 'Фильтр по дате',
         datePlaceholder: 'Выберите период',
         statusLabel: 'Статус',
@@ -398,6 +399,11 @@ const ru: CommonLocale = {
           yearly: 'Год',
         },
       },
+      mobile: {
+        actionRequired: 'Требуется действие для {{count}} клиентов',
+        viewAll: 'Смотреть все',
+        incomeDynamics: 'Динамика дохода',
+      },
     },
     bookings: {
       page: {
@@ -516,6 +522,13 @@ const ru: CommonLocale = {
         break: 'Перерыв',
         weekly: 'Еженедельно',
         removeSlot: 'Удалить слот',
+      },
+      mobile: {
+        schedule: 'Расписание',
+        slotsActive: '{{count}} активных',
+        noSlots: 'На этот день нет слотов',
+        addSlot: 'Добавить слот',
+        booking: 'Запись',
       },
     },
     services: {

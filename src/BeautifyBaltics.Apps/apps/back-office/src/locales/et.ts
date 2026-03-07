@@ -229,6 +229,7 @@ const et: CommonLocale = {
       locationFallback: 'Asukohta pole lisatud',
       filters: {
         allStatuses: 'Kõik staatused',
+        searchPlaceholder: 'Otsi meistri või teenuse järgi...',
         dateLabel: 'Filtreeri kuupäeva järgi',
         datePlaceholder: 'Vali kuupäevavahemik',
         statusLabel: 'Staatus',
@@ -398,6 +399,11 @@ const et: CommonLocale = {
           yearly: 'Aasta',
         },
       },
+      mobile: {
+        actionRequired: 'Vajalik tegevus {{count}} kliendi jaoks',
+        viewAll: 'Vaata kõiki',
+        incomeDynamics: 'Tulude dünaamika',
+      },
     },
     bookings: {
       page: {
@@ -516,6 +522,13 @@ const et: CommonLocale = {
         break: 'Paus',
         weekly: 'Iganädalane',
         removeSlot: 'Eemalda aeg',
+      },
+      mobile: {
+        schedule: 'Ajakava',
+        slotsActive: '{{count}} aktiivne',
+        noSlots: 'Sellel päeval pole aegu',
+        addSlot: 'Lisa aeg',
+        booking: 'Broneering',
       },
     },
     services: {
