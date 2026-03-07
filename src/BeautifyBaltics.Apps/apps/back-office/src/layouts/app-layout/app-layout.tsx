@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  AppShell, Box, Divider, Group, ScrollArea, Text, useMantineTheme,
+  AppShell, Box, Divider, Group, Portal, ScrollArea, Text, useMantineTheme,
 } from '@mantine/core';
 import { useFavicon, useLocalStorage } from '@mantine/hooks';
 
@@ -103,7 +103,7 @@ export default function AppLayout({
         </AppShell.Main>
         {devtools}
       </AppShell>
-      {mobileBottomNav}
+      {mobileBottomNav && <Portal>{mobileBottomNav}</Portal>}
     </AppLayoutContext.Provider>
   );
 }
