@@ -54,7 +54,9 @@ export default function ClientBottomNav() {
       }}
     >
       <Group grow gap={0} px="xs" py={6}>
-        {NAV_ITEMS.map(({ icon: Icon, labelKey, href, exact }) => {
+        {NAV_ITEMS.map(({
+          icon: Icon, labelKey, href, exact,
+        }) => {
           const isActive = exact
             ? location.pathname === href || location.pathname === `${href}/`
             : location.pathname.startsWith(href);
