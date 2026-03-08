@@ -230,7 +230,16 @@ internal class Program
         var keyVaultUri = builder.Configuration.GetConnectionString("key-vault");
         if (string.IsNullOrWhiteSpace(keyVaultUri)) throw new ArgumentException("Key vault connection string is not configured.");
 
-        var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+        var options = new SecretClientOptions
+        {
+            Retry =
+            {
+                MaxRetries = 2,
+                NetworkTimeout = TimeSpan.FromSeconds(10),
+            },
+        };
+
+        var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential(), options);
         builder.Configuration.AddAzureKeyVault(secretClient, new AzureKeyVaultConfigurationOptions
         {
             ReloadInterval = TimeSpan.FromHours(8)

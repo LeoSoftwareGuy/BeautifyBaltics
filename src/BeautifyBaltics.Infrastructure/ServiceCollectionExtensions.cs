@@ -76,7 +76,7 @@ public static class ServiceCollectionExtensions
                 // Turn on Otel tracing for connection activity, and
                 // also tag events to each span for all the Marten "write"
                 // operations 
-                options.OpenTelemetry.TrackConnections = TrackLevel.Verbose;
+                options.OpenTelemetry.TrackConnections = TrackLevel.Normal;
                 options.OpenTelemetry.TrackEventCounters();
 
                 options.Events.MetadataConfig.HeadersEnabled = true;
@@ -124,7 +124,7 @@ public static class ServiceCollectionExtensions
               })
             .UseNpgsqlDataSource()
             .UseLightweightSessions()
-            .AddAsyncDaemon(DaemonMode.Solo)
+            .AddAsyncDaemon(environment.IsDevelopment() ? DaemonMode.Solo : DaemonMode.HotCold)
             .ApplyAllDatabaseChangesOnStartup()
             .InitializeWith<SampleDataSeeder>();
     }
