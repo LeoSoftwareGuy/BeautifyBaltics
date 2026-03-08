@@ -7,6 +7,33 @@ using Microsoft.Extensions.Options;
 
 namespace BeautifyBaltics.Integrations.BlobStorage
 {
+    internal static class UserDelegationKeyCache
+    {
+        private static UserDelegationKey? _key;
+        private static DateTimeOffset _expiry = DateTimeOffset.MinValue;
+        private static readonly object _lock = new();
+
+        public static UserDelegationKey Get(BlobServiceClient client)
+        {
+            if (_key is not null && DateTimeOffset.UtcNow < _expiry)
+                return _key;
+
+            lock (_lock)
+            {
+                if (_key is not null && DateTimeOffset.UtcNow < _expiry)
+                    return _key;
+
+                var response = client.GetUserDelegationKey(
+                    DateTimeOffset.UtcNow.AddMinutes(-5),
+                    DateTimeOffset.UtcNow.AddHours(6));
+
+                _key = response.Value;
+                _expiry = DateTimeOffset.UtcNow.AddHours(5);
+                return _key;
+            }
+        }
+    }
+
     public class BlobStorageService<TFile>(
         IOptions<BlobStorageOptions<TFile>> options,
         BlobServiceClient blobServiceClient,
@@ -14,9 +41,6 @@ namespace BeautifyBaltics.Integrations.BlobStorage
     ) : IBlobStorageService<TFile>
         where TFile : notnull
     {
-        private static UserDelegationKey? _cachedDelegationKey;
-        private static DateTimeOffset _delegationKeyExpiry = DateTimeOffset.MinValue;
-        private static readonly object _delegationKeyLock = new();
         public async Task<string> UploadAsync(Guid containerId, BlobFileDTO file, string tenantId, CancellationToken cancellationToken = default)
             => await UploadInternalAsync(containerId, file, tenantId, cancellationToken);
 
@@ -129,24 +153,7 @@ namespace BeautifyBaltics.Integrations.BlobStorage
         }
 
         private UserDelegationKey GetCachedUserDelegationKey()
-        {
-            if (_cachedDelegationKey is not null && DateTimeOffset.UtcNow < _delegationKeyExpiry)
-                return _cachedDelegationKey;
-
-            lock (_delegationKeyLock)
-            {
-                if (_cachedDelegationKey is not null && DateTimeOffset.UtcNow < _delegationKeyExpiry)
-                    return _cachedDelegationKey;
-
-                var response = blobServiceClient.GetUserDelegationKey(
-                    DateTimeOffset.UtcNow.AddMinutes(-5),
-                    DateTimeOffset.UtcNow.AddHours(6)
-                );
-                _cachedDelegationKey = response.Value;
-                _delegationKeyExpiry = DateTimeOffset.UtcNow.AddHours(5);
-                return _cachedDelegationKey;
-            }
-        }
+            => UserDelegationKeyCache.Get(blobServiceClient);
 
         private async Task<BlobContainerClient> GetContainerClientAsync(CancellationToken cancellationToken = default)
         {

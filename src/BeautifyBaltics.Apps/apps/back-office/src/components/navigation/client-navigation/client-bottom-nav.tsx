@@ -1,6 +1,5 @@
-import { useTranslation } from 'react-i18next';
 import {
-  Box, Group, Stack, Text, UnstyledButton,
+  Box, Group, Stack, UnstyledButton,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -29,7 +28,6 @@ export default function ClientBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useSession();
-  const { t } = useTranslation();
 
   if (isMobile === false) return null;
 
@@ -55,7 +53,7 @@ export default function ClientBottomNav() {
     >
       <Group grow gap={0} px="xs" py={6}>
         {NAV_ITEMS.map(({
-          icon: Icon, labelKey, href, exact,
+          icon: Icon, href, exact,
         }) => {
           const isActive = exact
             ? location.pathname === href || location.pathname === `${href}/`
@@ -66,25 +64,19 @@ export default function ClientBottomNav() {
               key={href}
               onClick={() => navigate({ to: href })}
             >
-              <Stack gap={2} align="center" py={4}>
+              <Stack gap={2} align="center" py={6}>
                 <Icon
-                  size={22}
+                  size={24}
                   color={isActive ? 'var(--mantine-color-pink-6)' : 'var(--mantine-color-gray-5)'}
                 />
-                <Text size="xs" c={isActive ? 'pink' : 'dimmed'} fw={isActive ? 700 : 400} lh={1}>
-                  {t(labelKey)}
-                </Text>
               </Stack>
             </UnstyledButton>
           );
         })}
 
         <UnstyledButton onClick={handleLogout}>
-          <Stack gap={2} align="center" py={4}>
-            <IconLogout size={22} color="var(--mantine-color-red-5)" />
-            <Text size="xs" c="red.5" lh={1}>
-              {t('actions.logout')}
-            </Text>
+          <Stack gap={2} align="center" py={6}>
+            <IconLogout size={24} color="var(--mantine-color-red-5)" />
           </Stack>
         </UnstyledButton>
       </Group>

@@ -128,8 +128,8 @@ function MasterDashboardPage() {
   };
 
   const formatCurrency = (value: number | undefined): string => {
-    if (value === undefined) return '$0.00';
-    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (value === undefined) return '€0.00';
+    return `€${value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   const isLoading = isUserLoading || isStatsLoading || isRatingsLoading;

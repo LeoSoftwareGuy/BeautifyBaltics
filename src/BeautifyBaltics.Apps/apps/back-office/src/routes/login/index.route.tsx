@@ -76,7 +76,7 @@ function LoginView() {
   const search = Route.useSearch();
   const router = useRouter();
   const { t } = useTranslation();
-  const { login, isAuthenticated, loading } = useSession();
+  const { login, isAuthenticated, loading, user } = useSession();
   const [submitting, setSubmitting] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
@@ -87,12 +87,13 @@ function LoginView() {
   const [resetRole, setResetRole] = useState<UserRole>(UserRole.Client);
   const redirectPath: RoutePath = search.redirect;
   const isDesktop = useMediaQuery('(min-width: 75em)');
-
   useEffect(() => {
-    if (!loading && isAuthenticated) {
-      router.navigate({ to: redirectPath, replace: true });
+    if (!loading && isAuthenticated && user) {
+      let destination: RoutePath = user.role === UserRole.Master ? '/master' : '/explore';
+      if (redirectPath !== '/home') destination = redirectPath;
+      router.navigate({ to: destination, replace: true });
     }
-  }, [isAuthenticated, loading, redirectPath, router]);
+  }, [isAuthenticated, loading, redirectPath, router, user]);
 
   useEffect(() => {
     if (search.registered || search.verified) {
@@ -129,7 +130,6 @@ function LoginView() {
         password: values.password,
         role: accountRole,
       });
-      router.navigate({ to: redirectPath, replace: true });
     } catch (error) {
       if (error && typeof error === 'object' && 'detail' in error) {
         if (error.detail === 'email_not_verified') {
