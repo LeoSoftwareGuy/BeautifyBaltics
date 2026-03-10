@@ -17,7 +17,8 @@ public class CreateJobEventHandler(ICommandRepository commandRepository, IJobCat
             category.Id,
             category.Name,
             TimeSpan.FromMinutes(request.DurationMinutes),
-            request.Description
+            request.Description,
+            request.Price
         ));
 
         return new CreateJobResponse(job.Id);

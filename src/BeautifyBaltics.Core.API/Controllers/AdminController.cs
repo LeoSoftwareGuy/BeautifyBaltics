@@ -1,6 +1,9 @@
 using BeautifyBaltics.Core.API.Application.Admin.Commands.CreateJobCategory;
+using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteJobCategory;
+using BeautifyBaltics.Core.API.Application.Admin.Commands.UpdateJobCategory;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.GetClientStatistics;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.GetMasterStatistics;
+using BeautifyBaltics.Core.API.Application.Admin.Queries.GetServiceStatistics;
 using BeautifyBaltics.Core.API.Application.Job.Commands.CreateJob;
 using BeautifyBaltics.Core.API.Application.Job.Commands.UpdateJob;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
@@ -25,6 +28,26 @@ public class AdminController(IMessageBus bus) : ApiController
         return Created(string.Empty, response);
     }
 
+    [HttpPut("job-categories/{id:guid}", Name = "AdminUpdateJobCategory")]
+    [ProducesResponseType(typeof(UpdateJobCategoryResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<UpdateJobCategoryResponse>> UpdateJobCategory([FromRoute] Guid id, [FromBody] UpdateJobCategoryRequest request)
+    {
+        var response = await bus.InvokeAsync<UpdateJobCategoryResponse>(request with { Id = id });
+        return Ok(response);
+    }
+
+    [HttpDelete("job-categories/{id:guid}", Name = "AdminDeleteJobCategory")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeleteJobCategory([FromRoute] Guid id)
+    {
+        await bus.InvokeAsync(new DeleteJobCategoryRequest(id));
+        return NoContent();
+    }
+
     [HttpPost("jobs", Name = "AdminCreateJob")]
     [ProducesResponseType(typeof(CreateJobResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -42,6 +65,14 @@ public class AdminController(IMessageBus bus) : ApiController
     public async Task<ActionResult<UpdateJobResponse>> UpdateJob([FromRoute] Guid id, [FromBody] UpdateJobRequest request)
     {
         var response = await bus.InvokeAsync<UpdateJobResponse>(request with { JobId = id });
+        return Ok(response);
+    }
+
+    [HttpGet("stats/services", Name = "GetServiceStatistics")]
+    [ProducesResponseType(typeof(GetServiceStatisticsResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<GetServiceStatisticsResponse>> GetServiceStatistics()
+    {
+        var response = await bus.InvokeAsync<GetServiceStatisticsResponse>(new GetServiceStatisticsRequest());
         return Ok(response);
     }
 

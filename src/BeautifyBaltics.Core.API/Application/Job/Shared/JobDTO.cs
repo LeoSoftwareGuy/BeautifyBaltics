@@ -21,4 +21,6 @@ public record JobDTO
 
     [Range(1, 24 * 60)]
     public required int DurationMinutes { get; init; }
+
+    public required decimal Price { get; init; }
 }

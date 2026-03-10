@@ -19,7 +19,8 @@ namespace BeautifyBaltics.Core.API.Application.Job.Commands.UpdateJob
                 categoryId: category.Id,
                 categoryName: category.Name,
                 duration: TimeSpan.FromMinutes(request.DurationMinutes),
-                description: request.Description
+                description: request.Description,
+                price: request.Price
             );
 
             documentSession.Update(job);

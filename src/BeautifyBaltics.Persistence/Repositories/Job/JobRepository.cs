@@ -16,6 +16,15 @@ public class JobRepository(IQuerySession session) : QueryRepository<Domain.Docum
             .SortBy(search.SortBy, search.Ascending)
             .ToListAsync(cancellationToken);
 
+    public async Task<decimal> AveragePriceAsync(CancellationToken cancellationToken = default)
+    {
+        var count = await _session.Query<Domain.Documents.Job>().CountAsync(cancellationToken);
+        if (count == 0) return 0m;
+        return Math.Round(
+            (decimal)await _session.Query<Domain.Documents.Job>().AverageAsync(j => (double)j.Price, cancellationToken),
+            2);
+    }
+
     private IQueryable<Domain.Documents.Job> BuildSearchQuery(JobSearchDTO search)
     {
         var query = _session.Query<Domain.Documents.Job>().AsQueryable();

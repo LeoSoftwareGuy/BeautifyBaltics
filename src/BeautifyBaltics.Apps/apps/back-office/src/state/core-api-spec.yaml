@@ -36,6 +36,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/admin/job-categories/{id}':
+    put:
+      tags:
+        - Admin
+      operationId: AdminUpdateJobCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobCategoryRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobCategoryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateJobCategoryResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+    delete:
+      tags:
+        - Admin
+      operationId: AdminDeleteJobCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/admin/jobs:
     post:
       tags:
@@ -107,6 +172,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/admin/stats/services:
+    get:
+      tags:
+        - Admin
+      operationId: GetServiceStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetServiceStatisticsResponse'
   /api/v1/admin/stats/masters:
     get:
       tags:
@@ -548,6 +625,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/bookings/{id}/force-complete':
+    post:
+      tags:
+        - Bookings
+      summary: '[DEV ONLY] Force-complete a booking, bypassing the scheduled time check.'
+      operationId: ForceCompleteBooking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/clients:
     get:
       tags:
@@ -2629,9 +2734,9 @@ components:
       type: object
       properties:
         name:
-          maxLength: 128
           minLength: 1
           type: string
+          description: Name of the category
       additionalProperties: false
     CreateJobCategoryResponse:
       type: object
@@ -2689,6 +2794,7 @@ components:
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
         job:
           $ref: '#/components/schemas/MasterJobOfferingCommandDTO'
@@ -3077,22 +3183,33 @@ components:
         - type: object
           additionalProperties: false
     GetClientStatisticsResponse:
+      required:
+        - activeClientsLast30Days
+        - newClientsThisMonth
+        - totalBookingsLast30Days
+        - totalClients
+        - totalCompletedBookings
       type: object
       properties:
         totalClients:
           type: integer
+          description: Total number of clients
           format: int32
         newClientsThisMonth:
           type: integer
+          description: Number of new clients which joined this month
           format: int32
         activeClientsLast30Days:
           type: integer
+          description: Number of active cliens during the last 30 days
           format: int32
         totalBookingsLast30Days:
           type: integer
+          description: Total number of bookings the last 30 days
           format: int32
-        totalCompletedBookingValue:
+        totalCompletedBookings:
           type: number
+          description: Total number of completed bookings
           format: double
       additionalProperties: false
     GetDashboardStatsResponse:
@@ -3221,22 +3338,33 @@ components:
           description: Items
       additionalProperties: false
     GetMasterStatisticsResponse:
+      required:
+        - activeMastersLast30Days
+        - newMastersThisMonth
+        - pendingRequests
+        - totalBookingsLast30Days
+        - totalMasters
       type: object
       properties:
         totalMasters:
           type: integer
+          description: Total number of masters
           format: int32
         newMastersThisMonth:
           type: integer
+          description: Number of new masters this month
           format: int32
         activeMastersLast30Days:
           type: integer
+          description: Number of active masters during last 30 days
           format: int32
         totalBookingsLast30Days:
           type: integer
+          description: Total number of bookings during last 30 days
           format: int32
         pendingRequests:
           type: integer
+          description: Number of pending requests
           format: int32
       additionalProperties: false
     GetPendingRequestsResponse:
@@ -3254,6 +3382,26 @@ components:
           type: integer
           description: Total count of pending requests
           format: int32
+      additionalProperties: false
+    GetServiceStatisticsResponse:
+      required:
+        - averagePrice
+        - totalCategories
+        - totalServices
+      type: object
+      properties:
+        totalServices:
+          type: integer
+          description: Total services number
+          format: int64
+        totalCategories:
+          type: integer
+          description: Total categories number
+          format: int64
+        averagePrice:
+          type: number
+          description: Average price
+          format: double
       additionalProperties: false
     GetUserResponse:
       type: object
@@ -3307,6 +3455,10 @@ components:
           type: integer
           description: Duration in minutes
           format: int32
+        price:
+          type: number
+          description: Price in EUR
+          format: double
       additionalProperties: false
     JobDTO:
       required:
@@ -3316,6 +3468,7 @@ components:
         - durationMinutes
         - id
         - name
+        - price
       type: object
       properties:
         id:
@@ -3338,6 +3491,9 @@ components:
           minimum: 1
           type: integer
           format: int32
+        price:
+          type: number
+          format: double
       additionalProperties: false
     LoginRequest:
       required:
@@ -3349,9 +3505,11 @@ components:
         email:
           minLength: 1
           type: string
+          description: Email identifier
         password:
           minLength: 1
           type: string
+          description: Password
         role:
           $ref: '#/components/schemas/UserRole'
       additionalProperties: false
@@ -3614,25 +3772,27 @@ components:
       additionalProperties: false
     MasterJobOfferingCommandDTO:
       required:
+        - durationMinutes
         - jobId
+        - price
         - title
       type: object
       properties:
         jobId:
           type: string
+          description: Job identifier
           format: uuid
         title:
-          maxLength: 256
           minLength: 1
           type: string
+          description: Title to be displayed to clients
         price:
-          minimum: 0
           type: number
+          description: Price to be paid for the service
           format: double
         durationMinutes:
-          maximum: 1440
-          minimum: 1
           type: integer
+          description: Duration of the service
           format: int32
       additionalProperties: false
     MasterProfileCommandDTO:
@@ -3644,64 +3804,61 @@ components:
       type: object
       properties:
         firstName:
-          maxLength: 128
           minLength: 1
           type: string
+          description: First name
         lastName:
-          maxLength: 128
           minLength: 1
           type: string
+          description: Last name
         age:
-          maximum: 120
-          minimum: 18
           type: integer
+          description: Age
           format: int32
           nullable: true
         gender:
           $ref: '#/components/schemas/Gender'
         description:
-          maxLength: 1000
           type: string
+          description: Description
           nullable: true
         email:
           minLength: 1
           type: string
-          format: email
+          description: Email address
         phoneNumber:
-          maxLength: 32
           minLength: 1
           type: string
+          description: Phone number
         latitude:
-          maximum: 90
-          minimum: -90
           type: number
+          description: Latitude of the service lcoation
           format: double
           nullable: true
         longitude:
-          maximum: 180
-          minimum: -180
           type: number
+          description: Longitude of the service lcoation
           format: double
           nullable: true
         city:
-          maxLength: 128
           type: string
+          description: City of the service lcoation
           nullable: true
         country:
-          maxLength: 128
           type: string
+          description: Country of the service lcoation
           nullable: true
         addressLine1:
-          maxLength: 256
           type: string
+          description: Address line 1
           nullable: true
         addressLine2:
-          maxLength: 256
           type: string
+          description: Address line 2
           nullable: true
         postalCode:
-          maxLength: 32
           type: string
+          description: Postal code
           nullable: true
       additionalProperties: false
     PendingRequestDTO:
@@ -3821,18 +3978,23 @@ components:
         firstName:
           minLength: 1
           type: string
+          description: First name
         lastName:
           minLength: 1
           type: string
+          description: Last name
         email:
           minLength: 1
           type: string
+          description: Email address
         password:
           minLength: 1
           type: string
+          description: Password
         phoneNumber:
           minLength: 1
           type: string
+          description: Phone number
         role:
           $ref: '#/components/schemas/UserRole'
       additionalProperties: false
@@ -3887,24 +4049,30 @@ components:
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
         masterJobId:
           type: string
+          description: Master job identifier
           format: uuid
         masterJobImageId:
           type: string
+          description: Master job image identfier to be set as featured
           format: uuid
           nullable: true
         focusX:
           type: number
+          description: Featured image horizontal adjustment
           format: double
           nullable: true
         focusY:
           type: number
+          description: Featured image vertical adjustment
           format: double
           nullable: true
         zoom:
           type: number
+          description: Featured image zoom adjustment
           format: double
           nullable: true
       additionalProperties: false
@@ -3953,6 +4121,31 @@ components:
           type: string
           description: Id
           format: uuid
+      additionalProperties: false
+    UpdateJobCategoryRequest:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Job category identifier
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+          description: Job category name
+      additionalProperties: false
+    UpdateJobCategoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
       additionalProperties: false
     UpdateJobRequest:
       allOf:
@@ -4041,9 +4234,11 @@ components:
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
         masterJobId:
           type: string
+          description: Master job identifier
           format: uuid
         job:
           $ref: '#/components/schemas/MasterJobOfferingCommandDTO'
@@ -4067,6 +4262,7 @@ components:
           properties:
             masterId:
               type: string
+              description: Master identifier
               format: uuid
           additionalProperties: false
     UpdateMasterProfileResponse:

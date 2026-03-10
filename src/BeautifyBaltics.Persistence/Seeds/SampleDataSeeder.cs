@@ -539,7 +539,7 @@ public class SampleDataSeeder : IInitialData
     {
         public TimeSpan DefaultDuration => TimeSpan.FromMinutes(DurationMinutes);
 
-        public Job ToDocument(JobCategorySeed category) => new(Id, Name, category.Id, category.Name, TimeSpan.FromMinutes(DurationMinutes), Description);
+        public Job ToDocument(JobCategorySeed category) => new(Id, Name, category.Id, category.Name, TimeSpan.FromMinutes(DurationMinutes), Description, DefaultPrice);
     }
 
     private sealed record JobCategorySeed(Guid Id, string Name)

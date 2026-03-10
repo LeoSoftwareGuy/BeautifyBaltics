@@ -4,7 +4,9 @@ namespace BeautifyBaltics.Core.API.Application.Admin.Commands.CreateJobCategory;
 
 public record CreateJobCategoryRequest
 {
+    /// <summary>
+    /// Name of the category
+    /// </summary>
     [Required]
-    [MaxLength(128)]
     public required string Name { get; init; }
 }

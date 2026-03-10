@@ -580,3 +580,51 @@ export const useConfirmBooking = <TError = ProblemDetails | ProblemDetails | Val
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary [DEV ONLY] Force-complete a booking, bypassing the scheduled time check.
+ */
+export const forceCompleteBooking = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<void>(
+  { url: `/api/v1/bookings/${id}/force-complete`, method: 'POST', signal },
+);
+
+export const getForceCompleteBookingMutationOptions = <TError = ProblemDetails | ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof forceCompleteBooking>>, TError, { id: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof forceCompleteBooking>>, TError, { id: string }, TContext> => {
+  const mutationKey = ['forceCompleteBooking'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof forceCompleteBooking>>, { id: string }> = (props) => {
+    const { id } = props ?? {};
+
+    return forceCompleteBooking(id);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ForceCompleteBookingMutationResult = NonNullable<Awaited<ReturnType<typeof forceCompleteBooking>>>;
+
+export type ForceCompleteBookingMutationError = ProblemDetails | ProblemDetails;
+
+/**
+ * @summary [DEV ONLY] Force-complete a booking, bypassing the scheduled time check.
+ */
+export const useForceCompleteBooking = <TError = ProblemDetails | ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof forceCompleteBooking>>, TError, { id: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof forceCompleteBooking>>,
+  TError,
+  { id: string },
+  TContext
+  > => {
+  const mutationOptions = getForceCompleteBookingMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};

@@ -201,8 +201,8 @@ export type CreateClientResponse = {
 
 export type CreateJobCategoryRequest = {
   /**
+   * Name of the category
    * @minLength 1
-   * @maxLength 128
    */
   name: string;
 };
@@ -234,6 +234,7 @@ export type CreateMasterAvailabilityResponse = {
 };
 
 export type CreateMasterJobRequest = {
+  /** Master identifier */
   masterId: string;
   job: MasterJobOfferingCommandDTO;
 };
@@ -443,11 +444,16 @@ export type GetClientByIdResponseAllOf = { [key: string]: unknown };
 export type GetClientByIdResponse = ClientDTO & GetClientByIdResponseAllOf;
 
 export type GetClientStatisticsResponse = {
-  totalClients?: number;
-  newClientsThisMonth?: number;
-  activeClientsLast30Days?: number;
-  totalBookingsLast30Days?: number;
-  totalCompletedBookingValue?: number;
+  /** Total number of clients */
+  totalClients: number;
+  /** Number of new clients which joined this month */
+  newClientsThisMonth: number;
+  /** Number of active cliens during the last 30 days */
+  activeClientsLast30Days: number;
+  /** Total number of bookings the last 30 days */
+  totalBookingsLast30Days: number;
+  /** Total number of completed bookings */
+  totalCompletedBookings: number;
 };
 
 export type GetDashboardStatsResponse = {
@@ -524,11 +530,16 @@ export type GetMasterRatingsResponsePagedResponse = {
 };
 
 export type GetMasterStatisticsResponse = {
-  totalMasters?: number;
-  newMastersThisMonth?: number;
-  activeMastersLast30Days?: number;
-  totalBookingsLast30Days?: number;
-  pendingRequests?: number;
+  /** Total number of masters */
+  totalMasters: number;
+  /** Number of new masters this month */
+  newMastersThisMonth: number;
+  /** Number of active masters during last 30 days */
+  activeMastersLast30Days: number;
+  /** Total number of bookings during last 30 days */
+  totalBookingsLast30Days: number;
+  /** Number of pending requests */
+  pendingRequests: number;
 };
 
 export type GetPendingRequestsResponse = {
@@ -539,6 +550,15 @@ export type GetPendingRequestsResponse = {
   requests?: PendingRequestDTO[] | null;
   /** Total count of pending requests */
   totalCount: number;
+};
+
+export type GetServiceStatisticsResponse = {
+  /** Total services number */
+  totalServices: number;
+  /** Total categories number */
+  totalCategories: number;
+  /** Average price */
+  averagePrice: number;
 };
 
 export type GetUserResponse = {
@@ -575,6 +595,8 @@ export type JobCommandDTO = {
    * @maximum 1440
    */
   durationMinutes: number;
+  /** Price in EUR */
+  price?: number;
 };
 
 export type JobDTO = {
@@ -591,12 +613,19 @@ export type JobDTO = {
    * @maximum 1440
    */
   durationMinutes: number;
+  price: number;
 };
 
 export type LoginRequest = {
-  /** @minLength 1 */
+  /**
+   * Email identifier
+   * @minLength 1
+   */
   email: string;
-  /** @minLength 1 */
+  /**
+   * Password
+   * @minLength 1
+   */
   password: string;
   role: UserRole;
 };
@@ -758,85 +787,83 @@ export type MasterJobImageWithUrlDTO = {
 };
 
 export type MasterJobOfferingCommandDTO = {
+  /** Job identifier */
   jobId: string;
   /**
+   * Title to be displayed to clients
    * @minLength 1
-   * @maxLength 256
    */
   title: string;
-  /** @minimum 0 */
-  price?: number;
-  /**
-   * @minimum 1
-   * @maximum 1440
-   */
-  durationMinutes?: number;
+  /** Price to be paid for the service */
+  price: number;
+  /** Duration of the service */
+  durationMinutes: number;
 };
 
 export type MasterProfileCommandDTO = {
   /**
+   * First name
    * @minLength 1
-   * @maxLength 128
    */
   firstName: string;
   /**
+   * Last name
    * @minLength 1
-   * @maxLength 128
    */
   lastName: string;
   /**
-   * @minimum 18
-   * @maximum 120
+   * Age
    * @nullable
    */
   age?: number | null;
   gender?: Gender;
   /**
-   * @maxLength 1000
+   * Description
    * @nullable
    */
   description?: string | null;
-  /** @minLength 1 */
+  /**
+   * Email address
+   * @minLength 1
+   */
   email: string;
   /**
+   * Phone number
    * @minLength 1
-   * @maxLength 32
    */
   phoneNumber: string;
   /**
-   * @minimum -90
-   * @maximum 90
+   * Latitude of the service lcoation
    * @nullable
    */
   latitude?: number | null;
   /**
-   * @minimum -180
-   * @maximum 180
+   * Longitude of the service lcoation
    * @nullable
    */
   longitude?: number | null;
   /**
-   * @maxLength 128
+   * City of the service lcoation
    * @nullable
    */
   city?: string | null;
   /**
-   * @maxLength 128
+   * Country of the service lcoation
    * @nullable
    */
   country?: string | null;
   /**
-   * @maxLength 256
+   * Address line 1
    * @nullable
    */
   addressLine1?: string | null;
   /**
-   * @maxLength 256
+   * Address line 2
    * @nullable
    */
   addressLine2?: string | null;
   /**
-   * @maxLength 32
+   * Postal code
    * @nullable
    */
   postalCode?: string | null;
@@ -908,15 +935,30 @@ export type RatingDTO = {
 };
 
 export type RegisterUserRequest = {
-  /** @minLength 1 */
+  /**
+   * First name
+   * @minLength 1
+   */
   firstName: string;
-  /** @minLength 1 */
+  /**
+   * Last name
+   * @minLength 1
+   */
   lastName: string;
-  /** @minLength 1 */
+  /**
+   * Email address
+   * @minLength 1
+   */
   email: string;
-  /** @minLength 1 */
+  /**
+   * Password
+   * @minLength 1
+   */
   password: string;
-  /** @minLength 1 */
+  /**
+   * Phone number
+   * @minLength 1
+   */
   phoneNumber: string;
   role: UserRole;
 };
@@ -943,15 +985,29 @@ export type ResetPasswordRequest = {
 };
 
 export type SetMasterJobFeaturedImageRequest = {
+  /** Master identifier */
   masterId: string;
+  /** Master job identifier */
   masterJobId: string;
-  /** @nullable */
+  /**
+   * Master job image identfier to be set as featured
+   * @nullable
+   */
   masterJobImageId?: string | null;
-  /** @nullable */
+  /**
+   * Featured image horizontal adjustment
+   * @nullable
+   */
   focusX?: number | null;
-  /** @nullable */
+  /**
+   * Featured image vertical adjustment
+   * @nullable
+   */
   focusY?: number | null;
-  /** @nullable */
+  /**
+   * Featured image zoom adjustment
+   * @nullable
+   */
   zoom?: number | null;
 };
 
@@ -977,6 +1033,22 @@ export type UpdateClientProfileRequest = ClientCommandDTO & UpdateClientProfileR
 export type UpdateClientProfileResponse = {
   /** Id */
   id: string;
+};
+
+export type UpdateJobCategoryRequest = {
+  /** Job category identifier */
+  id: string;
+  /**
+   * Job category name
+   * @minLength 1
+   */
+  name: string;
+};
+
+export type UpdateJobCategoryResponse = {
+  id?: string;
+  /** @nullable */
+  name?: string | null;
 };
 
 export type UpdateJobRequestAllOf = {
@@ -1021,7 +1093,9 @@ export type UpdateMasterBufferTimeResponse = {
 };
 
 export type UpdateMasterJobRequest = {
+  /** Master identifier */
   masterId: string;
+  /** Master job identifier */
   masterJobId: string;
   job: MasterJobOfferingCommandDTO;
 };
@@ -1032,6 +1106,7 @@ export type UpdateMasterJobResponse = {
 };
 
 export type UpdateMasterProfileRequestAllOf = {
+  /** Master identifier */
   masterId: string;
 };
 

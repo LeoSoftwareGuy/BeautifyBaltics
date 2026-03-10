@@ -37,7 +37,10 @@ import type {
   CreateJobResponse,
   GetClientStatisticsResponse,
   GetMasterStatisticsResponse,
+  GetServiceStatisticsResponse,
   ProblemDetails,
+  UpdateJobCategoryRequest,
+  UpdateJobCategoryResponse,
   UpdateJobRequest,
   UpdateJobResponse,
   ValidationProblemDetails,
@@ -88,6 +91,94 @@ export const useAdminCreateJobCategory = <TError = ProblemDetails | ValidationPr
   TContext
   > => {
   const mutationOptions = getAdminCreateJobCategoryMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const adminUpdateJobCategory = (
+  id: string,
+  updateJobCategoryRequest: UpdateJobCategoryRequest,
+) => customClient<UpdateJobCategoryResponse>(
+  {
+    url: `/api/v1/admin/job-categories/${id}`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateJobCategoryRequest,
+  },
+);
+
+export const getAdminUpdateJobCategoryMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminUpdateJobCategory>>, TError, { id: string;data: UpdateJobCategoryRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof adminUpdateJobCategory>>, TError, { id: string;data: UpdateJobCategoryRequest }, TContext> => {
+  const mutationKey = ['adminUpdateJobCategory'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminUpdateJobCategory>>, { id: string;data: UpdateJobCategoryRequest }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return adminUpdateJobCategory(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminUpdateJobCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof adminUpdateJobCategory>>>;
+export type AdminUpdateJobCategoryMutationBody = UpdateJobCategoryRequest;
+export type AdminUpdateJobCategoryMutationError = ProblemDetails | ValidationProblemDetails;
+
+export const useAdminUpdateJobCategory = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminUpdateJobCategory>>, TError, { id: string;data: UpdateJobCategoryRequest }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof adminUpdateJobCategory>>,
+  TError,
+  { id: string;data: UpdateJobCategoryRequest },
+  TContext
+  > => {
+  const mutationOptions = getAdminUpdateJobCategoryMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const adminDeleteJobCategory = (
+  id: string,
+) => customClient<void>(
+  { url: `/api/v1/admin/job-categories/${id}`, method: 'DELETE' },
+);
+
+export const getAdminDeleteJobCategoryMutationOptions = <TError = ProblemDetails | ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminDeleteJobCategory>>, TError, { id: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof adminDeleteJobCategory>>, TError, { id: string }, TContext> => {
+  const mutationKey = ['adminDeleteJobCategory'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminDeleteJobCategory>>, { id: string }> = (props) => {
+    const { id } = props ?? {};
+
+    return adminDeleteJobCategory(id);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdminDeleteJobCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof adminDeleteJobCategory>>>;
+
+export type AdminDeleteJobCategoryMutationError = ProblemDetails | ProblemDetails;
+
+export const useAdminDeleteJobCategory = <TError = ProblemDetails | ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminDeleteJobCategory>>, TError, { id: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof adminDeleteJobCategory>>,
+  TError,
+  { id: string },
+  TContext
+  > => {
+  const mutationOptions = getAdminDeleteJobCategoryMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
@@ -186,6 +277,107 @@ export const useAdminUpdateJob = <TError = ProblemDetails | ValidationProblemDet
 
   return useMutation(mutationOptions, queryClient);
 };
+export const getServiceStatistics = (
+
+  signal?: AbortSignal,
+) => customClient<GetServiceStatisticsResponse>(
+  { url: '/api/v1/admin/stats/services', method: 'GET', signal },
+);
+
+export const getGetServiceStatisticsQueryKey = () => ['/api/v1/admin/stats/services'] as const;
+
+export const getGetServiceStatisticsQueryOptions = <TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetServiceStatisticsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceStatistics>>> = ({ signal }) => getServiceStatistics(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetServiceStatisticsQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceStatistics>>>;
+export type GetServiceStatisticsQueryError = unknown;
+
+export function useGetServiceStatistics<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getServiceStatistics>>,
+  TError,
+  Awaited<ReturnType<typeof getServiceStatistics>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetServiceStatistics<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getServiceStatistics>>,
+  TError,
+  Awaited<ReturnType<typeof getServiceStatistics>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetServiceStatistics<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetServiceStatistics<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetServiceStatisticsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetServiceStatisticsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetServiceStatisticsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getServiceStatistics>>> = ({ signal }) => getServiceStatistics(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetServiceStatisticsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getServiceStatistics>>>;
+export type GetServiceStatisticsSuspenseQueryError = unknown;
+
+export function useGetServiceStatisticsSuspense<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetServiceStatisticsSuspense<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetServiceStatisticsSuspense<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetServiceStatisticsSuspense<TData = Awaited<ReturnType<typeof getServiceStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getServiceStatistics>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetServiceStatisticsSuspenseQueryOptions(options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export const getMasterStatistics = (
 
   signal?: AbortSignal,

@@ -43,7 +43,7 @@ public class GetClientStatisticsHandler(IClientRepository clientRepository, IBoo
             NewClientsThisMonth = newClientsThisMonth,
             ActiveClientsLast30Days = activeClients,
             TotalBookingsLast30Days = totalBookingsLast30Days,
-            TotalCompletedBookingValue = Math.Round(totalCompletedValue, 2),
+            TotalCompletedBookings = Math.Round(totalCompletedValue, 2),
         };
     }
 }

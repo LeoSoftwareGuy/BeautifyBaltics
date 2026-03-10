@@ -20,6 +20,10 @@ namespace BeautifyBaltics.Core.API.Application.Job.Commands.Shared
             RuleFor(v => v.DurationMinutes)
                 .GreaterThan(0)
                 .LessThanOrEqualTo(24 * 60);
+
+            RuleFor(v => v.Price)
+                .GreaterThan(0)
+                .LessThanOrEqualTo(10000);
         }
     }
 }
