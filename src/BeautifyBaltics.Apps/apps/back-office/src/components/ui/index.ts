@@ -10,4 +10,5 @@ export { default as InsightCard } from './insight-card';
 export { default as PageTitle } from './page-title';
 export { default as StickyActionButtons } from './sticky-action-buttons';
 export { default as ViewportContainer } from './viewport-container';
+export * from './stat-card';
 export * from './widgets';

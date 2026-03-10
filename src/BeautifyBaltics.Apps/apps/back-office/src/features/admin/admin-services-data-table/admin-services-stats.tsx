@@ -1,47 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import {
-  Card,
-  Group,
-  NumberFormatter,
-  SimpleGrid,
-  Skeleton,
-  Text,
-  ThemeIcon,
-} from '@mantine/core';
+import { NumberFormatter, SimpleGrid } from '@mantine/core';
 import {
   IconBriefcase,
   IconCategory,
   IconCurrencyEuro,
 } from '@tabler/icons-react';
 
+import { StatCard } from '@/components/ui';
 import { useGetServiceStatistics } from '@/state/endpoints/admin';
-
-type StatCardProps = {
-  icon: typeof IconBriefcase;
-  label: string;
-  value: React.ReactNode;
-  isLoading: boolean;
-};
-
-function StatCard({
-  icon: Icon, label, value, isLoading,
-}: StatCardProps) {
-  return (
-    <Card withBorder radius="md" p="lg">
-      <Group gap="md">
-        <ThemeIcon size="xl" radius="md" variant="light" color="brand">
-          <Icon size={22} />
-        </ThemeIcon>
-        <div>
-          <Text size="xs" c="dimmed" tt="uppercase" fw={600}>{label}</Text>
-          {isLoading
-            ? <Skeleton height={28} width={60} mt={4} />
-            : <Text fw={700} size="xl">{value}</Text>}
-        </div>
-      </Group>
-    </Card>
-  );
-}
 
 export function AdminServicesStats() {
   const { t } = useTranslation();

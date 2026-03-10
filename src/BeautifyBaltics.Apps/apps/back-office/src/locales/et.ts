@@ -62,21 +62,79 @@ const et: CommonLocale = {
       adminDashboard: 'Admin',
       adminServices: 'Teenused',
       adminBookings: 'Broneeringud',
+      adminUsers: 'Kasutajad',
     },
     admin: {
       services: 'Teenused',
       bookings: 'Broneeringud',
+      users: 'Kasutajad',
     },
   },
   admin: {
     navigation: {
       services: 'Teenused',
       bookings: 'Broneeringud',
+      users: 'Kasutajad',
     },
     breadcrumbs: {
       adminDashboard: 'Admin',
       adminServices: 'Teenused',
       adminBookings: 'Broneeringud',
+      adminUsers: 'Kasutajad',
+    },
+    users: {
+      page: {
+        title: 'Kasutajate haldus',
+        subtitle: 'Halda platvormi kasutajaid, rolle ja kontosid',
+      },
+      stats: {
+        totalUsers: 'Kasutajaid kokku',
+        totalMasters: 'Aktiivsed meistrid',
+        totalClients: 'Aktiivsed kliendid',
+        platformVolume: 'Platvormi käive',
+      },
+      table: {
+        columns: {
+          name: 'Nimi',
+          phone: 'Telefon',
+          role: 'Roll',
+          emailVerified: 'E-post',
+          joinedAt: 'Liitus',
+          actions: 'Toimingud',
+        },
+        noRecords: 'Kasutajaid ei leitud',
+      },
+      filters: {
+        searchPlaceholder: 'Otsi nime või e-posti järgi...',
+        allRoles: 'Kõik rollid',
+      },
+      role: {
+        client: 'Klient',
+        master: 'Meister',
+        admin: 'Admin',
+      },
+      verified: 'Kinnitatud',
+      unverified: 'Kinnitamata',
+      actions: {
+        promoteToAdmin: 'Tee adminiks',
+        delete: 'Kustuta',
+      },
+      promoteModal: {
+        title: 'Tee adminiks',
+        message: 'Kas oled kindel, et soovid teha {{name}} adminiks? See annab täieliku platvormi ligipääsu.',
+        confirm: 'Tee adminiks',
+      },
+      deleteModal: {
+        title: 'Kustuta kasutaja',
+        message: 'Kas oled kindel, et soovid kustutada kasutaja {{name}}? Seda toimingut ei saa tagasi võtta.',
+        confirm: 'Kustuta',
+      },
+      notifications: {
+        roleUpdated: 'Kasutaja roll edukalt uuendatud',
+        deleted: 'Kasutaja edukalt kustutatud',
+        errorTitle: 'Viga',
+        error: 'Midagi läks valesti. Palun proovi uuesti.',
+      },
     },
     bookings: {
       page: {

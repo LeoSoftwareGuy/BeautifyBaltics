@@ -62,21 +62,79 @@ const ru: CommonLocale = {
       adminDashboard: 'Панель Админа',
       adminServices: 'Сервисы',
       adminBookings: 'Бронирования',
+      adminUsers: 'Пользователи',
     },
     admin: {
       services: 'Услуги',
       bookings: 'Бронирования',
+      users: 'Пользователи',
     },
   },
   admin: {
     navigation: {
       services: 'Услуги',
       bookings: 'Бронирования',
+      users: 'Пользователи',
     },
     breadcrumbs: {
       adminDashboard: 'Панель Админа',
       adminServices: 'Услуги',
       adminBookings: 'Бронирования',
+      adminUsers: 'Пользователи',
+    },
+    users: {
+      page: {
+        title: 'Управление пользователями',
+        subtitle: 'Управляйте пользователями платформы, ролями и аккаунтами',
+      },
+      stats: {
+        totalUsers: 'Всего пользователей',
+        totalMasters: 'Активных мастеров',
+        totalClients: 'Активных клиентов',
+        platformVolume: 'Объём платформы',
+      },
+      table: {
+        columns: {
+          name: 'Имя',
+          phone: 'Телефон',
+          role: 'Роль',
+          emailVerified: 'Email',
+          joinedAt: 'Дата регистрации',
+          actions: 'Действия',
+        },
+        noRecords: 'Пользователи не найдены',
+      },
+      filters: {
+        searchPlaceholder: 'Поиск по имени или email...',
+        allRoles: 'Все роли',
+      },
+      role: {
+        client: 'Клиент',
+        master: 'Мастер',
+        admin: 'Админ',
+      },
+      verified: 'Подтверждён',
+      unverified: 'Не подтверждён',
+      actions: {
+        promoteToAdmin: 'Сделать админом',
+        delete: 'Удалить',
+      },
+      promoteModal: {
+        title: 'Сделать админом',
+        message: 'Вы уверены, что хотите назначить {{name}} администратором? Это даст полный доступ к платформе.',
+        confirm: 'Назначить',
+      },
+      deleteModal: {
+        title: 'Удалить пользователя',
+        message: 'Вы уверены, что хотите удалить пользователя {{name}}? Это действие нельзя отменить.',
+        confirm: 'Удалить',
+      },
+      notifications: {
+        roleUpdated: 'Роль пользователя успешно обновлена',
+        deleted: 'Пользователь успешно удалён',
+        errorTitle: 'Ошибка',
+        error: 'Что-то пошло не так. Попробуйте ещё раз.',
+      },
     },
     bookings: {
       page: {

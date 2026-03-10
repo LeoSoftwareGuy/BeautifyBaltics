@@ -1,45 +1,45 @@
 import { useTranslation } from 'react-i18next';
 import { NumberFormatter, SimpleGrid } from '@mantine/core';
 import {
-  IconCalendarCheck,
-  IconCalendarClock,
-  IconCalendarStats,
   IconCurrencyEuro,
+  IconUserCheck,
+  IconUsers,
+  IconUserStar,
 } from '@tabler/icons-react';
 
 import { StatCard } from '@/components/ui';
-import { useGetBookingStatistics } from '@/state/endpoints/admin';
+import { useGetUserStatistics } from '@/state/endpoints/admin';
 
-export function AdminBookingsStats() {
+export function AdminUsersStats() {
   const { t } = useTranslation();
-  const { data: stats, isLoading } = useGetBookingStatistics();
+  const { data: stats, isLoading } = useGetUserStatistics();
 
   return (
     <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }}>
       <StatCard
-        icon={IconCalendarStats}
-        label={t('admin.bookings.stats.totalBookings')}
-        value={stats?.totalBookings ?? 0}
+        icon={IconUsers}
+        label={t('admin.users.stats.totalUsers')}
+        value={stats?.totalUsers ?? 0}
         isLoading={isLoading}
       />
       <StatCard
-        icon={IconCalendarCheck}
-        label={t('admin.bookings.stats.confirmed')}
-        value={stats?.confirmed ?? 0}
+        icon={IconUserStar}
+        label={t('admin.users.stats.totalMasters')}
+        value={stats?.totalMasters ?? 0}
         isLoading={isLoading}
       />
       <StatCard
-        icon={IconCalendarClock}
-        label={t('admin.bookings.stats.pending')}
-        value={stats?.pending ?? 0}
+        icon={IconUserCheck}
+        label={t('admin.users.stats.totalClients')}
+        value={stats?.totalClients ?? 0}
         isLoading={isLoading}
       />
       <StatCard
         icon={IconCurrencyEuro}
-        label={t('admin.bookings.stats.revenueThisMonth')}
+        label={t('admin.users.stats.platformVolume')}
         value={(
           <NumberFormatter
-            value={stats?.revenueThisMonth ?? 0}
+            value={stats?.platformVolume ?? 0}
             prefix="€"
             decimalScale={2}
             fixedDecimalScale

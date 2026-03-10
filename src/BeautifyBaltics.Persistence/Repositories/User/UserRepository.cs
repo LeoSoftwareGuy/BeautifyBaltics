@@ -11,13 +11,25 @@ namespace BeautifyBaltics.Persistence.Repositories.User
                CancellationToken cancellationToken = default
         )
         {
+            return BuildSearchQuery(search).ToPagedListAsync(search.Page, search.PageSize, cancellationToken);
+        }
+
+        public override Task<int> CountAsync(UserSearchDTO search, CancellationToken cancellationToken = default)
+        {
+            return BuildSearchQuery(search).CountAsync(cancellationToken);
+        }
+
+        private IQueryable<Domain.Documents.User.User> BuildSearchQuery(UserSearchDTO search)
+        {
             var query = _session.Query<Domain.Documents.User.User>().AsQueryable();
 
             if (search.Role is not null) query = query.Where(x => x.Role == search.Role);
             if (search.FirstName is not null) query = query.Where(x => x.FirstName.NgramSearch(search.FirstName));
             if (search.Email is not null) query = query.Where(x => x.Email.NgramSearch(search.Email));
+            if (search.Search is not null)
+                query = query.Where(x => x.Email.NgramSearch(search.Search) || x.FirstName.NgramSearch(search.Search));
 
-            return query.ToPagedListAsync(search.Page, search.PageSize, cancellationToken);
+            return query;
         }
 
         public async Task<Domain.Documents.User.User?> GetByEmailAsync(string email, UserRole? role = null, CancellationToken cancellationToken = default)

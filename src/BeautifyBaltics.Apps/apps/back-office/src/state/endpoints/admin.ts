@@ -35,11 +35,16 @@ import type {
   CreateJobCategoryResponse,
   CreateJobRequest,
   CreateJobResponse,
+  FindUsersParams,
+  FindUsersResponsePagedResponse,
   GetBookingStatisticsResponse,
   GetClientStatisticsResponse,
   GetMasterStatisticsResponse,
   GetServiceStatisticsResponse,
+  GetUserStatisticsResponse,
   ProblemDetails,
+  SetUserRoleRequest,
+  SetUserRoleResponse,
   UpdateJobCategoryRequest,
   UpdateJobCategoryResponse,
   UpdateJobRequest,
@@ -278,67 +283,6 @@ export const useAdminUpdateJob = <TError = ProblemDetails | ValidationProblemDet
 
   return useMutation(mutationOptions, queryClient);
 };
-export const getBookingStatistics = (
-
-  signal?: AbortSignal,
-) => customClient<GetBookingStatisticsResponse>(
-  { url: '/api/v1/admin/stats/bookings', method: 'GET', signal },
-);
-
-export const getGetBookingStatisticsQueryKey = () => ['/api/v1/admin/stats/bookings'] as const;
-
-export const getGetBookingStatisticsQueryOptions = <TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getGetBookingStatisticsQueryKey();
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBookingStatistics>>> = ({ signal }) => getBookingStatistics(signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type GetBookingStatisticsQueryResult = NonNullable<Awaited<ReturnType<typeof getBookingStatistics>>>;
-export type GetBookingStatisticsQueryError = unknown;
-
-export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>> & Pick<
-  DefinedInitialDataOptions<
-  Awaited<ReturnType<typeof getBookingStatistics>>,
-  TError,
-  Awaited<ReturnType<typeof getBookingStatistics>>
-  >, 'initialData'
-  >, }
-  , queryClient?: QueryClient
-): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>> & Pick<
-  UndefinedInitialDataOptions<
-  Awaited<ReturnType<typeof getBookingStatistics>>,
-  TError,
-  Awaited<ReturnType<typeof getBookingStatistics>>
-  >, 'initialData'
-  >, }
-  , queryClient?: QueryClient
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, }
-  , queryClient?: QueryClient
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getGetBookingStatisticsQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
 export const getServiceStatistics = (
 
   signal?: AbortSignal,
@@ -432,6 +376,107 @@ export function useGetServiceStatisticsSuspense<TData = Awaited<ReturnType<typeo
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getGetServiceStatisticsSuspenseQueryOptions(options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getBookingStatistics = (
+
+  signal?: AbortSignal,
+) => customClient<GetBookingStatisticsResponse>(
+  { url: '/api/v1/admin/stats/bookings', method: 'GET', signal },
+);
+
+export const getGetBookingStatisticsQueryKey = () => ['/api/v1/admin/stats/bookings'] as const;
+
+export const getGetBookingStatisticsQueryOptions = <TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetBookingStatisticsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBookingStatistics>>> = ({ signal }) => getBookingStatistics(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetBookingStatisticsQueryResult = NonNullable<Awaited<ReturnType<typeof getBookingStatistics>>>;
+export type GetBookingStatisticsQueryError = unknown;
+
+export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getBookingStatistics>>,
+  TError,
+  Awaited<ReturnType<typeof getBookingStatistics>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getBookingStatistics>>,
+  TError,
+  Awaited<ReturnType<typeof getBookingStatistics>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetBookingStatistics<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetBookingStatisticsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetBookingStatisticsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetBookingStatisticsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBookingStatistics>>> = ({ signal }) => getBookingStatistics(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetBookingStatisticsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getBookingStatistics>>>;
+export type GetBookingStatisticsSuspenseQueryError = unknown;
+
+export function useGetBookingStatisticsSuspense<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetBookingStatisticsSuspense<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetBookingStatisticsSuspense<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetBookingStatisticsSuspense<TData = Awaited<ReturnType<typeof getBookingStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getBookingStatistics>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetBookingStatisticsSuspenseQueryOptions(options);
 
   const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -641,3 +686,301 @@ export function useGetClientStatisticsSuspense<TData = Awaited<ReturnType<typeof
 
   return query;
 }
+
+export const getUserStatistics = (
+
+  signal?: AbortSignal,
+) => customClient<GetUserStatisticsResponse>(
+  { url: '/api/v1/admin/stats/users', method: 'GET', signal },
+);
+
+export const getGetUserStatisticsQueryKey = () => ['/api/v1/admin/stats/users'] as const;
+
+export const getGetUserStatisticsQueryOptions = <TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetUserStatisticsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserStatistics>>> = ({ signal }) => getUserStatistics(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetUserStatisticsQueryResult = NonNullable<Awaited<ReturnType<typeof getUserStatistics>>>;
+export type GetUserStatisticsQueryError = unknown;
+
+export function useGetUserStatistics<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getUserStatistics>>,
+  TError,
+  Awaited<ReturnType<typeof getUserStatistics>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetUserStatistics<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getUserStatistics>>,
+  TError,
+  Awaited<ReturnType<typeof getUserStatistics>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetUserStatistics<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetUserStatistics<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetUserStatisticsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetUserStatisticsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetUserStatisticsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserStatistics>>> = ({ signal }) => getUserStatistics(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetUserStatisticsSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getUserStatistics>>>;
+export type GetUserStatisticsSuspenseQueryError = unknown;
+
+export function useGetUserStatisticsSuspense<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetUserStatisticsSuspense<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetUserStatisticsSuspense<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetUserStatisticsSuspense<TData = Awaited<ReturnType<typeof getUserStatistics>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getUserStatistics>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetUserStatisticsSuspenseQueryOptions(options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const findUsers = (
+  params?: FindUsersParams,
+  signal?: AbortSignal,
+) => customClient<FindUsersResponsePagedResponse>(
+  {
+    url: '/api/v1/admin/users',
+    method: 'GET',
+    params,
+    signal,
+  },
+);
+
+export const getFindUsersQueryKey = (params?: FindUsersParams) => ['/api/v1/admin/users', ...(params ? [params] : [])] as const;
+
+export const getFindUsersQueryOptions = <TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(params?: FindUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindUsersQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findUsers>>> = ({ signal }) => findUsers(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindUsersQueryResult = NonNullable<Awaited<ReturnType<typeof findUsers>>>;
+export type FindUsersQueryError = unknown;
+
+export function useFindUsers<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params: undefined | FindUsersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findUsers>>,
+  TError,
+  Awaited<ReturnType<typeof findUsers>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindUsers<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params?: FindUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof findUsers>>,
+  TError,
+  Awaited<ReturnType<typeof findUsers>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindUsers<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params?: FindUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useFindUsers<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params?: FindUsersParams,
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindUsersQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getFindUsersSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(params?: FindUsersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindUsersQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findUsers>>> = ({ signal }) => findUsers(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindUsersSuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof findUsers>>>;
+export type FindUsersSuspenseQueryError = unknown;
+
+export function useFindUsersSuspense<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params: undefined | FindUsersParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindUsersSuspense<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params?: FindUsersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useFindUsersSuspense<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params?: FindUsersParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useFindUsersSuspense<TData = Awaited<ReturnType<typeof findUsers>>, TError = unknown>(
+  params?: FindUsersParams,
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findUsers>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getFindUsersSuspenseQueryOptions(params, options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const setUserRole = (
+  id: string,
+  setUserRoleRequest: SetUserRoleRequest,
+) => customClient<SetUserRoleResponse>(
+  {
+    url: `/api/v1/admin/users/${id}/role`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: setUserRoleRequest,
+  },
+);
+
+export const getSetUserRoleMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setUserRole>>, TError, { id: string;data: SetUserRoleRequest }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof setUserRole>>, TError, { id: string;data: SetUserRoleRequest }, TContext> => {
+  const mutationKey = ['setUserRole'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof setUserRole>>, { id: string;data: SetUserRoleRequest }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return setUserRole(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SetUserRoleMutationResult = NonNullable<Awaited<ReturnType<typeof setUserRole>>>;
+export type SetUserRoleMutationBody = SetUserRoleRequest;
+export type SetUserRoleMutationError = ProblemDetails | ValidationProblemDetails;
+
+export const useSetUserRole = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof setUserRole>>, TError, { id: string;data: SetUserRoleRequest }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof setUserRole>>,
+  TError,
+  { id: string;data: SetUserRoleRequest },
+  TContext
+  > => {
+  const mutationOptions = getSetUserRoleMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const deleteUser = (
+  id: string,
+) => customClient<void>(
+  { url: `/api/v1/admin/users/${id}`, method: 'DELETE' },
+);
+
+export const getDeleteUserMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError, { id: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError, { id: string }, TContext> => {
+  const mutationKey = ['deleteUser'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteUser>>, { id: string }> = (props) => {
+    const { id } = props ?? {};
+
+    return deleteUser(id);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteUserMutationResult = NonNullable<Awaited<ReturnType<typeof deleteUser>>>;
+
+export type DeleteUserMutationError = ProblemDetails;
+
+export const useDeleteUser = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUser>>, TError, { id: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof deleteUser>>,
+  TError,
+  { id: string },
+  TContext
+  > => {
+  const mutationOptions = getDeleteUserMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};

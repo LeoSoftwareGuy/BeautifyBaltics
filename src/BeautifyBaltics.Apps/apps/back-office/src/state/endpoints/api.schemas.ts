@@ -418,6 +418,54 @@ export type FindMastersResponsePagedResponse = {
   items: FindMastersResponse[];
 };
 
+export type FindUsersResponse = {
+  /** User ID */
+  id: string;
+  /**
+   * Email address
+   * @nullable
+   */
+  email: string | null;
+  /**
+   * First name
+   * @nullable
+   */
+  firstName: string | null;
+  /**
+   * Last name
+   * @nullable
+   */
+  lastName: string | null;
+  /**
+   * Full name
+   * @nullable
+   */
+  fullName: string | null;
+  /**
+   * Phone number
+   * @nullable
+   */
+  phoneNumber: string | null;
+  role: UserRole;
+  /** Whether email is verified */
+  emailVerified: boolean;
+  /** Account creation date */
+  createdAt: Date;
+};
+
+export type FindUsersResponsePagedResponse = {
+  /** Current page number */
+  page: number;
+  /** Page size */
+  pageSize: number;
+  /** Total pages count */
+  pageCount: number;
+  /** Total items count */
+  totalItemCount: number;
+  /** Items */
+  items: FindUsersResponse[];
+};
+
 export type ForgotPasswordRequest = {
   /** @minLength 1 */
   email: string;
@@ -438,6 +486,17 @@ export type GetAvailableTimeSlotsResponse = {
 export type GetBookingByIdResponseAllOf = { [key: string]: unknown };
 
 export type GetBookingByIdResponse = BookingDTO & GetBookingByIdResponseAllOf;
+
+export type GetBookingStatisticsResponse = {
+  /** Total number of bookings */
+  totalBookings?: number;
+  /** Number of confirmed bookings */
+  confirmed?: number;
+  /** Number of pending (requested) bookings */
+  pending?: number;
+  /** Total revenue from non-cancelled bookings this month */
+  revenueThisMonth?: number;
+};
 
 export type GetClientByIdResponseAllOf = { [key: string]: unknown };
 
@@ -552,17 +611,6 @@ export type GetPendingRequestsResponse = {
   totalCount: number;
 };
 
-export type GetBookingStatisticsResponse = {
-  /** Total number of bookings */
-  totalBookings: number;
-  /** Number of confirmed bookings */
-  confirmed: number;
-  /** Number of pending (requested) bookings */
-  pending: number;
-  /** Total revenue from non-cancelled bookings this month */
-  revenueThisMonth: number;
-};
-
 export type GetServiceStatisticsResponse = {
   /** Total services number */
   totalServices: number;
@@ -579,6 +627,17 @@ export type GetUserResponse = {
   email?: string | null;
   /** @nullable */
   fullName?: string | null;
+};
+
+export type GetUserStatisticsResponse = {
+  /** Total number of registered users */
+  totalUsers?: number;
+  /** Total number of masters */
+  totalMasters?: number;
+  /** Total number of clients */
+  totalClients?: number;
+  /** Total platform revenue from completed bookings */
+  platformVolume?: number;
 };
 
 export type JobCategoryDTO = {
@@ -1029,6 +1088,16 @@ export type SetMasterJobFeaturedImageResponse = {
   featuredImageId?: string | null;
 };
 
+export type SetUserRoleRequest = {
+  userId?: string;
+  role?: UserRole;
+};
+
+export type SetUserRoleResponse = {
+  id?: string;
+  role?: UserRole;
+};
+
 export type UnsetMasterJobFeaturedImageResponse = {
   masterId?: string;
   masterJobId?: string;
@@ -1167,6 +1236,49 @@ export type ValidationProblemDetails = {
   /** @nullable */
   errors?: ValidationProblemDetailsErrors;
   [key: string]: unknown;
+};
+
+export type FindUsersParams = {
+/**
+ * Filter by role
+ */
+  role?: UserRole;
+  /**
+ * Filter by first name
+ */
+  firstName?: string;
+  /**
+ * Filter by last name
+ */
+  lastName?: string;
+  /**
+ * Filter by email address
+ */
+  email?: string;
+  /**
+ * Search by name or email
+ */
+  search?: string;
+  /**
+ * Page number
+ */
+  page?: number;
+  /**
+ * Items per page
+ */
+  pageSize?: number;
+  /**
+ * Sort by column
+ */
+  sortBy?: string;
+  /**
+ * Is sorting order ascending or descending, defaults to false (descending)
+ */
+  ascending?: boolean;
+  /**
+ * Retrieve all items
+ */
+  all?: boolean;
 };
 
 export type VerifyEmailParams = {

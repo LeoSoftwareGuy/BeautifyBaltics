@@ -184,6 +184,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetServiceStatisticsResponse'
+  /api/v1/admin/stats/bookings:
+    get:
+      tags:
+        - Admin
+      operationId: GetBookingStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBookingStatisticsResponse'
   /api/v1/admin/stats/masters:
     get:
       tags:
@@ -208,6 +220,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetClientStatisticsResponse'
+  /api/v1/admin/stats/users:
+    get:
+      tags:
+        - Admin
+      operationId: GetUserStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserStatisticsResponse'
+  /api/v1/admin/users:
+    get:
+      tags:
+        - Admin
+      operationId: FindUsers
+      parameters:
+        - name: role
+          in: query
+          description: Filter by role
+          schema:
+            $ref: '#/components/schemas/UserRole'
+        - name: firstName
+          in: query
+          description: Filter by first name
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: Filter by last name
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Filter by email address
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Search by name or email
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindUsersResponsePagedResponse'
+  '/api/v1/admin/users/{id}/role':
+    put:
+      tags:
+        - Admin
+      operationId: SetUserRole
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetUserRoleRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/SetUserRoleRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetUserRoleResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/admin/users/{id}':
+    delete:
+      tags:
+        - Admin
+      operationId: DeleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/auth/register:
     post:
       tags:
@@ -3143,6 +3292,84 @@ components:
             $ref: '#/components/schemas/FindMastersResponse'
           description: Items
       additionalProperties: false
+    FindUsersResponse:
+      required:
+        - createdAt
+        - email
+        - emailVerified
+        - firstName
+        - fullName
+        - id
+        - lastName
+        - phoneNumber
+        - role
+      type: object
+      properties:
+        id:
+          type: string
+          description: User ID
+          format: uuid
+        email:
+          type: string
+          description: Email address
+          nullable: true
+        firstName:
+          type: string
+          description: First name
+          nullable: true
+        lastName:
+          type: string
+          description: Last name
+          nullable: true
+        fullName:
+          type: string
+          description: Full name
+          nullable: true
+        phoneNumber:
+          type: string
+          description: Phone number
+          nullable: true
+        role:
+          $ref: '#/components/schemas/UserRole'
+        emailVerified:
+          type: boolean
+          description: Whether email is verified
+        createdAt:
+          type: string
+          description: Account creation date
+          format: date-time
+      additionalProperties: false
+    FindUsersResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindUsersResponse'
+          description: Items
+      additionalProperties: false
     ForgotPasswordRequest:
       required:
         - email
@@ -3177,6 +3404,26 @@ components:
         - $ref: '#/components/schemas/BookingDTO'
         - type: object
           additionalProperties: false
+    GetBookingStatisticsResponse:
+      type: object
+      properties:
+        totalBookings:
+          type: integer
+          description: Total number of bookings
+          format: int64
+        confirmed:
+          type: integer
+          description: Number of confirmed bookings
+          format: int64
+        pending:
+          type: integer
+          description: Number of pending (requested) bookings
+          format: int64
+        revenueThisMonth:
+          type: number
+          description: Total revenue from non-cancelled bookings this month
+          format: double
+      additionalProperties: false
     GetClientByIdResponse:
       allOf:
         - $ref: '#/components/schemas/ClientDTO'
@@ -3417,6 +3664,26 @@ components:
         fullName:
           type: string
           nullable: true
+      additionalProperties: false
+    GetUserStatisticsResponse:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+          description: Total number of registered users
+          format: int64
+        totalMasters:
+          type: integer
+          description: Total number of masters
+          format: int64
+        totalClients:
+          type: integer
+          description: Total number of clients
+          format: int64
+        platformVolume:
+          type: number
+          description: Total platform revenue from completed bookings
+          format: double
       additionalProperties: false
     JobCategoryDTO:
       required:
@@ -4089,6 +4356,24 @@ components:
           type: string
           format: uuid
           nullable: true
+      additionalProperties: false
+    SetUserRoleRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/UserRole'
+      additionalProperties: false
+    SetUserRoleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/UserRole'
       additionalProperties: false
     UnsetMasterJobFeaturedImageResponse:
       type: object

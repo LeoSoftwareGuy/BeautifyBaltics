@@ -43,6 +43,7 @@ const en = {
     admin: {
       services: 'Services',
       bookings: 'Bookings',
+      users: 'Users',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -64,6 +65,7 @@ const en = {
       adminDashboard: 'Admin',
       adminServices: 'Services',
       adminBookings: 'Bookings',
+      adminUsers: 'Users',
     },
   },
   auth: {
@@ -863,11 +865,67 @@ const en = {
     navigation: {
       services: 'Services',
       bookings: 'Bookings',
+      users: 'Users',
     },
     breadcrumbs: {
       adminDashboard: 'Admin',
       adminServices: 'Services',
       adminBookings: 'Bookings',
+      adminUsers: 'Users',
+    },
+    users: {
+      page: {
+        title: 'User Management',
+        subtitle: 'Manage platform users, roles and accounts',
+      },
+      stats: {
+        totalUsers: 'Total Users',
+        totalMasters: 'Active Masters',
+        totalClients: 'Active Clients',
+        platformVolume: 'Platform Volume',
+      },
+      table: {
+        columns: {
+          name: 'Name',
+          phone: 'Phone',
+          role: 'Role',
+          emailVerified: 'Email',
+          joinedAt: 'Joined',
+          actions: 'Actions',
+        },
+        noRecords: 'No users found',
+      },
+      filters: {
+        searchPlaceholder: 'Search by name or email...',
+        allRoles: 'All roles',
+      },
+      role: {
+        client: 'Client',
+        master: 'Master',
+        admin: 'Admin',
+      },
+      verified: 'Verified',
+      unverified: 'Unverified',
+      actions: {
+        promoteToAdmin: 'Promote to Admin',
+        delete: 'Delete',
+      },
+      promoteModal: {
+        title: 'Promote to Admin',
+        message: 'Are you sure you want to promote {{name}} to Admin? This will grant full platform access.',
+        confirm: 'Promote',
+      },
+      deleteModal: {
+        title: 'Delete User',
+        message: 'Are you sure you want to delete {{name}}? This action cannot be undone.',
+        confirm: 'Delete',
+      },
+      notifications: {
+        roleUpdated: 'User role updated successfully',
+        deleted: 'User deleted successfully',
+        errorTitle: 'Error',
+        error: 'Something went wrong. Please try again.',
+      },
     },
     bookings: {
       page: {

@@ -26,6 +26,7 @@ import { Route as MasterServicesIndexRouteRouteImport } from './routes/master/se
 import { Route as MasterBookingsIndexRouteRouteImport } from './routes/master/bookings/index.route'
 import { Route as ClientExploreIndexRouteRouteImport } from './routes/client/explore/index.route'
 import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bookings/index.route'
+import { Route as AdminUsersIndexRouteRouteImport } from './routes/admin/users/index.route'
 import { Route as AdminServicesIndexRouteRouteImport } from './routes/admin/services/index.route'
 import { Route as AdminBookingsIndexRouteRouteImport } from './routes/admin/bookings/index.route'
 
@@ -120,6 +121,11 @@ const ClientBookingsIndexRouteRoute =
     path: '/client/bookings/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminUsersIndexRouteRoute = AdminUsersIndexRouteRouteImport.update({
+  id: '/admin/users/',
+  path: '/admin/users/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminServicesIndexRouteRoute = AdminServicesIndexRouteRouteImport.update({
   id: '/admin/services/',
   path: '/admin/services/',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
+  '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
+  '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/top-masters/': typeof TopMastersIndexRouteRoute
   '/admin/bookings/': typeof AdminBookingsIndexRouteRoute
   '/admin/services/': typeof AdminServicesIndexRouteRoute
+  '/admin/users/': typeof AdminUsersIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
   '/client/explore/': typeof ClientExploreIndexRouteRoute
   '/master/bookings/': typeof MasterBookingsIndexRouteRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/top-masters'
     | '/admin/bookings'
     | '/admin/services'
+    | '/admin/users'
     | '/client/bookings'
     | '/client/explore'
     | '/master/bookings'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/top-masters'
     | '/admin/bookings'
     | '/admin/services'
+    | '/admin/users'
     | '/client/bookings'
     | '/client/explore'
     | '/master/bookings'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/top-masters/'
     | '/admin/bookings/'
     | '/admin/services/'
+    | '/admin/users/'
     | '/client/bookings/'
     | '/client/explore/'
     | '/master/bookings/'
@@ -274,6 +286,7 @@ export interface RootRouteChildren {
   TopMastersIndexRouteRoute: typeof TopMastersIndexRouteRoute
   AdminBookingsIndexRouteRoute: typeof AdminBookingsIndexRouteRoute
   AdminServicesIndexRouteRoute: typeof AdminServicesIndexRouteRoute
+  AdminUsersIndexRouteRoute: typeof AdminUsersIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
   ClientExploreIndexRouteRoute: typeof ClientExploreIndexRouteRoute
   MasterBookingsIndexRouteRoute: typeof MasterBookingsIndexRouteRoute
@@ -404,6 +417,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientBookingsIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/services/': {
       id: '/admin/services/'
       path: '/admin/services'
@@ -434,6 +454,7 @@ const rootRouteChildren: RootRouteChildren = {
   TopMastersIndexRouteRoute: TopMastersIndexRouteRoute,
   AdminBookingsIndexRouteRoute: AdminBookingsIndexRouteRoute,
   AdminServicesIndexRouteRoute: AdminServicesIndexRouteRoute,
+  AdminUsersIndexRouteRoute: AdminUsersIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,
   ClientExploreIndexRouteRoute: ClientExploreIndexRouteRoute,
   MasterBookingsIndexRouteRoute: MasterBookingsIndexRouteRoute,
