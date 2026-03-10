@@ -76,7 +76,9 @@ function LoginView() {
   const search = Route.useSearch();
   const router = useRouter();
   const { t } = useTranslation();
-  const { login, isAuthenticated, loading, user } = useSession();
+  const {
+    login, isAuthenticated, loading, user,
+  } = useSession();
   const [submitting, setSubmitting] = useState(false);
   const [forgotPassword, setForgotPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);

@@ -22,8 +22,8 @@ import {
   getFindBookingsQueryKey,
   useCancelBooking,
   useFindBookings,
+  useForceCompleteBooking,
 } from '@/state/endpoints/bookings';
-import { useForceCompleteBooking } from '@/state/endpoints/bookings-dev';
 import { useFindRatings } from '@/state/endpoints/ratings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
@@ -232,7 +232,7 @@ export function ClientBookingsDataTable() {
           onCancel={handleCancel}
           isCancelling={isCancelling && cancellingBookingId === booking.id}
           isRated={ratedBookingIds.has(booking.id)}
-          onForceComplete={(id) => forceComplete(id)}
+          onForceComplete={(id) => forceComplete({ id: id as string })}
           isForceCompleting={isForceCompleting}
         />
       ),

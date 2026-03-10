@@ -42,6 +42,7 @@ const en = {
     },
     admin: {
       services: 'Services',
+      bookings: 'Bookings',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -62,6 +63,7 @@ const en = {
       masterProfile: 'Master Profile',
       adminDashboard: 'Admin',
       adminServices: 'Services',
+      adminBookings: 'Bookings',
     },
   },
   auth: {
@@ -860,10 +862,47 @@ const en = {
   admin: {
     navigation: {
       services: 'Services',
+      bookings: 'Bookings',
     },
     breadcrumbs: {
       adminDashboard: 'Admin',
       adminServices: 'Services',
+      adminBookings: 'Bookings',
+    },
+    bookings: {
+      page: {
+        title: 'Bookings Management',
+        subtitle: 'View and monitor all bookings on the platform',
+      },
+      stats: {
+        totalBookings: 'Total Bookings',
+        confirmed: 'Confirmed',
+        pending: 'Pending',
+        revenueThisMonth: 'Revenue This Month',
+      },
+      table: {
+        columns: {
+          client: 'Client',
+          master: 'Master',
+          service: 'Service',
+          scheduledAt: 'Scheduled At',
+          price: 'Price',
+          status: 'Status',
+        },
+        noRecords: 'No bookings found',
+      },
+      filters: {
+        searchPlaceholder: 'Search by client or service...',
+        allStatuses: 'All statuses',
+        fromDate: 'From date',
+        toDate: 'To date',
+      },
+      status: {
+        requested: 'Requested',
+        confirmed: 'Confirmed',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
+      },
     },
     services: {
       page: {

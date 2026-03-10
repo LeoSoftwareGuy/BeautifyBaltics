@@ -552,6 +552,17 @@ export type GetPendingRequestsResponse = {
   totalCount: number;
 };
 
+export type GetBookingStatisticsResponse = {
+  /** Total number of bookings */
+  totalBookings: number;
+  /** Number of confirmed bookings */
+  confirmed: number;
+  /** Number of pending (requested) bookings */
+  pending: number;
+  /** Total revenue from non-cancelled bookings this month */
+  revenueThisMonth: number;
+};
+
 export type GetServiceStatisticsResponse = {
   /** Total services number */
   totalServices: number;

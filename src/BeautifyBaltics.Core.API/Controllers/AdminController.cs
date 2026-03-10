@@ -1,6 +1,7 @@
 using BeautifyBaltics.Core.API.Application.Admin.Commands.CreateJobCategory;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteJobCategory;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.UpdateJobCategory;
+using BeautifyBaltics.Core.API.Application.Admin.Queries.GetBookingStatistics;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.GetClientStatistics;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.GetMasterStatistics;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.GetServiceStatistics;
@@ -73,6 +74,14 @@ public class AdminController(IMessageBus bus) : ApiController
     public async Task<ActionResult<GetServiceStatisticsResponse>> GetServiceStatistics()
     {
         var response = await bus.InvokeAsync<GetServiceStatisticsResponse>(new GetServiceStatisticsRequest());
+        return Ok(response);
+    }
+
+    [HttpGet("stats/bookings", Name = "GetBookingStatistics")]
+    [ProducesResponseType(typeof(GetBookingStatisticsResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<GetBookingStatisticsResponse>> GetBookingStatistics()
+    {
+        var response = await bus.InvokeAsync<GetBookingStatisticsResponse>(new GetBookingStatisticsRequest());
         return Ok(response);
     }
 

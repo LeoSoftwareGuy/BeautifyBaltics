@@ -59,6 +59,137 @@ const ru: CommonLocale = {
       masterTimeSlots: 'Тайм-слоты',
       masterSettings: 'Настройки',
       masterProfile: 'Профиль мастера',
+      adminDashboard: 'Панель Админа',
+      adminServices: 'Сервисы',
+      adminBookings: 'Бронирования',
+    },
+    admin: {
+      services: 'Услуги',
+      bookings: 'Бронирования',
+    },
+  },
+  admin: {
+    navigation: {
+      services: 'Услуги',
+      bookings: 'Бронирования',
+    },
+    breadcrumbs: {
+      adminDashboard: 'Панель Админа',
+      adminServices: 'Услуги',
+      adminBookings: 'Бронирования',
+    },
+    bookings: {
+      page: {
+        title: 'Управление бронированиями',
+        subtitle: 'Просматривайте и отслеживайте все бронирования на платформе',
+      },
+      stats: {
+        totalBookings: 'Всего бронирований',
+        confirmed: 'Подтверждено',
+        pending: 'Ожидает',
+        revenueThisMonth: 'Доход за месяц',
+      },
+      table: {
+        columns: {
+          client: 'Клиент',
+          master: 'Мастер',
+          service: 'Услуга',
+          scheduledAt: 'Дата и время',
+          price: 'Цена',
+          status: 'Статус',
+        },
+        noRecords: 'Бронирования не найдены',
+      },
+      filters: {
+        searchPlaceholder: 'Поиск по клиенту или услуге...',
+        allStatuses: 'Все статусы',
+        fromDate: 'С даты',
+        toDate: 'По дату',
+      },
+      status: {
+        requested: 'Ожидает',
+        confirmed: 'Подтверждено',
+        completed: 'Завершено',
+        cancelled: 'Отменено',
+      },
+    },
+    services: {
+      page: {
+        title: 'Управление услугами',
+        subtitle: 'Управляйте категориями и услугами, предлагаемыми на платформе',
+      },
+      stats: {
+        totalServices: 'Всего услуг',
+        totalCategories: 'Всего категорий',
+        averagePrice: 'Средняя цена',
+      },
+      tabs: {
+        services: 'Услуги',
+        categories: 'Категории',
+      },
+      servicesTable: {
+        columns: {
+          name: 'Название услуги',
+          category: 'Категория',
+          duration: 'Длительность',
+          price: 'Цена',
+          actions: 'Действия',
+        },
+        noRecords: 'Услуги не найдены',
+      },
+      categoriesTable: {
+        columns: {
+          name: 'Название категории',
+          actions: 'Действия',
+        },
+        noRecords: 'Категории не найдены',
+      },
+      filters: {
+        searchPlaceholder: 'Поиск услуг...',
+        categorySearchPlaceholder: 'Поиск категорий...',
+        categoryFilterPlaceholder: 'Все категории',
+      },
+      actions: {
+        addService: 'Добавить услугу',
+        addCategory: 'Добавить категорию',
+        edit: 'Редактировать',
+        delete: 'Удалить',
+      },
+      jobModal: {
+        createTitle: 'Создать услугу',
+        editTitle: 'Редактировать услугу',
+        fields: {
+          name: 'Название услуги',
+          category: 'Категория',
+          description: 'Описание',
+          durationMinutes: 'Длительность (минуты)',
+          price: 'Цена (EUR)',
+        },
+        submit: 'Сохранить',
+        notifications: {
+          createSuccess: 'Услуга успешно создана',
+          updateSuccess: 'Услуга успешно обновлена',
+          errorTitle: 'Ошибка',
+          error: 'Что-то пошло не так. Попробуйте ещё раз.',
+        },
+      },
+      categoryModal: {
+        createTitle: 'Создать категорию',
+        editTitle: 'Редактировать категорию',
+        deleteTitle: 'Удалить категорию',
+        deleteMessage: 'Вы уверены, что хотите удалить эту категорию? Это действие нельзя отменить.',
+        fields: {
+          name: 'Название категории',
+        },
+        submit: 'Сохранить',
+        notifications: {
+          createSuccess: 'Категория успешно создана',
+          updateSuccess: 'Категория успешно обновлена',
+          deleteSuccess: 'Категория успешно удалена',
+          errorTitle: 'Ошибка',
+          error: 'Что-то пошло не так. Попробуйте ещё раз.',
+        },
+      },
     },
   },
   auth: {

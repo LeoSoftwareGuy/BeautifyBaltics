@@ -59,6 +59,137 @@ const et: CommonLocale = {
       masterTimeSlots: 'Ajaaknad',
       masterSettings: 'Seaded',
       masterProfile: 'Meistri profiil',
+      adminDashboard: 'Admin',
+      adminServices: 'Teenused',
+      adminBookings: 'Broneeringud',
+    },
+    admin: {
+      services: 'Teenused',
+      bookings: 'Broneeringud',
+    },
+  },
+  admin: {
+    navigation: {
+      services: 'Teenused',
+      bookings: 'Broneeringud',
+    },
+    breadcrumbs: {
+      adminDashboard: 'Admin',
+      adminServices: 'Teenused',
+      adminBookings: 'Broneeringud',
+    },
+    bookings: {
+      page: {
+        title: 'Broneeringute haldus',
+        subtitle: 'Vaata ja jälgi kõiki platvormi broneeringuid',
+      },
+      stats: {
+        totalBookings: 'Broneeringuid kokku',
+        confirmed: 'Kinnitatud',
+        pending: 'Ootel',
+        revenueThisMonth: 'Tulu sel kuul',
+      },
+      table: {
+        columns: {
+          client: 'Klient',
+          master: 'Meister',
+          service: 'Teenus',
+          scheduledAt: 'Aeg',
+          price: 'Hind',
+          status: 'Staatus',
+        },
+        noRecords: 'Broneeringuid ei leitud',
+      },
+      filters: {
+        searchPlaceholder: 'Otsi kliendi või teenuse järgi...',
+        allStatuses: 'Kõik staatused',
+        fromDate: 'Alates',
+        toDate: 'Kuni',
+      },
+      status: {
+        requested: 'Ootel',
+        confirmed: 'Kinnitatud',
+        completed: 'Lõpetatud',
+        cancelled: 'Tühistatud',
+      },
+    },
+    services: {
+      page: {
+        title: 'Teenuste haldus',
+        subtitle: 'Halda töökategooriaid ja platvormil pakutavaid teenuseid',
+      },
+      stats: {
+        totalServices: 'Teenuseid kokku',
+        totalCategories: 'Kategooriaid kokku',
+        averagePrice: 'Keskmine hind',
+      },
+      tabs: {
+        services: 'Teenused',
+        categories: 'Kategooriad',
+      },
+      servicesTable: {
+        columns: {
+          name: 'Teenuse nimi',
+          category: 'Kategooria',
+          duration: 'Kestus',
+          price: 'Hind',
+          actions: 'Toimingud',
+        },
+        noRecords: 'Teenuseid ei leitud',
+      },
+      categoriesTable: {
+        columns: {
+          name: 'Kategooria nimi',
+          actions: 'Toimingud',
+        },
+        noRecords: 'Kategooriaid ei leitud',
+      },
+      filters: {
+        searchPlaceholder: 'Otsi teenuseid...',
+        categorySearchPlaceholder: 'Otsi kategooriaid...',
+        categoryFilterPlaceholder: 'Kõik kategooriad',
+      },
+      actions: {
+        addService: 'Lisa teenus',
+        addCategory: 'Lisa kategooria',
+        edit: 'Muuda',
+        delete: 'Kustuta',
+      },
+      jobModal: {
+        createTitle: 'Loo teenus',
+        editTitle: 'Muuda teenust',
+        fields: {
+          name: 'Teenuse nimi',
+          category: 'Kategooria',
+          description: 'Kirjeldus',
+          durationMinutes: 'Kestus (minutites)',
+          price: 'Hind (EUR)',
+        },
+        submit: 'Salvesta',
+        notifications: {
+          createSuccess: 'Teenus edukalt loodud',
+          updateSuccess: 'Teenus edukalt uuendatud',
+          errorTitle: 'Viga',
+          error: 'Midagi läks valesti. Palun proovi uuesti.',
+        },
+      },
+      categoryModal: {
+        createTitle: 'Loo kategooria',
+        editTitle: 'Muuda kategooriat',
+        deleteTitle: 'Kustuta kategooria',
+        deleteMessage: 'Kas oled kindel, et soovid selle kategooria kustutada? Seda toimingut ei saa tagasi võtta.',
+        fields: {
+          name: 'Kategooria nimi',
+        },
+        submit: 'Salvesta',
+        notifications: {
+          createSuccess: 'Kategooria edukalt loodud',
+          updateSuccess: 'Kategooria edukalt uuendatud',
+          deleteSuccess: 'Kategooria edukalt kustutatud',
+          errorTitle: 'Viga',
+          error: 'Midagi läks valesti. Palun proovi uuesti.',
+        },
+      },
     },
   },
   auth: {
