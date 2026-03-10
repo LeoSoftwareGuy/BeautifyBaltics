@@ -40,6 +40,9 @@ const en = {
       settings: 'Settings',
       howTo: 'How It Works',
     },
+    admin: {
+      services: 'Services',
+    },
     breadcrumbs: {
       brand: 'Beautify Baltics',
       home: 'Home',
@@ -57,6 +60,8 @@ const en = {
       masterTimeSlots: 'Time Slots',
       masterSettings: 'Settings',
       masterProfile: 'Master Profile',
+      adminDashboard: 'Admin',
+      adminServices: 'Services',
     },
   },
   auth: {
@@ -850,6 +855,93 @@ const en = {
       subtitle: 'Choose the role that fits you best and start booking in minutes.',
       master: 'Join as a Master',
       client: 'Book as a Client',
+    },
+  },
+  admin: {
+    navigation: {
+      services: 'Services',
+    },
+    breadcrumbs: {
+      adminDashboard: 'Admin',
+      adminServices: 'Services',
+    },
+    services: {
+      page: {
+        title: 'Services Management',
+        subtitle: 'Manage job categories and services offered on the platform',
+      },
+      stats: {
+        totalServices: 'Total Services',
+        totalCategories: 'Total Categories',
+        averagePrice: 'Average Price',
+      },
+      tabs: {
+        services: 'Services',
+        categories: 'Categories',
+      },
+      servicesTable: {
+        columns: {
+          name: 'Service Name',
+          category: 'Category',
+          duration: 'Duration',
+          price: 'Price',
+          actions: 'Actions',
+        },
+        noRecords: 'No services found',
+      },
+      categoriesTable: {
+        columns: {
+          name: 'Category Name',
+          actions: 'Actions',
+        },
+        noRecords: 'No categories found',
+      },
+      filters: {
+        searchPlaceholder: 'Search services...',
+        categorySearchPlaceholder: 'Search categories...',
+        categoryFilterPlaceholder: 'All categories',
+      },
+      actions: {
+        addService: 'Add Service',
+        addCategory: 'Add Category',
+        edit: 'Edit',
+        delete: 'Delete',
+      },
+      jobModal: {
+        createTitle: 'Create Service',
+        editTitle: 'Edit Service',
+        fields: {
+          name: 'Service Name',
+          category: 'Category',
+          description: 'Description',
+          durationMinutes: 'Duration (minutes)',
+          price: 'Price (EUR)',
+        },
+        submit: 'Save',
+        notifications: {
+          createSuccess: 'Service created successfully',
+          updateSuccess: 'Service updated successfully',
+          errorTitle: 'Error',
+          error: 'Something went wrong. Please try again.',
+        },
+      },
+      categoryModal: {
+        createTitle: 'Create Category',
+        editTitle: 'Edit Category',
+        deleteTitle: 'Delete Category',
+        deleteMessage: 'Are you sure you want to delete this category? This action cannot be undone.',
+        fields: {
+          name: 'Category Name',
+        },
+        submit: 'Save',
+        notifications: {
+          createSuccess: 'Category created successfully',
+          updateSuccess: 'Category updated successfully',
+          deleteSuccess: 'Category deleted successfully',
+          errorTitle: 'Error',
+          error: 'Something went wrong. Please try again.',
+        },
+      },
     },
   },
   data: {
