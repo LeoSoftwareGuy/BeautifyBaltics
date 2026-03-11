@@ -41,6 +41,7 @@ const en = {
       howTo: 'How It Works',
     },
     admin: {
+      dashboard: 'Dashboard',
       services: 'Services',
       bookings: 'Bookings',
       users: 'Users',
@@ -863,6 +864,7 @@ const en = {
   },
   admin: {
     navigation: {
+      dashboard: 'Dashboard',
       services: 'Services',
       bookings: 'Bookings',
       users: 'Users',
@@ -872,6 +874,37 @@ const en = {
       adminServices: 'Services',
       adminBookings: 'Bookings',
       adminUsers: 'Users',
+    },
+    dashboard: {
+      page: {
+        title: 'Platform Overview',
+        subtitle: 'Here\'s what\'s happening with Beautify Baltics.',
+        exportReport: 'Export Report',
+      },
+      stats: {
+        totalClients: 'Total Clients',
+        totalMasters: 'Total Masters',
+        totalBookings: 'Total Bookings',
+      },
+      monthlyPerformance: {
+        title: 'Monthly Performance',
+        subtitle: 'Booking trends across all service categories',
+        completed: 'Completed',
+        confirmed: 'Confirmed',
+        cancelled: 'Cancelled',
+      },
+      recentActivity: {
+        title: 'Recent Activity',
+        viewAll: 'View All',
+        booked: 'booked',
+        with: 'with',
+        noActivity: 'No recent activity',
+      },
+      serviceCategories: {
+        title: 'Service Categories',
+        totalRevenue: 'Total revenue (last 12 months)',
+        noData: 'No category data available',
+      },
     },
     users: {
       page: {

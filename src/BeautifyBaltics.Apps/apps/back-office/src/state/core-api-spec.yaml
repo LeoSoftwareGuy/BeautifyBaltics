@@ -172,6 +172,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/admin/dashboard:
+    get:
+      tags:
+        - Admin
+      operationId: GetDashboardSummary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDashboardSummaryResponse'
   /api/v1/admin/stats/services:
     get:
       tags:
@@ -3001,6 +3013,28 @@ components:
           description: ID of created rating
           format: uuid
       additionalProperties: false
+    DashboardRecentActivity:
+      type: object
+      properties:
+        clientName:
+          type: string
+          nullable: true
+        serviceName:
+          type: string
+          nullable: true
+        masterName:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+        status:
+          type: string
+          nullable: true
+        bookedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
     EarningsDataPoint:
       required:
         - label
@@ -3488,6 +3522,45 @@ components:
           type: integer
           description: Number of pending booking requests
           format: int32
+      additionalProperties: false
+    GetDashboardSummaryResponse:
+      required:
+        - monthlyPerformance
+        - recentActivities
+        - serviceCategories
+        - totalBookings
+        - totalClients
+        - totalMasters
+        - totalRevenue
+      type: object
+      properties:
+        totalClients:
+          type: integer
+          format: int32
+        totalMasters:
+          type: integer
+          format: int32
+        totalBookings:
+          type: integer
+          format: int64
+        totalRevenue:
+          type: number
+          format: double
+        monthlyPerformance:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyBookingStat'
+          nullable: true
+        recentActivities:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardRecentActivity'
+          nullable: true
+        serviceCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceCategoryRevenueStat'
+          nullable: true
       additionalProperties: false
     GetEarningsPerformanceResponse:
       required:
@@ -4128,6 +4201,25 @@ components:
           description: Postal code
           nullable: true
       additionalProperties: false
+    MonthlyBookingStat:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        completed:
+          type: integer
+          format: int32
+        confirmed:
+          type: integer
+          format: int32
+        cancelled:
+          type: integer
+          format: int32
+      additionalProperties: false
     PendingRequestDTO:
       required:
         - clientId
@@ -4307,6 +4399,19 @@ components:
         newPassword:
           minLength: 1
           type: string
+      additionalProperties: false
+    ServiceCategoryRevenueStat:
+      type: object
+      properties:
+        categoryName:
+          type: string
+          nullable: true
+        revenue:
+          type: number
+          format: double
+        percentage:
+          type: integer
+          format: int32
       additionalProperties: false
     SetMasterJobFeaturedImageRequest:
       required:

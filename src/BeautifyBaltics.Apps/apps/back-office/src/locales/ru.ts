@@ -65,6 +65,7 @@ const ru: CommonLocale = {
       adminUsers: 'Пользователи',
     },
     admin: {
+      dashboard: 'Панель',
       services: 'Услуги',
       bookings: 'Бронирования',
       users: 'Пользователи',
@@ -72,6 +73,7 @@ const ru: CommonLocale = {
   },
   admin: {
     navigation: {
+      dashboard: 'Панель',
       services: 'Услуги',
       bookings: 'Бронирования',
       users: 'Пользователи',
@@ -81,6 +83,37 @@ const ru: CommonLocale = {
       adminServices: 'Услуги',
       adminBookings: 'Бронирования',
       adminUsers: 'Пользователи',
+    },
+    dashboard: {
+      page: {
+        title: 'Обзор платформы',
+        subtitle: 'Вот что происходит в Beautify Baltics сегодня.',
+        exportReport: 'Экспорт отчёта',
+      },
+      stats: {
+        totalClients: 'Всего клиентов',
+        totalMasters: 'Всего мастеров',
+        totalBookings: 'Всего бронирований',
+      },
+      monthlyPerformance: {
+        title: 'Ежемесячная статистика',
+        subtitle: 'Тренды бронирований по всем категориям услуг',
+        completed: 'Завершено',
+        confirmed: 'Подтверждено',
+        cancelled: 'Отменено',
+      },
+      recentActivity: {
+        title: 'Последние действия',
+        viewAll: 'Смотреть все',
+        booked: 'забронировал(а)',
+        with: 'с',
+        noActivity: 'Нет последних действий',
+      },
+      serviceCategories: {
+        title: 'Категории услуг',
+        totalRevenue: 'Общая выручка (последние 12 месяцев)',
+        noData: 'Данные по категориям отсутствуют',
+      },
     },
     users: {
       page: {

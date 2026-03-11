@@ -39,6 +39,7 @@ import type {
   FindUsersResponsePagedResponse,
   GetBookingStatisticsResponse,
   GetClientStatisticsResponse,
+  GetDashboardSummaryResponse,
   GetMasterStatisticsResponse,
   GetServiceStatisticsResponse,
   GetUserStatisticsResponse,
@@ -283,6 +284,107 @@ export const useAdminUpdateJob = <TError = ProblemDetails | ValidationProblemDet
 
   return useMutation(mutationOptions, queryClient);
 };
+export const getDashboardSummary = (
+
+  signal?: AbortSignal,
+) => customClient<GetDashboardSummaryResponse>(
+  { url: '/api/v1/admin/dashboard', method: 'GET', signal },
+);
+
+export const getGetDashboardSummaryQueryKey = () => ['/api/v1/admin/dashboard'] as const;
+
+export const getGetDashboardSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetDashboardSummaryQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardSummary>>> = ({ signal }) => getDashboardSummary(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetDashboardSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardSummary>>>;
+export type GetDashboardSummaryQueryError = unknown;
+
+export function useGetDashboardSummary<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>> & Pick<
+  DefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getDashboardSummary>>,
+  TError,
+  Awaited<ReturnType<typeof getDashboardSummary>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardSummary<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>> & Pick<
+  UndefinedInitialDataOptions<
+  Awaited<ReturnType<typeof getDashboardSummary>>,
+  TError,
+  Awaited<ReturnType<typeof getDashboardSummary>>
+  >, 'initialData'
+  >, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardSummary<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetDashboardSummary<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetDashboardSummaryQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getGetDashboardSummarySuspenseQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetDashboardSummaryQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardSummary>>> = ({ signal }) => getDashboardSummary(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetDashboardSummarySuspenseQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardSummary>>>;
+export type GetDashboardSummarySuspenseQueryError = unknown;
+
+export function useGetDashboardSummarySuspense<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardSummarySuspense<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetDashboardSummarySuspense<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, }
+  , queryClient?: QueryClient
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+export function useGetDashboardSummarySuspense<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = unknown>(
+  options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>>, },
+  queryClient?: QueryClient,
+): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetDashboardSummarySuspenseQueryOptions(options);
+
+  const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 export const getServiceStatistics = (
 
   signal?: AbortSignal,

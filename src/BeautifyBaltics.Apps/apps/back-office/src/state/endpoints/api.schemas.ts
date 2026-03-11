@@ -273,6 +273,19 @@ export type CreateRatingResponse = {
   id: string;
 };
 
+export type DashboardRecentActivity = {
+  /** @nullable */
+  clientName?: string | null;
+  /** @nullable */
+  serviceName?: string | null;
+  /** @nullable */
+  masterName?: string | null;
+  price?: number;
+  /** @nullable */
+  status?: string | null;
+  bookedAt?: Date;
+};
+
 export type EarningsDataPoint = {
   /**
    * Label for the data point (e.g., "Mon", "Jan", "2024")
@@ -526,6 +539,19 @@ export type GetDashboardStatsResponse = {
   monthlyEarningsChange: number;
   /** Number of pending booking requests */
   pendingRequestsCount: number;
+};
+
+export type GetDashboardSummaryResponse = {
+  totalClients: number;
+  totalMasters: number;
+  totalBookings: number;
+  totalRevenue: number;
+  /** @nullable */
+  monthlyPerformance: MonthlyBookingStat[] | null;
+  /** @nullable */
+  recentActivities: DashboardRecentActivity[] | null;
+  /** @nullable */
+  serviceCategories: ServiceCategoryRevenueStat[] | null;
 };
 
 export type GetEarningsPerformanceResponse = {
@@ -939,6 +965,14 @@ export type MasterProfileCommandDTO = {
   postalCode?: string | null;
 };
 
+export type MonthlyBookingStat = {
+  year?: number;
+  month?: number;
+  completed?: number;
+  confirmed?: number;
+  cancelled?: number;
+};
+
 export type PendingRequestDTO = {
   /** Booking ID */
   id: string;
@@ -1052,6 +1086,13 @@ export type ResetPasswordRequest = {
   token: string;
   /** @minLength 1 */
   newPassword: string;
+};
+
+export type ServiceCategoryRevenueStat = {
+  /** @nullable */
+  categoryName?: string | null;
+  revenue?: number;
+  percentage?: number;
 };
 
 export type SetMasterJobFeaturedImageRequest = {

@@ -19,6 +19,7 @@ import { Route as HowToIndexRouteRouteImport } from './routes/how-to/index.route
 import { Route as HomeIndexRouteRouteImport } from './routes/home/index.route'
 import { Route as ExploreIndexRouteRouteImport } from './routes/explore/index.route'
 import { Route as DashboardIndexRouteRouteImport } from './routes/dashboard/index.route'
+import { Route as AdminIndexRouteRouteImport } from './routes/admin/index.route'
 import { Route as MastersMasterIdIndexRouteRouteImport } from './routes/masters/$masterId/index.route'
 import { Route as MasterTimeSlotsIndexRouteRouteImport } from './routes/master/time-slots/index.route'
 import { Route as MasterSettingsIndexRouteRouteImport } from './routes/master/settings/index.route'
@@ -80,6 +81,11 @@ const DashboardIndexRouteRoute = DashboardIndexRouteRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRouteRoute = AdminIndexRouteRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MastersMasterIdIndexRouteRoute =
   MastersMasterIdIndexRouteRouteImport.update({
     id: '/masters/$masterId/',
@@ -139,6 +145,7 @@ const AdminBookingsIndexRouteRoute = AdminBookingsIndexRouteRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRouteRoute
+  '/admin': typeof AdminIndexRouteRoute
   '/dashboard': typeof DashboardIndexRouteRoute
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRouteRoute
+  '/admin': typeof AdminIndexRouteRoute
   '/dashboard': typeof DashboardIndexRouteRoute
   '/explore': typeof ExploreIndexRouteRoute
   '/home': typeof HomeIndexRouteRoute
@@ -184,6 +192,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRouteRoute
+  '/admin/': typeof AdminIndexRouteRoute
   '/dashboard/': typeof DashboardIndexRouteRoute
   '/explore/': typeof ExploreIndexRouteRoute
   '/home/': typeof HomeIndexRouteRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/explore'
     | '/home'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/explore'
     | '/home'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin/'
     | '/dashboard/'
     | '/explore/'
     | '/home/'
@@ -275,6 +287,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRouteRoute: typeof IndexRouteRoute
+  AdminIndexRouteRoute: typeof AdminIndexRouteRoute
   DashboardIndexRouteRoute: typeof DashboardIndexRouteRoute
   ExploreIndexRouteRoute: typeof ExploreIndexRouteRoute
   HomeIndexRouteRoute: typeof HomeIndexRouteRoute
@@ -368,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/masters/$masterId/': {
       id: '/masters/$masterId/'
       path: '/masters/$masterId'
@@ -443,6 +463,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRouteRoute: IndexRouteRoute,
+  AdminIndexRouteRoute: AdminIndexRouteRoute,
   DashboardIndexRouteRoute: DashboardIndexRouteRoute,
   ExploreIndexRouteRoute: ExploreIndexRouteRoute,
   HomeIndexRouteRoute: HomeIndexRouteRoute,

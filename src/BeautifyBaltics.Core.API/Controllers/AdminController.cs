@@ -1,4 +1,5 @@
 using BeautifyBaltics.Core.API.Application.Admin.Commands.CreateJobCategory;
+using BeautifyBaltics.Core.API.Application.Admin.Queries.GetDashboardSummary;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteJobCategory;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteUser;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.SetUserRole;
@@ -71,6 +72,14 @@ public class AdminController(IMessageBus bus) : ApiController
     public async Task<ActionResult<UpdateJobResponse>> UpdateJob([FromRoute] Guid id, [FromBody] UpdateJobRequest request)
     {
         var response = await bus.InvokeAsync<UpdateJobResponse>(request with { JobId = id });
+        return Ok(response);
+    }
+
+    [HttpGet("dashboard", Name = "GetDashboardSummary")]
+    [ProducesResponseType(typeof(GetDashboardSummaryResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<GetDashboardSummaryResponse>> GetDashboardSummary()
+    {
+        var response = await bus.InvokeAsync<GetDashboardSummaryResponse>(new GetDashboardSummaryRequest());
         return Ok(response);
     }
 

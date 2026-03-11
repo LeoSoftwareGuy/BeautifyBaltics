@@ -65,6 +65,7 @@ const et: CommonLocale = {
       adminUsers: 'Kasutajad',
     },
     admin: {
+      dashboard: 'Töölaud',
       services: 'Teenused',
       bookings: 'Broneeringud',
       users: 'Kasutajad',
@@ -72,6 +73,7 @@ const et: CommonLocale = {
   },
   admin: {
     navigation: {
+      dashboard: 'Töölaud',
       services: 'Teenused',
       bookings: 'Broneeringud',
       users: 'Kasutajad',
@@ -81,6 +83,37 @@ const et: CommonLocale = {
       adminServices: 'Teenused',
       adminBookings: 'Broneeringud',
       adminUsers: 'Kasutajad',
+    },
+    dashboard: {
+      page: {
+        title: 'Platvormi ülevaade',
+        subtitle: 'Siin on, mis täna Beautify Balticsis toimub.',
+        exportReport: 'Ekspordi aruanne',
+      },
+      stats: {
+        totalClients: 'Kliente kokku',
+        totalMasters: 'Meistreid kokku',
+        totalBookings: 'Broneeringuid kokku',
+      },
+      monthlyPerformance: {
+        title: 'Kuine tulemuslikkus',
+        subtitle: 'Broneeringute trend kõigis teenuskategooriates',
+        completed: 'Lõpetatud',
+        confirmed: 'Kinnitatud',
+        cancelled: 'Tühistatud',
+      },
+      recentActivity: {
+        title: 'Viimane tegevus',
+        viewAll: 'Vaata kõiki',
+        booked: 'broneeri',
+        with: 'koos',
+        noActivity: 'Viimast tegevust pole',
+      },
+      serviceCategories: {
+        title: 'Teenuste kategooriad',
+        totalRevenue: 'Kogutulude (viimased 12 kuud)',
+        noData: 'Kategooria andmed puuduvad',
+      },
     },
     users: {
       page: {
