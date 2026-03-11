@@ -1,6 +1,7 @@
 import {
-  Anchor, Avatar, Badge, Button, Group, Stack, Text,
+  ActionIcon, Anchor, Avatar, Badge, Button, Group, Stack, Text, Tooltip,
 } from '@mantine/core';
+import { IconCheck } from '@tabler/icons-react';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import { BookingStatus, FindBookingsResponse } from '@/state/endpoints/api.schemas';
@@ -107,6 +108,8 @@ type ActionsRendererProps = {
   onCancel: (bookingId: string) => void;
   isConfirming: boolean;
   isCancelling: boolean;
+  onForceComplete: (bookingId: string) => void;
+  isForceCompleting: boolean;
   labels: {
     viewInvoice: string;
     confirm: string;
@@ -120,10 +123,13 @@ export function ActionsRenderer({
   onCancel,
   isConfirming,
   isCancelling,
+  onForceComplete,
+  isForceCompleting,
   labels,
 }: ActionsRendererProps) {
   const showConfirm = canConfirmBooking(booking);
   const showCancel = canCancelBooking(booking);
+  const showForceComplete = import.meta.env.DEV && booking.status === BookingStatus.Confirmed;
   const isCompleted = booking.status === BookingStatus.Completed;
 
   if (isCompleted) {
@@ -134,12 +140,25 @@ export function ActionsRenderer({
     );
   }
 
-  if (!showConfirm && !showCancel) {
+  if (!showConfirm && !showCancel && !showForceComplete) {
     return <Text size="sm" c="dimmed">-</Text>;
   }
 
   return (
     <Group gap="xs" wrap="nowrap">
+      {showForceComplete && (
+        <Tooltip label="[DEV] Force complete">
+          <ActionIcon
+            variant="light"
+            color="teal"
+            size="sm"
+            onClick={() => onForceComplete(booking.id)}
+            loading={isForceCompleting}
+          >
+            <IconCheck size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
       {showConfirm && (
         <Button
           variant="filled"
