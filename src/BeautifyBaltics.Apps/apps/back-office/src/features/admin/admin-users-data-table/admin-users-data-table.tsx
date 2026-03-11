@@ -1,29 +1,35 @@
 import { useTranslation } from 'react-i18next';
 import { PagedDataTable, PagedDataTableColumn, usePagedTableQuery } from '@beautify-baltics-apps/components';
 import {
-  ActionIcon,
   Badge,
   Card,
   Group,
+  Menu,
+  NumberFormatter,
   Select,
   Stack,
+  Switch,
   Text,
   TextInput,
+  UnstyledButton,
 } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import {
+  IconDotsVertical,
   IconSearch,
-  IconShield,
+  IconStar,
   IconTrash,
 } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { DataTableRowExpansionProps } from 'mantine-datatable';
 
 import {
   getFindUsersQueryKey,
   getGetUserStatisticsQueryKey,
   useDeleteUser,
-  useFindUsers, useSetUserRole,
+  useFindUsers,
+  useSetUserRole,
 } from '@/state/endpoints/admin';
 import {
   FindUsersParams,
@@ -32,6 +38,7 @@ import {
   UserRole,
 } from '@/state/endpoints/api.schemas';
 
+import { AdminUserDetailPanel } from './admin-user-detail-panel';
 import { AdminUsersStats } from './admin-users-stats';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -56,7 +63,7 @@ export function AdminUsersDataTable() {
   } = usePagedTableQuery<FindUsersParams, FindUsersResponse>({
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
-    sortBy: 'createdAt',
+    sortBy: 'joinedAt',
     ascending: false,
     search: undefined as string | undefined,
     role: undefined as UserRole | undefined,
@@ -100,7 +107,8 @@ export function AdminUsersDataTable() {
     },
   });
 
-  const handlePromoteToAdmin = (user: FindUsersResponse) => {
+  const handleAdminToggle = (user: FindUsersResponse, checked: boolean) => {
+    if (!checked) return;
     modals.openConfirmModal({
       title: t('admin.users.promoteModal.title'),
       children: <Text size="sm">{t('admin.users.promoteModal.message', { name: user.fullName ?? user.email ?? '' })}</Text>,
@@ -140,11 +148,6 @@ export function AdminUsersDataTable() {
       ),
     },
     {
-      accessor: 'phoneNumber',
-      title: t('admin.users.table.columns.phone'),
-      render: (user) => <Text size="sm">{user.phoneNumber || '—'}</Text>,
-    },
-    {
       accessor: 'role',
       title: t('admin.users.table.columns.role'),
       render: (user) => (
@@ -154,55 +157,72 @@ export function AdminUsersDataTable() {
       ),
     },
     {
-      accessor: 'emailVerified',
-      title: t('admin.users.table.columns.emailVerified'),
-      render: (user) => (
-        <Badge variant="dot" color={user.emailVerified ? 'green' : 'gray'} radius="sm">
-          {user.emailVerified ? t('admin.users.verified') : t('admin.users.unverified')}
-        </Badge>
-      ),
+      accessor: 'totalBookings',
+      title: t('admin.users.table.columns.bookings'),
+      sortKey: 'totalBookings',
+      render: (user) => <Text size="sm" fw={500}>{user.totalBookings ?? 0}</Text>,
     },
     {
-      accessor: 'createdAt',
-      title: t('admin.users.table.columns.joinedAt'),
-      sortKey: 'createdAt',
+      accessor: 'rating',
+      title: t('admin.users.table.columns.rating'),
+      render: (user) => (user.role === UserRole.Master && (user.rating ?? 0) > 0 ? (
+        <Group gap={4}>
+          <IconStar size={13} color="var(--mantine-color-yellow-6)" fill="var(--mantine-color-yellow-6)" />
+          <Text size="sm" fw={500}>{Number(user.rating).toFixed(1)}</Text>
+        </Group>
+      ) : <Text size="sm" c="dimmed">—</Text>),
+    },
+    {
+      accessor: 'earnings',
+      title: t('admin.users.table.columns.earnings'),
+      sortKey: 'earnings',
       render: (user) => (
-        <Text size="sm">
-          {new Date(user.createdAt).toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-          })}
+        <Text size="sm" fw={500}>
+          <NumberFormatter value={user.earnings ?? 0} prefix="€" decimalScale={2} fixedDecimalScale />
         </Text>
       ),
     },
     {
-      accessor: 'actions',
-      title: t('admin.users.table.columns.actions'),
+      accessor: 'isAdmin',
+      title: t('admin.users.table.columns.admin'),
       render: (user) => (
-        <Group gap="xs">
-          {user.role !== UserRole.Admin && (
-            <ActionIcon
-              variant="subtle"
-              color="brand"
-              title={t('admin.users.actions.promoteToAdmin')}
-              onClick={() => handlePromoteToAdmin(user)}
+        <Switch
+          size="sm"
+          checked={user.role === UserRole.Admin}
+          disabled={user.role === UserRole.Admin}
+          onChange={(e) => handleAdminToggle(user, e.currentTarget.checked)}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+    },
+    {
+      accessor: 'actions',
+      title: '',
+      render: (user) => (
+        <Menu withinPortal position="bottom-end" shadow="sm">
+          <Menu.Target>
+            <UnstyledButton onClick={(e) => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center' }}>
+              <IconDotsVertical size={16} color="var(--mantine-color-gray-6)" />
+            </UnstyledButton>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item
+              color="red"
+              leftSection={<IconTrash size={14} />}
+              onClick={() => handleDelete(user)}
             >
-              <IconShield size={16} />
-            </ActionIcon>
-          )}
-          <ActionIcon
-            variant="subtle"
-            color="red"
-            title={t('admin.users.actions.delete')}
-            onClick={() => handleDelete(user)}
-          >
-            <IconTrash size={16} />
-          </ActionIcon>
-        </Group>
+              {t('admin.users.actions.delete')}
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       ),
     },
   ];
+
+  const rowExpansion: DataTableRowExpansionProps<FindUsersResponse> = {
+    allowMultiple: false,
+    content: ({ record }) => <AdminUserDetailPanel user={record} />,
+  };
 
   return (
     <>
@@ -238,6 +258,7 @@ export function AdminUsersDataTable() {
             sortStatus={sortStatus}
             onSortStatusChange={(s) => handleSortStatusChange(s, columns)}
             noRecordsText={t('admin.users.table.noRecords')}
+            rowExpansion={rowExpansion}
           />
         </Stack>
       </Card>

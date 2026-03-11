@@ -28,6 +28,12 @@ public class ClientRepository(IQuerySession session) : QueryRepository<Projectio
         if (search.LastName is not null) query = query.Where(x => x.LastName.NgramSearch(search.LastName));
         if (search.Email is not null) query = query.Where(x => x.Email.NgramSearch(search.Email));
 
+        if (search.UserIds is { Count: > 0 })
+        {
+            var ids = search.UserIds;
+            query = query.Where(x => ids.Contains(x.UserId));
+        }
+
         return query;
     }
 }

@@ -1,10 +1,9 @@
 using BeautifyBaltics.Core.API.Application.Users.Queries.UserProfile;
-using BeautifyBaltics.Domain.Documents.User;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.Client;
 using BeautifyBaltics.Persistence.Repositories.Master;
-
 using Marten;
 
 namespace BeautifyBaltics.Core.API.Application.Users.Queries.GetUser
@@ -13,7 +12,7 @@ namespace BeautifyBaltics.Core.API.Application.Users.Queries.GetUser
     {
         public async Task<GetUserResponse> Handle(GetUserRequest request, CancellationToken cancellationToken)
         {
-            var userAccount = await querySession.LoadAsync<User>(request.UserId, cancellationToken)
+            var userAccount = await querySession.LoadAsync<UserProjection>(request.UserId, cancellationToken)
                 ?? throw new NotFoundException($"User with ID {request.UserId} not found");
 
             if (userAccount.Role == UserRole.Admin)

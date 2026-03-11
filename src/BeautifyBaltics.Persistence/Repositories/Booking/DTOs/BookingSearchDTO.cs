@@ -7,6 +7,8 @@ public record BookingSearchDTO : BaseSearchDTO
 {
     public Guid? MasterId { get; init; }
     public Guid? ClientId { get; init; }
+    public IReadOnlyList<Guid>? MasterIds { get; init; }
+    public IReadOnlyList<Guid>? ClientIds { get; init; }
     public BookingStatus? Status { get; init; }
     public DateTime? From { get; init; }
     public DateTime? To { get; init; }

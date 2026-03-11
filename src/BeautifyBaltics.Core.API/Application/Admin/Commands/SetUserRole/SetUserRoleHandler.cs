@@ -1,5 +1,7 @@
+using BeautifyBaltics.Domain.Aggregates.User;
+using BeautifyBaltics.Domain.Aggregates.User.Events;
 using BeautifyBaltics.Domain.Exceptions;
-using BeautifyBaltics.Domain.Documents.User;
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 using BeautifyBaltics.Persistence.Repositories.User;
 
@@ -10,11 +12,15 @@ public class SetUserRoleHandler(IUserRepository userRepository, ICommandReposito
     public async Task<SetUserRoleResponse> Handle(SetUserRoleRequest request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken)
-            ?? throw NotFoundException.For<User>(request.UserId);
+            ?? throw NotFoundException.For<UserProjection>(request.UserId);
 
-        user.SetRole(request.Role);
-        commandRepository.Update(user);
+        if (user.Role == request.Role)
+        {
+            return new SetUserRoleResponse(user.Id, user.Role);
+        }
 
-        return new SetUserRoleResponse(user.Id, user.Role);
+        commandRepository.Append<UserAggregate>(user.Id, new UserRoleChanged(user.Id, request.Role));
+
+        return new SetUserRoleResponse(user.Id, request.Role);
     }
 }

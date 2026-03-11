@@ -6,6 +6,11 @@ namespace BeautifyBaltics.Core.API.Application.Admin.Queries.FindUsers;
 public record FindUsersRequest : PagedRequest
 {
     /// <summary>
+    /// Text search across name and email
+    /// </summary>
+    public string? Search { get; init; }
+
+    /// <summary>
     /// Filter by role
     /// </summary>
     public UserRole? Role { get; init; }
@@ -26,7 +31,17 @@ public record FindUsersRequest : PagedRequest
     public string? Email { get; init; }
 
     /// <summary>
-    /// Search by name or email
+    /// Filter by total bookings
     /// </summary>
-    public string? Search { get; init; }
+    public int? TotalBookings { get; init; }
+
+    /// <summary>
+    /// Filter by rating
+    /// </summary>
+    public decimal? Rating { get; init;  }
+
+    /// <summary>
+    /// Filter by earnings
+    /// </summary>
+    public decimal? Earnings { get; init; }
 }

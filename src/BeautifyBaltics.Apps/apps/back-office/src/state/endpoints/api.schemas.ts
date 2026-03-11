@@ -436,34 +436,40 @@ export type FindUsersResponse = {
   id: string;
   /**
    * Email address
-   * @nullable
+   * @minLength 1
    */
-  email: string | null;
+  email: string;
   /**
    * First name
-   * @nullable
+   * @minLength 1
    */
-  firstName: string | null;
+  firstName: string;
   /**
    * Last name
-   * @nullable
+   * @minLength 1
    */
-  lastName: string | null;
+  lastName: string;
   /**
    * Full name
-   * @nullable
+   * @minLength 1
    */
-  fullName: string | null;
+  fullName: string;
   /**
    * Phone number
-   * @nullable
+   * @minLength 1
    */
-  phoneNumber: string | null;
+  phoneNumber: string;
   role: UserRole;
   /** Whether email is verified */
   emailVerified: boolean;
-  /** Account creation date */
-  createdAt: Date;
+  /** Account registration date */
+  joinedAt: Date;
+  /** Total bookings */
+  totalBookings: number;
+  /** Total earnings */
+  earnings: number;
+  /** Master rating, 0 for clients */
+  rating: number;
 };
 
 export type FindUsersResponsePagedResponse = {
@@ -491,6 +497,48 @@ export enum Gender {
   Other = 'Other',
 
 }
+export type GetAdminUserDetailResponse = {
+  /** User identifier */
+  id: string;
+  /**
+   * User full name
+   * @minLength 1
+   */
+  fullName: string;
+  /**
+   * User email
+   * @minLength 1
+   */
+  email: string;
+  role: UserRole;
+  /**
+   * Master aggregate ID — used to build the public profile URL (/masters/{id})
+   * @nullable
+   */
+  masterProfileId?: string | null;
+  /**
+   * Master city
+   * @nullable
+   */
+  city?: string | null;
+  /**
+   * Master description
+   * @nullable
+   */
+  description?: string | null;
+  /**
+   * Master rating
+   * @nullable
+   */
+  rating?: number | null;
+  /** Services offered by master */
+  services: string[];
+  /** Categories offered by master */
+  categories: string[];
+  /** Bookig history for the last 6 months */
+  bookingHistory: UserBookingHistoryEntry[];
+};
+
 export type GetAvailableTimeSlotsResponse = {
   /** @nullable */
   slots: AvailableTimeSlotDTO[] | null;
@@ -542,16 +590,20 @@ export type GetDashboardStatsResponse = {
 };
 
 export type GetDashboardSummaryResponse = {
+  /** Total number of clients */
   totalClients: number;
+  /** Total number of masters */
   totalMasters: number;
+  /** Total number of bookings */
   totalBookings: number;
+  /** Total revenue */
   totalRevenue: number;
-  /** @nullable */
-  monthlyPerformance: MonthlyBookingStat[] | null;
-  /** @nullable */
-  recentActivities: DashboardRecentActivity[] | null;
-  /** @nullable */
-  serviceCategories: ServiceCategoryRevenueStat[] | null;
+  /** Monthly performance stats */
+  monthlyPerformance: MonthlyBookingStat[];
+  /** Recent activities stats */
+  recentActivities: DashboardRecentActivity[];
+  /** Service categories */
+  serviceCategories: ServiceCategoryRevenueStat[];
 };
 
 export type GetEarningsPerformanceResponse = {
@@ -1236,6 +1288,13 @@ export type UploadMasterProfileImageResponse = {
   masterId: string;
 };
 
+export type UserBookingHistoryEntry = {
+  year?: number;
+  month?: number;
+  count?: number;
+  earnings?: number;
+};
+
 export enum UserRole {
   Client = 'Client',
   Master = 'Master',
@@ -1265,6 +1324,10 @@ export type ValidationProblemDetails = {
 
 export type FindUsersParams = {
 /**
+ * Text search across name and email
+ */
+  search?: string;
+  /**
  * Filter by role
  */
   role?: UserRole;
@@ -1281,9 +1344,17 @@ export type FindUsersParams = {
  */
   email?: string;
   /**
- * Search by name or email
+ * Filter by total bookings
  */
-  search?: string;
+  totalBookings?: number;
+  /**
+ * Filter by rating
+ */
+  rating?: number;
+  /**
+ * Filter by earnings
+ */
+  earnings?: number;
   /**
  * Page number
  */

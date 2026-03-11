@@ -129,11 +129,11 @@ const ru: CommonLocale = {
       table: {
         columns: {
           name: 'Имя',
-          phone: 'Телефон',
           role: 'Роль',
-          emailVerified: 'Email',
-          joinedAt: 'Дата регистрации',
-          actions: 'Действия',
+          bookings: 'Бронирования',
+          rating: 'Рейтинг',
+          earnings: 'Доход',
+          admin: 'Админ',
         },
         noRecords: 'Пользователи не найдены',
       },
@@ -150,7 +150,7 @@ const ru: CommonLocale = {
       unverified: 'Не подтверждён',
       actions: {
         promoteToAdmin: 'Сделать админом',
-        delete: 'Удалить',
+        delete: 'Удалить аккаунт',
       },
       promoteModal: {
         title: 'Сделать админом',
@@ -158,7 +158,7 @@ const ru: CommonLocale = {
         confirm: 'Назначить',
       },
       deleteModal: {
-        title: 'Удалить пользователя',
+        title: 'Удалить аккаунт',
         message: 'Вы уверены, что хотите удалить пользователя {{name}}? Это действие нельзя отменить.',
         confirm: 'Удалить',
       },
@@ -167,6 +167,19 @@ const ru: CommonLocale = {
         deleted: 'Пользователь успешно удалён',
         errorTitle: 'Ошибка',
         error: 'Что-то пошло не так. Попробуйте ещё раз.',
+      },
+      detail: {
+        profile: {
+          title: 'Профиль мастера',
+        },
+        chart: {
+          title: 'История бронирований (6 мес.)',
+          bookings: 'Бронирования',
+          earnings: 'Доход',
+        },
+        quickActions: 'Быстрые действия',
+        memberSince: 'Участник с {{date}}',
+        viewProfile: 'Открыть публичный профиль',
       },
     },
     bookings: {

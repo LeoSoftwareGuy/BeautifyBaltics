@@ -39,5 +39,6 @@ public class BookingConfiguration : IConfigureMarten
         options.Events.AddEventType(typeof(BookingRescheduled));
         options.Events.AddEventType(typeof(BookingConfirmed));
         options.Events.AddEventType(typeof(BookingCancelled));
+        options.Events.AddEventType(typeof(BookingCompleted));
     }
 }

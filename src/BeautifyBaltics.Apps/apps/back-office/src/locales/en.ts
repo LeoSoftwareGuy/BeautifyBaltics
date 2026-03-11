@@ -920,11 +920,11 @@ const en = {
       table: {
         columns: {
           name: 'Name',
-          phone: 'Phone',
           role: 'Role',
-          emailVerified: 'Email',
-          joinedAt: 'Joined',
-          actions: 'Actions',
+          bookings: 'Bookings',
+          rating: 'Rating',
+          earnings: 'Earnings',
+          admin: 'Admin',
         },
         noRecords: 'No users found',
       },
@@ -941,7 +941,7 @@ const en = {
       unverified: 'Unverified',
       actions: {
         promoteToAdmin: 'Promote to Admin',
-        delete: 'Delete',
+        delete: 'Delete Account',
       },
       promoteModal: {
         title: 'Promote to Admin',
@@ -949,7 +949,7 @@ const en = {
         confirm: 'Promote',
       },
       deleteModal: {
-        title: 'Delete User',
+        title: 'Delete Account',
         message: 'Are you sure you want to delete {{name}}? This action cannot be undone.',
         confirm: 'Delete',
       },
@@ -958,6 +958,19 @@ const en = {
         deleted: 'User deleted successfully',
         errorTitle: 'Error',
         error: 'Something went wrong. Please try again.',
+      },
+      detail: {
+        profile: {
+          title: 'Master Profile',
+        },
+        chart: {
+          title: 'Booking History (6 months)',
+          bookings: 'Bookings',
+          earnings: 'Earnings',
+        },
+        quickActions: 'Quick Actions',
+        memberSince: 'Member since {{date}}',
+        viewProfile: 'View Public Profile',
       },
     },
     bookings: {

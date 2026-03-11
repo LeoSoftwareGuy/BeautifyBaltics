@@ -33,6 +33,7 @@
     "react/jsx-props-no-spreading": "off",
     "react/require-default-props": "off",
     "react/prop-types": "off",
+    "react/no-unstable-nested-components": ["error", { "allowAsProps": true }],
     "no-console": "warn",
     "no-alert": "off",
     "no-restricted-exports": "off",

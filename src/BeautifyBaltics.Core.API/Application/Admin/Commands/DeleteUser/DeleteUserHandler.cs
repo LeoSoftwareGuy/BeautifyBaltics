@@ -1,5 +1,7 @@
+using BeautifyBaltics.Domain.Aggregates.User;
+using BeautifyBaltics.Domain.Aggregates.User.Events;
 using BeautifyBaltics.Domain.Exceptions;
-using BeautifyBaltics.Domain.Documents.User;
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 using BeautifyBaltics.Persistence.Repositories.User;
 
@@ -10,8 +12,8 @@ public class DeleteUserHandler(IUserRepository userRepository, ICommandRepositor
     public async Task Handle(DeleteUserRequest request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken)
-            ?? throw NotFoundException.For<User>(request.UserId);
+            ?? throw NotFoundException.For<UserProjection>(request.UserId);
 
-        commandRepository.Delete(user);
+        commandRepository.Append<UserAggregate>(user.Id, new UserDeleted(user.Id, DateTimeOffset.UtcNow));
     }
 }

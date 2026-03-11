@@ -4,6 +4,8 @@ using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Domain.Aggregates.Client.Events;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Aggregates.User;
+using BeautifyBaltics.Domain.Aggregates.User.Events;
 using BeautifyBaltics.Domain.Documents.User;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
@@ -23,7 +25,7 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
     {
         public async Task<(RegisterUserResponse, OutgoingMessages)> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
         {
-            var normalizedEmail = request.Email.Trim();
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
             var existingUser = await userRepository.GetByEmailAsync(normalizedEmail, request.Role, cancellationToken);
 
@@ -38,17 +40,16 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
 
             var userId = CombGuidIdGeneration.NewGuid();
 
-            var userAccount = new User(
-                id: userId,
-                email: normalizedEmail,
-                passwordHash: passwordHash,
-                role: request.Role,
-                firstName: request.FirstName,
-                lastName: request.LastName,
-                phoneNumber: request.PhoneNumber
+            StartUserAggregate(
+                userId,
+                normalizedEmail,
+                passwordHash,
+                request.FirstName,
+                request.LastName,
+                request.PhoneNumber,
+                request.Role,
+                emailVerified: false
             );
-
-            session.Insert(userAccount);
 
             if (request.Role == UserRole.Client)
             {
@@ -77,17 +78,16 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
                 {
                     var clientUserId = CombGuidIdGeneration.NewGuid();
 
-                    var clientUserAccount = new User(
-                        id: clientUserId,
-                        email: normalizedEmail,
-                        passwordHash: passwordHash,
-                        role: UserRole.Client,
-                        firstName: request.FirstName,
-                        lastName: request.LastName,
-                        phoneNumber: request.PhoneNumber
+                    StartUserAggregate(
+                        clientUserId,
+                        normalizedEmail,
+                        passwordHash,
+                        request.FirstName,
+                        request.LastName,
+                        request.PhoneNumber,
+                        UserRole.Client,
+                        emailVerified: false
                     );
-
-                    session.Insert(clientUserAccount);
 
                     session.Events.StartStream<ClientAggregate>(new ClientCreated(
                         FirstName: request.FirstName,
@@ -119,6 +119,34 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
             };
 
             return (new RegisterUserResponse("Registration successful. Please check your email to verify your account."), outgoing);
+        }
+
+        private void StartUserAggregate(
+            Guid userId,
+            string email,
+            string passwordHash,
+            string firstName,
+            string lastName,
+            string phoneNumber,
+            UserRole role,
+            bool emailVerified)
+        {
+            session.Events.StartStream<UserAggregate>(userId,
+                new UserRegistered(
+                    userId,
+                    email,
+                    firstName,
+                    lastName,
+                    phoneNumber,
+                    role,
+                    DateTimeOffset.UtcNow,
+                    passwordHash
+                ));
+
+            if (emailVerified)
+            {
+                session.Events.Append(userId, new UserEmailVerified(userId, DateTimeOffset.UtcNow));
+            }
         }
     }
 }

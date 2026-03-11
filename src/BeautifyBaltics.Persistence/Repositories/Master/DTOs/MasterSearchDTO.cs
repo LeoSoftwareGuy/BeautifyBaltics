@@ -11,4 +11,5 @@ public record MasterSearchDTO : BaseSearchDTO
     public decimal? MinPrice { get; init; }
     public decimal? MaxPrice { get; init; }
     public string? ExcludeEmail { get; init; }
+    public IReadOnlyList<Guid>? UserIds { get; init; }
 }

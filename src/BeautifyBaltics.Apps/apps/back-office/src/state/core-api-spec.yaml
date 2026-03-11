@@ -244,12 +244,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUserStatisticsResponse'
+  '/api/v1/admin/users/{id}/detail':
+    get:
+      tags:
+        - Admin
+      operationId: GetAdminUserDetail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdminUserDetailResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/admin/users:
     get:
       tags:
         - Admin
       operationId: FindUsers
       parameters:
+        - name: search
+          in: query
+          description: Text search across name and email
+          schema:
+            type: string
         - name: role
           in: query
           description: Filter by role
@@ -270,11 +300,24 @@ paths:
           description: Filter by email address
           schema:
             type: string
-        - name: search
+        - name: totalBookings
           in: query
-          description: Search by name or email
+          description: Filter by total bookings
           schema:
-            type: string
+            type: integer
+            format: int32
+        - name: rating
+          in: query
+          description: Filter by rating
+          schema:
+            type: number
+            format: double
+        - name: earnings
+          in: query
+          description: Filter by earnings
+          schema:
+            type: number
+            format: double
         - name: page
           in: query
           description: Page number
@@ -1057,9 +1100,9 @@ paths:
       summary: Find paged jobs
       operationId: FindJobs
       parameters:
-        - name: text
+        - name: name
           in: query
-          description: Filter by text
+          description: Filter by name
           schema:
             type: string
         - name: categoryId
@@ -3328,15 +3371,18 @@ components:
       additionalProperties: false
     FindUsersResponse:
       required:
-        - createdAt
+        - earnings
         - email
         - emailVerified
         - firstName
         - fullName
         - id
+        - joinedAt
         - lastName
         - phoneNumber
+        - rating
         - role
+        - totalBookings
       type: object
       properties:
         id:
@@ -3344,34 +3390,46 @@ components:
           description: User ID
           format: uuid
         email:
+          minLength: 1
           type: string
           description: Email address
-          nullable: true
         firstName:
+          minLength: 1
           type: string
           description: First name
-          nullable: true
         lastName:
+          minLength: 1
           type: string
           description: Last name
-          nullable: true
         fullName:
+          minLength: 1
           type: string
           description: Full name
-          nullable: true
         phoneNumber:
+          minLength: 1
           type: string
           description: Phone number
-          nullable: true
         role:
           $ref: '#/components/schemas/UserRole'
         emailVerified:
           type: boolean
           description: Whether email is verified
-        createdAt:
+        joinedAt:
           type: string
-          description: Account creation date
+          description: Account registration date
           format: date-time
+        totalBookings:
+          type: integer
+          description: Total bookings
+          format: int32
+        earnings:
+          type: number
+          description: Total earnings
+          format: double
+        rating:
+          type: number
+          description: 'Master rating, 0 for clients'
+          format: double
       additionalProperties: false
     FindUsersResponsePagedResponse:
       required:
@@ -3422,6 +3480,65 @@ components:
         - Female
         - Other
       type: string
+    GetAdminUserDetailResponse:
+      required:
+        - bookingHistory
+        - categories
+        - email
+        - fullName
+        - id
+        - role
+        - services
+      type: object
+      properties:
+        id:
+          type: string
+          description: User identifier
+          format: uuid
+        fullName:
+          minLength: 1
+          type: string
+          description: User full name
+        email:
+          minLength: 1
+          type: string
+          description: User email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        masterProfileId:
+          type: string
+          description: 'Master aggregate ID — used to build the public profile URL (/masters/{id})'
+          format: uuid
+          nullable: true
+        city:
+          type: string
+          description: Master city
+          nullable: true
+        description:
+          type: string
+          description: Master description
+          nullable: true
+        rating:
+          type: number
+          description: Master rating
+          format: double
+          nullable: true
+        services:
+          type: array
+          items:
+            type: string
+          description: Services offered by master
+        categories:
+          type: array
+          items:
+            type: string
+          description: Categories offered by master
+        bookingHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBookingHistoryEntry'
+          description: Bookig history for the last 6 months
+      additionalProperties: false
     GetAvailableTimeSlotsResponse:
       required:
         - slots
@@ -3536,31 +3653,35 @@ components:
       properties:
         totalClients:
           type: integer
+          description: Total number of clients
           format: int32
         totalMasters:
           type: integer
+          description: Total number of masters
           format: int32
         totalBookings:
           type: integer
+          description: Total number of bookings
           format: int64
         totalRevenue:
           type: number
+          description: Total revenue
           format: double
         monthlyPerformance:
           type: array
           items:
             $ref: '#/components/schemas/MonthlyBookingStat'
-          nullable: true
+          description: Monthly performance stats
         recentActivities:
           type: array
           items:
             $ref: '#/components/schemas/DashboardRecentActivity'
-          nullable: true
+          description: Recent activities stats
         serviceCategories:
           type: array
           items:
             $ref: '#/components/schemas/ServiceCategoryRevenueStat'
-          nullable: true
+          description: Service categories
       additionalProperties: false
     GetEarningsPerformanceResponse:
       required:
@@ -3705,7 +3826,6 @@ components:
       additionalProperties: false
     GetServiceStatisticsResponse:
       required:
-        - averagePrice
         - totalCategories
         - totalServices
       type: object
@@ -3718,10 +3838,6 @@ components:
           type: integer
           description: Total categories number
           format: int64
-        averagePrice:
-          type: number
-          description: Average price
-          format: double
       additionalProperties: false
     GetUserResponse:
       type: object
@@ -3773,7 +3889,6 @@ components:
     JobCommandDTO:
       required:
         - categoryId
-        - durationMinutes
         - name
       type: object
       properties:
@@ -3789,26 +3904,14 @@ components:
           type: string
           description: Desciption
           nullable: true
-        durationMinutes:
-          maximum: 1440
-          minimum: 1
-          type: integer
-          description: Duration in minutes
-          format: int32
-        price:
-          type: number
-          description: Price in EUR
-          format: double
       additionalProperties: false
     JobDTO:
       required:
         - categoryId
         - categoryName
         - description
-        - durationMinutes
         - id
         - name
-        - price
       type: object
       properties:
         id:
@@ -3826,14 +3929,6 @@ components:
         description:
           minLength: 1
           type: string
-        durationMinutes:
-          maximum: 1440
-          minimum: 1
-          type: integer
-          format: int32
-        price:
-          type: number
-          format: double
       additionalProperties: false
     LoginRequest:
       required:
@@ -4691,6 +4786,22 @@ components:
           type: string
           description: Master id
           format: uuid
+      additionalProperties: false
+    UserBookingHistoryEntry:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+        earnings:
+          type: number
+          format: double
       additionalProperties: false
     UserRole:
       enum:

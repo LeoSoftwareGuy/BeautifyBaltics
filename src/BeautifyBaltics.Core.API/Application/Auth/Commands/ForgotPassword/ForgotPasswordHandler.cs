@@ -1,6 +1,7 @@
 using BeautifyBaltics.Core.API.Application.Auth.Commands.SendPasswordResetEmail;
 using BeautifyBaltics.Core.API.Authentication.SeedWork;
 using BeautifyBaltics.Domain.Documents.User;
+using BeautifyBaltics.Persistence.Projections;
 using JasperFx.Core;
 using Marten;
 using Wolverine;
@@ -20,7 +21,7 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.ForgotPassword
             var outgoing = new OutgoingMessages();
 
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
-            var userAccount = await session.Query<User>()
+            var userAccount = await session.Query<UserProjection>()
                 .FirstOrDefaultAsync(x => x.Email == normalizedEmail && x.Role == request.Role, cancellationToken);
 
             // Always return success to prevent email enumeration

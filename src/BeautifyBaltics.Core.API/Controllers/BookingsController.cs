@@ -139,7 +139,13 @@ public class BookingsController(IMessageBus bus, IWebHostEnvironment env) : ApiC
         if (booking.Status != BookingStatus.Confirmed)
             return BadRequest($"Booking is '{booking.Status}', must be Confirmed.");
 
-        session.Events.Append(id, new BookingCompleted(BookingId: id, CompletedAt: DateTime.UtcNow));
+        session.Events.Append(id, new BookingCompleted(
+            BookingId: id,
+            CompletedAt: DateTime.UtcNow,
+            MasterId: booking.MasterId,
+            ClientId: booking.ClientId,
+            Price: booking.Price
+        ));
         await session.SaveChangesAsync();
 
         return NoContent();

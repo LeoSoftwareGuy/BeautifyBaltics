@@ -1,17 +1,18 @@
 ﻿using BeautifyBaltics.Domain.Enumerations;
+using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.User.DTOs;
 using Marten;
 using Marten.Pagination;
 
 namespace BeautifyBaltics.Persistence.Repositories.User
 {
-    public class UserRepository(IQuerySession session) : QueryRepository<Domain.Documents.User.User, UserSearchDTO>(session), IUserRepository
+    public class UserRepository(IQuerySession session) : QueryRepository<UserProjection, UserSearchDTO>(session), IUserRepository
     {
-        public override Task<IPagedList<Domain.Documents.User.User>> GetPagedListAsync(UserSearchDTO search,
+        public override Task<IPagedList<UserProjection>> GetPagedListAsync(UserSearchDTO search,
                CancellationToken cancellationToken = default
         )
         {
-            return BuildSearchQuery(search).ToPagedListAsync(search.Page, search.PageSize, cancellationToken);
+            return BuildSearchQuery(search).SortBy(search.SortBy, search.Ascending).ToPagedListAsync(search.Page, search.PageSize, cancellationToken);
         }
 
         public override Task<int> CountAsync(UserSearchDTO search, CancellationToken cancellationToken = default)
@@ -19,23 +20,29 @@ namespace BeautifyBaltics.Persistence.Repositories.User
             return BuildSearchQuery(search).CountAsync(cancellationToken);
         }
 
-        private IQueryable<Domain.Documents.User.User> BuildSearchQuery(UserSearchDTO search)
+        private IQueryable<UserProjection> BuildSearchQuery(UserSearchDTO search)
         {
-            var query = _session.Query<Domain.Documents.User.User>().AsQueryable();
+            var query = _session.Query<UserProjection>().AsQueryable();
 
             if (search.Role is not null) query = query.Where(x => x.Role == search.Role);
             if (search.FirstName is not null) query = query.Where(x => x.FirstName.NgramSearch(search.FirstName));
             if (search.Email is not null) query = query.Where(x => x.Email.NgramSearch(search.Email));
-            if (search.Search is not null)
-                query = query.Where(x => x.Email.NgramSearch(search.Search) || x.FirstName.NgramSearch(search.Search));
+            if (!string.IsNullOrWhiteSpace(search.Search))
+            {
+                var value = search.Search;
+                query = query.Where(x =>
+                    x.FirstName.NgramSearch(value) ||
+                    x.LastName.NgramSearch(value) ||
+                    x.Email.NgramSearch(value));
+            }
 
             return query;
         }
 
-        public async Task<Domain.Documents.User.User?> GetByEmailAsync(string email, UserRole? role = null, CancellationToken cancellationToken = default)
+        public async Task<UserProjection?> GetByEmailAsync(string email, UserRole? role = null, CancellationToken cancellationToken = default)
         {
             var normalized = NormalizeEmail(email);
-            var query = _session.Query<Domain.Documents.User.User>()
+            var query = _session.Query<UserProjection>()
                 .Where(x => x.Email != null && x.Email.Equals(normalized, StringComparison.InvariantCulture));
 
             if (role is not null)
@@ -49,7 +56,7 @@ namespace BeautifyBaltics.Persistence.Repositories.User
         public Task<bool> ExistsByEmailAsync(string email, UserRole? role = null, CancellationToken cancellationToken = default)
         {
             var normalized = NormalizeEmail(email);
-            var query = _session.Query<Domain.Documents.User.User>()
+            var query = _session.Query<UserProjection>()
                 .Where(x => x.Email != null && x.Email.Equals(normalized, StringComparison.InvariantCulture));
 
             if (role is not null)
@@ -62,7 +69,7 @@ namespace BeautifyBaltics.Persistence.Repositories.User
 
         public Task<bool> ExistsByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken = default)
         {
-            var query = _session.Query<Domain.Documents.User.User>().Where(x => x.PhoneNumber == phoneNumber);
+            var query = _session.Query<UserProjection>().Where(x => x.PhoneNumber == phoneNumber);
 
             return query.AnyAsync(cancellationToken);
         }

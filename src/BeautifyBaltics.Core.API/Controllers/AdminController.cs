@@ -1,4 +1,5 @@
 using BeautifyBaltics.Core.API.Application.Admin.Commands.CreateJobCategory;
+using BeautifyBaltics.Core.API.Application.Admin.Queries.GetAdminUserDetail;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.GetDashboardSummary;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteJobCategory;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteUser;
@@ -120,6 +121,15 @@ public class AdminController(IMessageBus bus) : ApiController
     public async Task<ActionResult<GetUserStatisticsResponse>> GetUserStatistics()
     {
         var response = await bus.InvokeAsync<GetUserStatisticsResponse>(new GetUserStatisticsRequest());
+        return Ok(response);
+    }
+
+    [HttpGet("users/{id:guid}/detail", Name = "GetAdminUserDetail")]
+    [ProducesResponseType(typeof(GetAdminUserDetailResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<GetAdminUserDetailResponse>> GetAdminUserDetail([FromRoute] Guid id)
+    {
+        var response = await bus.InvokeAsync<GetAdminUserDetailResponse>(new GetAdminUserDetailRequest(id));
         return Ok(response);
     }
 

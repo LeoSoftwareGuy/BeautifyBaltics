@@ -2,19 +2,21 @@ using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Domain.Aggregates.Client.Events;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
-using JasperFx.Core;
+using BeautifyBaltics.Domain.Aggregates.User;
+using BeautifyBaltics.Domain.Aggregates.User.Events;
 using BeautifyBaltics.Domain.Documents;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.ValueObjects;
 using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Integrations.BlobStorage;
+using JasperFx.Core;
 using Marten;
+using Marten.Events;
 using Marten.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using BeautifyBaltics.Domain.Documents.User;
 
 namespace BeautifyBaltics.Persistence.Seeds;
 
@@ -119,36 +121,63 @@ public class SampleDataSeeder : IInitialData
 
     private async Task SeedAdminUserAsync(IDocumentSession session, CancellationToken cancellation)
     {
-        var existing = await session.LoadAsync<User>(AdminId, cancellation);
-        if (existing is not null) return;
+        var adminExists = await session.Events.QueryRawEventDataOnly<UserRegistered>()
+            .AnyAsync(e => e.UserId == AdminId, cancellation);
+        if (adminExists) return;
 
         var email = _configuration["Seed:AdminEmail"] ?? "admin@beautifybaltics.com";
         var password = _configuration["Seed:AdminPassword"] ?? "Admin@12345!";
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-        var adminAccount = new User(AdminId, email, passwordHash, UserRole.Admin, "Admin", "User", string.Empty);
-        adminAccount.SetEmailVerified();
-        session.Store(adminAccount);
+        session.Events.StartStream<UserAggregate>(AdminId, new UserRegistered(
+            AdminId,
+            email.ToLowerInvariant(),
+            "Admin",
+            "User",
+            string.Empty,
+            UserRole.Admin,
+            DateTimeOffset.UtcNow,
+            passwordHash
+        ));
+        session.Events.Append(AdminId, new UserEmailVerified(AdminId, DateTimeOffset.UtcNow));
 
         _logger.LogInformation("Admin user seeded with email: {Email}", email);
     }
 
     private async Task SeedUserAccountsAsync(IDocumentSession session, CancellationToken cancellation)
     {
-        if (await session.Query<User>().AnyAsync(cancellation)) return;
+        var hasExistingNonAdminUsers = await session.Events.QueryRawEventDataOnly<UserRegistered>()
+            .AnyAsync(e => e.Role != UserRole.Admin, cancellation);
+        if (hasExistingNonAdminUsers) return;
 
         var devPasswordHash = BCrypt.Net.BCrypt.HashPassword("Dev@12345!");
 
         foreach (var master in _masters)
         {
-            var masterAccount = new User(master.UserId, master.Email, devPasswordHash, UserRole.Master, master.FirstName, master.LastName, master.PhoneNumber);
-            masterAccount.SetEmailVerified();
-            session.Store(masterAccount);
+            session.Events.StartStream<UserAggregate>(master.UserId, new UserRegistered(
+                master.UserId,
+                master.Email.ToLowerInvariant(),
+                master.FirstName,
+                master.LastName,
+                master.PhoneNumber,
+                UserRole.Master,
+                DateTimeOffset.UtcNow,
+                devPasswordHash
+            ));
+            session.Events.Append(master.UserId, new UserEmailVerified(master.UserId, DateTimeOffset.UtcNow));
 
             var clientUserId = CombGuidIdGeneration.NewGuid();
-            var clientAccount = new User(clientUserId, master.Email, devPasswordHash, UserRole.Client, master.FirstName, master.LastName, master.PhoneNumber);
-            clientAccount.SetEmailVerified();
-            session.Store(clientAccount);
+            session.Events.StartStream<UserAggregate>(clientUserId, new UserRegistered(
+                clientUserId,
+                master.Email.ToLowerInvariant(),
+                master.FirstName,
+                master.LastName,
+                master.PhoneNumber,
+                UserRole.Client,
+                DateTimeOffset.UtcNow,
+                devPasswordHash
+            ));
+            session.Events.Append(clientUserId, new UserEmailVerified(clientUserId, DateTimeOffset.UtcNow));
 
             session.Events.StartStream<ClientAggregate>(new ClientCreated(
                 FirstName: master.FirstName,

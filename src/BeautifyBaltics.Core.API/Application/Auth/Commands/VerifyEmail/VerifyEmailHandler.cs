@@ -1,7 +1,10 @@
 using BeautifyBaltics.Core.API.Authentication.SeedWork;
+using BeautifyBaltics.Domain.Aggregates.User;
+using BeautifyBaltics.Domain.Aggregates.User.Events;
 using BeautifyBaltics.Domain.Documents.User;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
+using BeautifyBaltics.Persistence.Projections;
 using Marten;
 
 namespace BeautifyBaltics.Core.API.Application.Auth.Commands.VerifyEmail
@@ -19,25 +22,23 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.VerifyEmail
 
             if (verificationToken is null || !verificationToken.IsValid()) throw DomainException.WithMessage("Invalid or expired verification token.");
 
-            var userAccount = await session.LoadAsync<User>(verificationToken.UserId, cancellationToken)
+            var userAccount = await session.Query<UserProjection>()
+                .FirstOrDefaultAsync(x => x.Id == verificationToken.UserId, cancellationToken)
                 ?? throw DomainException.WithMessage("User not found.");
-
-            userAccount.SetEmailVerified();
 
             verificationToken.MarkUsed();
 
-            session.Update(userAccount);
+            session.Events.Append(userAccount.Id, new UserEmailVerified(userAccount.Id, DateTimeOffset.UtcNow));
             session.Update(verificationToken);
 
             if (userAccount.Role == UserRole.Master)
             {
-                var clientAccount = await session.Query<User>()
+                var clientAccount = await session.Query<UserProjection>()
                     .FirstOrDefaultAsync(x => x.Email == userAccount.Email && x.Role == UserRole.Client, cancellationToken);
 
                 if (clientAccount is not null && !clientAccount.EmailVerified)
                 {
-                    clientAccount.SetEmailVerified();
-                    session.Update(clientAccount);
+                    session.Events.Append(clientAccount.Id, new UserEmailVerified(clientAccount.Id, DateTimeOffset.UtcNow));
                 }
             }
 

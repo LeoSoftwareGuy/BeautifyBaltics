@@ -57,6 +57,12 @@ public class MasterRepository(IQuerySession session) : QueryRepository<Projectio
             query = query.Where(master => masterIds.Contains(master.Id));
         }
 
+        if (search.UserIds is { Count: > 0 })
+        {
+            var ids = search.UserIds;
+            query = query.Where(x => ids.Contains(x.UserId));
+        }
+
         return query;
     }
 }

@@ -129,11 +129,11 @@ const et: CommonLocale = {
       table: {
         columns: {
           name: 'Nimi',
-          phone: 'Telefon',
           role: 'Roll',
-          emailVerified: 'E-post',
-          joinedAt: 'Liitus',
-          actions: 'Toimingud',
+          bookings: 'Broneeringud',
+          rating: 'Reiting',
+          earnings: 'Tulud',
+          admin: 'Admin',
         },
         noRecords: 'Kasutajaid ei leitud',
       },
@@ -150,7 +150,7 @@ const et: CommonLocale = {
       unverified: 'Kinnitamata',
       actions: {
         promoteToAdmin: 'Tee adminiks',
-        delete: 'Kustuta',
+        delete: 'Kustuta konto',
       },
       promoteModal: {
         title: 'Tee adminiks',
@@ -158,7 +158,7 @@ const et: CommonLocale = {
         confirm: 'Tee adminiks',
       },
       deleteModal: {
-        title: 'Kustuta kasutaja',
+        title: 'Kustuta konto',
         message: 'Kas oled kindel, et soovid kustutada kasutaja {{name}}? Seda toimingut ei saa tagasi võtta.',
         confirm: 'Kustuta',
       },
@@ -167,6 +167,19 @@ const et: CommonLocale = {
         deleted: 'Kasutaja edukalt kustutatud',
         errorTitle: 'Viga',
         error: 'Midagi läks valesti. Palun proovi uuesti.',
+      },
+      detail: {
+        profile: {
+          title: 'Meistri profiil',
+        },
+        chart: {
+          title: 'Broneeringute ajalugu (6 kuud)',
+          bookings: 'Broneeringud',
+          earnings: 'Tulud',
+        },
+        quickActions: 'Kiirtoimingud',
+        memberSince: 'Liige alates {{date}}',
+        viewProfile: 'Vaata avalikku profiili',
       },
     },
     bookings: {

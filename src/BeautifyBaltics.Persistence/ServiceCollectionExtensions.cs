@@ -1,5 +1,6 @@
 using BeautifyBaltics.Persistence.Configurations;
 using BeautifyBaltics.Persistence.Repositories;
+using BeautifyBaltics.Persistence.Repositories.AdminUserStatistics;
 using BeautifyBaltics.Persistence.Repositories.Booking;
 using BeautifyBaltics.Persistence.Repositories.Client;
 using BeautifyBaltics.Persistence.Repositories.Job;
@@ -26,8 +27,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigureMarten, JobCategoryConfiguration>();
         services.AddSingleton<IConfigureMarten, JobCategoryConfiguration>();
         services.AddSingleton<IConfigureMarten, RatingConfiguration>();
-        services.AddSingleton<IConfigureMarten, UserAccountConfiguration>();
+        services.AddSingleton<IConfigureMarten, UserConfiguration>();
+        services.AddSingleton<IConfigureMarten, UserProjectionConfiguration>();
         services.AddSingleton<IConfigureMarten, UserSessionConfiguration>();
+        services.AddSingleton<IConfigureMarten, AdminUserStatisticsConfiguration>();
 
         return services;
     }
@@ -45,6 +48,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRatingRepository, RatingRepository>();
         services.AddScoped<ISessionRepository, SessionRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAdminUserStatisticsRepository, AdminUserStatisticsRepository>();
 
         return services;
     }
