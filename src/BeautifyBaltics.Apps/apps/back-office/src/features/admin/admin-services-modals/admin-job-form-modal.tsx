@@ -4,7 +4,6 @@ import {
   Button,
   Group,
   Modal,
-  NumberInput,
   Select,
   Stack,
   Textarea,
@@ -21,16 +20,12 @@ type JobFormState = {
   name: string;
   categoryId: string;
   description: string;
-  durationMinutes: number | string;
-  price: number | string;
 };
 
 const DEFAULT_FORM: JobFormState = {
   name: '',
   categoryId: '',
   description: '',
-  durationMinutes: '',
-  price: '',
 };
 
 type AdminJobFormModalProps = {
@@ -58,8 +53,6 @@ export function AdminJobFormModal({ opened, onClose, job }: AdminJobFormModalPro
             name: job.name,
             categoryId: job.categoryId,
             description: job.description,
-            durationMinutes: job.durationMinutes,
-            price: job.price ?? '',
           }
           : DEFAULT_FORM,
       );
@@ -102,8 +95,6 @@ export function AdminJobFormModal({ opened, onClose, job }: AdminJobFormModalPro
       name: form.name,
       categoryId: form.categoryId,
       description: form.description,
-      durationMinutes: Number(form.durationMinutes),
-      price: Number(form.price),
     };
 
     if (job) {
@@ -126,7 +117,7 @@ export function AdminJobFormModal({ opened, onClose, job }: AdminJobFormModalPro
         <TextInput
           label={t('admin.services.jobModal.fields.name')}
           value={form.name}
-          onChange={(e) => setForm((f) => ({ ...f, name: e.currentTarget.value }))}
+          onChange={(e) => { const { value } = e.currentTarget; setForm((f) => ({ ...f, name: value })); }}
           required
         />
         <Select
@@ -140,25 +131,8 @@ export function AdminJobFormModal({ opened, onClose, job }: AdminJobFormModalPro
         <Textarea
           label={t('admin.services.jobModal.fields.description')}
           value={form.description}
-          onChange={(e) => setForm((f) => ({ ...f, description: e.currentTarget.value }))}
+          onChange={(e) => { const { value } = e.currentTarget; setForm((f) => ({ ...f, description: value })); }}
           minRows={3}
-          required
-        />
-        <NumberInput
-          label={t('admin.services.jobModal.fields.durationMinutes')}
-          value={form.durationMinutes}
-          onChange={(v) => setForm((f) => ({ ...f, durationMinutes: v }))}
-          min={1}
-          max={1440}
-          required
-        />
-        <NumberInput
-          label={t('admin.services.jobModal.fields.price')}
-          value={form.price}
-          onChange={(v) => setForm((f) => ({ ...f, price: v }))}
-          min={0.01}
-          decimalScale={2}
-          prefix="€"
           required
         />
         <Group justify="flex-end" mt="sm">

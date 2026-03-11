@@ -18,9 +18,4 @@ public record JobDTO
 
     [Required]
     public required string Description { get; init; }
-
-    [Range(1, 24 * 60)]
-    public required int DurationMinutes { get; init; }
-
-    public required decimal Price { get; init; }
 }

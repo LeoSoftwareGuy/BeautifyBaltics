@@ -10,6 +10,7 @@ using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Integrations.BlobStorage;
 using Marten;
 using Marten.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -22,18 +23,21 @@ public class SampleDataSeeder : IInitialData
     private readonly IHostEnvironment _environment;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<SampleDataSeeder> _logger;
+    private readonly IConfiguration _configuration;
     private readonly string? _seedAssetsRoot;
     private readonly Dictionary<Guid, CategoryMediaAssets?> _categoryMediaCache = new();
 
     public SampleDataSeeder(
         IHostEnvironment environment,
         IServiceScopeFactory scopeFactory,
-        ILogger<SampleDataSeeder> logger
+        ILogger<SampleDataSeeder> logger,
+        IConfiguration configuration
     )
     {
         _environment = environment;
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _configuration = configuration;
         _seedAssetsRoot = ResolveSeedAssetsRoot();
     }
 
@@ -43,6 +47,7 @@ public class SampleDataSeeder : IInitialData
         await using var refSession = store.LightweightSession();
         await SeedCategoriesAsync(refSession, cancellation);
         await SeedJobsAsync(refSession, cancellation);
+        await SeedAdminUserAsync(refSession, cancellation);
         await refSession.SaveChangesAsync(cancellation);
 
         // Sample data: only seed masters and availability in development
@@ -110,6 +115,24 @@ public class SampleDataSeeder : IInitialData
         }
     }
 
+    private static readonly Guid AdminId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    private async Task SeedAdminUserAsync(IDocumentSession session, CancellationToken cancellation)
+    {
+        var existing = await session.LoadAsync<User>(AdminId, cancellation);
+        if (existing is not null) return;
+
+        var email = _configuration["Seed:AdminEmail"] ?? "admin@beautifybaltics.com";
+        var password = _configuration["Seed:AdminPassword"] ?? "Admin@12345!";
+
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        var adminAccount = new User(AdminId, email, passwordHash, UserRole.Admin, "Admin", "User", string.Empty);
+        adminAccount.SetEmailVerified();
+        session.Store(adminAccount);
+
+        _logger.LogInformation("Admin user seeded with email: {Email}", email);
+    }
+
     private async Task SeedUserAccountsAsync(IDocumentSession session, CancellationToken cancellation)
     {
         if (await session.Query<User>().AnyAsync(cancellation)) return;
@@ -134,12 +157,6 @@ public class SampleDataSeeder : IInitialData
                 UserId: clientUserId
             ));
         }
-
-        var adminId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-        var adminPasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@12345!");
-        var adminAccount = new User(adminId, "admin@dev.local", adminPasswordHash, UserRole.Admin, "Admin", "User", string.Empty);
-        adminAccount.SetEmailVerified();
-        session.Store(adminAccount);
     }
 
     private async Task<IReadOnlyDictionary<Guid, List<MasterAvailabilitySlotCreated>>> SeedMastersAsync(
@@ -539,7 +556,7 @@ public class SampleDataSeeder : IInitialData
     {
         public TimeSpan DefaultDuration => TimeSpan.FromMinutes(DurationMinutes);
 
-        public Job ToDocument(JobCategorySeed category) => new(Id, Name, category.Id, category.Name, TimeSpan.FromMinutes(DurationMinutes), Description, DefaultPrice);
+        public Job ToDocument(JobCategorySeed category) => new(Id, Name, category.Id, category.Name, Description);
     }
 
     private sealed record JobCategorySeed(Guid Id, string Name)

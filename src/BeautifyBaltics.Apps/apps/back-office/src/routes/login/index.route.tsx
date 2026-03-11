@@ -91,8 +91,10 @@ function LoginView() {
   const isDesktop = useMediaQuery('(min-width: 75em)');
   useEffect(() => {
     if (!loading && isAuthenticated && user) {
-      let destination: RoutePath = user.role === UserRole.Master ? '/master' : '/explore';
-      if (redirectPath !== '/home') destination = redirectPath;
+      let destination: RoutePath = '/explore';
+      if (user.role === UserRole.Admin) destination = '/admin';
+      else if (user.role === UserRole.Master) destination = '/master';
+      if (redirectPath !== '/home' && user.role !== UserRole.Admin) destination = redirectPath;
       router.navigate({ to: destination, replace: true });
     }
   }, [isAuthenticated, loading, redirectPath, router, user]);

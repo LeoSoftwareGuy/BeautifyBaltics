@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { NumberFormatter, SimpleGrid } from '@mantine/core';
+import { SimpleGrid } from '@mantine/core';
 import {
   IconBriefcase,
   IconCategory,
-  IconCurrencyEuro,
 } from '@tabler/icons-react';
 
 import { StatCard } from '@/components/ui';
@@ -14,7 +13,7 @@ export function AdminServicesStats() {
   const { data: stats, isLoading } = useGetServiceStatistics();
 
   return (
-    <SimpleGrid cols={{ base: 1, sm: 3 }}>
+    <SimpleGrid cols={{ base: 1, sm: 2 }}>
       <StatCard
         icon={IconBriefcase}
         label={t('admin.services.stats.totalServices')}
@@ -25,19 +24,6 @@ export function AdminServicesStats() {
         icon={IconCategory}
         label={t('admin.services.stats.totalCategories')}
         value={stats?.totalCategories ?? 0}
-        isLoading={isLoading}
-      />
-      <StatCard
-        icon={IconCurrencyEuro}
-        label={t('admin.services.stats.averagePrice')}
-        value={(
-          <NumberFormatter
-            value={stats?.averagePrice ?? 0}
-            prefix="€"
-            decimalScale={2}
-            fixedDecimalScale
-          />
-        )}
         isLoading={isLoading}
       />
     </SimpleGrid>

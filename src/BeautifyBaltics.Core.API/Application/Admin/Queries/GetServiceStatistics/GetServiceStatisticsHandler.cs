@@ -12,13 +12,10 @@ public class GetServiceStatisticsHandler(IJobRepository jobRepository, IJobCateg
 
         await Task.WhenAll(totalServicesTask, totalCategoriesTask);
 
-        var avgPrice = await jobRepository.AveragePriceAsync(cancellationToken);
-
         return new GetServiceStatisticsResponse
         {
             TotalServices = await totalServicesTask,
             TotalCategories = await totalCategoriesTask,
-            AveragePrice = avgPrice,
         };
     }
 }

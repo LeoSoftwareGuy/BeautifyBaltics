@@ -642,8 +642,6 @@ export type GetServiceStatisticsResponse = {
   totalServices: number;
   /** Total categories number */
   totalCategories: number;
-  /** Average price */
-  averagePrice: number;
 };
 
 export type GetUserResponse = {
@@ -685,14 +683,6 @@ export type JobCommandDTO = {
    * @nullable
    */
   description?: string | null;
-  /**
-   * Duration in minutes
-   * @minimum 1
-   * @maximum 1440
-   */
-  durationMinutes: number;
-  /** Price in EUR */
-  price?: number;
 };
 
 export type JobDTO = {
@@ -704,12 +694,6 @@ export type JobDTO = {
   categoryName: string;
   /** @minLength 1 */
   description: string;
-  /**
-   * @minimum 1
-   * @maximum 1440
-   */
-  durationMinutes: number;
-  price: number;
 };
 
 export type LoginRequest = {
@@ -1431,9 +1415,9 @@ export type UploadClientProfileImageBody = {
 
 export type FindJobsParams = {
 /**
- * Filter by text
+ * Filter by name
  */
-  text?: string;
+  name?: string;
   /**
  * Filter by category
  */

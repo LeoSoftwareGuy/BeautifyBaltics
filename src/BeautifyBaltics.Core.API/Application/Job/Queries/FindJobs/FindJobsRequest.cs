@@ -6,9 +6,9 @@ namespace BeautifyBaltics.Core.API.Application.Job.Queries.FindJobs;
 public record FindJobsRequest : PagedRequest
 {
     /// <summary>
-    /// Filter by text
+    /// Filter by name
     /// </summary>
-    public string? Text { get; init; }
+    public string? Name { get; init; }
 
     /// <summary>
     /// Filter by category

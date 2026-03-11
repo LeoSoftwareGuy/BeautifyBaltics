@@ -21,15 +21,4 @@ public record JobCommandDTO
     /// </summary>
     public string Description { get; init; } = string.Empty;
 
-    /// <summary>
-    /// Duration in minutes
-    /// </summary>
-    [Required]
-    [Range(1, 24 * 60)]
-    public int DurationMinutes { get; init; }
-
-    /// <summary>
-    /// Price in EUR
-    /// </summary>
-    public decimal Price { get; init; }
 }

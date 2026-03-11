@@ -8,7 +8,6 @@ import {
   Button,
   Card,
   Group,
-  NumberFormatter,
   Select,
   Stack,
   Tabs,
@@ -71,7 +70,7 @@ export function AdminServicesDataTable() {
     pageSize: DEFAULT_PAGE_SIZE,
     sortBy: 'name',
     ascending: true,
-    text: undefined as string | undefined,
+    name: undefined as string | undefined,
     categoryId: undefined as string | undefined,
   });
 
@@ -95,7 +94,7 @@ export function AdminServicesDataTable() {
     pageSize: servicesQuery.pageSize,
     sortBy: servicesQuery.sortBy,
     ascending: servicesQuery.ascending,
-    text: servicesQuery.text || undefined,
+    name: servicesQuery.name || undefined,
     categoryId: servicesQuery.categoryId || undefined,
   });
 
@@ -180,28 +179,6 @@ export function AdminServicesDataTable() {
       ),
     },
     {
-      accessor: 'durationMinutes',
-      title: t('admin.services.servicesTable.columns.duration'),
-      sortKey: 'durationMinutes',
-      render: (job) => (
-        <Text size="sm">
-          {job.durationMinutes}
-          {' '}
-          min
-        </Text>
-      ),
-    },
-    {
-      accessor: 'price',
-      title: t('admin.services.servicesTable.columns.price'),
-      sortKey: 'price',
-      render: (job) => (
-        <Text size="sm" fw={600}>
-          <NumberFormatter value={job.price ?? 0} prefix="€" decimalScale={2} fixedDecimalScale />
-        </Text>
-      ),
-    },
-    {
       accessor: 'actions',
       title: t('admin.services.servicesTable.columns.actions'),
       render: (job) => (
@@ -271,8 +248,8 @@ export function AdminServicesDataTable() {
                 <TextInput
                   placeholder={t('admin.services.filters.searchPlaceholder')}
                   leftSection={<IconSearch size={16} />}
-                  value={servicesQuery.text ?? ''}
-                  onChange={(e) => onServicesFilterChange('text', e.currentTarget.value || undefined)}
+                  value={servicesQuery.name ?? ''}
+                  onChange={(e) => onServicesFilterChange('name', e.currentTarget.value || undefined)}
                   radius="md"
                   style={{ flex: 1 }}
                 />

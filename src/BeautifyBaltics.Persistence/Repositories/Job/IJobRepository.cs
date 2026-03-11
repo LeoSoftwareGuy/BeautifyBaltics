@@ -5,5 +5,4 @@ namespace BeautifyBaltics.Persistence.Repositories.Job;
 
 public interface IJobRepository : IQueryRepository<Domain.Documents.Job, JobSearchDTO>
 {
-    Task<decimal> AveragePriceAsync(CancellationToken cancellationToken = default);
 }

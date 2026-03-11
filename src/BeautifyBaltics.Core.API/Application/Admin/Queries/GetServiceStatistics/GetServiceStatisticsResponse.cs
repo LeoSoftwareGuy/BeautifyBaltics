@@ -16,9 +16,4 @@ public record GetServiceStatisticsResponse
     [Required]
     public long TotalCategories { get; init; }
 
-    /// <summary>
-    /// Average price
-    /// </summary>
-    [Required]
-    public decimal AveragePrice { get; init; }
 }

@@ -14,25 +14,18 @@ public class Job : Document<Guid>
     [JsonInclude]
     public string CategoryName { get; private set; } = string.Empty;
     [JsonInclude]
-    public TimeSpan Duration { get; private set; }
-    [JsonInclude]
     public string Description { get; private set; } = string.Empty;
 
-    [JsonInclude]
-    public decimal Price { get; private set; }
-
-    public Job(Guid id, string name, Guid categoryId, string categoryName, TimeSpan duration, string description, decimal price)
+    public Job(Guid id, string name, Guid categoryId, string categoryName, string description)
         : base(id)
     {
         Name = name.Trim();
         CategoryId = categoryId;
         CategoryName = categoryName.Trim();
-        Duration = duration;
         Description = description.Trim();
-        Price = price;
     }
 
-    public void Update(string name, Guid categoryId, string categoryName, TimeSpan duration, string description, decimal price)
+    public void Update(string name, Guid categoryId, string categoryName, string description)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
         Name = name.Trim();
@@ -41,11 +34,7 @@ public class Job : Document<Guid>
         CategoryId = categoryId;
         CategoryName = categoryName.Trim();
 
-        Duration = duration;
-
         if (string.IsNullOrWhiteSpace(description)) throw new ArgumentNullException(nameof(description));
         Description = description;
-
-        Price = price;
     }
 }
