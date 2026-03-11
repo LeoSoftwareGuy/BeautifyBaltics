@@ -41,43 +41,43 @@ public class AdminUserStatisticsProjection : MultiStreamProjection<AdminUserStat
 
         CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, MasterProfileUpdated>(
             doc => doc.Id,
-            doc => doc.MasterId ?? Guid.Empty,
+            doc => doc.MasterId,
             e => e.Data.MasterId
         ));
 
         CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, MasterRatingUpdated>(
             doc => doc.Id,
-            doc => doc.MasterId ?? Guid.Empty,
+            doc => doc.MasterId,
             e => e.Data.MasterId
         ));
 
         CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, ClientProfileUpdated>(
             doc => doc.Id,
-            doc => doc.ClientId ?? Guid.Empty,
+            doc => doc.ClientId,
             e => e.Data.ClientId
         ));
 
         CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, BookingCreated>(
             doc => doc.Id,
-            doc => doc.MasterId ?? Guid.Empty,
+            doc => doc.MasterId,
             e => e.Data.MasterId
         ));
 
         CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, BookingCreated>(
             doc => doc.Id,
-            doc => doc.ClientId ?? Guid.Empty,
+            doc => doc.ClientId,
             e => e.Data.ClientId
         ));
 
         CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, BookingCompleted>(
             doc => doc.Id,
-            doc => doc.MasterId ?? Guid.Empty,
+            doc => doc.MasterId,
             e => e.Data.MasterId
         ));
 
         CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, BookingCompleted>(
             doc => doc.Id,
-            doc => doc.ClientId ?? Guid.Empty,
+            doc => doc.ClientId,
             e => e.Data.ClientId
         ));
 

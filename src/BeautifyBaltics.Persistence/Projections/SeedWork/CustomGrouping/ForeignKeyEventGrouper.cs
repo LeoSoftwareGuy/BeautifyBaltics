@@ -8,33 +8,35 @@ namespace BeautifyBaltics.Persistence.Projections.SeedWork.CustomGrouping;
 
 /// <summary>
 /// Fans events of type TEvent whose key is extracted by eventKeySelector
-/// out to every document of type TDoc whose foreignKeySelector matches.
+/// out to every document of type TDoc whose nullable foreignKeySelector matches.
 /// </summary>
 public class ForeignKeyEventGrouper<TDoc, TKey, TEvent>(
     Expression<Func<TDoc, TKey>> docIdSelector,
-    Expression<Func<TDoc, TKey>> foreignKeySelector,
+    Expression<Func<TDoc, TKey?>> foreignKeySelector,
     Func<IEvent<TEvent>, TKey> eventKeySelector
 ) : IAggregateGrouper<TKey>
     where TDoc : notnull
-    where TKey : notnull
+    where TKey : struct
     where TEvent : notnull
 {
+    private readonly Func<TDoc, TKey?> _compiledForeignKey = foreignKeySelector.Compile();
+    private readonly Func<TDoc, TKey> _compiledDocId = docIdSelector.Compile();
+
     public async Task Group(IQuerySession session, IEnumerable<IEvent> events, IEventGrouping<TKey> grouping)
     {
         var typedEvents = events.OfType<IEvent<TEvent>>().ToList();
         if (typedEvents.Count == 0) return;
 
         var keys = typedEvents.Select(eventKeySelector).Distinct().ToArray();
-
-        var docId = Expression.Parameter(typeof(TDoc), "d");
+        var nullableKeys = keys.Select(k => (TKey?)k).ToArray();
 
         var docs = await session.Query<TDoc>()
-            .Where(Contains(keys, docId))
-            .Select(Pair(docId))
+            .Where(BuildContainsExpression(nullableKeys))
             .ToListAsync();
 
         var lookup = docs
-            .GroupBy(x => x.Key, x => x.Value)
+            .Where(d => _compiledForeignKey(d).HasValue)
+            .GroupBy(d => _compiledForeignKey(d)!.Value, d => _compiledDocId(d))
             .ToDictionary(g => g.Key, g => g.ToList());
 
         grouping.AddEvents<IEvent<TEvent>>(
@@ -47,29 +49,17 @@ public class ForeignKeyEventGrouper<TDoc, TKey, TEvent>(
         );
     }
 
-    private Expression<Func<TDoc, bool>> Contains(TKey[] keys, ParameterExpression docId)
+    private Expression<Func<TDoc, bool>> BuildContainsExpression(TKey?[] keys)
     {
         var containsMethod = typeof(Enumerable)
             .GetMethods()
             .First(m => m.Name == nameof(Enumerable.Contains) && m.GetParameters().Length == 2)
-            .MakeGenericMethod(typeof(TKey));
+            .MakeGenericMethod(typeof(TKey?));
         var containsCall = Expression.Call(
             containsMethod,
-            Expression.Constant(keys),
-            Expression.Invoke(foreignKeySelector, docId)
+            Expression.Constant(keys, typeof(TKey?[])),
+            foreignKeySelector.Body
         );
-        return Expression.Lambda<Func<TDoc, bool>>(containsCall, docId);
-    }
-
-    private Expression<Func<TDoc, KeyValuePair<TKey, TKey>>> Pair(ParameterExpression docId)
-    {
-        var ctor = typeof(KeyValuePair<TKey, TKey>).GetConstructor([typeof(TKey), typeof(TKey)])!;
-        var pair = Expression.New(
-            ctor,
-            Expression.Invoke(foreignKeySelector, docId),
-            Expression.Invoke(docIdSelector, docId)
-        );
-
-        return Expression.Lambda<Func<TDoc, KeyValuePair<TKey, TKey>>>(pair, docId);
+        return Expression.Lambda<Func<TDoc, bool>>(containsCall, foreignKeySelector.Parameters[0]);
     }
 }
