@@ -45,6 +45,7 @@ const en = {
       services: 'Services',
       bookings: 'Bookings',
       users: 'Users',
+      changesets: 'Approvals',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -67,6 +68,7 @@ const en = {
       adminServices: 'Services',
       adminBookings: 'Bookings',
       adminUsers: 'Users',
+      adminChangesets: 'Approvals',
     },
   },
   auth: {
@@ -1084,6 +1086,50 @@ const en = {
           errorTitle: 'Error',
           error: 'Something went wrong. Please try again.',
         },
+      },
+    },
+    changesets: {
+      pageTitle: 'Approvals',
+      status: {
+        pending: 'Pending',
+        approved: 'Approved',
+        rejected: 'Rejected',
+      },
+      filters: {
+        allStatuses: 'All statuses',
+      },
+      table: {
+        columns: {
+          changeType: 'Change Type',
+          masterId: 'Master',
+          proposedAt: 'Proposed At',
+          status: 'Status',
+        },
+        noRecords: 'No changesets found',
+      },
+      proposedChange: 'Proposed Change',
+      comment: 'Comment',
+      actions: {
+        approve: 'Approve',
+        reject: 'Reject',
+      },
+      approveModal: {
+        title: 'Approve Change',
+        message: 'Are you sure you want to approve this change? It will be applied immediately.',
+        commentPlaceholder: 'Optional comment...',
+        confirm: 'Approve',
+      },
+      rejectModal: {
+        title: 'Reject Change',
+        message: 'Are you sure you want to reject this change? The action cannot be undone.',
+        commentPlaceholder: 'Reason for rejection (optional)...',
+        confirm: 'Reject',
+      },
+      notifications: {
+        approved: 'Change approved successfully',
+        rejected: 'Change rejected',
+        errorTitle: 'Error',
+        error: 'Something went wrong. Please try again.',
       },
     },
   },

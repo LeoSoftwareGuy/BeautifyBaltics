@@ -12,4 +12,6 @@ public record MasterSearchDTO : BaseSearchDTO
     public decimal? MaxPrice { get; init; }
     public string? ExcludeEmail { get; init; }
     public IReadOnlyList<Guid>? UserIds { get; init; }
+    /// <summary>When true, only returns masters that have been approved and made visible.</summary>
+    public bool OnlyVisible { get; init; }
 }

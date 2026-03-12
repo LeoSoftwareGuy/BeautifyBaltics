@@ -1,4 +1,6 @@
+using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
+using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Domain.ValueObjects;
@@ -14,14 +16,13 @@ public class UpdateMasterProfileEventHandler
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        var updated = new MasterProfileUpdated(
-            MasterId: request.MasterId,
+        var change = new MasterProfileChangeProposed(
             FirstName: request.FirstName,
             LastName: request.LastName,
             Age: request.Age,
             Gender: request.Gender,
             Description: request.Description,
-            new ContactInformation(request.Email, request.PhoneNumber),
+            Contacts: new ContactInformation(request.Email, request.PhoneNumber),
             Latitude: request.Latitude,
             Longitude: request.Longitude,
             City: request.City,
@@ -31,6 +32,14 @@ public class UpdateMasterProfileEventHandler
             PostalCode: request.PostalCode
         );
 
-        return Task.FromResult<(Events, OutgoingMessages)>(([updated], [new UpdateMasterProfileResponse(request.MasterId)]));
+        var proposed = new MasterChangeProposed
+        {
+            AggregateId = master.Id,
+            ProposedById = master.UserId,
+            Type = typeof(MasterProfileChangeProposed).FullName!,
+            ProposedChange = JsonSerializer.SerializeToElement(change),
+        };
+
+        return Task.FromResult<(Events, OutgoingMessages)>(([proposed], [new UpdateMasterProfileResponse(request.MasterId)]));
     }
 }

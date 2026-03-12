@@ -1,7 +1,10 @@
+using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
+using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Integrations.BlobStorage;
+using JasperFx.Core;
 using Wolverine;
 using Wolverine.Marten;
 
@@ -13,28 +16,29 @@ public class UploadMasterProfileImageEventHandler(IBlobStorageService<MasterAggr
     public async Task<(Events, OutgoingMessages)> Handle(
         UploadMasterProfileImageRequest request,
         MasterAggregate master,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
         var blobFile = new BlobFileDTO(request.Files[0].FileName, request.Files[0], request.Files[0].ContentType);
-
         var blobName = await blobStorageService.UploadAsync(master.Id, blobFile, cancellationToken);
 
-        if (master.ProfileImage is { } currentImage)
-        {
-            await blobStorageService.DeleteAsync(currentImage.BlobName, cancellationToken);
-        }
-
-        var @event = new MasterProfileImageUploaded(
-            MasterId: master.Id,
+        var change = new MasterProfileImageChangeProposed(
+            MasterProfileImageId: CombGuidIdGeneration.NewGuid(),
             BlobName: blobName,
             FileName: request.Files[0].FileName,
             FileMimeType: request.Files[0].ContentType,
             FileSize: request.Files[0].Length
         );
 
-        return ([@event], [new UploadMasterProfileImageResponse(master.Id)]);
+        var proposed = new MasterChangeProposed
+        {
+            AggregateId = master.Id,
+            ProposedById = master.UserId,
+            Type = typeof(MasterProfileImageChangeProposed).FullName!,
+            ProposedChange = JsonSerializer.SerializeToElement(change),
+        };
+
+        return ([proposed], [new UploadMasterProfileImageResponse(master.Id)]);
     }
 }

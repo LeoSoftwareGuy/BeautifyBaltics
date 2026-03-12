@@ -19,10 +19,11 @@ type NavItem = {
 interface NavigationItemProps extends NavItem {
   icon?: typeof IconSettingsCog,
   subItems?: NavItem[],
+  rightSection?: React.ReactNode,
 }
 
 export default function NavigationItem({
-  icon, label, href, subItems,
+  icon, label, href, subItems, rightSection,
 }: NavigationItemProps) {
   const location = useLocation();
   const theme = useMantineTheme();
@@ -102,6 +103,7 @@ export default function NavigationItem({
         px="xs"
         label={label}
         leftSection={renderIcon()}
+        rightSection={rightSection}
         opened={subItems?.length !== 0}
         activeOptions={{
           exact: isSubitem,

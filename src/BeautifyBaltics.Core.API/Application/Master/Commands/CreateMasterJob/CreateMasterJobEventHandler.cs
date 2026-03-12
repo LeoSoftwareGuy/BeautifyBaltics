@@ -1,7 +1,10 @@
+using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
+using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Persistence.Repositories.Job;
+using JasperFx.Core;
 using Wolverine;
 using Wolverine.Marten;
 
@@ -17,8 +20,8 @@ public class CreateMasterJobEventHandler(IJobRepository jobRepository)
         var jobDefinition = await jobRepository.GetByIdAsync(request.Job.JobId, cancellationToken)
                             ?? throw NotFoundException.For<Domain.Documents.Job>(request.Job.JobId);
 
-        var @event = new MasterJobCreated(
-            MasterId: request.MasterId,
+        var change = new MasterJobCreateChangeProposed(
+            MasterJobId: CombGuidIdGeneration.NewGuid(),
             JobId: request.Job.JobId,
             Price: request.Job.Price,
             Duration: TimeSpan.FromMinutes(request.Job.DurationMinutes),
@@ -28,6 +31,14 @@ public class CreateMasterJobEventHandler(IJobRepository jobRepository)
             JobName: jobDefinition.Name
         );
 
-        return ([@event], [new CreateMasterJobResponse(request.MasterId, @event.MasterJobId)]);
+        var proposed = new MasterChangeProposed
+        {
+            AggregateId = master.Id,
+            ProposedById = master.UserId,
+            Type = typeof(MasterJobCreateChangeProposed).FullName!,
+            ProposedChange = JsonSerializer.SerializeToElement(change),
+        };
+
+        return ([proposed], [new CreateMasterJobResponse(request.MasterId, change.MasterJobId)]);
     }
 }

@@ -3,6 +3,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Storage.Blobs;
 using BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
+using BeautifyBaltics.Core.API.Application.Changeset.Commands.Shared;
 using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Domain.Aggregates.Booking.Events;
@@ -86,6 +87,7 @@ internal class Program
 
         builder.Services.AddPersistenceServices();
         builder.Services.AddInfrastructureServices();
+        builder.Services.AddScoped<MasterChangesetHandler>();
 
         builder.Services.AddHostedService<BookingCompletionBackgroundService>();
         builder.Services.AddHostedService<BookingExpirationBackgroundService>();

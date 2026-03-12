@@ -2,6 +2,7 @@ using BeautifyBaltics.Persistence.Configurations;
 using BeautifyBaltics.Persistence.Repositories;
 using BeautifyBaltics.Persistence.Repositories.AdminUserStatistics;
 using BeautifyBaltics.Persistence.Repositories.Booking;
+using BeautifyBaltics.Persistence.Repositories.Changeset;
 using BeautifyBaltics.Persistence.Repositories.Client;
 using BeautifyBaltics.Persistence.Repositories.Job;
 using BeautifyBaltics.Persistence.Repositories.Master;
@@ -9,7 +10,6 @@ using BeautifyBaltics.Persistence.Repositories.Rating;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 using BeautifyBaltics.Persistence.Repositories.User;
 using Marten;
-
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BeautifyBaltics.Persistence;
@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IConfigureMarten, UserProjectionConfiguration>();
         services.AddSingleton<IConfigureMarten, UserSessionConfiguration>();
         services.AddSingleton<IConfigureMarten, AdminUserStatisticsConfiguration>();
+        services.AddSingleton<IConfigureMarten, ChangesetConfiguration>();
 
         return services;
     }
@@ -49,6 +50,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISessionRepository, SessionRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAdminUserStatisticsRepository, AdminUserStatisticsRepository>();
+        services.AddScoped<IChangesetRepository, ChangesetRepository>();
 
         return services;
     }

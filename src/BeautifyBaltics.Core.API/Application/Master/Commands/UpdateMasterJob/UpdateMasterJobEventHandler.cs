@@ -1,4 +1,6 @@
+using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
+using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Persistence.Repositories.Job;
@@ -15,15 +17,14 @@ public class UpdateMasterJobEventHandler(IJobRepository jobRepository)
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        var job = master.Jobs.SingleOrDefault(j => j.MasterJobId == request.MasterJobId)
+        _ = master.Jobs.SingleOrDefault(j => j.MasterJobId == request.MasterJobId)
             ?? throw NotFoundException.For<MasterJob>(request.MasterJobId);
 
         var jobDefinition = await jobRepository.GetByIdAsync(request.Job.JobId, cancellationToken)
                             ?? throw NotFoundException.For<Domain.Documents.Job>(request.Job.JobId);
 
-        var @event = new MasterJobUpdated(
+        var change = new MasterJobUpdateChangeProposed(
             MasterJobId: request.MasterJobId,
-            MasterId: request.MasterId,
             JobId: request.Job.JobId,
             Price: request.Job.Price,
             Duration: TimeSpan.FromMinutes(request.Job.DurationMinutes),
@@ -33,6 +34,14 @@ public class UpdateMasterJobEventHandler(IJobRepository jobRepository)
             JobName: jobDefinition.Name
         );
 
-        return ([@event], [new UpdateMasterJobResponse(request.MasterId, request.MasterJobId)]);
+        var proposed = new MasterChangeProposed
+        {
+            AggregateId = master.Id,
+            ProposedById = master.UserId,
+            Type = typeof(MasterJobUpdateChangeProposed).FullName!,
+            ProposedChange = JsonSerializer.SerializeToElement(change),
+        };
+
+        return ([proposed], [new UpdateMasterJobResponse(request.MasterId, request.MasterJobId)]);
     }
 }

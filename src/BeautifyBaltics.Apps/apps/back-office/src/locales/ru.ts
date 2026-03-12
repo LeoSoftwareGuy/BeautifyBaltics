@@ -63,12 +63,14 @@ const ru: CommonLocale = {
       adminServices: 'Сервисы',
       adminBookings: 'Бронирования',
       adminUsers: 'Пользователи',
+      adminChangesets: 'Согласования',
     },
     admin: {
       dashboard: 'Панель',
       services: 'Услуги',
       bookings: 'Бронирования',
       users: 'Пользователи',
+      changesets: 'Согласования',
     },
   },
   admin: {
@@ -293,6 +295,50 @@ const ru: CommonLocale = {
           errorTitle: 'Ошибка',
           error: 'Что-то пошло не так. Попробуйте ещё раз.',
         },
+      },
+    },
+    changesets: {
+      pageTitle: 'Согласования',
+      status: {
+        pending: 'Ожидает',
+        approved: 'Одобрено',
+        rejected: 'Отклонено',
+      },
+      filters: {
+        allStatuses: 'Все статусы',
+      },
+      table: {
+        columns: {
+          changeType: 'Тип изменения',
+          masterId: 'Мастер',
+          proposedAt: 'Предложено',
+          status: 'Статус',
+        },
+        noRecords: 'Записи не найдены',
+      },
+      proposedChange: 'Предлагаемое изменение',
+      comment: 'Комментарий',
+      actions: {
+        approve: 'Одобрить',
+        reject: 'Отклонить',
+      },
+      approveModal: {
+        title: 'Одобрить изменение',
+        message: 'Вы уверены, что хотите одобрить это изменение? Оно будет применено немедленно.',
+        commentPlaceholder: 'Необязательный комментарий...',
+        confirm: 'Одобрить',
+      },
+      rejectModal: {
+        title: 'Отклонить изменение',
+        message: 'Вы уверены, что хотите отклонить это изменение? Действие нельзя отменить.',
+        commentPlaceholder: 'Причина отклонения (необязательно)...',
+        confirm: 'Отклонить',
+      },
+      notifications: {
+        approved: 'Изменение успешно одобрено',
+        rejected: 'Изменение отклонено',
+        errorTitle: 'Ошибка',
+        error: 'Что-то пошло не так. Попробуйте ещё раз.',
       },
     },
   },

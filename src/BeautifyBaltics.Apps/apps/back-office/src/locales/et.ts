@@ -63,12 +63,14 @@ const et: CommonLocale = {
       adminServices: 'Teenused',
       adminBookings: 'Broneeringud',
       adminUsers: 'Kasutajad',
+      adminChangesets: 'Kinnitused',
     },
     admin: {
       dashboard: 'Töölaud',
       services: 'Teenused',
       bookings: 'Broneeringud',
       users: 'Kasutajad',
+      changesets: 'Kinnitused',
     },
   },
   admin: {
@@ -293,6 +295,50 @@ const et: CommonLocale = {
           errorTitle: 'Viga',
           error: 'Midagi läks valesti. Palun proovi uuesti.',
         },
+      },
+    },
+    changesets: {
+      pageTitle: 'Kinnitused',
+      status: {
+        pending: 'Ootel',
+        approved: 'Kinnitatud',
+        rejected: 'Tagasi lükatud',
+      },
+      filters: {
+        allStatuses: 'Kõik staatused',
+      },
+      table: {
+        columns: {
+          changeType: 'Muudatuse tüüp',
+          masterId: 'Meister',
+          proposedAt: 'Esitatud',
+          status: 'Staatus',
+        },
+        noRecords: 'Kirjeid ei leitud',
+      },
+      proposedChange: 'Pakutud muudatus',
+      comment: 'Kommentaar',
+      actions: {
+        approve: 'Kinnita',
+        reject: 'Lükka tagasi',
+      },
+      approveModal: {
+        title: 'Kinnita muudatus',
+        message: 'Kas oled kindel, et soovid selle muudatuse kinnitada? See rakendatakse kohe.',
+        commentPlaceholder: 'Valikuline kommentaar...',
+        confirm: 'Kinnita',
+      },
+      rejectModal: {
+        title: 'Lükka muudatus tagasi',
+        message: 'Kas oled kindel, et soovid selle muudatuse tagasi lükata? Seda toimingut ei saa tagasi võtta.',
+        commentPlaceholder: 'Tagasilükkamise põhjus (valikuline)...',
+        confirm: 'Lükka tagasi',
+      },
+      notifications: {
+        approved: 'Muudatus edukalt kinnitatud',
+        rejected: 'Muudatus tagasi lükatud',
+        errorTitle: 'Viga',
+        error: 'Midagi läks valesti. Palun proovi uuesti.',
       },
     },
   },

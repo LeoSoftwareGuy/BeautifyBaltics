@@ -1,16 +1,17 @@
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
-using BeautifyBaltics.Domain.SeedWork;
+using BeautifyBaltics.Domain.SeedWork.Approvable;
 using BeautifyBaltics.Domain.ValueObjects;
 
 namespace BeautifyBaltics.Domain.Aggregates.Master;
 
-public partial class MasterAggregate : Aggregate
+public partial class MasterAggregate : ApprovableAggregate
 {
     private readonly Dictionary<Guid, MasterAvailabilitySlot> _availabilities = new();
     private readonly Dictionary<Guid, MasterJob> _jobs = new();
 
+    public bool IsVisible { get; private set; }
     public Guid UserId { get; private set; }
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
@@ -39,6 +40,14 @@ public partial class MasterAggregate : Aggregate
         LastName = @event.LastName;
         Contacts = @event.Contacts;
     }
+
+    internal void Apply(MasterChangeProposed @event) => ApplyChangeProposed(@event);
+
+    internal void Apply(MasterChangesetApproved @event) => ApplyChangesetApproved(@event);
+
+    internal void Apply(MasterChangesetRejected @event) => ApplyChangesetRejected(@event);
+
+    internal void Apply(MasterActivated _) => IsVisible = true;
 
     internal void Apply(MasterProfileUpdated @event)
     {
@@ -166,8 +175,6 @@ public partial class MasterAggregate : Aggregate
         BufferMinutes = @event.BufferMinutes;
     }
 
-
-   
     public bool IsAvailable(DateTime startAt, DateTime endAt)
     {
         return !_availabilities.Any(v => v.Value.StartAt < endAt && v.Value.EndAt > startAt);

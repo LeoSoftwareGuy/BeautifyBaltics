@@ -116,6 +116,17 @@ export type CancelBookingResponse = {
   bookingId?: string;
 };
 
+export type ChangesetActionRequest = {
+  /** @nullable */
+  comment?: string | null;
+};
+
+export enum ChangesetStatus {
+  Pending = 'Pending',
+  Approved = 'Approved',
+  Rejected = 'Rejected',
+
+}
 export type ClientCommandDTO = {
   /**
    * First name
@@ -317,6 +328,42 @@ export type FindBookingsResponsePagedResponse = {
   totalItemCount: number;
   /** Items */
   items: FindBookingsResponse[];
+};
+
+export type FindChangesetsResponse = {
+  id?: string;
+  masterId?: string;
+  /** @nullable */
+  entityId?: string | null;
+  /** @nullable */
+  type?: string | null;
+  proposedChange?: unknown;
+  proposedById?: string;
+  proposedAt?: Date;
+  status?: ChangesetStatus;
+  /** @nullable */
+  approvedById?: string | null;
+  /** @nullable */
+  approvedAt?: Date | null;
+  /** @nullable */
+  rejectedById?: string | null;
+  /** @nullable */
+  rejectedAt?: Date | null;
+  /** @nullable */
+  comment?: string | null;
+};
+
+export type FindChangesetsResponsePagedResponse = {
+  /** Current page number */
+  page: number;
+  /** Page size */
+  pageSize: number;
+  /** Total pages count */
+  pageCount: number;
+  /** Total items count */
+  totalItemCount: number;
+  /** Items */
+  items: FindChangesetsResponse[];
 };
 
 export type FindClientsResponseAllOf = { [key: string]: unknown };
@@ -677,6 +724,10 @@ export type GetMasterStatisticsResponse = {
   totalBookingsLast30Days: number;
   /** Number of pending requests */
   pendingRequests: number;
+};
+
+export type GetPendingChangesetsCountResponse = {
+  count?: number;
 };
 
 export type GetPendingRequestsResponse = {
@@ -1436,6 +1487,31 @@ export type GetBookingByIdParams = {
  * Id
  */
   id: string;
+};
+
+export type FindChangesetsParams = {
+  masterId?: string;
+  status?: ChangesetStatus;
+  /**
+ * Page number
+ */
+  page?: number;
+  /**
+ * Items per page
+ */
+  pageSize?: number;
+  /**
+ * Sort by column
+ */
+  sortBy?: string;
+  /**
+ * Is sorting order ascending or descending, defaults to false (descending)
+ */
+  ascending?: boolean;
+  /**
+ * Retrieve all items
+ */
+  all?: boolean;
 };
 
 export type FindClientsParams = {

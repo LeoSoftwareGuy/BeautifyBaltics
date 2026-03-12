@@ -857,6 +857,137 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/admin/changesets:
+    get:
+      tags:
+        - Changesets
+      operationId: FindChangesets
+      parameters:
+        - name: masterId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChangesetStatus'
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindChangesetsResponsePagedResponse'
+  /api/v1/admin/changesets/pending-count:
+    get:
+      tags:
+        - Changesets
+      operationId: GetPendingChangesetsCount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPendingChangesetsCountResponse'
+  '/api/v1/admin/changesets/{masterId}/{changesetId}/approve':
+    patch:
+      tags:
+        - Changesets
+      operationId: ApproveChangeset
+      parameters:
+        - name: masterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: changesetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/admin/changesets/{masterId}/{changesetId}/reject':
+    patch:
+      tags:
+        - Changesets
+      operationId: RejectChangeset
+      parameters:
+        - name: masterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: changesetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/clients:
     get:
       tags:
@@ -2819,6 +2950,19 @@ components:
           type: string
           format: uuid
       additionalProperties: false
+    ChangesetActionRequest:
+      type: object
+      properties:
+        comment:
+          type: string
+          nullable: true
+      additionalProperties: false
+    ChangesetStatus:
+      enum:
+        - Pending
+        - Approved
+        - Rejected
+      type: string
     ClientCommandDTO:
       required:
         - email
@@ -3133,6 +3277,82 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FindBookingsResponse'
+          description: Items
+      additionalProperties: false
+    FindChangesetsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        masterId:
+          type: string
+          format: uuid
+        entityId:
+          type: string
+          format: uuid
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        proposedChange: { }
+        proposedById:
+          type: string
+          format: uuid
+        proposedAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ChangesetStatus'
+        approvedById:
+          type: string
+          format: uuid
+          nullable: true
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        rejectedById:
+          type: string
+          format: uuid
+          nullable: true
+        rejectedAt:
+          type: string
+          format: date-time
+          nullable: true
+        comment:
+          type: string
+          nullable: true
+      additionalProperties: false
+    FindChangesetsResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindChangesetsResponse'
           description: Items
       additionalProperties: false
     FindClientsResponse:
@@ -3806,6 +4026,13 @@ components:
         pendingRequests:
           type: integer
           description: Number of pending requests
+          format: int32
+      additionalProperties: false
+    GetPendingChangesetsCountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
           format: int32
       additionalProperties: false
     GetPendingRequestsResponse:

@@ -2,7 +2,6 @@ using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
 using JasperFx.Events;
-
 using Marten.Events.Aggregation;
 
 namespace BeautifyBaltics.Persistence.Projections;
@@ -30,6 +29,9 @@ public record Master(Guid Id) : Projection
     public string? ProfileImageMimeType { get; init; }
     public long? ProfileImageSize { get; init; }
     public int BufferMinutes { get; init; }
+    public bool IsVisible { get; init; }
+    public int PendingChangesetsCount { get; init; }
+    public bool HasPendingChangesets => PendingChangesetsCount > 0;
 
     public string? LocationName =>
         !string.IsNullOrWhiteSpace(City) ? City :
@@ -96,4 +98,15 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
     public static Master Apply(MasterBufferTimeUpdated @event, Master current) => current with { BufferMinutes = @event.BufferMinutes };
 
     public static Master Apply(MasterRatingUpdated @event, Master current) => current with { Rating = @event.AverageRating };
+
+    public static Master Apply(MasterActivated _, Master current) => current with { IsVisible = true };
+
+    public static Master Apply(MasterChangeProposed _, Master current) =>
+        current with { PendingChangesetsCount = current.PendingChangesetsCount + 1 };
+
+    public static Master Apply(MasterChangesetApproved _, Master current) =>
+        current with { PendingChangesetsCount = Math.Max(0, current.PendingChangesetsCount - 1) };
+
+    public static Master Apply(MasterChangesetRejected _, Master current) =>
+        current with { PendingChangesetsCount = Math.Max(0, current.PendingChangesetsCount - 1) };
 }
