@@ -6,4 +6,5 @@ public record GetMasterByIdRequest
 {
     [Required]
     public Guid Id { get; init; }
+    public bool Proposal { get; init; }
 }

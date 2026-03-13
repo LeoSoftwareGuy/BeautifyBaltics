@@ -125,9 +125,9 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(typeof(FindMasterJobsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult<FindMasterJobsResponse>> FindMasterJobs([FromRoute] Guid id)
+    public async Task<ActionResult<FindMasterJobsResponse>> FindMasterJobs([FromRoute] Guid id, [FromQuery] bool proposal = false)
     {
-        var response = await bus.InvokeAsync<FindMasterJobsResponse>(new FindMasterJobsRequest { MasterId = id });
+        var response = await bus.InvokeAsync<FindMasterJobsResponse>(new FindMasterJobsRequest { MasterId = id, Proposal = proposal });
         return Ok(response);
     }
 

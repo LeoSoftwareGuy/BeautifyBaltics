@@ -351,6 +351,8 @@ export type FindChangesetsResponse = {
   rejectedAt?: Date | null;
   /** @nullable */
   comment?: string | null;
+  /** @nullable */
+  imageUrl?: string | null;
 };
 
 export type FindChangesetsResponsePagedResponse = {
@@ -437,6 +439,10 @@ export type FindMasterAvailabilitiesResponsePagedResponse = {
 export type FindMasterJobImagesResponse = {
   /** @nullable */
   images?: MasterJobImageWithUrlDTO[] | null;
+};
+
+export type FindMasterJobsParams = {
+  proposal?: boolean;
 };
 
 export type FindMasterJobsResponse = {
@@ -880,6 +886,7 @@ export type MasterDTO = {
   /** @nullable */
   profileImageUrl?: string | null;
   bufferMinutes?: number;
+  hasPendingChangesets?: boolean;
 };
 
 export type MasterJobDTO = {
@@ -1653,6 +1660,7 @@ export type FindMastersParams = {
 
 export type GetMasterByIdParams = {
   id: string;
+  proposal?: boolean;
 };
 
 export type FindMasterAvailabilitiesParams = {

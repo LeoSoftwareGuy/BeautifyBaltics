@@ -3,6 +3,7 @@ import {
   Badge,
   Button,
   Group,
+  Image,
   Stack,
   Text,
   Textarea,
@@ -42,23 +43,40 @@ export function formatChangeType(type?: string) {
   return CHANGE_TYPE_LABELS[type] ?? type.split('.').pop() ?? type;
 }
 
-export function ProposedChangePreview({ data }: { data: unknown }) {
+const IMAGE_BLOB_FIELDS = new Set(['blobName', 'masterProfileImageId', 'masterJobImageId', 'fileName', 'fileMimeType', 'fileSize']);
+
+export function ProposedChangePreview({ record }: { record: FindChangesetsResponse }) {
+  const { data, imageUrl } = record;
   if (!data || typeof data !== 'object') return <Text size="sm" c="dimmed">No data</Text>;
 
+  const entries = Object.entries(data as Record<string, unknown>)
+    .filter(([key, v]) => v !== null && v !== undefined && v !== '' && !(imageUrl && IMAGE_BLOB_FIELDS.has(key)));
+
   return (
-    <Stack gap={4}>
-      {Object.entries(data as Record<string, unknown>)
-        .filter(([, v]) => v !== null && v !== undefined && v !== '')
-        .map(([key, value]) => (
-          <Group key={key} gap="xs" wrap="nowrap">
-            <Text size="xs" c="dimmed" style={{ minWidth: 140, fontWeight: 500 }}>
-              {key}
-            </Text>
-            <Text size="xs" style={{ wordBreak: 'break-all' }}>
-              {typeof value === 'object' ? JSON.stringify(value) : String(value)}
-            </Text>
-          </Group>
-        ))}
+    <Stack gap="sm">
+      {imageUrl && (
+        <Image
+          src={imageUrl}
+          radius="md"
+          maw={240}
+          fit="cover"
+          fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+        />
+      )}
+      {entries.length > 0 && (
+        <Stack gap={4}>
+          {entries.map(([key, value]) => (
+            <Group key={key} gap="xs" wrap="nowrap">
+              <Text size="xs" c="dimmed" style={{ minWidth: 140, fontWeight: 500 }}>
+                {key}
+              </Text>
+              <Text size="xs" style={{ wordBreak: 'break-all' }}>
+                {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+              </Text>
+            </Group>
+          ))}
+        </Stack>
+      )}
     </Stack>
   );
 }

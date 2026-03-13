@@ -122,7 +122,7 @@ export function AdminChangesetsDataTable() {
                   <Text size="xs" fw={600} tt="uppercase" c="dimmed">
                     {t('admin.changesets.proposedChange')}
                   </Text>
-                  <ProposedChangePreview data={record.proposedChange} />
+                  <ProposedChangePreview record={record} />
                   {record.comment && (
                     <>
                       <Text size="xs" fw={600} tt="uppercase" c="dimmed" mt="xs">

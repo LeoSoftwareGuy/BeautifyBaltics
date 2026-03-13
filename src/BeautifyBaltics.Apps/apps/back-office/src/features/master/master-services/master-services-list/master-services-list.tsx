@@ -10,11 +10,18 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import {
+  getFindMasterJobsQueryKey,
   useDeleteMasterJob,
   useFindMasterJobs,
+  useGetMasterById,
 } from '@/state/endpoints/masters';
+import {
+  MasterProfilePreviewNotification,
+  ProfilePreviewMode,
+} from '../../master-profile-settings/master-profile-preview-notification';
 
 import { AddServiceCard } from '../add-service-card';
 import { MasterServiceCard } from '../master-service-card';
@@ -26,22 +33,39 @@ type MasterServicesListProps = {
   masterId: string;
 };
 
+const proposalParams = { proposal: true };
+
 export function MasterServicesList({ masterId }: MasterServicesListProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [previewMode, setPreviewMode] = useState<ProfilePreviewMode>('proposed');
   const [detailModalOpened, setDetailModalOpened] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string | null>(null);
 
+  const { data: masterData } = useGetMasterById(masterId, { id: masterId }, {
+    query: { enabled: !!masterId },
+  });
+  const hasPendingChangesets = masterData?.hasPendingChangesets ?? false;
+
   const {
-    data: jobsData,
+    data: approvedData,
     isLoading,
     isError,
-    refetch,
-  } = useFindMasterJobs(masterId, {
+    refetch: refetchApproved,
+  } = useFindMasterJobs(masterId, undefined, {
     query: { enabled: !!masterId },
   });
 
-  const allServices = useMemo(() => jobsData?.jobs ?? [], [jobsData?.jobs]);
+  const { data: proposalData } = useFindMasterJobs(masterId, proposalParams, {
+    query: { enabled: !!masterId && hasPendingChangesets },
+  });
+
+  const activeData = hasPendingChangesets && previewMode === 'proposed' && proposalData
+    ? proposalData
+    : approvedData;
+
+  const allServices = useMemo(() => activeData?.jobs ?? [], [activeData?.jobs]);
 
   const availableCategories = useMemo(() => {
     const categoryMap = new Map<string, string>();
@@ -63,7 +87,8 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
   const { mutateAsync: deleteJob, isPending: isDeleting } = useDeleteMasterJob({
     mutation: {
       onSuccess: async () => {
-        await refetch();
+        await refetchApproved();
+        queryClient.invalidateQueries({ queryKey: getFindMasterJobsQueryKey(masterId, proposalParams) });
         notifications.show({
           title: t('master.services.notifications.deleteSuccessTitle'),
           message: t('master.services.notifications.deleteSuccessMessage'),
@@ -149,6 +174,13 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
         masterId={masterId}
         service={selectedJob}
       />
+
+      {hasPendingChangesets && (
+        <MasterProfilePreviewNotification
+          mode={previewMode}
+          onChange={setPreviewMode}
+        />
+      )}
     </>
   );
 }

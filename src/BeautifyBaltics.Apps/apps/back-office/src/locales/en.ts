@@ -666,6 +666,12 @@ const en = {
           email: 'Email is required',
           phone: 'Phone number is required',
         },
+        pendingPreview: {
+          viewingProposed: 'Viewing pending changes (awaiting approval)',
+          viewingApproved: 'Viewing approved version (currently public)',
+          pending: 'Pending',
+          approved: 'Approved',
+        },
         photo: {
           title: 'Profile Photo',
           subtitle: 'Upload a professional photo for your profile',

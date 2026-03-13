@@ -11,4 +11,5 @@ public record FindMasterJobsRequest
     [Required]
     [Identity]
     public Guid MasterId { get; init; }
+    public bool Proposal { get; init; }
 }

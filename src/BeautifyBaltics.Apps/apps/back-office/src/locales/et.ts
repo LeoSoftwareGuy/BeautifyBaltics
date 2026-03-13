@@ -937,6 +937,12 @@ const et: CommonLocale = {
           email: 'E-post on kohustuslik',
           phone: 'Telefon on kohustuslik',
         },
+        pendingPreview: {
+          viewingProposed: 'Vaatad ootel muudatusi (kinnitamist ootab)',
+          viewingApproved: 'Vaatad kinnitatud versiooni (avalik)',
+          pending: 'Ootel',
+          approved: 'Kinnitatud',
+        },
         photo: {
           title: 'Profiilifoto',
           subtitle: 'Laadi üles professionaalne foto',

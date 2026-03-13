@@ -16,5 +16,6 @@ public record FindChangesetsResponse(
     DateTimeOffset? ApprovedAt,
     Guid? RejectedById,
     DateTimeOffset? RejectedAt,
-    string? Comment
+    string? Comment,
+    string? ImageUrl = null
 );

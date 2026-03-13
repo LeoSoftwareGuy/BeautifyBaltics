@@ -45,6 +45,7 @@ import type {
   FindMasterAvailabilitiesParams,
   FindMasterAvailabilitiesResponsePagedResponse,
   FindMasterJobImagesResponse,
+  FindMasterJobsParams,
   FindMasterJobsResponse,
   FindMastersParams,
   FindMastersResponsePagedResponse,
@@ -550,12 +551,15 @@ export const useCreateMasterJob = <TError = ProblemDetails | ValidationProblemDe
  */
 export const findMasterJobs = (
   id: string,
+  params?: FindMasterJobsParams,
   signal?: AbortSignal,
 ) => customClient<FindMasterJobsResponse>(
-  { url: `/api/v1/masters/${id}/jobs`, method: 'GET', signal },
+  {
+    url: `/api/v1/masters/${id}/jobs`, method: 'GET', params, signal,
+  },
 );
 
-export const getFindMasterJobsQueryKey = (id?: string) => [`/api/v1/masters/${id}/jobs`] as const;
+export const getFindMasterJobsQueryKey = (id?: string, params?: FindMasterJobsParams) => [`/api/v1/masters/${id}/jobs`, ...(params ? [params] : [])] as const;
 
 export const getFindMasterJobsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
@@ -615,13 +619,13 @@ export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnTyp
   return query;
 }
 
-export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, params?: FindMasterJobsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, params, signal);
 
   return {
     queryKey, queryFn, enabled: !!(id), ...queryOptions,
@@ -632,7 +636,7 @@ export type FindMasterJobsQueryResult = NonNullable<Awaited<ReturnType<typeof fi
 export type FindMasterJobsQueryError = ProblemDetails | ValidationProblemDetails;
 
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  id: string, params: FindMasterJobsParams | undefined, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
   TError,
@@ -642,7 +646,7 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   , queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  id: string, params?: FindMasterJobsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
   TError,
@@ -652,7 +656,7 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  id: string, params?: FindMasterJobsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
@@ -661,10 +665,11 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
 
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
+  params?: FindMasterJobsParams,
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterJobsQueryOptions(id, options);
+  const queryOptions = getFindMasterJobsQueryOptions(id, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

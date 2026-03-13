@@ -937,6 +937,12 @@ const ru: CommonLocale = {
           email: 'Email обязателен',
           phone: 'Номер телефона обязателен',
         },
+        pendingPreview: {
+          viewingProposed: 'Просмотр ожидающих изменений (на проверке)',
+          viewingApproved: 'Просмотр одобренной версии (публичная)',
+          pending: 'На проверке',
+          approved: 'Одобрено',
+        },
         photo: {
           title: 'Фото профиля',
           subtitle: 'Загрузите профессиональное фото',
