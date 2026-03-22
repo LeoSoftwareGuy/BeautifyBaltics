@@ -1688,6 +1688,7 @@ export type GetMasterByIdParams = {
 
 export type FindMasterJobsParams = {
   proposal?: boolean;
+  page?: number;
 };
 
 export type FindMasterAvailabilitiesParams = {

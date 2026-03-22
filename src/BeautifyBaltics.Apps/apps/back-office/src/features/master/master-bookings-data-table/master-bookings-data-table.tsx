@@ -67,7 +67,7 @@ type MobileBookingCardProps = {
   isCancelling: boolean;
   onForceComplete: (id: string) => void;
   isForceCompleting: boolean;
-  labels: { confirm: string; cancel: string };
+  labels: { confirm: string; cancel: string; clientComment: string };
 };
 
 function MobileBookingCard({
@@ -150,7 +150,7 @@ function MobileBookingCard({
         >
           <Group gap="xs" mb={4}>
             <IconMessage size={13} color="var(--mantine-color-dimmed)" />
-            <Text size="xs" fw={600} tt="uppercase" c="dimmed">{t('master.bookings.table.clientComment')}</Text>
+            <Text size="xs" fw={600} tt="uppercase" c="dimmed">{labels.clientComment}</Text>
           </Group>
           <Text size="xs">{booking.clientComment}</Text>
         </Box>
@@ -464,6 +464,7 @@ export function MasterBookingsDataTable() {
               labels={{
                 confirm: t('master.bookings.table.confirm'),
                 cancel: t('master.bookings.table.cancel'),
+                clientComment: t('master.bookings.table.clientComment'),
               }}
             />
           ))}
@@ -495,7 +496,7 @@ export function MasterBookingsDataTable() {
             rowExpansion={{
               allowMultiple: false,
               collapseProps: { transitionDuration: 150 },
-              content: ({ record }) => record.clientComment ? (
+              content: ({ record }) => (record.clientComment ? (
                 <Box py="sm" px="xl" style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
                   <Group gap="xs" mb={4}>
                     <IconMessage size={14} color="var(--mantine-color-dimmed)" />
@@ -505,7 +506,7 @@ export function MasterBookingsDataTable() {
                   </Group>
                   <Text size="sm">{record.clientComment}</Text>
                 </Box>
-              ) : null,
+              ) : null),
             }}
           />
         </Stack>
