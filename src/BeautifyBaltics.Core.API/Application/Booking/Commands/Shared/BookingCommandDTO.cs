@@ -27,4 +27,10 @@ public record BookingCommandDTO
     /// </summary>
     [Required]
     public DateTime ScheduledAt { get; init; }
+
+    /// <summary>
+    /// Optional comment from the client for the master
+    /// </summary>
+    [MaxLength(500)]
+    public string? ClientComment { get; init; }
 }

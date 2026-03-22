@@ -8,6 +8,7 @@ import {
   Modal,
   Stack,
   Text,
+  Textarea,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
@@ -52,6 +53,7 @@ function BookingModal({
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [comment, setComment] = useState('');
 
   const availableSlotsKeyPrefix = `/api/v1/masters/${masterId}/available-slots`;
 
@@ -98,6 +100,7 @@ function BookingModal({
         clientId: user.id,
         masterJobId: job.id,
         scheduledAt,
+        clientComment: comment.trim() || null,
       },
     });
   };
@@ -105,6 +108,7 @@ function BookingModal({
   const handleClose = () => {
     setIsSuccess(false);
     setError('');
+    setComment('');
     onClose();
   };
 
@@ -189,6 +193,17 @@ function BookingModal({
           <Phone size={18} />
           <Text>{phone ?? t('masterProfile.bookingModal.phoneFallback')}</Text>
         </Group>
+
+        <Textarea
+          label={t('masterProfile.bookingModal.commentLabel')}
+          placeholder={t('masterProfile.bookingModal.commentPlaceholder')}
+          autosize
+          minRows={2}
+          maxRows={4}
+          maxLength={500}
+          value={comment}
+          onChange={(e) => setComment(e.currentTarget.value)}
+        />
 
         <Group gap="sm" mt="md">
           <Button

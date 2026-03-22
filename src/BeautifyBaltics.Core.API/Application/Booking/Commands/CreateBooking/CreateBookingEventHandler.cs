@@ -116,7 +116,8 @@ public class CreateBookingEventHandler(
             MasterJobId: request.MasterJobId,
             ScheduledAt: scheduledAt,
             Duration: masterJob.Duration,
-            Price: masterJob.Price
+            Price: masterJob.Price,
+            ClientComment: request.ClientComment
         );
 
         var bookingId = commandRepository.StartStream<BookingAggregate>(bookingCreatedEvent);

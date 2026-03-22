@@ -25,6 +25,12 @@ export type BookingCommandDTO = {
   masterJobId: string;
   /** The scheduled start time for the booking */
   scheduledAt: Date;
+  /**
+   * Optional comment from the client for the master
+   * @maxLength 500
+   * @nullable
+   */
+  clientComment?: string | null;
 };
 
 export type BookingDTO = {
@@ -88,6 +94,11 @@ export type BookingDTO = {
   /** Price */
   price: number;
   status: BookingStatus;
+  /**
+   * Optional comment left by the client at booking time
+   * @nullable
+   */
+  clientComment?: string | null;
 };
 
 export enum BookingStatus {

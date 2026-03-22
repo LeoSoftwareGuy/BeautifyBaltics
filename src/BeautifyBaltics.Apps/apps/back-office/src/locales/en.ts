@@ -300,6 +300,9 @@ const en = {
         scheduledTime: 'Scheduled Time',
         status: 'Status',
       },
+      commentSection: {
+        title: 'Your Note',
+      },
       contactSection: {
         title: 'Contact Details',
         empty: 'No contact details available',
@@ -454,6 +457,7 @@ const en = {
         viewInvoice: 'View Invoice',
         confirm: 'Confirm',
         cancel: 'Cancel',
+        clientComment: 'Client note',
         noRecords: 'No bookings found',
       },
       status: {
@@ -789,6 +793,8 @@ const en = {
       phoneFallback: 'Phone not provided',
       booking: 'Booking...',
       confirmBooking: 'Confirm Booking',
+      commentLabel: 'Note for master (optional)',
+      commentPlaceholder: 'Any special requests or notes for the master...',
       notifications: {
         successTitle: 'Booking created',
         successMessage: 'Your booking was successfully created',

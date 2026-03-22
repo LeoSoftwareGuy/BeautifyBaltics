@@ -20,6 +20,7 @@ import {
   IconClock,
   IconCurrencyEuro,
   IconMail,
+  IconMessage,
   IconPhone,
   IconTool,
   IconX,
@@ -252,6 +253,19 @@ export function ClientBookingDetailsDrawer({
             </Group>
           </Stack>
         </Box>
+
+        {booking.clientComment && (
+          <>
+            <Divider />
+            <Box p="md" bg="var(--mantine-color-gray-0)">
+              <Group gap="xs" mb="sm">
+                <IconMessage size={14} color="var(--mantine-color-dimmed)" />
+                <Text size="sm" fw={700} tt="uppercase" c="dimmed">{t('client.bookingDetails.commentSection.title')}</Text>
+              </Group>
+              <Text size="sm">{booking.clientComment}</Text>
+            </Box>
+          </>
+        )}
 
         <Divider />
 

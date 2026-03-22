@@ -571,6 +571,9 @@ const et: CommonLocale = {
         scheduledTime: 'Planeeritud aeg',
         status: 'Staatus',
       },
+      commentSection: {
+        title: 'Sinu märkus',
+      },
       contactSection: {
         title: 'Kontaktandmed',
         empty: 'Kontaktandmed puuduvad',
@@ -725,6 +728,7 @@ const et: CommonLocale = {
         viewInvoice: 'Vaata arvet',
         confirm: 'Kinnita',
         cancel: 'Tühista',
+        clientComment: 'Kliendi märkus',
         noRecords: 'Broneeringuid ei leitud',
       },
       status: {
@@ -1060,6 +1064,8 @@ const et: CommonLocale = {
       phoneFallback: 'Telefon täpsustamata',
       booking: 'Broneerin...',
       confirmBooking: 'Kinnita broneering',
+      commentLabel: 'Märkus meistrile (valikuline)',
+      commentPlaceholder: 'Eripäringud või märkused meistrile...',
       notifications: {
         successTitle: 'Broneering loodud',
         successMessage: 'Sinu broneering loodi edukalt',

@@ -23,6 +23,7 @@ import {
   IconCalendarEvent,
   IconClock,
   IconCurrencyEuro,
+  IconMessage,
   IconSearch,
 } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -140,6 +141,20 @@ function MobileBookingCard({
           </Text>
         </Group>
       </SimpleGrid>
+
+      {booking.clientComment && (
+        <Box
+          pt="sm"
+          mt="sm"
+          style={{ borderTop: '1px solid var(--mantine-color-gray-1)' }}
+        >
+          <Group gap="xs" mb={4}>
+            <IconMessage size={13} color="var(--mantine-color-dimmed)" />
+            <Text size="xs" fw={600} tt="uppercase" c="dimmed">{t('master.bookings.table.clientComment')}</Text>
+          </Group>
+          <Text size="xs">{booking.clientComment}</Text>
+        </Box>
+      )}
 
       {isPending && (
         <Group grow mt="md">
@@ -477,6 +492,21 @@ export function MasterBookingsDataTable() {
             sortStatus={sortStatus}
             onSortStatusChange={(newStatus) => handleSortStatusChange(newStatus, columns)}
             noRecordsText={t('master.bookings.table.noRecords')}
+            rowExpansion={{
+              allowMultiple: false,
+              collapseProps: { transitionDuration: 150 },
+              content: ({ record }) => record.clientComment ? (
+                <Box py="sm" px="xl" style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
+                  <Group gap="xs" mb={4}>
+                    <IconMessage size={14} color="var(--mantine-color-dimmed)" />
+                    <Text size="xs" fw={600} tt="uppercase" c="dimmed">
+                      {t('master.bookings.table.clientComment')}
+                    </Text>
+                  </Group>
+                  <Text size="sm">{record.clientComment}</Text>
+                </Box>
+              ) : null,
+            }}
           />
         </Stack>
       </Card>

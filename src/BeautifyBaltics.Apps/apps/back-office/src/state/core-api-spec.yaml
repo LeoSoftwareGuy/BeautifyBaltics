@@ -2882,6 +2882,11 @@ components:
           type: string
           description: The scheduled start time for the booking
           format: date-time
+        clientComment:
+          type: string
+          description: Optional comment from the client for the master
+          maxLength: 500
+          nullable: true
       additionalProperties: false
     BookingDTO:
       required:
@@ -2965,6 +2970,10 @@ components:
           format: double
         status:
           $ref: '#/components/schemas/BookingStatus'
+        clientComment:
+          type: string
+          description: Optional comment left by the client at booking time
+          nullable: true
       additionalProperties: false
     BookingStatus:
       enum:

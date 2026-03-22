@@ -571,6 +571,9 @@ const ru: CommonLocale = {
         scheduledTime: 'Запланированное время',
         status: 'Статус',
       },
+      commentSection: {
+        title: 'Ваша заметка',
+      },
       contactSection: {
         title: 'Контакты',
         empty: 'Контактные данные отсутствуют',
@@ -725,6 +728,7 @@ const ru: CommonLocale = {
         viewInvoice: 'Смотреть счёт',
         confirm: 'Подтвердить',
         cancel: 'Отменить',
+        clientComment: 'Заметка клиента',
         noRecords: 'Бронирования не найдены',
       },
       status: {
@@ -1060,6 +1064,8 @@ const ru: CommonLocale = {
       phoneFallback: 'Телефон не указан',
       booking: 'Бронирую...',
       confirmBooking: 'Подтвердить бронирование',
+      commentLabel: 'Заметка для мастера (необязательно)',
+      commentPlaceholder: 'Особые пожелания или заметки для мастера...',
       notifications: {
         successTitle: 'Бронирование создано',
         successMessage: 'Ваше бронирование успешно создано',

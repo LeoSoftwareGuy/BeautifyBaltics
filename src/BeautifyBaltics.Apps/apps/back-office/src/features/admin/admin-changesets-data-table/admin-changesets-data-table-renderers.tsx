@@ -39,7 +39,32 @@ export const CHANGE_TYPE_LABELS: Record<string, string> = {
   'BeautifyBaltics.Domain.Aggregates.Master.Changesets.MasterJobSubmitForReviewChangeProposed': 'Service submission',
 };
 
-const FIELD_LABELS: Record<string, string> = {
+type DisplayableProposedChange = {
+  firstName?: unknown;
+  lastName?: unknown;
+  age?: unknown;
+  gender?: unknown;
+  description?: unknown;
+  email?: unknown;
+  phoneNumber?: unknown;
+  city?: unknown;
+  country?: unknown;
+  addressLine1?: unknown;
+  addressLine2?: unknown;
+  postalCode?: unknown;
+  latitude?: unknown;
+  longitude?: unknown;
+  title?: unknown;
+  category?: unknown;
+  service?: unknown;
+  price?: unknown;
+  durationMinutes?: unknown;
+  imageCount?: unknown;
+  jobName?: unknown;
+  jobCategoryName?: unknown;
+};
+
+const FIELD_LABELS: Record<keyof DisplayableProposedChange, string> = {
   firstName: 'First name',
   lastName: 'Last name',
   age: 'Age',
@@ -69,19 +94,18 @@ export function formatChangeType(type?: string) {
   return CHANGE_TYPE_LABELS[type] ?? type.split('.').pop() ?? type;
 }
 
-const SKIP_FIELDS = new Set([
-  'blobName', 'masterProfileImageId', 'masterJobImageId', 'fileName', 'fileMimeType', 'fileSize',
-  'masterJobId', 'jobId', 'jobCategoryId', 'masterId',
-]);
-
 export function ProposedChangePreview({ record }: { record: FindChangesetsResponse }) {
   const { proposedChange: data, imageUrl, imageUrls } = record;
   if (!data || typeof data !== 'object') return <Text size="sm" c="dimmed">No data</Text>;
 
   const toCamel = (k: string) => k.charAt(0).toLowerCase() + k.slice(1);
 
-  const entries = Object.entries(data as Record<string, unknown>)
-    .filter(([key, v]) => v !== null && v !== undefined && v !== '' && !SKIP_FIELDS.has(toCamel(key)));
+  const normalized = Object.fromEntries(
+    Object.entries(data as Record<string, unknown>).map(([k, v]) => [toCamel(k), v]),
+  ) as Partial<DisplayableProposedChange>;
+
+  const entries = (Object.keys(FIELD_LABELS) as Array<keyof DisplayableProposedChange>)
+    .filter((key) => normalized[key] !== null && normalized[key] !== undefined && normalized[key] !== '');
 
   function renderImages() {
     if (imageUrls && imageUrls.length > 1) {
@@ -120,13 +144,13 @@ export function ProposedChangePreview({ record }: { record: FindChangesetsRespon
       {renderImages()}
       {entries.length > 0 && (
         <Stack gap={4}>
-          {entries.map(([key, value]) => (
+          {entries.map((key) => (
             <Group key={key} gap="xs" wrap="nowrap">
               <Text size="xs" c="dimmed" style={{ minWidth: 140, fontWeight: 500 }}>
-                {FIELD_LABELS[toCamel(key)] ?? key}
+                {FIELD_LABELS[key]}
               </Text>
               <Text size="xs" style={{ wordBreak: 'break-all' }}>
-                {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                {typeof normalized[key] === 'object' ? JSON.stringify(normalized[key]) : String(normalized[key])}
               </Text>
             </Group>
           ))}
