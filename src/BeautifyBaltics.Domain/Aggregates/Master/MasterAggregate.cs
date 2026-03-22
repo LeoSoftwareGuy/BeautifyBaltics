@@ -77,9 +77,9 @@ public partial class MasterAggregate : ApprovableAggregate
         );
     }
 
-    internal void Apply(MasterJobCreated @event)
+    internal void Apply(MasterJobDraftCreated @event)
     {
-        this._jobs.Add(@event.MasterJobId,
+        _jobs.Add(@event.MasterJobId,
             new MasterJob(
                 @event.MasterJobId,
                 @event.JobId,
@@ -91,6 +91,45 @@ public partial class MasterAggregate : ApprovableAggregate
                 @event.JobName
             )
         );
+    }
+
+    internal void Apply(MasterJobSubmittedForReview @event)
+    {
+        if (_jobs.TryGetValue(@event.MasterJobId, out var job))
+            job.SubmitForReview();
+    }
+
+    internal void Apply(MasterJobActivated @event)
+    {
+        if (_jobs.TryGetValue(@event.MasterJobId, out var job))
+            job.Activate();
+    }
+
+    internal void Apply(MasterJobDeclined @event)
+    {
+        if (_jobs.TryGetValue(@event.MasterJobId, out var job))
+            job.Decline();
+    }
+
+    // Backward compat: jobs approved via old changeset flow before draft model was introduced
+    internal void Apply(MasterJobCreated @event)
+    {
+        if (!_jobs.ContainsKey(@event.MasterJobId))
+        {
+            _jobs.Add(@event.MasterJobId,
+                new MasterJob(
+                    @event.MasterJobId,
+                    @event.JobId,
+                    @event.Price,
+                    @event.Duration,
+                    @event.Title,
+                    @event.JobCategoryId,
+                    @event.JobCategoryName,
+                    @event.JobName
+                )
+            );
+        }
+        _jobs[@event.MasterJobId].Activate();
     }
 
     internal void Apply(MasterJobUpdated @event)

@@ -352,7 +352,11 @@ export type FindChangesetsResponse = {
   /** @nullable */
   comment?: string | null;
   /** @nullable */
+  masterName?: string | null;
+  /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  imageUrls?: string[] | null;
 };
 
 export type FindChangesetsResponsePagedResponse = {
@@ -439,10 +443,6 @@ export type FindMasterAvailabilitiesResponsePagedResponse = {
 export type FindMasterJobImagesResponse = {
   /** @nullable */
   images?: MasterJobImageWithUrlDTO[] | null;
-};
-
-export type FindMasterJobsParams = {
-  proposal?: boolean;
 };
 
 export type FindMasterJobsResponse = {
@@ -915,6 +915,7 @@ export type MasterJobDTO = {
   price: number;
   /** Job duration in minutes */
   durationMinutes: number;
+  status: MasterJobStatus;
   /**
    * Featured image identifier
    * @nullable
@@ -990,6 +991,12 @@ export type MasterJobOfferingCommandDTO = {
   durationMinutes: number;
 };
 
+export enum MasterJobStatus {
+  Draft = 'Draft',
+  PendingReview = 'PendingReview',
+  Active = 'Active',
+
+}
 export type MasterProfileCommandDTO = {
   /**
    * First name
@@ -1231,6 +1238,11 @@ export type SetUserRoleRequest = {
 export type SetUserRoleResponse = {
   id?: string;
   role?: UserRole;
+};
+
+export type SubmitMasterJobForReviewResponse = {
+  masterId?: string;
+  masterJobId?: string;
 };
 
 export type UnsetMasterJobFeaturedImageResponse = {
@@ -1660,6 +1672,10 @@ export type FindMastersParams = {
 
 export type GetMasterByIdParams = {
   id: string;
+  proposal?: boolean;
+};
+
+export type FindMasterJobsParams = {
   proposal?: boolean;
 };
 

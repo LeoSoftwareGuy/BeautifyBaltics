@@ -828,6 +828,11 @@ const ru: CommonLocale = {
         count_one: '{{count}} услуга добавлена',
         count_other: '{{count}} услуг добавлено',
       },
+      status: {
+        draft: 'Черновик',
+        pendingReview: 'На проверке',
+        active: 'Активна',
+      },
       notifications: {
         createSuccessTitle: 'Услуга добавлена',
         createSuccessMessage: 'Услуга успешно добавлена.',
@@ -853,10 +858,16 @@ const ru: CommonLocale = {
         deleteImageSuccessMessage: 'Фото успешно удалено.',
         deleteImageErrorTitle: 'Не удалось удалить изображение',
         deleteImageErrorMessage: 'Повторите попытку.',
+        submitSuccessTitle: 'Отправлено на проверку',
+        submitSuccessMessage: 'Услуга отправлена администратору на проверку.',
+        submitErrorTitle: 'Не удалось отправить услугу',
+        submitErrorMessage: 'Произошла ошибка при отправке услуги.',
       },
       cards: {
         addServiceTitle: 'Добавить новую услугу',
         addServiceSubtitle: 'Расширьте свой каталог услуг',
+        submitForReview: 'Отправить на проверку',
+        pendingReviewTooltip: 'Ожидает проверки администратором — редактирование недоступно',
       },
       form: {
         description: 'Сначала выберите категорию, затем услугу.',

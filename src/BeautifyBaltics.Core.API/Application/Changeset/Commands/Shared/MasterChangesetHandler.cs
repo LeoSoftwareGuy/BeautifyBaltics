@@ -18,7 +18,8 @@ public class MasterChangesetHandler(
     public async Task<(object RealEvent, bool ShouldActivate)> BuildApprovalEventAsync(
         Persistence.Projections.Changesets.Changeset changeset,
         MasterAggregate master,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         if (changeset.Type == typeof(MasterProfileChangeProposed).FullName)
         {
@@ -112,7 +113,30 @@ public class MasterChangesetHandler(
             return (realEvent, false);
         }
 
+        if (changeset.Type == typeof(MasterJobSubmitForReviewChangeProposed).FullName)
+        {
+            var change = changeset.ProposedChange.Deserialize<MasterJobSubmitForReviewChangeProposed>()!;
+            var realEvent = new MasterJobActivated(master.Id, change.MasterJobId);
+            return (realEvent, false);
+        }
+
         throw new InvalidOperationException($"Unknown changeset type: {changeset.Type}");
+    }
+
+    /// <summary>
+    /// Returns the domain rejection event for changesets that require one, or null if none is needed.
+    /// </summary>
+    public object? BuildRejectionEvent(
+        Persistence.Projections.Changesets.Changeset changeset,
+        MasterAggregate master)
+    {
+        if (changeset.Type == typeof(MasterJobSubmitForReviewChangeProposed).FullName)
+        {
+            var change = changeset.ProposedChange.Deserialize<MasterJobSubmitForReviewChangeProposed>()!;
+            return new MasterJobDeclined(master.Id, change.MasterJobId);
+        }
+
+        return null;
     }
 
     /// <summary>

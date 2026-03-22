@@ -24,6 +24,7 @@ import { notifications } from '@mantine/notifications';
 import {
   IconAlertCircle, IconCamera, IconDeviceFloppy, IconPhotoUp,
 } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import type { LocationData } from '@/features/map';
 import { LocationPicker } from '@/features/map';
@@ -33,7 +34,6 @@ import {
   useGetMasterById, useUpdateMasterProfile, useUploadMasterProfileImage,
 } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
-import { useQueryClient } from '@tanstack/react-query';
 
 import {
   MasterProfilePreviewNotification,
@@ -70,10 +70,9 @@ function MasterProfileSettings() {
     queryKey: getGetMasterByIdQueryKey(masterId, proposalParams),
   });
 
-  const activeData: GetMasterByIdResponse | undefined
-    = hasPendingChangesets && previewMode === 'proposed' && proposalData
-      ? proposalData
-      : approvedData;
+  const activeData: GetMasterByIdResponse | undefined = hasPendingChangesets && previewMode === 'proposed' && proposalData
+    ? proposalData
+    : approvedData;
 
   const validate = useMemo(
     () => ({

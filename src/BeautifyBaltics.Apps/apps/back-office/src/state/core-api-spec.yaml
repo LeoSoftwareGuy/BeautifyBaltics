@@ -1580,6 +1580,10 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: proposal
+          in: query
+          schema:
+            type: boolean
       responses:
         '200':
           description: OK
@@ -1695,6 +1699,12 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: proposal
+          in: query
+          description: ''
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: OK
@@ -1714,6 +1724,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{id}/jobs/{jobId}/submit':
+    post:
+      tags:
+        - Masters
+      summary: Submit a master job for review
+      operationId: SubmitMasterJobForReview
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          description: Master job id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitMasterJobForReviewResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   '/api/v1/masters/{id}/images':
     get:
       tags:
@@ -3323,6 +3373,17 @@ components:
         comment:
           type: string
           nullable: true
+        masterName:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        imageUrls:
+          type: array
+          items:
+            type: string
+          nullable: true
       additionalProperties: false
     FindChangesetsResponsePagedResponse:
       required:
@@ -4298,6 +4359,8 @@ components:
         bufferMinutes:
           type: integer
           format: int32
+        hasPendingChangesets:
+          type: boolean
       additionalProperties: false
     MasterJobDTO:
       required:
@@ -4309,6 +4372,7 @@ components:
         - jobId
         - jobName
         - price
+        - status
         - title
       type: object
       properties:
@@ -4344,6 +4408,8 @@ components:
           type: integer
           description: Job duration in minutes
           format: int32
+        status:
+          $ref: '#/components/schemas/MasterJobStatus'
         featuredImageId:
           type: string
           description: Featured image identifier
@@ -4457,6 +4523,12 @@ components:
           description: Duration of the service
           format: int32
       additionalProperties: false
+    MasterJobStatus:
+      enum:
+        - Draft
+        - PendingReview
+        - Active
+      type: string
     MasterProfileCommandDTO:
       required:
         - email
@@ -4801,6 +4873,16 @@ components:
           format: uuid
         role:
           $ref: '#/components/schemas/UserRole'
+      additionalProperties: false
+    SubmitMasterJobForReviewResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
       additionalProperties: false
     UnsetMasterJobFeaturedImageResponse:
       type: object

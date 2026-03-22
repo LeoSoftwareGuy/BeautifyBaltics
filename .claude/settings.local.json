@@ -11,7 +11,9 @@
       "Bash(az containerapp exec:*)",
       "Bash(az containerapp env show:*)",
       "Bash(getent:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(find:*)",
+      "Bash(cd:*)"
     ]
   }
 }

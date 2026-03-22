@@ -1,4 +1,5 @@
 using BeautifyBaltics.Core.API.Application.Master.Commands.AddMasterJob;
+using BeautifyBaltics.Core.API.Application.Master.Commands.SubmitMasterJobForReview;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJobImage;
@@ -116,9 +117,27 @@ public class MastersController(IMessageBus bus) : ApiController
     }
 
     /// <summary>
+    /// Submit a master job for review
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="jobId">Master job id</param>
+    /// <returns>Master id and master job id</returns>
+    [HttpPost("{id:guid}/jobs/{jobId:guid}/submit", Name = "SubmitMasterJobForReview")]
+    [ProducesResponseType(typeof(SubmitMasterJobForReviewResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> SubmitMasterJobForReview([FromRoute] Guid id, [FromRoute] Guid jobId)
+    {
+        var response = await bus.InvokeAsync<SubmitMasterJobForReviewResponse>(
+            new SubmitMasterJobForReviewRequest { MasterId = id, MasterJobId = jobId });
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Find master jobs
     /// </summary>
     /// <param name="id">Master id</param>
+    /// <param name="proposal"></param>
     /// <returns>Master jobs</returns>
     [HttpGet("{id:guid}/jobs", Name = "FindMasterJobs")]
     [AllowAnonymous]

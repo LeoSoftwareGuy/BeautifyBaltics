@@ -2,6 +2,7 @@ using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Integrations.BlobStorage;
 using JasperFx.Core;
@@ -16,12 +17,17 @@ public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterAggregat
     public async Task<(Events, OutgoingMessages)> Handle(
         UploadMasterJobImageRequest request,
         MasterAggregate master,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken
+    )
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        var job = master.Jobs.SingleOrDefault(j => j.MasterJobId == request.MasterJobId)
-            ?? throw DomainException.WithMessage($"Master job {request.MasterJobId} not found.");
+        var job = master.GetJobOrThrow(request.MasterJobId);
+
+        if (job.Status == MasterJobStatus.PendingReview)
+        {
+            throw DomainException.WithMessage("Cannot upload images while job is pending review.");
+        }      
 
         var events = new Events();
 
@@ -30,23 +36,38 @@ public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterAggregat
             var blobFile = new BlobFileDTO(file.FileName, file, file.ContentType);
             var blobName = await blobStorageService.UploadAsync(master.Id, blobFile, cancellationToken);
 
-            var change = new MasterJobImageChangeProposed(
-                MasterJobImageId: CombGuidIdGeneration.NewGuid(),
-                MasterJobId: job.MasterJobId,
-                BlobName: blobName,
-                FileName: file.FileName,
-                FileMimeType: file.ContentType,
-                FileSize: file.Length
-            );
-
-            events.Add(new MasterChangeProposed
+            if (job.Status == MasterJobStatus.Draft)
             {
-                AggregateId = master.Id,
-                ProposedById = master.UserId,
-                EntityId = job.MasterJobId,
-                Type = typeof(MasterJobImageChangeProposed).FullName!,
-                ProposedChange = JsonSerializer.SerializeToElement(change),
-            });
+                events.Add(new MasterJobImageUploaded(
+                    MasterId: master.Id,
+                    MasterJobId: job.MasterJobId,
+                    BlobName: blobName,
+                    FileName: file.FileName,
+                    FileMimeType: file.ContentType,
+                    FileSize: file.Length
+                )
+                { MasterJobImageId = CombGuidIdGeneration.NewGuid() });
+            }
+            else
+            {
+                var change = new MasterJobImageChangeProposed(
+                    MasterJobImageId: CombGuidIdGeneration.NewGuid(),
+                    MasterJobId: job.MasterJobId,
+                    BlobName: blobName,
+                    FileName: file.FileName,
+                    FileMimeType: file.ContentType,
+                    FileSize: file.Length
+                );
+
+                events.Add(new MasterChangeProposed
+                {
+                    AggregateId = master.Id,
+                    ProposedById = master.UserId,
+                    EntityId = job.MasterJobId,
+                    Type = typeof(MasterJobImageChangeProposed).FullName!,
+                    ProposedChange = JsonSerializer.SerializeToElement(change),
+                });
+            }
         }
 
         return (events, [new UploadMasterJobImageResponse(master.Id, job.JobId)]);

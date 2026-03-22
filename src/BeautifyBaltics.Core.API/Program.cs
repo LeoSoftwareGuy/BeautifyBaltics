@@ -230,7 +230,7 @@ internal class Program
     private static void ConfigureKeyVault(WebApplicationBuilder builder)
     {
         var keyVaultUri = builder.Configuration.GetConnectionString("key-vault");
-        if (string.IsNullOrWhiteSpace(keyVaultUri)) throw new ArgumentException("Key vault connection string is not configured.");
+        if (string.IsNullOrWhiteSpace(keyVaultUri)) return;
 
         var options = new SecretClientOptions
         {

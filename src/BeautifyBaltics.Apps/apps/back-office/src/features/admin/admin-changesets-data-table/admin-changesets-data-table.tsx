@@ -61,12 +61,11 @@ export function AdminChangesetsDataTable() {
       render: (c) => <Text size="sm" fw={500}>{formatChangeType(c.type ?? undefined)}</Text>,
     },
     {
-      accessor: 'masterId',
+      accessor: 'masterName',
       title: t('admin.changesets.table.columns.masterId'),
       render: (c) => (
-        <Text size="xs" c="dimmed" ff="monospace">
-          {c.masterId?.slice(0, 8)}
-          …
+        <Text size="sm">
+          {c.masterName ?? c.masterId?.slice(0, 8)}
         </Text>
       ),
     },
@@ -117,7 +116,7 @@ export function AdminChangesetsDataTable() {
           rowExpansion={{
             allowMultiple: false,
             content: ({ record }) => (
-              <Card p="md" radius={0} style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
+              <Card py="md" px="xl" radius={0} style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
                 <Stack gap="xs">
                   <Text size="xs" fw={600} tt="uppercase" c="dimmed">
                     {t('admin.changesets.proposedChange')}

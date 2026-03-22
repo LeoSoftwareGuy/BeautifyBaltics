@@ -8,7 +8,7 @@ export default function AdminChangesetsPage() {
 
   return (
     <Stack gap="lg">
-      <Title order={3}>{t('admin.changesets.pageTitle')}</Title>
+      <Title ml="sm" order={3}>{t('admin.changesets.pageTitle')}</Title>
       <AdminChangesetsDataTable />
     </Stack>
   );

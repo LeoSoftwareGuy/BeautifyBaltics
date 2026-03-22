@@ -36,6 +36,32 @@ export const CHANGE_TYPE_LABELS: Record<string, string> = {
   'BeautifyBaltics.Domain.Aggregates.Master.Changesets.MasterJobCreateChangeProposed': 'New service',
   'BeautifyBaltics.Domain.Aggregates.Master.Changesets.MasterJobUpdateChangeProposed': 'Service update',
   'BeautifyBaltics.Domain.Aggregates.Master.Changesets.MasterJobImageChangeProposed': 'Service image',
+  'BeautifyBaltics.Domain.Aggregates.Master.Changesets.MasterJobSubmitForReviewChangeProposed': 'Service submission',
+};
+
+const FIELD_LABELS: Record<string, string> = {
+  firstName: 'First name',
+  lastName: 'Last name',
+  age: 'Age',
+  gender: 'Gender',
+  description: 'Description',
+  email: 'Email',
+  phoneNumber: 'Phone',
+  city: 'City',
+  country: 'Country',
+  addressLine1: 'Address',
+  addressLine2: 'Address 2',
+  postalCode: 'Postal code',
+  latitude: 'Latitude',
+  longitude: 'Longitude',
+  title: 'Title',
+  category: 'Category',
+  service: 'Service',
+  price: 'Price',
+  durationMinutes: 'Duration (min)',
+  imageCount: 'Images',
+  jobName: 'Service name',
+  jobCategoryName: 'Category',
 };
 
 export function formatChangeType(type?: string) {
@@ -43,18 +69,40 @@ export function formatChangeType(type?: string) {
   return CHANGE_TYPE_LABELS[type] ?? type.split('.').pop() ?? type;
 }
 
-const IMAGE_BLOB_FIELDS = new Set(['blobName', 'masterProfileImageId', 'masterJobImageId', 'fileName', 'fileMimeType', 'fileSize']);
+const SKIP_FIELDS = new Set([
+  'blobName', 'masterProfileImageId', 'masterJobImageId', 'fileName', 'fileMimeType', 'fileSize',
+  'masterJobId', 'jobId', 'jobCategoryId', 'masterId',
+]);
 
 export function ProposedChangePreview({ record }: { record: FindChangesetsResponse }) {
-  const { data, imageUrl } = record;
+  const { proposedChange: data, imageUrl, imageUrls } = record;
   if (!data || typeof data !== 'object') return <Text size="sm" c="dimmed">No data</Text>;
 
-  const entries = Object.entries(data as Record<string, unknown>)
-    .filter(([key, v]) => v !== null && v !== undefined && v !== '' && !(imageUrl && IMAGE_BLOB_FIELDS.has(key)));
+  const toCamel = (k: string) => k.charAt(0).toLowerCase() + k.slice(1);
 
-  return (
-    <Stack gap="sm">
-      {imageUrl && (
+  const entries = Object.entries(data as Record<string, unknown>)
+    .filter(([key, v]) => v !== null && v !== undefined && v !== '' && !SKIP_FIELDS.has(toCamel(key)));
+
+  function renderImages() {
+    if (imageUrls && imageUrls.length > 1) {
+      return (
+        <Group gap="xs" wrap="wrap">
+          {imageUrls.map((url) => (
+            <Image
+              key={url}
+              src={url}
+              radius="md"
+              w={160}
+              h={120}
+              fit="cover"
+              fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+            />
+          ))}
+        </Group>
+      );
+    }
+    if (imageUrl) {
+      return (
         <Image
           src={imageUrl}
           radius="md"
@@ -62,13 +110,20 @@ export function ProposedChangePreview({ record }: { record: FindChangesetsRespon
           fit="cover"
           fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
         />
-      )}
+      );
+    }
+    return null;
+  }
+
+  return (
+    <Stack gap="sm">
+      {renderImages()}
       {entries.length > 0 && (
         <Stack gap={4}>
           {entries.map(([key, value]) => (
             <Group key={key} gap="xs" wrap="nowrap">
               <Text size="xs" c="dimmed" style={{ minWidth: 140, fontWeight: 500 }}>
-                {key}
+                {FIELD_LABELS[toCamel(key)] ?? key}
               </Text>
               <Text size="xs" style={{ wordBreak: 'break-all' }}>
                 {typeof value === 'object' ? JSON.stringify(value) : String(value)}

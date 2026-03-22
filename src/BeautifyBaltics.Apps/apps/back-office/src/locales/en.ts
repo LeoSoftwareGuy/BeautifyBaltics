@@ -557,6 +557,11 @@ const en = {
         count_one: '{{count}} service added',
         count_other: '{{count}} services added',
       },
+      status: {
+        draft: 'Draft',
+        pendingReview: 'Pending Review',
+        active: 'Active',
+      },
       notifications: {
         createSuccessTitle: 'Service added',
         createSuccessMessage: 'Your service has been added successfully.',
@@ -582,10 +587,16 @@ const en = {
         deleteImageSuccessMessage: 'The image has been removed.',
         deleteImageErrorTitle: 'Failed to delete image',
         deleteImageErrorMessage: 'Please try again.',
+        submitSuccessTitle: 'Submitted for review',
+        submitSuccessMessage: 'Your service has been submitted for admin review.',
+        submitErrorTitle: 'Failed to submit service',
+        submitErrorMessage: 'An error occurred while submitting the service.',
       },
       cards: {
         addServiceTitle: 'Add New Service',
         addServiceSubtitle: 'Expand your catalog with a new service',
+        submitForReview: 'Submit for Review',
+        pendingReviewTooltip: 'Pending admin review — editing is disabled',
       },
       form: {
         description: 'Select a category first, then choose the service you want to offer',

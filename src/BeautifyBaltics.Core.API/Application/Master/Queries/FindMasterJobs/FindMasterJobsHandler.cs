@@ -4,7 +4,6 @@ using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Integrations.BlobStorage;
-using BeautifyBaltics.Persistence.Projections.Changesets;
 using BeautifyBaltics.Persistence.Repositories.Changeset;
 using BeautifyBaltics.Persistence.Repositories.Master;
 
@@ -17,7 +16,6 @@ public class FindMasterJobsHandler(
     IBlobStorageService<MasterAggregate.MasterJobImage> blobStorageService
 )
 {
-    private static readonly string JobCreateType = typeof(MasterJobCreateChangeProposed).FullName!;
     private static readonly string JobUpdateType = typeof(MasterJobUpdateChangeProposed).FullName!;
     private static readonly string JobImageType = typeof(MasterJobImageChangeProposed).FullName!;
 
@@ -38,6 +36,7 @@ public class FindMasterJobsHandler(
             Title = job.Title,
             Price = job.Price,
             DurationMinutes = (int)job.Duration.TotalMinutes,
+            Status = job.Status,
             FeaturedImageId = job.FeaturedImageId,
             FeaturedImageFocusX = job.FeaturedImageFocusX,
             FeaturedImageFocusY = job.FeaturedImageFocusY,
@@ -52,40 +51,22 @@ public class FindMasterJobsHandler(
             }).ToArray() ?? []
         });
 
-        if (!request.Proposal)
-            return new FindMasterJobsResponse { Jobs = [.. jobDtos] };
+        if (!request.Proposal) return new FindMasterJobsResponse { Jobs = [.. jobDtos] };
 
         var changesets = await changesetRepository.GetPendingByMasterAsync(request.MasterId, cancellationToken);
+
         return new FindMasterJobsResponse { Jobs = [.. ApplyChangesets(jobDtos, changesets)] };
     }
 
     private IEnumerable<MasterJobDTO> ApplyChangesets(
         IEnumerable<MasterJobDTO> jobs,
-        IReadOnlyList<Changeset> changesets)
+        IReadOnlyList<Persistence.Projections.Changesets.Changeset> changesets)
     {
         var jobsById = jobs.ToDictionary(j => j.Id);
 
         foreach (var changeset in changesets.OrderBy(c => c.ProposedAt))
         {
-            if (changeset.Type == JobCreateType)
-            {
-                var c = JsonSerializer.Deserialize<MasterJobCreateChangeProposed>(changeset.ProposedChange);
-                if (c is null) continue;
-
-                jobsById[c.MasterJobId] = new MasterJobDTO
-                {
-                    Id = c.MasterJobId,
-                    JobId = c.JobId,
-                    JobCategoryId = c.JobCategoryId,
-                    JobCategoryName = c.JobCategoryName,
-                    JobName = c.JobName,
-                    Title = c.Title,
-                    Price = c.Price,
-                    DurationMinutes = (int)c.Duration.TotalMinutes,
-                    Images = []
-                };
-            }
-            else if (changeset.Type == JobUpdateType)
+            if (changeset.Type == JobUpdateType)
             {
                 var c = JsonSerializer.Deserialize<MasterJobUpdateChangeProposed>(changeset.ProposedChange);
                 if (c is null || !jobsById.TryGetValue(c.MasterJobId, out var existing)) continue;

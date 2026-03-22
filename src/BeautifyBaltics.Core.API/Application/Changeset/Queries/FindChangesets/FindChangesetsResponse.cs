@@ -17,5 +17,7 @@ public record FindChangesetsResponse(
     Guid? RejectedById,
     DateTimeOffset? RejectedAt,
     string? Comment,
-    string? ImageUrl = null
+    string? MasterName = null,
+    string? ImageUrl = null,
+    IReadOnlyList<string>? ImageUrls = null
 );

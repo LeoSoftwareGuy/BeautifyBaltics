@@ -35,6 +35,11 @@ public class RejectChangesetHandler(IChangesetRepository changesetRepository, Ma
             Comment = request.Comment,
         };
 
-        return ([rejectionEvent], []);
+        var events = new Events { rejectionEvent };
+
+        var domainRejectionEvent = masterChangesetHandler.BuildRejectionEvent(changeset, master);
+        if (domainRejectionEvent is not null) events.Add(domainRejectionEvent);
+
+        return (events, []);
     }
 }

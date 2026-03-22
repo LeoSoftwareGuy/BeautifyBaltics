@@ -17,12 +17,13 @@ import {
   useDeleteMasterJob,
   useFindMasterJobs,
   useGetMasterById,
+  useSubmitMasterJobForReview,
 } from '@/state/endpoints/masters';
+
 import {
   MasterProfilePreviewNotification,
   ProfilePreviewMode,
 } from '../../master-profile-settings/master-profile-preview-notification';
-
 import { AddServiceCard } from '../add-service-card';
 import { MasterServiceCard } from '../master-service-card';
 import { MasterServicesDetailModal } from '../master-services-modals';
@@ -105,9 +106,33 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
     },
   });
 
+  const { mutateAsync: submitJob, isPending: isSubmitting } = useSubmitMasterJobForReview({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getFindMasterJobsQueryKey(masterId) });
+        notifications.show({
+          title: t('master.services.notifications.submitSuccessTitle'),
+          message: t('master.services.notifications.submitSuccessMessage'),
+          color: 'green',
+        });
+      },
+      onError: (error) => {
+        notifications.show({
+          title: t('master.services.notifications.submitErrorTitle'),
+          message: error.detail ?? t('master.services.notifications.submitErrorMessage'),
+          color: 'red',
+        });
+      },
+    },
+  });
+
   const handleDelete = async (jobId: string) => {
     if (selectedJobId === jobId) setSelectedJobId(null);
     await deleteJob({ id: masterId, jobId });
+  };
+
+  const handleSubmit = async (jobId: string) => {
+    await submitJob({ id: masterId, jobId });
   };
 
   const handleOpenDetailModal = (jobId: string) => {
@@ -161,7 +186,9 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
               service={service}
               onClick={handleOpenDetailModal}
               onDelete={handleDelete}
+              onSubmit={handleSubmit}
               isDeleting={isDeleting}
+              isSubmitting={isSubmitting}
             />
           ))}
           <AddServiceCard masterId={masterId} />

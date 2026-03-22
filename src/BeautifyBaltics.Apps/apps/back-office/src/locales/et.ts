@@ -828,6 +828,11 @@ const et: CommonLocale = {
         count_one: '{{count}} teenus lisatud',
         count_other: '{{count}} teenust lisatud',
       },
+      status: {
+        draft: 'Mustand',
+        pendingReview: 'Ülevaatamisel',
+        active: 'Aktiivne',
+      },
       notifications: {
         createSuccessTitle: 'Teenus lisatud',
         createSuccessMessage: 'Teenus lisati edukalt.',
@@ -853,10 +858,16 @@ const et: CommonLocale = {
         deleteImageSuccessMessage: 'Pilt eemaldati edukalt.',
         deleteImageErrorTitle: 'Pildi kustutamine ebaõnnestus',
         deleteImageErrorMessage: 'Palun proovi uuesti.',
+        submitSuccessTitle: 'Ülevaatamisele saadetud',
+        submitSuccessMessage: 'Teenus on saadetud administraatorile ülevaatamiseks.',
+        submitErrorTitle: 'Saatmine ebaõnnestus',
+        submitErrorMessage: 'Teenuse saatmisel tekkis viga.',
       },
       cards: {
         addServiceTitle: 'Lisa uus teenus',
         addServiceSubtitle: 'Täienda oma teenuste nimekirja',
+        submitForReview: 'Saada ülevaatamisele',
+        pendingReviewTooltip: 'Ootel administraatori ülevaatus — muutmine on keelatud',
       },
       form: {
         description: 'Vali kõigepealt kategooria ja seejärel teenus.',
