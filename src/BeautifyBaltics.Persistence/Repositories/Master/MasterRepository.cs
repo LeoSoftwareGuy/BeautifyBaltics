@@ -89,8 +89,9 @@ public class MasterRepository(IQuerySession session) : QueryRepository<Projectio
             query = query.Where(m => availableMasterIds.Contains(m.Id));
         }
 
-        if (search.OnlyVisible)
-            query = query.Where(x => x.IsVisible);
+        if (search.OnlyVisible) query = query.Where(x => x.IsVisible);
+
+        if (search.OnlyKycApproved) query = query.Where(x => x.KycStatus == KycStatus.Approved);
 
         return query;
     }

@@ -16,4 +16,6 @@ public record EmailTemplates
     public string ClientBookingCancelled { get; set; } = string.Empty;
     public string MasterBookingConfirmed { get; set; } = string.Empty;
     public string MasterBookingCancelled { get; set; } = string.Empty;
+    public string MasterKycApproved { get; set; } = string.Empty;
+    public string MasterKycRejected { get; set; } = string.Empty;
 }

@@ -23,5 +23,8 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared
         public string? ProfileImageUrl { get; init; }
         public int BufferMinutes { get; init; }
         public bool HasPendingChangesets { get; init; }
+        public KycStatus KycStatus { get; init; }
+        public string? KycDocumentUrl { get; init; }
+        public string? KycRejectionReason { get; init; }
     }
 }

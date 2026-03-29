@@ -7,6 +7,7 @@ import {
   IconCheckbox,
   IconLayoutDashboard,
   IconLogout,
+  IconShieldCheck,
   IconSparkles,
   IconUsers,
 } from '@tabler/icons-react';
@@ -14,6 +15,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { useSession } from '@/contexts/session-context';
 import { useLayout } from '@/layouts';
+import { useGetPendingKycSubmissions } from '@/state/endpoints/admin-kyc';
 import { useGetPendingChangesetsCount } from '@/state/endpoints/changesets';
 
 import NavigationItem from '../main-navigation/navigation-item';
@@ -27,6 +29,11 @@ export default function AdminNavigation() {
     query: { refetchInterval: 30_000 },
   });
   const count = pendingCount?.count ?? 0;
+
+  const { data: pendingKyc } = useGetPendingKycSubmissions({
+    query: { refetchInterval: 30_000 },
+  });
+  const kycCount = pendingKyc?.items?.length ?? 0;
 
   const handleLogout = async () => {
     try {
@@ -47,6 +54,14 @@ export default function AdminNavigation() {
         href="/admin/changesets"
         rightSection={count > 0 ? (
           <Badge size="xs" color="yellow" variant="filled" circle>{count}</Badge>
+        ) : undefined}
+      />
+      <NavigationItem
+        icon={IconShieldCheck}
+        label={t('navigation.admin.kyc')}
+        href="/admin/kyc"
+        rightSection={kycCount > 0 ? (
+          <Badge size="xs" color="orange" variant="filled" circle>{kycCount}</Badge>
         ) : undefined}
       />
 

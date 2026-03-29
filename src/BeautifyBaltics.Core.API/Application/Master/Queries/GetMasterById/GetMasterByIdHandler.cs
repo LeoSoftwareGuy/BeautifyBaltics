@@ -1,6 +1,7 @@
 using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Integrations.BlobStorage;
 using BeautifyBaltics.Persistence.Repositories.Changeset;
@@ -12,7 +13,8 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
 public class GetMasterByIdHandler(
     IMasterRepository masterRepository,
     IChangesetRepository changesetRepository,
-    IBlobStorageService<MasterAggregate.MasterProfileImage> blobStorageService
+    IBlobStorageService<MasterAggregate.MasterProfileImage> blobStorageService,
+    IBlobStorageService<MasterAggregate.MasterKycDocument> kycBlobStorageService
 )
 {
     public async Task<GetMasterByIdResponse> Handle(GetMasterByIdRequest request, CancellationToken cancellationToken)
@@ -20,14 +22,24 @@ public class GetMasterByIdHandler(
         var master = await masterRepository.GetByIdAsync(request.Id, cancellationToken)
                      ?? throw NotFoundException.For<Persistence.Projections.Master>(request.Id);
 
+        // Public/client access: only show KYC-approved masters
+        // Allow access if: KYC approved, or the caller is the master themselves, or proposal mode
+        var isSelfAccess = request.RequesterId.HasValue && request.RequesterId.Value == master.UserId;
+        if (!isSelfAccess && !request.Proposal && master.KycStatus != KycStatus.Approved)
+        {
+            throw NotFoundException.For<Persistence.Projections.Master>(request.Id);
+        }
+
         var response = master.Adapt<GetMasterByIdResponse>();
         response = response with
         {
-            ProfileImageUrl = blobStorageService.GetBlobUrl(master.ProfileImageBlobName)
+            ProfileImageUrl = blobStorageService.GetBlobUrl(master.ProfileImageBlobName),
+            KycDocumentUrl = master.KycDocumentBlobName is not null
+                ? kycBlobStorageService.GetBlobUrl(master.KycDocumentBlobName)
+                : null,
         };
 
-        if (!request.Proposal || !master.HasPendingChangesets)
-            return response;
+        if (!request.Proposal || !master.HasPendingChangesets) return response;
 
         var changesets = await changesetRepository.GetPendingByMasterAsync(request.Id, cancellationToken);
 

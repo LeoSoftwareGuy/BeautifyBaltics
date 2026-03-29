@@ -2,6 +2,7 @@ using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Domain.ValueObjects;
 using Wolverine;
@@ -15,6 +16,11 @@ public class UpdateMasterProfileEventHandler
     public Task<(Events, OutgoingMessages)> Handle(UpdateMasterProfileRequest request, MasterAggregate master, CancellationToken cancellationToken)
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
+
+        if (master.KycStatus != KycStatus.Approved)
+        {
+            throw DomainException.WithMessage("Identity verification must be approved before submitting profile changes.");
+        }
 
         var change = new MasterProfileChangeProposed(
             FirstName: request.FirstName,

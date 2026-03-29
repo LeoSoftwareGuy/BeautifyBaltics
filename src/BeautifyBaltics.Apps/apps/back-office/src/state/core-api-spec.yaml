@@ -412,6 +412,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/admin/kyc:
+    get:
+      tags:
+        - AdminKyc
+      summary: Get all pending KYC submissions awaiting admin review
+      operationId: GetPendingKycSubmissions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPendingKycSubmissionsResponse'
+  '/api/v1/admin/kyc/{masterId}/approve':
+    patch:
+      tags:
+        - AdminKyc
+      summary: Approve a master's KYC submission
+      operationId: ApproveMasterKyc
+      parameters:
+        - name: masterId
+          in: path
+          description: Master identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/admin/kyc/{masterId}/reject':
+    patch:
+      tags:
+        - AdminKyc
+      summary: Reject a master's KYC submission with a required reason
+      operationId: RejectMasterKyc
+      parameters:
+        - name: masterId
+          in: path
+          description: Master identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Rejection reason
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KycRejectRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/KycRejectRequest'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   /api/v1/auth/register:
     post:
       tags:
@@ -1481,6 +1561,15 @@ paths:
           schema:
             type: number
             format: double
+        - name: availableDate
+          in: query
+          schema:
+            type: string
+        - name: availableTime
+          in: query
+          schema:
+            type: string
+            format: time
         - name: page
           in: query
           description: Page number
@@ -1584,6 +1673,12 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: requesterId
+          in: query
+          description: 'Authenticated caller''s user ID — set by controller, not from request body'
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: OK
@@ -2614,6 +2709,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/kyc':
+    post:
+      tags:
+        - Masters
+      summary: Submit KYC document for identity verification
+      operationId: SubmitMasterKyc
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - files
+                - masterId
+              type: object
+              properties:
+                masterId:
+                  type: string
+                  description: Master identifier
+                  format: uuid
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: File uploads
+            encoding:
+              masterId:
+                style: form
+              files:
+                style: form
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitMasterKycResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   '/api/v1/masters/{id}/buffer-time':
     put:
       tags:
@@ -2883,9 +3035,9 @@ components:
           description: The scheduled start time for the booking
           format: date-time
         clientComment:
+          maxLength: 500
           type: string
           description: Optional comment from the client for the master
-          maxLength: 500
           nullable: true
       additionalProperties: false
     BookingDTO:
@@ -4105,6 +4257,15 @@ components:
           type: integer
           format: int32
       additionalProperties: false
+    GetPendingKycSubmissionsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingKycSubmissionDTO'
+          nullable: true
+      additionalProperties: false
     GetPendingRequestsResponse:
       required:
         - totalCount
@@ -4227,6 +4388,22 @@ components:
           minLength: 1
           type: string
       additionalProperties: false
+    KycRejectRequest:
+      required:
+        - reason
+      type: object
+      properties:
+        reason:
+          minLength: 1
+          type: string
+      additionalProperties: false
+    KycStatus:
+      enum:
+        - NotSubmitted
+        - Pending
+        - Approved
+        - Rejected
+      type: string
     LoginRequest:
       required:
         - email
@@ -4370,6 +4547,14 @@ components:
           format: int32
         hasPendingChangesets:
           type: boolean
+        kycStatus:
+          $ref: '#/components/schemas/KycStatus'
+        kycDocumentUrl:
+          type: string
+          nullable: true
+        kycRejectionReason:
+          type: string
+          nullable: true
       additionalProperties: false
     MasterJobDTO:
       required:
@@ -4622,6 +4807,29 @@ components:
         cancelled:
           type: integer
           format: int32
+      additionalProperties: false
+    PendingKycSubmissionDTO:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        documentUrl:
+          type: string
+          nullable: true
+        submittedAt:
+          type: string
+          format: date-time
+          nullable: true
       additionalProperties: false
     PendingRequestDTO:
       required:
@@ -4890,6 +5098,13 @@ components:
           type: string
           format: uuid
         masterJobId:
+          type: string
+          format: uuid
+      additionalProperties: false
+    SubmitMasterKycResponse:
+      type: object
+      properties:
+        masterId:
           type: string
           format: uuid
       additionalProperties: false

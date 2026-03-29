@@ -5,10 +5,16 @@ namespace BeautifyBaltics.Core.API.Application.Master.Commands.SubmitMasterJobFo
 
 public record SubmitMasterJobForReviewRequest
 {
+    /// <summary>
+    /// Master id
+    /// </summary>
     [Identity]
     [Required]
     public Guid MasterId { get; init; }
 
+    /// <summary>
+    /// Master job id
+    /// </summary>
     [Required]
     public Guid MasterJobId { get; init; }
 }

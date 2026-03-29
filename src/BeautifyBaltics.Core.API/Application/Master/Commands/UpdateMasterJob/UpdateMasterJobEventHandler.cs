@@ -22,13 +22,14 @@ public class UpdateMasterJobEventHandler(IJobRepository jobRepository)
         if (job.Status == MasterJobStatus.PendingReview)
         {
             throw DomainException.WithMessage("Cannot update a job while it is pending review.");
-        }    
+        }
 
         var jobDefinition = await jobRepository.GetByIdAsync(request.Job.JobId, cancellationToken)
                             ?? throw NotFoundException.For<Domain.Documents.Job>(request.Job.JobId);
 
         if (job.Status == MasterJobStatus.Draft)
         {
+            // Draft updates bypass changeset flow — no KYC guard needed here
             var directEvent = new MasterJobUpdated(
                 MasterJobId: job.MasterJobId,
                 MasterId: master.Id,
@@ -41,6 +42,11 @@ public class UpdateMasterJobEventHandler(IJobRepository jobRepository)
                 JobName: jobDefinition.Name
             );
             return ([directEvent], [new UpdateMasterJobResponse(request.MasterId, request.MasterJobId)]);
+        }
+
+        if (master.KycStatus != KycStatus.Approved)
+        {
+            throw DomainException.WithMessage("Identity verification must be approved before submitting job changes.");
         }
 
         var change = new MasterJobUpdateChangeProposed(

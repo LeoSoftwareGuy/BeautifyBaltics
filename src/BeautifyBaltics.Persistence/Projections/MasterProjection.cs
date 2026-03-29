@@ -35,6 +35,11 @@ public record Master(Guid Id) : Projection
     public int PendingChangesetsCount { get; init; }
     public bool HasPendingChangesets => PendingChangesetsCount > 0;
 
+    public KycStatus KycStatus { get; init; } = KycStatus.NotSubmitted;
+    public string? KycDocumentBlobName { get; init; }
+    public DateTimeOffset? KycSubmittedAt { get; init; }
+    public string? KycRejectionReason { get; init; }
+
     public IReadOnlyList<MasterAvailabilityWindow> Availabilities { get; init; } = [];
 
     public string? LocationName =>
@@ -134,5 +139,28 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
             Availabilities = current.Availabilities
                 .Where(s => s.Id != @event.MasterAvailabilitySlotId)
                 .ToArray()
+        };
+
+    public static Master Apply(MasterKycSubmitted @event, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Pending,
+            KycDocumentBlobName = @event.BlobName,
+            KycSubmittedAt = @event.SubmittedAt,
+            KycRejectionReason = null,
+        };
+
+    public static Master Apply(MasterKycApproved _, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Approved,
+            KycRejectionReason = null,
+        };
+
+    public static Master Apply(MasterKycRejected @event, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Rejected,
+            KycRejectionReason = @event.Reason,
         };
 }

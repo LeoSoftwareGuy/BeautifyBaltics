@@ -185,6 +185,53 @@ public class NotificationService(
         );
     }
 
+    public async Task NotifyKycApprovedAsync(KycNotificationContext context, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("Sending KYC approval notification to master {MasterEmail}", context.MasterEmail);
+
+        if (string.IsNullOrWhiteSpace(_templates.MasterKycApproved))
+        {
+            logger.LogWarning("KYC approved email template not configured — skipping email.");
+            return;
+        }
+
+        var templateData = new
+        {
+            master_name = context.MasterName,
+        };
+
+        await emailService.SendWithTemplateAsync(
+            context.MasterEmail,
+            _templates.MasterKycApproved,
+            templateData,
+            cancellationToken
+        );
+    }
+
+    public async Task NotifyKycRejectedAsync(KycNotificationContext context, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("Sending KYC rejection notification to master {MasterEmail}", context.MasterEmail);
+
+        if (string.IsNullOrWhiteSpace(_templates.MasterKycRejected))
+        {
+            logger.LogWarning("KYC rejected email template not configured — skipping email.");
+            return;
+        }
+
+        var templateData = new
+        {
+            master_name = context.MasterName,
+            rejection_reason = context.RejectionReason ?? string.Empty,
+        };
+
+        await emailService.SendWithTemplateAsync(
+            context.MasterEmail,
+            _templates.MasterKycRejected,
+            templateData,
+            cancellationToken
+        );
+    }
+
     private static string BuildLocationSnippet(BookingNotificationContext context)
     {
         if (string.IsNullOrWhiteSpace(context.LocationName) && string.IsNullOrWhiteSpace(context.LocationAddress))

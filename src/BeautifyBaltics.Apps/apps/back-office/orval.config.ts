@@ -10,7 +10,6 @@ const infiniteOperationNames = [
   'FindRatings',
   'FindMasterJobImages',
   'FindMasterAvailabilities',
-  'FindMasterJobs',
 ];
 
 export default defineConfig({

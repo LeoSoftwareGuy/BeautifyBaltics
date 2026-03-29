@@ -46,6 +46,7 @@ const en = {
       bookings: 'Bookings',
       users: 'Users',
       changesets: 'Approvals',
+      kyc: 'KYC',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -69,6 +70,7 @@ const en = {
       adminBookings: 'Bookings',
       adminUsers: 'Users',
       adminChangesets: 'Approvals',
+      adminKyc: 'KYC Review',
     },
   },
   auth: {
@@ -435,6 +437,11 @@ const en = {
         viewAll: 'View All',
         incomeDynamics: 'Income Dynamics',
       },
+      kycBanner: {
+        title: 'Complete identity verification',
+        message: 'Verify your identity to become visible to clients and start receiving bookings.',
+        action: 'Verify now',
+      },
     },
     bookings: {
       page: {
@@ -676,6 +683,37 @@ const en = {
     settings: {
       page: {
         title: 'Settings',
+      },
+      kyc: {
+        title: 'Identity Verification',
+        subtitle: 'Verify your identity to become visible to clients. Upload a selfie with your ID or passport.',
+        status: {
+          notSubmitted: 'Not submitted',
+          pending: 'Under review',
+          approved: 'Verified',
+          rejected: 'Rejected',
+        },
+        approvedMessage: 'Your identity has been verified. You are visible to clients.',
+        pendingMessage: 'Your document is under review. We\'ll notify you once a decision is made.',
+        rejectedMessage: 'Your submission was rejected',
+        rejectedReason: 'Reason: {{reason}}',
+        resubmitHint: 'You can submit a new document below.',
+        documentPreview: 'Submitted document',
+        uploadLabel: 'Select document',
+        uploadHint: 'Take a selfie holding your ID or passport so both your face and document are clearly visible.',
+        uploadButton: 'Upload document',
+        reuploadButton: 'Replace document',
+        submitButton: 'Submit for verification',
+        notifications: {
+          successTitle: 'Document submitted',
+          successMessage: 'Your KYC document has been submitted for review.',
+          errorTitle: 'Submission failed',
+          errorMessage: 'An error occurred while submitting your document.',
+        },
+        softLock: {
+          title: 'Identity verification required',
+          message: 'Complete identity verification before submitting changes.',
+        },
       },
       profile: {
         loading: 'Loading profile...',
@@ -1169,6 +1207,35 @@ const en = {
       notifications: {
         approved: 'Change approved successfully',
         rejected: 'Change rejected',
+        errorTitle: 'Error',
+        error: 'Something went wrong. Please try again.',
+      },
+    },
+    kyc: {
+      pageTitle: 'KYC Review',
+      pageSubtitle: 'Review and verify master identity documents.',
+      empty: 'No pending KYC submissions',
+      submittedAt: 'Submitted {{date}}',
+      viewDocument: 'View document',
+      actions: {
+        approve: 'Approve',
+        reject: 'Reject',
+      },
+      approveModal: {
+        title: 'Approve Identity',
+        message: 'Approve this master\'s identity verification? They will become visible to clients.',
+        confirm: 'Approve',
+      },
+      rejectModal: {
+        title: 'Reject Submission',
+        message: 'Provide a reason for rejection. The master will be notified.',
+        reasonLabel: 'Rejection reason',
+        reasonPlaceholder: 'e.g., Document is not clearly visible...',
+        confirm: 'Reject',
+      },
+      notifications: {
+        approved: 'Identity verified successfully',
+        rejected: 'Submission rejected',
         errorTitle: 'Error',
         error: 'Something went wrong. Please try again.',
       },

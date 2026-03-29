@@ -50,6 +50,11 @@ public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterAggregat
             }
             else
             {
+                if (master.KycStatus != KycStatus.Approved)
+                {
+                    throw DomainException.WithMessage("Identity verification must be approved before submitting job image changes.");
+                }
+                   
                 var change = new MasterJobImageChangeProposed(
                     MasterJobImageId: CombGuidIdGeneration.NewGuid(),
                     MasterJobId: job.MasterJobId,

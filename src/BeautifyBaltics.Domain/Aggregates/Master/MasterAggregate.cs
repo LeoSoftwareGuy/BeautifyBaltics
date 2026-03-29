@@ -13,6 +13,12 @@ public partial class MasterAggregate : ApprovableAggregate
 
     public bool IsVisible { get; private set; }
     public Guid UserId { get; private set; }
+
+    public KycStatus KycStatus { get; private set; } = KycStatus.NotSubmitted;
+    public string? KycDocumentBlobName { get; private set; }
+    public string? KycDocumentFileName { get; private set; }
+    public string? KycRejectionReason { get; private set; }
+    public DateTimeOffset? KycSubmittedAt { get; private set; }
     public string FirstName { get; private set; } = string.Empty;
     public string LastName { get; private set; } = string.Empty;
     public int? Age { get; private set; }
@@ -212,6 +218,27 @@ public partial class MasterAggregate : ApprovableAggregate
     internal void Apply(MasterBufferTimeUpdated @event)
     {
         BufferMinutes = @event.BufferMinutes;
+    }
+
+    internal void Apply(MasterKycSubmitted @event)
+    {
+        KycStatus = KycStatus.Pending;
+        KycDocumentBlobName = @event.BlobName;
+        KycDocumentFileName = @event.FileName;
+        KycRejectionReason = null;
+        KycSubmittedAt = @event.SubmittedAt;
+    }
+
+    internal void Apply(MasterKycApproved _)
+    {
+        KycStatus = KycStatus.Approved;
+        KycRejectionReason = null;
+    }
+
+    internal void Apply(MasterKycRejected @event)
+    {
+        KycStatus = KycStatus.Rejected;
+        KycRejectionReason = @event.Reason;
     }
 
     public bool IsAvailable(DateTime startAt, DateTime endAt)

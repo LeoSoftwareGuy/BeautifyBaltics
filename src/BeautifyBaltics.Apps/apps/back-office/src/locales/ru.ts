@@ -64,6 +64,7 @@ const ru: CommonLocale = {
       adminBookings: 'Бронирования',
       adminUsers: 'Пользователи',
       adminChangesets: 'Согласования',
+      adminKyc: 'Проверка KYC',
     },
     admin: {
       dashboard: 'Панель',
@@ -71,6 +72,7 @@ const ru: CommonLocale = {
       bookings: 'Бронирования',
       users: 'Пользователи',
       changesets: 'Согласования',
+      kyc: 'KYC',
     },
   },
   admin: {
@@ -337,6 +339,35 @@ const ru: CommonLocale = {
       notifications: {
         approved: 'Изменение успешно одобрено',
         rejected: 'Изменение отклонено',
+        errorTitle: 'Ошибка',
+        error: 'Что-то пошло не так. Попробуйте ещё раз.',
+      },
+    },
+    kyc: {
+      pageTitle: 'Проверка KYC',
+      pageSubtitle: 'Проверьте и верифицируйте документы мастеров.',
+      empty: 'Нет ожидающих заявок KYC',
+      submittedAt: 'Подано {{date}}',
+      viewDocument: 'Просмотреть документ',
+      actions: {
+        approve: 'Одобрить',
+        reject: 'Отклонить',
+      },
+      approveModal: {
+        title: 'Подтвердить личность',
+        message: 'Одобрить верификацию личности мастера? Он станет виден клиентам.',
+        confirm: 'Одобрить',
+      },
+      rejectModal: {
+        title: 'Отклонить заявку',
+        message: 'Укажите причину отклонения. Мастер будет уведомлён.',
+        reasonLabel: 'Причина отклонения',
+        reasonPlaceholder: 'Например: Документ не виден чётко...',
+        confirm: 'Отклонить',
+      },
+      notifications: {
+        approved: 'Личность успешно верифицирована',
+        rejected: 'Заявка отклонена',
         errorTitle: 'Ошибка',
         error: 'Что-то пошло не так. Попробуйте ещё раз.',
       },
@@ -706,6 +737,11 @@ const ru: CommonLocale = {
         viewAll: 'Смотреть все',
         incomeDynamics: 'Динамика дохода',
       },
+      kycBanner: {
+        title: 'Завершите верификацию личности',
+        message: 'Подтвердите личность, чтобы стать видимым для клиентов и начать получать бронирования.',
+        action: 'Верифицировать',
+      },
     },
     bookings: {
       page: {
@@ -947,6 +983,37 @@ const ru: CommonLocale = {
     settings: {
       page: {
         title: 'Настройки',
+      },
+      kyc: {
+        title: 'Верификация личности',
+        subtitle: 'Подтвердите личность, чтобы стать видимым для клиентов. Загрузите селфи с паспортом или удостоверением.',
+        status: {
+          notSubmitted: 'Не подано',
+          pending: 'На рассмотрении',
+          approved: 'Верифицирован',
+          rejected: 'Отклонено',
+        },
+        approvedMessage: 'Ваша личность подтверждена. Вы видны клиентам.',
+        pendingMessage: 'Ваш документ на рассмотрении. Мы уведомим вас о решении.',
+        rejectedMessage: 'Ваша заявка была отклонена',
+        rejectedReason: 'Причина: {{reason}}',
+        resubmitHint: 'Вы можете загрузить новый документ ниже.',
+        documentPreview: 'Загруженный документ',
+        uploadLabel: 'Выбрать документ',
+        uploadHint: 'Сделайте селфи с паспортом или удостоверением так, чтобы было видно лицо и документ.',
+        uploadButton: 'Загрузить документ',
+        reuploadButton: 'Заменить документ',
+        submitButton: 'Отправить на верификацию',
+        notifications: {
+          successTitle: 'Документ отправлен',
+          successMessage: 'Ваш документ KYC отправлен на проверку.',
+          errorTitle: 'Ошибка отправки',
+          errorMessage: 'Произошла ошибка при отправке документа.',
+        },
+        softLock: {
+          title: 'Требуется верификация личности',
+          message: 'Завершите верификацию личности перед отправкой изменений.',
+        },
       },
       profile: {
         loading: 'Загружаем профиль...',

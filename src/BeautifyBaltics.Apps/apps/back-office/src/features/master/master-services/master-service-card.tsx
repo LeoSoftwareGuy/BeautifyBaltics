@@ -37,6 +37,7 @@ type MasterServiceCardProps = {
   onSubmit: (id: string) => void;
   isDeleting?: boolean;
   isSubmitting?: boolean;
+  isKycLocked?: boolean;
 };
 
 export function MasterServiceCard({
@@ -47,6 +48,7 @@ export function MasterServiceCard({
   onSubmit,
   isDeleting,
   isSubmitting,
+  isKycLocked = false,
 }: MasterServiceCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const { translateService, translateCategory } = useTranslateData();
@@ -224,6 +226,7 @@ export function MasterServiceCard({
               color="brand"
               leftSection={<IconSend size={14} />}
               loading={isSubmitting}
+              disabled={isKycLocked}
               onClick={(e) => { e.stopPropagation(); onSubmit(service.id); }}
               mt={4}
             >

@@ -20,6 +20,11 @@ public class SubmitMasterJobForReviewEventHandler
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
+        if (master.KycStatus != KycStatus.Approved)
+        {
+            throw DomainException.WithMessage("Identity verification must be approved before submitting jobs for review.");
+        }
+
         var job = master.GetJobOrThrow(request.MasterJobId);
 
         if (job.Status != MasterJobStatus.Draft)

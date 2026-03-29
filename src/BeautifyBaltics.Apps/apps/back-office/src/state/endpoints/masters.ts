@@ -63,6 +63,8 @@ import type {
   SetMasterJobFeaturedImageRequest,
   SetMasterJobFeaturedImageResponse,
   SubmitMasterJobForReviewResponse,
+  SubmitMasterKycBody,
+  SubmitMasterKycResponse,
   UnsetMasterJobFeaturedImageResponse,
   UpdateMasterAvailabilityRequest,
   UpdateMasterAvailabilityResponse,
@@ -567,69 +569,6 @@ export const getFindMasterJobsQueryKey = (
   id?: string,
   params?: FindMasterJobsParams,
 ) => [`/api/v1/masters/${id}/jobs`, ...(params ? [params] : [])] as const;
-
-export const getFindMasterJobsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>, FindMasterJobsParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
-  params?: FindMasterJobsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData, QueryKey, FindMasterJobsParams['page']>>, },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id, params);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>, QueryKey, FindMasterJobsParams['page']> = ({ signal, pageParam }) => findMasterJobs(id, { ...params, page: pageParam || params?.page }, signal);
-
-  return {
-    queryKey, queryFn, enabled: !!(id), ...queryOptions,
-  } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData, QueryKey, FindMasterJobsParams['page']> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type FindMasterJobsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
-export type FindMasterJobsInfiniteQueryError = ProblemDetails | ValidationProblemDetails;
-
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>, FindMasterJobsParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string,
-  params: undefined | FindMasterJobsParams, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData, QueryKey, FindMasterJobsParams['page']>> & Pick<
-  DefinedInitialDataOptions<
-  Awaited<ReturnType<typeof findMasterJobs>>,
-  TError,
-  Awaited<ReturnType<typeof findMasterJobs>>, QueryKey
-  >, 'initialData'
-  >, }
-  , queryClient?: QueryClient
-): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>, FindMasterJobsParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string,
-  params?: FindMasterJobsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData, QueryKey, FindMasterJobsParams['page']>> & Pick<
-  UndefinedInitialDataOptions<
-  Awaited<ReturnType<typeof findMasterJobs>>,
-  TError,
-  Awaited<ReturnType<typeof findMasterJobs>>, QueryKey
-  >, 'initialData'
-  >, }
-  , queryClient?: QueryClient
-): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>, FindMasterJobsParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string,
-  params?: FindMasterJobsParams, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData, QueryKey, FindMasterJobsParams['page']>>, }
-  , queryClient?: QueryClient
-): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-/**
- * @summary Find master jobs
- */
-
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>, FindMasterJobsParams['page']>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string,
-  params?: FindMasterJobsParams,
-  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData, QueryKey, FindMasterJobsParams['page']>>, },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterJobsInfiniteQueryOptions(id, params, options);
-
-  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
 
 export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
   params?: FindMasterJobsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
@@ -2575,6 +2514,67 @@ export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof 
   return query;
 }
 
+/**
+ * @summary Submit KYC document for identity verification
+ */
+export const submitMasterKyc = (
+  id: string,
+  submitMasterKycBody: SubmitMasterKycBody,
+  signal?: AbortSignal,
+) => {
+  const formData = new FormData();
+  formData.append('masterId', submitMasterKycBody.masterId);
+  submitMasterKycBody.files.forEach((value) => formData.append('files', value));
+
+  return customClient<SubmitMasterKycResponse>(
+    {
+      url: `/api/v1/masters/${id}/kyc`,
+      method: 'POST',
+      headers: { 'Content-Type': 'multipart/form-data' },
+      data: formData,
+      signal,
+    },
+  );
+};
+
+export const getSubmitMasterKycMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitMasterKyc>>, TError, { id: string;data: SubmitMasterKycBody }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof submitMasterKyc>>, TError, { id: string;data: SubmitMasterKycBody }, TContext> => {
+  const mutationKey = ['submitMasterKyc'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitMasterKyc>>, { id: string;data: SubmitMasterKycBody }> = (props) => {
+    const { id, data } = props ?? {};
+
+    return submitMasterKyc(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SubmitMasterKycMutationResult = NonNullable<Awaited<ReturnType<typeof submitMasterKyc>>>;
+export type SubmitMasterKycMutationBody = SubmitMasterKycBody;
+export type SubmitMasterKycMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Submit KYC document for identity verification
+ */
+export const useSubmitMasterKyc = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitMasterKyc>>, TError, { id: string;data: SubmitMasterKycBody }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof submitMasterKyc>>,
+  TError,
+  { id: string;data: SubmitMasterKycBody },
+  TContext
+  > => {
+  const mutationOptions = getSubmitMasterKycMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * @summary Update master buffer time between bookings
  */

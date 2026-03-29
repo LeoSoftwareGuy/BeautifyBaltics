@@ -40,7 +40,7 @@ import {
   ProfilePreviewMode,
 } from './master-profile-settings/master-profile-preview-notification';
 
-function MasterProfileSettings() {
+function MasterProfileSettings({ isKycLocked = false }: { isKycLocked?: boolean }) {
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
   const { t } = useTranslation();
@@ -393,7 +393,7 @@ function MasterProfileSettings() {
             hiddenFrom="sm"
             leftSection={<IconDeviceFloppy size={16} />}
             loading={isPending}
-            disabled={!form.isDirty()}
+            disabled={!form.isDirty() || isKycLocked}
           >
             {t('master.settings.profile.form.submit')}
           </Button>
@@ -402,7 +402,7 @@ function MasterProfileSettings() {
               type="submit"
               leftSection={<IconDeviceFloppy size={16} />}
               loading={isPending}
-              disabled={!form.isDirty()}
+              disabled={!form.isDirty() || isKycLocked}
             >
               {t('master.settings.profile.form.submit')}
             </Button>

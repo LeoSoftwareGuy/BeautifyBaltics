@@ -16,7 +16,7 @@ public class FindMastersHandler(
     public async Task<PagedResponse<FindMastersResponse>> Handle(FindMastersRequest request, CancellationToken cancellationToken)
     {
         var search = request.Adapt<Persistence.Repositories.Master.DTOs.MasterSearchDTO>()
-            with { OnlyVisible = true };
+            with { OnlyVisible = true, OnlyKycApproved = true };
 
         var currentUserEmail = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
         if (!string.IsNullOrEmpty(currentUserEmail))

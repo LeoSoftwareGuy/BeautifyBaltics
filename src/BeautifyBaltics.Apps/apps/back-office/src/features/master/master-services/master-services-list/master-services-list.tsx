@@ -32,11 +32,12 @@ import { MasterServicesListFilter } from './master-services-list-filter';
 
 type MasterServicesListProps = {
   masterId: string;
+  isKycLocked?: boolean;
 };
 
 const proposalParams = { proposal: true };
 
-export function MasterServicesList({ masterId }: MasterServicesListProps) {
+export function MasterServicesList({ masterId, isKycLocked = false }: MasterServicesListProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [previewMode, setPreviewMode] = useState<ProfilePreviewMode>('proposed');
@@ -189,6 +190,7 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
               onSubmit={handleSubmit}
               isDeleting={isDeleting}
               isSubmitting={isSubmitting}
+              isKycLocked={isKycLocked}
             />
           ))}
           <AddServiceCard masterId={masterId} />

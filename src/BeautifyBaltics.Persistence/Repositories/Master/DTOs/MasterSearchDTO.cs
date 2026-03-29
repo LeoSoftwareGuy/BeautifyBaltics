@@ -16,4 +16,7 @@ public record MasterSearchDTO : BaseSearchDTO
     public IReadOnlyList<Guid>? UserIds { get; init; }
     /// <summary>When true, only returns masters that have been approved and made visible.</summary>
     public bool OnlyVisible { get; init; }
+
+    /// <summary>When true, only returns masters with KYC approved.</summary>
+    public bool OnlyKycApproved { get; init; }
 }

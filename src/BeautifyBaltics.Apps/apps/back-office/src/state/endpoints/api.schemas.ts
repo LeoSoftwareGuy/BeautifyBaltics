@@ -747,6 +747,11 @@ export type GetPendingChangesetsCountResponse = {
   count?: number;
 };
 
+export type GetPendingKycSubmissionsResponse = {
+  /** @nullable */
+  items?: PendingKycSubmissionDTO[] | null;
+};
+
 export type GetPendingRequestsResponse = {
   /**
    * List of pending booking requests
@@ -816,6 +821,18 @@ export type JobDTO = {
   description: string;
 };
 
+export type KycRejectRequest = {
+  /** @minLength 1 */
+  reason: string;
+};
+
+export enum KycStatus {
+  NotSubmitted = 'NotSubmitted',
+  Pending = 'Pending',
+  Approved = 'Approved',
+  Rejected = 'Rejected',
+
+}
 export type LoginRequest = {
   /**
    * Email identifier
@@ -898,6 +915,11 @@ export type MasterDTO = {
   profileImageUrl?: string | null;
   bufferMinutes?: number;
   hasPendingChangesets?: boolean;
+  kycStatus?: KycStatus;
+  /** @nullable */
+  kycDocumentUrl?: string | null;
+  /** @nullable */
+  kycRejectionReason?: string | null;
 };
 
 export type MasterJobDTO = {
@@ -1085,6 +1107,20 @@ export type MonthlyBookingStat = {
   cancelled?: number;
 };
 
+export type PendingKycSubmissionDTO = {
+  masterId?: string;
+  /** @nullable */
+  firstName?: string | null;
+  /** @nullable */
+  lastName?: string | null;
+  /** @nullable */
+  email?: string | null;
+  /** @nullable */
+  documentUrl?: string | null;
+  /** @nullable */
+  submittedAt?: Date | null;
+};
+
 export type PendingRequestDTO = {
   /** Booking ID */
   id: string;
@@ -1254,6 +1290,10 @@ export type SetUserRoleResponse = {
 export type SubmitMasterJobForReviewResponse = {
   masterId?: string;
   masterJobId?: string;
+};
+
+export type SubmitMasterKycResponse = {
+  masterId?: string;
 };
 
 export type UnsetMasterJobFeaturedImageResponse = {
@@ -1686,11 +1726,14 @@ export type FindMastersParams = {
 export type GetMasterByIdParams = {
   id: string;
   proposal?: boolean;
+  /**
+ * Authenticated caller's user ID — set by controller, not from request body
+ */
+  requesterId?: string;
 };
 
 export type FindMasterJobsParams = {
   proposal?: boolean;
-  page?: number;
 };
 
 export type FindMasterAvailabilitiesParams = {
@@ -1769,6 +1812,13 @@ export type GetEarningsPerformanceParams = {
  * Time period for earnings data grouping
  */
   period?: EarningsPeriod;
+};
+
+export type SubmitMasterKycBody = {
+  /** Master identifier */
+  masterId: string;
+  /** File uploads */
+  files: Blob[];
 };
 
 export type FindRatingsParams = {

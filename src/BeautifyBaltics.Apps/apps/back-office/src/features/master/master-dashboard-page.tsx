@@ -19,6 +19,7 @@ import {
   IconCalendarEvent,
   IconChevronRight,
   IconCurrencyEuro,
+  IconShieldCheck,
   IconStar,
   IconTrendingUp,
 } from '@tabler/icons-react';
@@ -27,12 +28,13 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import dayjs from 'dayjs';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
-import { BookingStatus, EarningsPeriod } from '@/state/endpoints/api.schemas';
+import { BookingStatus, EarningsPeriod, KycStatus } from '@/state/endpoints/api.schemas';
 import { useCancelBooking, useConfirmBooking, useFindBookings } from '@/state/endpoints/bookings';
 import {
   getGetPendingRequestsQueryKey,
   useGetDashboardStats,
   useGetEarningsPerformance,
+  useGetMasterById,
   useGetPendingRequests,
 } from '@/state/endpoints/masters';
 import { useGetMasterRatings } from '@/state/endpoints/ratings';
@@ -86,6 +88,15 @@ function MasterDashboardPage() {
     { masterId, page: 1, pageSize: 100 },
     { query: { enabled: !!masterId } },
   );
+
+  const { data: masterData } = useGetMasterById(
+    masterId,
+    { id: masterId, proposal: true },
+    { query: { enabled: !!masterId } },
+  );
+
+  const kycStatus = masterData?.kycStatus;
+  const showKycBanner = !!masterId && kycStatus !== undefined && kycStatus !== KycStatus.Approved;
 
   const today = dayjs();
   const { data: todayBookingsData, isLoading: isTodayBookingsLoading } = useFindBookings(
@@ -152,6 +163,35 @@ function MasterDashboardPage() {
 
       {/* ── MOBILE LAYOUT ── */}
       <Box hiddenFrom="md">
+        {/* KYC verification banner */}
+        {showKycBanner && (
+          <Box px="md" pt="lg">
+            <UnstyledButton style={{ width: '100%' }} onClick={() => navigate({ to: '/master/settings' })}>
+              <Box
+                p="md"
+                style={{
+                  borderRadius: 12,
+                  backgroundColor: 'var(--mantine-color-orange-0)',
+                  border: '1px solid var(--mantine-color-orange-3)',
+                }}
+              >
+                <Group justify="space-between" align="center">
+                  <Group gap="sm">
+                    <ThemeIcon size={40} radius="xl" color="orange" variant="filled">
+                      <IconShieldCheck size={20} />
+                    </ThemeIcon>
+                    <div>
+                      <Text fw={700} size="sm" lh={1}>{t('master.dashboard.kycBanner.title')}</Text>
+                      <Text size="xs" c="dimmed" mt={4}>{t('master.dashboard.kycBanner.message')}</Text>
+                    </div>
+                  </Group>
+                  <Text size="sm" fw={700} c="orange">{t('master.dashboard.kycBanner.action')}</Text>
+                </Group>
+              </Box>
+            </UnstyledButton>
+          </Box>
+        )}
+
         {/* Stats grid */}
         <Box px="md" pt="lg">
           <Title order={3} style={{ fontFamily: '"Playfair Display", serif' }} mb="md">
@@ -341,6 +381,37 @@ function MasterDashboardPage() {
         </Box>
 
         <Stack gap="xl" px="md" pb="xl">
+          {/* KYC verification banner */}
+          {showKycBanner && (
+            <UnstyledButton onClick={() => navigate({ to: '/master/settings' })}>
+              <Box
+                p="md"
+                style={{
+                  borderRadius: 12,
+                  backgroundColor: 'var(--mantine-color-orange-0)',
+                  border: '1px solid var(--mantine-color-orange-3)',
+                }}
+              >
+                <Group justify="space-between" align="center">
+                  <Group gap="sm">
+                    <ThemeIcon size={44} radius="md" color="orange" variant="filled">
+                      <IconShieldCheck size={22} />
+                    </ThemeIcon>
+                    <div>
+                      <Text fw={700} size="md">{t('master.dashboard.kycBanner.title')}</Text>
+                      <Text size="sm" c="dimmed">{t('master.dashboard.kycBanner.message')}</Text>
+                    </div>
+                  </Group>
+                  <Text size="sm" fw={700} c="orange">
+                    {t('master.dashboard.kycBanner.action')}
+                    {' '}
+                    →
+                  </Text>
+                </Group>
+              </Box>
+            </UnstyledButton>
+          )}
+
           {/* Stats Cards */}
           <Grid>
             <Grid.Col span={{ base: 12, sm: 6, lg: 4 }}>

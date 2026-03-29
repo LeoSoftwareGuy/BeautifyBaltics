@@ -29,6 +29,7 @@ import { Route as ClientExploreIndexRouteRouteImport } from './routes/client/exp
 import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bookings/index.route'
 import { Route as AdminUsersIndexRouteRouteImport } from './routes/admin/users/index.route'
 import { Route as AdminServicesIndexRouteRouteImport } from './routes/admin/services/index.route'
+import { Route as AdminKycIndexRouteRouteImport } from './routes/admin/kyc/index.route'
 import { Route as AdminChangesetsIndexRouteRouteImport } from './routes/admin/changesets/index.route'
 import { Route as AdminBookingsIndexRouteRouteImport } from './routes/admin/bookings/index.route'
 
@@ -138,6 +139,11 @@ const AdminServicesIndexRouteRoute = AdminServicesIndexRouteRouteImport.update({
   path: '/admin/services/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminKycIndexRouteRoute = AdminKycIndexRouteRouteImport.update({
+  id: '/admin/kyc/',
+  path: '/admin/kyc/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminChangesetsIndexRouteRoute =
   AdminChangesetsIndexRouteRouteImport.update({
     id: '/admin/changesets/',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
   '/admin/changesets': typeof AdminChangesetsIndexRouteRoute
+  '/admin/kyc': typeof AdminKycIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
   '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
   '/admin/changesets': typeof AdminChangesetsIndexRouteRoute
+  '/admin/kyc': typeof AdminKycIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
   '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/top-masters/': typeof TopMastersIndexRouteRoute
   '/admin/bookings/': typeof AdminBookingsIndexRouteRoute
   '/admin/changesets/': typeof AdminChangesetsIndexRouteRoute
+  '/admin/kyc/': typeof AdminKycIndexRouteRoute
   '/admin/services/': typeof AdminServicesIndexRouteRoute
   '/admin/users/': typeof AdminUsersIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/top-masters'
     | '/admin/bookings'
     | '/admin/changesets'
+    | '/admin/kyc'
     | '/admin/services'
     | '/admin/users'
     | '/client/bookings'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/top-masters'
     | '/admin/bookings'
     | '/admin/changesets'
+    | '/admin/kyc'
     | '/admin/services'
     | '/admin/users'
     | '/client/bookings'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/top-masters/'
     | '/admin/bookings/'
     | '/admin/changesets/'
+    | '/admin/kyc/'
     | '/admin/services/'
     | '/admin/users/'
     | '/client/bookings/'
@@ -312,6 +324,7 @@ export interface RootRouteChildren {
   TopMastersIndexRouteRoute: typeof TopMastersIndexRouteRoute
   AdminBookingsIndexRouteRoute: typeof AdminBookingsIndexRouteRoute
   AdminChangesetsIndexRouteRoute: typeof AdminChangesetsIndexRouteRoute
+  AdminKycIndexRouteRoute: typeof AdminKycIndexRouteRoute
   AdminServicesIndexRouteRoute: typeof AdminServicesIndexRouteRoute
   AdminUsersIndexRouteRoute: typeof AdminUsersIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
@@ -465,6 +478,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminServicesIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/kyc/': {
+      id: '/admin/kyc/'
+      path: '/admin/kyc'
+      fullPath: '/admin/kyc'
+      preLoaderRoute: typeof AdminKycIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/changesets/': {
       id: '/admin/changesets/'
       path: '/admin/changesets'
@@ -496,6 +516,7 @@ const rootRouteChildren: RootRouteChildren = {
   TopMastersIndexRouteRoute: TopMastersIndexRouteRoute,
   AdminBookingsIndexRouteRoute: AdminBookingsIndexRouteRoute,
   AdminChangesetsIndexRouteRoute: AdminChangesetsIndexRouteRoute,
+  AdminKycIndexRouteRoute: AdminKycIndexRouteRoute,
   AdminServicesIndexRouteRoute: AdminServicesIndexRouteRoute,
   AdminUsersIndexRouteRoute: AdminUsersIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,

@@ -60,6 +60,7 @@ internal class Program
         {
             c.Configure<MasterAggregate.MasterProfileImage>(opt => opt.ContainerName = "master-profile-images");
             c.Configure<MasterAggregate.MasterJobImage>(opt => opt.ContainerName = "master-job-images");
+            c.Configure<MasterAggregate.MasterKycDocument>(opt => opt.ContainerName = "master-kyc-documents");
             c.Configure<ClientAggregate.ClientProfileImage>(opt => opt.ContainerName = "client-profile-images");
         });
 

@@ -64,6 +64,7 @@ const et: CommonLocale = {
       adminBookings: 'Broneeringud',
       adminUsers: 'Kasutajad',
       adminChangesets: 'Kinnitused',
+      adminKyc: 'KYC ülevaatus',
     },
     admin: {
       dashboard: 'Töölaud',
@@ -71,6 +72,7 @@ const et: CommonLocale = {
       bookings: 'Broneeringud',
       users: 'Kasutajad',
       changesets: 'Kinnitused',
+      kyc: 'KYC',
     },
   },
   admin: {
@@ -337,6 +339,35 @@ const et: CommonLocale = {
       notifications: {
         approved: 'Muudatus edukalt kinnitatud',
         rejected: 'Muudatus tagasi lükatud',
+        errorTitle: 'Viga',
+        error: 'Midagi läks valesti. Palun proovi uuesti.',
+      },
+    },
+    kyc: {
+      pageTitle: 'KYC ülevaatus',
+      pageSubtitle: 'Vaata üle ja kinnita meistrite isikudokumendid.',
+      empty: 'Ootel KYC taotlusi ei ole',
+      submittedAt: 'Esitatud {{date}}',
+      viewDocument: 'Vaata dokumenti',
+      actions: {
+        approve: 'Kinnita',
+        reject: 'Lükka tagasi',
+      },
+      approveModal: {
+        title: 'Kinnita isik',
+        message: 'Kinnita meistri isikutuvastus? Ta muutub klientidele nähtavaks.',
+        confirm: 'Kinnita',
+      },
+      rejectModal: {
+        title: 'Lükka taotlus tagasi',
+        message: 'Esita tagasilükkamise põhjus. Meistrit teavitatakse.',
+        reasonLabel: 'Tagasilükkamise põhjus',
+        reasonPlaceholder: 'Nt: Dokument pole selgelt nähtav...',
+        confirm: 'Lükka tagasi',
+      },
+      notifications: {
+        approved: 'Isik edukalt kinnitatud',
+        rejected: 'Taotlus tagasi lükatud',
         errorTitle: 'Viga',
         error: 'Midagi läks valesti. Palun proovi uuesti.',
       },
@@ -706,6 +737,11 @@ const et: CommonLocale = {
         viewAll: 'Vaata kõiki',
         incomeDynamics: 'Tulude dünaamika',
       },
+      kycBanner: {
+        title: 'Lõpeta isikutuvastus',
+        message: 'Kinnita oma isik, et muutuda klientidele nähtavaks ja hakata broneeringuid vastu võtma.',
+        action: 'Kinnita nüüd',
+      },
     },
     bookings: {
       page: {
@@ -947,6 +983,37 @@ const et: CommonLocale = {
     settings: {
       page: {
         title: 'Seaded',
+      },
+      kyc: {
+        title: 'Isikutuvastus',
+        subtitle: 'Kinnita oma isik, et muutuda klientidele nähtavaks. Lae üles selfie passi või isikutunnistusega.',
+        status: {
+          notSubmitted: 'Esitamata',
+          pending: 'Ülevaatamisel',
+          approved: 'Kinnitatud',
+          rejected: 'Tagasi lükatud',
+        },
+        approvedMessage: 'Sinu isik on kinnitatud. Oled klientidele nähtav.',
+        pendingMessage: 'Sinu dokument on ülevaatamisel. Teavitame sind otsusest.',
+        rejectedMessage: 'Sinu taotlus lükati tagasi',
+        rejectedReason: 'Põhjus: {{reason}}',
+        resubmitHint: 'Saad saata uue dokumendi allpool.',
+        documentPreview: 'Esitatud dokument',
+        uploadLabel: 'Vali dokument',
+        uploadHint: 'Tee selfie passi või isikutunnistusega nii, et nägu ja dokument on selgelt nähtavad.',
+        uploadButton: 'Lae dokument üles',
+        reuploadButton: 'Asenda dokument',
+        submitButton: 'Saada kinnitamiseks',
+        notifications: {
+          successTitle: 'Dokument esitatud',
+          successMessage: 'Sinu KYC dokument on ülevaatamiseks esitatud.',
+          errorTitle: 'Esitamine ebaõnnestus',
+          errorMessage: 'Dokumendi esitamisel ilmnes viga.',
+        },
+        softLock: {
+          title: 'Isikutuvastus nõutav',
+          message: 'Lõpeta isikutuvastus enne muudatuste esitamist.',
+        },
       },
       profile: {
         loading: 'Profiil laadib...',
