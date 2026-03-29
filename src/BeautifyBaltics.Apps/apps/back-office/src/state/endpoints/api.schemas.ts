@@ -1659,6 +1659,8 @@ export type FindMastersParams = {
   jobCategoryId?: string;
   minPrice?: number;
   maxPrice?: number;
+  availableDate?: string;
+  availableTime?: string;
   /**
  * Page number
  */

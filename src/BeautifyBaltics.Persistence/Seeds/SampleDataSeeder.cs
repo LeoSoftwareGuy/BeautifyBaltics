@@ -86,7 +86,7 @@ public class SampleDataSeeder : IInitialData
                 await availabilitySession.SaveChangesAsync(cancellation);
             }
 
-            await daemon.RebuildProjectionAsync<MasterAvailabilitySlotProjection>(cancellation);
+            await daemon.RebuildProjectionAsync<MasterProjection>(cancellation);
         }
         finally
         {

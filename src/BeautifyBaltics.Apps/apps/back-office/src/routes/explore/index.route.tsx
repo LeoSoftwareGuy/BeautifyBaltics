@@ -10,6 +10,8 @@ export const Route = createFileRoute('/explore/')({
     categoryId: z.string().optional(),
     minPrice: z.number().optional(),
     maxPrice: z.number().optional(),
+    date: z.string().optional(),
+    time: z.string().optional(),
   }).catch({}),
   beforeLoad: () => ({
     breadcrumbs: [

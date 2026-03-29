@@ -6,6 +6,8 @@ using Marten.Events.Aggregation;
 
 namespace BeautifyBaltics.Persistence.Projections;
 
+public record MasterAvailabilityWindow(Guid Id, DateTime StartAt, DateTime EndAt, AvailabilitySlotType SlotType);
+
 public record Master(Guid Id) : Projection
 {
     public Guid UserId { get; init; }
@@ -32,6 +34,8 @@ public record Master(Guid Id) : Projection
     public bool IsVisible { get; init; }
     public int PendingChangesetsCount { get; init; }
     public bool HasPendingChangesets => PendingChangesetsCount > 0;
+
+    public IReadOnlyList<MasterAvailabilityWindow> Availabilities { get; init; } = [];
 
     public string? LocationName =>
         !string.IsNullOrWhiteSpace(City) ? City :
@@ -109,4 +113,26 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
 
     public static Master Apply(MasterChangesetRejected _, Master current) =>
         current with { PendingChangesetsCount = Math.Max(0, current.PendingChangesetsCount - 1) };
+
+    public static Master Apply(MasterAvailabilitySlotCreated @event, Master current)
+    {
+        var slot = new MasterAvailabilityWindow(@event.MasterAvailabilityId, @event.StartAt, @event.EndAt, @event.SlotType);
+        return current with { Availabilities = [.. current.Availabilities, slot] };
+    }
+
+    public static Master Apply(MasterAvailabilitySlotUpdated @event, Master current)
+    {
+        var updated = current.Availabilities
+            .Select(s => s.Id == @event.MasterAvailabilityId ? s with { StartAt = @event.StartAt, EndAt = @event.EndAt } : s)
+            .ToArray();
+        return current with { Availabilities = updated };
+    }
+
+    public static Master Apply(MasterAvailabilitySlotDeleted @event, Master current) =>
+        current with
+        {
+            Availabilities = current.Availabilities
+                .Where(s => s.Id != @event.MasterAvailabilitySlotId)
+                .ToArray()
+        };
 }

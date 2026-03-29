@@ -11,6 +11,8 @@ export const Route = createFileRoute('/top-masters/')({
     jobId: z.string().optional(),
     minPrice: z.number().optional(),
     maxPrice: z.number().optional(),
+    date: z.string().optional(),
+    time: z.string().optional(),
     page: z.number().optional(),
   }).catch({}),
   beforeLoad: () => ({

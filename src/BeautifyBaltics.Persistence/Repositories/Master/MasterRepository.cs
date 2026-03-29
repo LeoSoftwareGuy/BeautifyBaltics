@@ -1,3 +1,4 @@
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.Master.DTOs;
 using Marten;
@@ -61,6 +62,31 @@ public class MasterRepository(IQuerySession session) : QueryRepository<Projectio
         {
             var ids = search.UserIds;
             query = query.Where(x => ids.Contains(x.UserId));
+        }
+
+        if (search.AvailableDate is not null)
+        {
+            var indexQuery = _session.Query<MasterAvailabilityIndex>()
+                .Where(s => s.SlotType == AvailabilitySlotType.Available);
+
+            if (search.AvailableTime is not null)
+            {
+                var point = search.AvailableDate.Value.ToDateTime(search.AvailableTime.Value);
+                indexQuery = indexQuery.Where(s => s.StartAt <= point && s.EndAt > point);
+            }
+            else
+            {
+                var dayStart = search.AvailableDate.Value.ToDateTime(TimeOnly.MinValue);
+                var dayEnd = search.AvailableDate.Value.ToDateTime(new TimeOnly(23, 59, 59));
+                indexQuery = indexQuery.Where(s => s.StartAt < dayEnd && s.EndAt > dayStart);
+            }
+
+            var availableMasterIds = indexQuery
+                .Select(s => s.MasterId)
+                .Distinct()
+                .ToList();
+
+            query = query.Where(m => availableMasterIds.Contains(m.Id));
         }
 
         if (search.OnlyVisible)

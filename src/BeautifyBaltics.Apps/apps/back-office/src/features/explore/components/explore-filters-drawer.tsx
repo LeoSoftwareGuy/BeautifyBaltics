@@ -6,6 +6,8 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
+import { DatePickerInput, DateValue, TimeInput } from '@mantine/dates';
+import { IconCalendar, IconClock } from '@tabler/icons-react';
 import { DollarSign } from 'lucide-react';
 
 type FiltersDrawerProps = {
@@ -14,6 +16,10 @@ type FiltersDrawerProps = {
   onPriceChange: (value: [number, number]) => void;
   onPriceChangeEnd: (value: [number, number]) => void;
   onClose: () => void;
+  selectedDate: DateValue;
+  onDateChange: (value: DateValue) => void;
+  selectedTime: string;
+  onTimeChange: (value: string) => void;
 };
 
 export function FiltersDrawer({
@@ -22,6 +28,10 @@ export function FiltersDrawer({
   onClose,
   onPriceChange,
   onPriceChangeEnd,
+  selectedDate,
+  onDateChange,
+  selectedTime,
+  onTimeChange,
 }: FiltersDrawerProps) {
   const { t } = useTranslation();
 
@@ -34,6 +44,26 @@ export function FiltersDrawer({
     >
       <Stack>
         <Text fw={600} size="sm" c="dimmed" mb="xs">
+          {t('explore.filters.availability')}
+        </Text>
+        <DatePickerInput
+          label={t('explore.filters.dateLabel')}
+          placeholder={t('explore.filters.datePlaceholder')}
+          leftSection={<IconCalendar size={16} style={{ marginTop: 16 }} />}
+          value={selectedDate}
+          onChange={onDateChange}
+          clearable
+          minDate={new Date()}
+        />
+        <TimeInput
+          label={t('explore.filters.timeLabel')}
+          placeholder={t('explore.filters.timePlaceholder')}
+          leftSection={<IconClock size={16} style={{ marginTop: 16 }} />}
+          value={selectedTime}
+          onChange={(e) => onTimeChange(e.currentTarget.value)}
+          disabled={!selectedDate}
+        />
+        <Text fw={600} size="sm" c="dimmed" mb="xs" mt="md">
           {t('explore.filters.priceRange')}
         </Text>
         <RangeSlider

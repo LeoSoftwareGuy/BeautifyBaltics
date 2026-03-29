@@ -10,8 +10,11 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
+import { DatePickerInput, DateValue, TimeInput } from '@mantine/dates';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconMapPin, IconSearch } from '@tabler/icons-react';
+import {
+  IconCalendar, IconClock, IconMapPin, IconSearch,
+} from '@tabler/icons-react';
 
 interface SelectOption {
   value: string;
@@ -34,6 +37,10 @@ interface ClientExploreHeaderProps {
   jobOptions: SelectOption[];
   isLoadingCategories: boolean;
   isLoadingJobs: boolean;
+  selectedDate: DateValue;
+  onDateChange: (value: DateValue) => void;
+  selectedTime: string;
+  onTimeChange: (value: string) => void;
   onSearch: () => void;
 }
 
@@ -53,6 +60,10 @@ export function ClientExploreHeader({
   jobOptions,
   isLoadingCategories,
   isLoadingJobs,
+  selectedDate,
+  onDateChange,
+  selectedTime,
+  onTimeChange,
   onSearch,
 }: ClientExploreHeaderProps) {
   const { t } = useTranslation();
@@ -83,6 +94,29 @@ export function ClientExploreHeader({
               leftSection={<IconMapPin size={16} color="#94a3b8" />}
               value={locationValue}
               onChange={(e) => onLocationChange(e.currentTarget.value)}
+              radius="xl"
+              styles={{ input: { border: 'none', background: '#f8fafc', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' } }}
+            />
+          </Group>
+          <Group gap="xs">
+            <DatePickerInput
+              flex={1}
+              placeholder={t('client.explore.header.datePlaceholder')}
+              leftSection={<IconCalendar size={16} color="#94a3b8" />}
+              value={selectedDate}
+              onChange={onDateChange}
+              clearable
+              minDate={new Date()}
+              radius="xl"
+              styles={{ input: { border: 'none', background: '#f8fafc', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' } }}
+            />
+            <TimeInput
+              w={110}
+              placeholder={t('client.explore.header.timePlaceholder')}
+              leftSection={<IconClock size={16} color="#94a3b8" />}
+              value={selectedTime}
+              onChange={(e) => onTimeChange(e.currentTarget.value)}
+              disabled={!selectedDate}
               radius="xl"
               styles={{ input: { border: 'none', background: '#f8fafc', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' } }}
             />
@@ -156,6 +190,26 @@ export function ClientExploreHeader({
               searchable
               disabled={isLoadingJobs || !selectedCategory}
               w={200}
+            />
+            <DatePickerInput
+              label={t('client.explore.header.dateLabel')}
+              placeholder={t('client.explore.header.datePlaceholder')}
+              leftSection={<IconCalendar size={16} style={{ marginTop: 16 }} />}
+              value={selectedDate}
+              onChange={onDateChange}
+              clearable
+              minDate={new Date()}
+              w={170}
+            />
+            <TimeInput
+              label={t('client.explore.header.timeLabel')}
+              placeholder={t('client.explore.header.timePlaceholder')}
+              leftSection={<IconClock size={16} style={{ marginTop: 16 }} />}
+              value={selectedTime}
+              onChange={(e) => onTimeChange(e.currentTarget.value)}
+              disabled={!selectedDate}
+              w={130}
+              styles={{ label: { marginBottom: 6 } }}
             />
             <Box w={250}>
               <Text size="sm" fw={500} mb={4}>{t('client.explore.header.priceRange')}</Text>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Grid,
@@ -32,6 +33,7 @@ type RegisterFormValues = {
 };
 
 export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client' }: RegisterFormProps) {
+  const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 75em)');
 
@@ -107,17 +109,17 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
     <form onSubmit={handleSubmit}>
       <Stack gap="lg">
         <Stack gap="xs">
-          <Title order={2} style={{ fontFamily: '"Playfair Display", serif' }}>Create an account</Title>
+          <Title order={2} style={{ fontFamily: '"Playfair Display", serif' }}>{t('auth.register.title')}</Title>
           <Text c="dimmed" size="sm">
-            Register to access Beautify Baltics.
+            {t('auth.register.subtitle')}
           </Text>
         </Stack>
         <Stack gap="sm">
           <Text size="sm" fw={500}>
-            Account type
+            {t('auth.register.accountTypeLabel')}
           </Text>
           <Text size="xs" c="dimmed">
-            Choose how you want to use Beautify Baltics
+            {t('auth.register.accountTypeHint')}
           </Text>
           <Grid gutter="md">
             <Grid.Col span={6}>
@@ -137,7 +139,7 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
               >
                 <Stack gap="xs" align="center">
                   <IconUser size={24} stroke={2} />
-                  <Text fw={600} size="sm">Client</Text>
+                  <Text fw={600} size="sm">{t('auth.register.roleClient')}</Text>
                 </Stack>
               </UnstyledButton>
             </Grid.Col>
@@ -158,7 +160,7 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
               >
                 <Stack gap="xs" align="center">
                   <IconScissors size={24} stroke={2} />
-                  <Text fw={600} size="sm">Master</Text>
+                  <Text fw={600} size="sm">{t('auth.register.roleMaster')}</Text>
                 </Stack>
               </UnstyledButton>
             </Grid.Col>
@@ -169,12 +171,12 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
             <Grid.Col span={isDesktop ? 6 : 12}>
               <Stack gap={4}>
                 <Text size="sm" fw={500}>
-                  First name
+                  {t('auth.shared.labels.firstName')}
                   {' '}
                   <Text component="span" c="red">*</Text>
                 </Text>
                 <TextInput
-                  placeholder="John"
+                  placeholder={t('auth.shared.placeholders.firstName')}
                   radius="md"
                   {...form.getInputProps('firstName')}
                 />
@@ -183,12 +185,12 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
             <Grid.Col span={isDesktop ? 6 : 12}>
               <Stack gap={4}>
                 <Text size="sm" fw={500}>
-                  Last name
+                  {t('auth.shared.labels.lastName')}
                   {' '}
                   <Text component="span" c="red">*</Text>
                 </Text>
                 <TextInput
-                  placeholder="Doe"
+                  placeholder={t('auth.shared.placeholders.lastName')}
                   radius="md"
                   {...form.getInputProps('lastName')}
                 />
@@ -197,45 +199,45 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
           </Grid>
           <Stack gap={4}>
             <Text size="sm" fw={500}>
-              Email address
+              {t('auth.shared.labels.email')}
               {' '}
               <Text component="span" c="red">*</Text>
             </Text>
             <TextInput
               type="email"
-              placeholder="you@example.com"
+              placeholder={t('auth.shared.placeholders.email')}
               radius="md"
               {...form.getInputProps('email')}
             />
           </Stack>
           <Stack gap={4}>
             <Text size="sm" fw={500}>
-              Password
+              {t('auth.shared.labels.password')}
               {' '}
               <Text component="span" c="red">*</Text>
             </Text>
             <PasswordInput
-              placeholder="••••••••"
+              placeholder={t('auth.shared.placeholders.password')}
               radius="md"
               {...form.getInputProps('password')}
             />
           </Stack>
           <Stack gap={4}>
             <Text size="sm" fw={500}>
-              Phone number
+              {t('auth.shared.labels.phoneNumber')}
               {' '}
               <Text component="span" c="red">*</Text>
             </Text>
             <TextInput
               type="tel"
-              placeholder="+1234567890"
+              placeholder={t('auth.shared.placeholders.phoneNumber')}
               radius="md"
               {...form.getInputProps('phoneNumber')}
             />
           </Stack>
         </Stack>
         <Button type="submit" loading={submitting} size="md" radius="md" color="brand" fullWidth>
-          Create account
+          {t('auth.register.submitButton')}
         </Button>
       </Stack>
     </form>

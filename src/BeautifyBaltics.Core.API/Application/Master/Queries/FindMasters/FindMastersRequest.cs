@@ -10,4 +10,6 @@ public record FindMastersRequest : PagedRequest
     public Guid? JobCategoryId { get; init; }
     public decimal? MinPrice { get; init; }
     public decimal? MaxPrice { get; init; }
+    public DateOnly? AvailableDate { get; init; }
+    public TimeOnly? AvailableTime { get; init; }
 }

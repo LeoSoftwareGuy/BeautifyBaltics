@@ -241,16 +241,16 @@ function LoginView() {
               <>
                 <Stack gap="xs" mb="xl">
                   <Title order={1} style={{ fontFamily: '"Playfair Display", serif' }}>
-                    Reset password
+                    {t('auth.login.resetPasswordTitle')}
                   </Title>
                   <Text c="dimmed" fz="sm">
-                    Enter your email and we&apos;ll send you a link to reset your password.
+                    {t('auth.login.resetPasswordSubtitle')}
                   </Text>
                 </Stack>
 
                 {resetSent ? (
-                  <Alert color="teal" title="Check your inbox" variant="light" mb="lg">
-                    A password reset link has been sent to your email address.
+                  <Alert color="teal" title={t('auth.login.resetCheckInboxTitle')} variant="light" mb="lg">
+                    {t('auth.login.resetCheckInboxMessage')}
                   </Alert>
                 ) : (
                   <form onSubmit={handleResetPassword}>
@@ -270,7 +270,7 @@ function LoginView() {
                         </Box>
                       </Stack>
                       <TextInput
-                        label="Email Address"
+                        label={t('auth.shared.labels.email')}
                         placeholder="name@example.com"
                         type="email"
                         size="md"
@@ -278,7 +278,7 @@ function LoginView() {
                         {...resetForm.getInputProps('email')}
                       />
                       <Button type="submit" size="md" radius="md" loading={submitting} color="brand" fullWidth>
-                        Send reset link
+                        {t('auth.login.sendResetLink')}
                       </Button>
                     </Stack>
                   </form>
@@ -286,7 +286,7 @@ function LoginView() {
 
                 <Text c="dimmed" fz="sm" ta="center" mt="xl">
                   <Anchor fz="sm" onClick={() => { setForgotPassword(false); setResetSent(false); }}>
-                    Back to sign in
+                    {t('auth.login.backToSignIn')}
                   </Anchor>
                 </Text>
               </>
@@ -294,10 +294,10 @@ function LoginView() {
               <>
                 <Stack gap="xs" mb="xl">
                   <Title order={1} style={{ fontFamily: '"Playfair Display", serif' }}>
-                    Welcome back
+                    {t('auth.login.title')}
                   </Title>
                   <Text c="dimmed" fz="sm">
-                    Enter your credentials to access your account
+                    {t('auth.login.subtitle')}
                   </Text>
                 </Stack>
 
@@ -333,7 +333,7 @@ function LoginView() {
                     </Box>
 
                     <TextInput
-                      label="Email Address"
+                      label={t('auth.shared.labels.email')}
                       placeholder="name@example.com"
                       type="email"
                       size="md"
@@ -343,9 +343,9 @@ function LoginView() {
 
                     <Box>
                       <Group justify="space-between" mb={4}>
-                        <Text fz="sm" fw={500}>Password</Text>
+                        <Text fz="sm" fw={500}>{t('auth.shared.labels.password')}</Text>
                         <Anchor fz="xs" onClick={() => setForgotPassword(true)}>
-                          Forgot password?
+                          {t('auth.login.forgotPassword')}
                         </Anchor>
                       </Group>
                       <PasswordInput
@@ -366,16 +366,16 @@ function LoginView() {
                       rightSection={<IconArrowRight size={18} />}
                       fullWidth
                     >
-                      Sign In
+                      {t('auth.login.signIn')}
                     </Button>
                   </Stack>
                 </form>
 
                 <Text c="dimmed" fz="sm" ta="center" mt="xl">
-                  New to Beautify Baltics?
+                  {t('auth.login.noAccount')}
                   {' '}
                   <AnchorLink to="/register" search={() => ({ redirect: redirectPath })}>
-                    Create an account
+                    {t('auth.login.createAccountLink')}
                   </AnchorLink>
                 </Text>
               </>

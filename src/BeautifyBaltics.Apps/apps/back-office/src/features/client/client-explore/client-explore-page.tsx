@@ -2,6 +2,7 @@ import {
   useEffect, useMemo, useRef, useState,
 } from 'react';
 import { Box, Container } from '@mantine/core';
+import { DateValue } from '@mantine/dates';
 import { useDebouncedValue } from '@mantine/hooks';
 import { getRouteApi, useNavigate } from '@tanstack/react-router';
 
@@ -9,6 +10,7 @@ import { useTranslateData } from '@/hooks/use-translate-data';
 import type { FindMastersParams } from '@/state/endpoints/api.schemas';
 import { useFindJobCategories, useFindJobs } from '@/state/endpoints/jobs';
 import { useFindMasters } from '@/state/endpoints/masters';
+import datetime from '@/utils/datetime';
 
 import { ClientExploreHeader } from './client-explore-header';
 import { ClientExploreResults } from './client-explore-results';
@@ -30,6 +32,9 @@ export function ClientExplorePage() {
   const [debouncedLocation] = useDebouncedValue(locationInput, 300);
 
   const [priceRange, setPriceRange] = useState<[number, number]>([search.minPrice ?? 0, search.maxPrice ?? 500]);
+
+  const [selectedDate, setSelectedDate] = useState<DateValue>(search.date ?? null);
+  const [selectedTime, setSelectedTime] = useState<string>(search.time ?? '');
 
   const didMountRef = useRef(false);
   useEffect(() => {
@@ -69,9 +74,11 @@ export function ClientExplorePage() {
     if (search.jobId) params.jobId = search.jobId;
     if (search.minPrice && search.minPrice > 0) params.minPrice = search.minPrice;
     if (search.maxPrice && search.maxPrice < 500) params.maxPrice = search.maxPrice;
+    if (search.date) params.availableDate = search.date;
+    if (search.time) params.availableTime = search.time;
 
     return params;
-  }, [debouncedSearch, debouncedLocation, search.categoryId, search.jobId, search.page, search.minPrice, search.maxPrice]);
+  }, [debouncedSearch, debouncedLocation, search.categoryId, search.jobId, search.page, search.minPrice, search.maxPrice, search.date, search.time]);
 
   const {
     data: mastersData,
@@ -127,6 +134,31 @@ export function ClientExplorePage() {
     });
   };
 
+  const handleDateChange = (value: DateValue) => {
+    setSelectedDate(value);
+    navigate({
+      search: {
+        ...searchRef.current,
+        date: value ? datetime.formatDateISO(value) : undefined,
+        time: value ? searchRef.current.time : undefined,
+        page: undefined,
+      } as never,
+      replace: true,
+    });
+  };
+
+  const handleTimeChange = (value: string) => {
+    setSelectedTime(value);
+    navigate({
+      search: {
+        ...searchRef.current,
+        time: value || undefined,
+        page: undefined,
+      } as never,
+      replace: true,
+    });
+  };
+
   const handleSearch = () => {
     navigate({ search: { ...search, page: undefined } as never, replace: true });
   };
@@ -149,6 +181,10 @@ export function ClientExplorePage() {
         jobOptions={jobOptions}
         isLoadingCategories={isLoadingCategories}
         isLoadingJobs={isLoadingJobs}
+        selectedDate={selectedDate}
+        onDateChange={handleDateChange}
+        selectedTime={selectedTime}
+        onTimeChange={handleTimeChange}
         onSearch={handleSearch}
       />
 

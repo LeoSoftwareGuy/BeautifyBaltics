@@ -81,10 +81,11 @@ function BookingModal({
         });
       },
       onError: (err) => {
-        setError(err?.detail ?? t('masterProfile.bookingModal.notifications.failMessage'));
+        const errMsg = err?.detail ?? (err as unknown as Error)?.message ?? t('masterProfile.bookingModal.notifications.failMessage');
+        setError(errMsg);
         notifications.show({
           title: t('masterProfile.bookingModal.notifications.failTitle'),
-          message: err?.detail ?? t('masterProfile.bookingModal.notifications.failMessage'),
+          message: errMsg,
           color: 'red',
         });
       },
