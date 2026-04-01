@@ -21,9 +21,9 @@ public class UploadMasterProfileImageEventHandler(IBlobStorageService<MasterAggr
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        if (master.KycStatus != KycStatus.Approved)
+        if (master.KycStatus != KycStatus.Approved && master.KycStatus != KycStatus.Pending)
         {
-            throw DomainException.WithMessage("Identity verification must be approved before submitting profile changes.");
+            throw DomainException.WithMessage("Identity verification must be submitted before uploading a profile image.");
         }
 
         var blobFile = new BlobFileDTO(request.Files[0].FileName, request.Files[0], request.Files[0].ContentType);

@@ -77,10 +77,10 @@ export function MasterSchedule() {
           color: 'green',
         });
       },
-      onError: () => {
+      onError: (error: any) => {
         notifications.show({
           title: t('master.timeSlots.notifications.createErrorTitle'),
-          message: t('master.timeSlots.notifications.createErrorMessage'),
+          message: error?.detail ?? t('master.timeSlots.notifications.createErrorMessage'),
           color: 'red',
         });
       },

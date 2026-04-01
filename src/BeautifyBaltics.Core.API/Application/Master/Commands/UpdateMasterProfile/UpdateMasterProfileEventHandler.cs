@@ -17,9 +17,9 @@ public class UpdateMasterProfileEventHandler
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        if (master.KycStatus != KycStatus.Approved)
+        if (master.KycStatus != KycStatus.Approved && master.KycStatus != KycStatus.Pending)
         {
-            throw DomainException.WithMessage("Identity verification must be approved before submitting profile changes.");
+            throw DomainException.WithMessage("Identity verification must be submitted before updating your profile.");
         }
 
         var change = new MasterProfileChangeProposed(

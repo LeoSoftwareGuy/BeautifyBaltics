@@ -30,6 +30,8 @@ function MasterSettingsPage() {
 
   const kycStatus = masterData?.kycStatus;
   const isKycApproved = kycStatus === KycStatus.Approved;
+  const isKycPending = kycStatus === KycStatus.Pending;
+  const isKycLocked = !isKycApproved && !isKycPending;
 
   const handleLogout = async () => {
     try {
@@ -84,12 +86,12 @@ function MasterSettingsPage() {
           />
         </Card>
 
-        {/* Profile settings — soft-locked until KYC approved */}
+        {/* Profile settings — soft-locked until KYC submitted */}
         <Card withBorder>
           {!isKycApproved && (
             <Alert
               icon={<IconAlertCircle size={16} />}
-              color="orange"
+              color={isKycPending ? 'blue' : 'orange'}
               variant="light"
               mb="md"
             >
@@ -98,7 +100,7 @@ function MasterSettingsPage() {
               {t('master.settings.kyc.softLock.message')}
             </Alert>
           )}
-          <MasterProfileSettings isKycLocked={!isKycApproved} />
+          <MasterProfileSettings isKycLocked={isKycLocked} />
         </Card>
 
         {/* Scheduling settings — soft-locked until KYC approved */}
@@ -106,7 +108,7 @@ function MasterSettingsPage() {
           {!isKycApproved && (
             <Alert
               icon={<IconAlertCircle size={16} />}
-              color="orange"
+              color={isKycPending ? 'blue' : 'orange'}
               variant="light"
               mb="md"
             >
@@ -115,7 +117,7 @@ function MasterSettingsPage() {
               {t('master.settings.kyc.softLock.message')}
             </Alert>
           )}
-          <MasterSchedulingSettings isKycLocked={!isKycApproved} />
+          <MasterSchedulingSettings isKycLocked={isKycLocked} />
         </Card>
 
         <Button
