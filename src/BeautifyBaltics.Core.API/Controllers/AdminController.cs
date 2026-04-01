@@ -3,6 +3,7 @@ using BeautifyBaltics.Core.API.Application.Admin.Queries.GetAdminUserDetail;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.GetDashboardSummary;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteJobCategory;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.DeleteUser;
+using BeautifyBaltics.Core.API.Application.Admin.Commands.RebuildProjection;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.SetUserRole;
 using BeautifyBaltics.Core.API.Application.Admin.Commands.UpdateJobCategory;
 using BeautifyBaltics.Core.API.Application.Admin.Queries.FindUsers;
@@ -158,5 +159,14 @@ public class AdminController(IMessageBus bus) : ApiController
     {
         await bus.InvokeAsync(new DeleteUserRequest(id));
         return NoContent();
+    }
+
+    [HttpPost("projections/{projectionName}/rebuild", Name = "RebuildProjection")]
+    [ProducesResponseType(typeof(RebuildProjectionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<RebuildProjectionResponse>> RebuildProjection([FromRoute] string projectionName)
+    {
+        var response = await bus.InvokeAsync<RebuildProjectionResponse>(new RebuildProjectionRequest(projectionName));
+        return Ok(response);
     }
 }
