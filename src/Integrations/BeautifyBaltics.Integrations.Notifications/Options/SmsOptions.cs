@@ -2,7 +2,7 @@ namespace BeautifyBaltics.Integrations.Notifications.Options;
 
 public record SmsOptions
 {
-    public string AccountSid { get; set; } = string.Empty;
-    public string AuthToken { get; set; } = string.Empty;
-    public string PhoneNumber { get; set; } = string.Empty;
+    public string ApiKey { get; set; } = string.Empty;
+    public string MessagingProfileId { get; set; } = string.Empty;
+    public string SenderId { get; set; } = string.Empty;
 }
