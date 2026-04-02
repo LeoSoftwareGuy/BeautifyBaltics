@@ -14,6 +14,7 @@ public class NotificationService(
 ) : INotificationService
 {
     private readonly EmailTemplates _templates = emailOptions.Value.Templates;
+    private readonly string _adminEmail = emailOptions.Value.AdminEmail;
 
     public Task NotifyBookingRequestedAsync(BookingNotificationContext context, CancellationToken cancellationToken = default)
     {
@@ -227,6 +228,36 @@ public class NotificationService(
         await emailService.SendWithTemplateAsync(
             context.MasterEmail,
             _templates.MasterKycRejected,
+            templateData,
+            cancellationToken
+        );
+    }
+
+    public async Task NotifyAdminKycSubmittedAsync(KycNotificationContext context, CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("Sending KYC submission notification to admin for master {MasterEmail}", context.MasterEmail);
+
+        if (string.IsNullOrWhiteSpace(_adminEmail))
+        {
+            logger.LogWarning("Admin email not configured — skipping KYC submission notification.");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_templates.AdminKycSubmitted))
+        {
+            logger.LogWarning("AdminKycSubmitted email template not configured — skipping email.");
+            return;
+        }
+
+        var templateData = new
+        {
+            master_name = context.MasterName,
+            master_email = context.MasterEmail,
+        };
+
+        await emailService.SendWithTemplateAsync(
+            _adminEmail,
+            _templates.AdminKycSubmitted,
             templateData,
             cancellationToken
         );
