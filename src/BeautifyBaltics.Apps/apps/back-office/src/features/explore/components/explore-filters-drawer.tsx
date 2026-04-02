@@ -8,7 +8,7 @@ import {
 } from '@mantine/core';
 import { DatePickerInput, DateValue, TimeInput } from '@mantine/dates';
 import { IconCalendar, IconClock } from '@tabler/icons-react';
-import { DollarSign } from 'lucide-react';
+import { Euro } from 'lucide-react';
 
 type FiltersDrawerProps = {
   opened: boolean;
@@ -74,7 +74,7 @@ export function FiltersDrawer({
           max={200}
           step={5}
           label={(value) => `$${value}`}
-          thumbChildren={<DollarSign size={14} />}
+          thumbChildren={<Euro size={14} />}
         />
         <Group justify="space-between" c="dimmed" gap="sm">
           <Text>

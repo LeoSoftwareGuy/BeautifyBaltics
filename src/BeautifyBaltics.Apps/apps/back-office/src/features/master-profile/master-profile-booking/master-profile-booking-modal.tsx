@@ -16,7 +16,7 @@ import {
   AlertCircle,
   Briefcase,
   Check,
-  DollarSign,
+  Euro,
   MapPin,
   Phone,
 } from 'lucide-react';
@@ -178,7 +178,7 @@ function BookingModal({
 
         {job && (
           <Group gap="sm">
-            <DollarSign size={18} />
+            <Euro size={18} />
             <Text fw={500}>
               {job.price}
             </Text>
