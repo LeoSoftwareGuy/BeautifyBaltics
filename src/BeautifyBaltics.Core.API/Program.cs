@@ -11,6 +11,7 @@ using BeautifyBaltics.Domain.Aggregates.Client;
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Infrastructure;
 using BeautifyBaltics.Integrations.BlobStorage;
+using BeautifyBaltics.Integrations.Didit;
 using BeautifyBaltics.Integrations.Notifications;
 using BeautifyBaltics.Persistence;
 using BeautifyBaltics.ServiceDefaults;
@@ -60,11 +61,11 @@ internal class Program
         {
             c.Configure<MasterAggregate.MasterProfileImage>(opt => opt.ContainerName = "master-profile-images");
             c.Configure<MasterAggregate.MasterJobImage>(opt => opt.ContainerName = "master-job-images");
-            c.Configure<MasterAggregate.MasterKycDocument>(opt => opt.ContainerName = "master-kyc-documents");
             c.Configure<ClientAggregate.ClientProfileImage>(opt => opt.ContainerName = "client-profile-images");
         });
 
         builder.Services.AddNotificationsIntegration(builder.Configuration);
+        builder.Services.AddDiditIntegration(builder.Configuration);
 
         // Register exceptions handling
         builder.Services.AddDefaultExceptionHandler();

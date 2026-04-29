@@ -21,7 +21,7 @@ public class ApproveMasterKycHandler
             
         var @event = new MasterKycApproved(
             MasterId: master.Id,
-            ApprovedById: request.ApprovedById,
+            ApprovedById: (Guid?)request.ApprovedById,
             ApprovedAt: DateTimeOffset.UtcNow
         );
 

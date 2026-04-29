@@ -24,14 +24,14 @@ function MasterServicesPage() {
   const isKycLocked = !!masterData && masterData.kycStatus !== KycStatus.Approved;
 
   return (
-    <Box bg="var(--mantine-color-body)" mih="100vh" p="md">
-      <Box component="header" bg="var(--mantine-color-default-hover)" px="md" py="sm" mb="lg">
+    <Box bg="var(--mantine-color-body)" mih="100vh">
+      <Box visibleFrom="md" component="header" bg="var(--mantine-color-default-hover)" px="md" py="sm" mb="lg">
         <Title order={2} fw={600}>{t('master.services.page.title')}</Title>
         <Text c="dimmed" size="sm">
           {t('master.services.page.subtitle')}
         </Text>
       </Box>
-      <Stack gap="xl" px="md" pb="xl">
+      <Stack gap="xl" px={{ base: 0, md: 'md' }} pb="xl">
         {isKycLocked && (
           <Alert icon={<IconAlertCircle size={16} />} color="orange" variant="light">
             <strong>{t('master.settings.kyc.softLock.title')}</strong>

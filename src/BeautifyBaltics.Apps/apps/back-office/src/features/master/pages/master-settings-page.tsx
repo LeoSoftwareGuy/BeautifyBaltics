@@ -1,16 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import {
-  ActionIcon, Alert, Box, Button, Card, Group, Stack, Title,
+  ActionIcon, Alert, Box, Button, Card, Group, Stack, Text, Title,
 } from '@mantine/core';
-import { IconAlertCircle, IconArrowLeft, IconLogout } from '@tabler/icons-react';
-import { useNavigate } from '@tanstack/react-router';
+import { IconArrowLeft, IconLogout, IconShieldCheck } from '@tabler/icons-react';
+import { Link, useNavigate } from '@tanstack/react-router';
 
 import { useSession } from '@/contexts/session-context';
 import { KycStatus } from '@/state/endpoints/api.schemas';
 import { useGetMasterById } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
-import { MasterKycSection } from '../master-kyc-section';
 import MasterProfileSettings from '../master-profile-settings';
 import { MasterSchedulingSettings } from '../master-scheduling-settings';
 
@@ -76,47 +75,39 @@ function MasterSettingsPage() {
       </Box>
 
       <Stack gap="xl" px="md" pb="xl" pt={{ base: 'md', md: 0 }}>
-        {/* KYC section — always first */}
-        <Card withBorder>
-          <MasterKycSection
-            masterId={masterId}
-            kycStatus={kycStatus}
-            kycDocumentUrl={masterData?.kycDocumentUrl}
-            kycRejectionReason={masterData?.kycRejectionReason}
-          />
-        </Card>
+        {/* KYC status banner — links to KYC page */}
+        {!isKycApproved && (
+          <Alert
+            icon={<IconShieldCheck size={16} />}
+            color={isKycPending ? 'blue' : 'orange'}
+            variant="light"
+          >
+            <Group justify="space-between" align="center" wrap="nowrap">
+              <Text size="sm">
+                <strong>{t('master.settings.kyc.softLock.title')}</strong>
+                {' — '}
+                {t('master.settings.kyc.softLock.message')}
+              </Text>
+              <Button
+                component={Link}
+                to="/master/kyc"
+                size="xs"
+                color={isKycPending ? 'blue' : 'orange'}
+                variant="light"
+              >
+                {t('master.settings.kyc.softLock.action')}
+              </Button>
+            </Group>
+          </Alert>
+        )}
 
-        {/* Profile settings — soft-locked until KYC submitted */}
+        {/* Profile settings */}
         <Card withBorder>
-          {!isKycApproved && (
-            <Alert
-              icon={<IconAlertCircle size={16} />}
-              color={isKycPending ? 'blue' : 'orange'}
-              variant="light"
-              mb="md"
-            >
-              <strong>{t('master.settings.kyc.softLock.title')}</strong>
-              {' — '}
-              {t('master.settings.kyc.softLock.message')}
-            </Alert>
-          )}
           <MasterProfileSettings isKycLocked={isKycLocked} />
         </Card>
 
-        {/* Scheduling settings — soft-locked until KYC approved */}
+        {/* Scheduling settings */}
         <Card withBorder>
-          {!isKycApproved && (
-            <Alert
-              icon={<IconAlertCircle size={16} />}
-              color={isKycPending ? 'blue' : 'orange'}
-              variant="light"
-              mb="md"
-            >
-              <strong>{t('master.settings.kyc.softLock.title')}</strong>
-              {' — '}
-              {t('master.settings.kyc.softLock.message')}
-            </Alert>
-          )}
           <MasterSchedulingSettings isKycLocked={isKycLocked} />
         </Card>
 

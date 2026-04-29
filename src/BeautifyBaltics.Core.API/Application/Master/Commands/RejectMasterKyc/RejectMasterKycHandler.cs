@@ -21,7 +21,7 @@ public class RejectMasterKycHandler
 
         var @event = new MasterKycRejected(
             MasterId: master.Id,
-            RejectedById: request.RejectedById,
+            RejectedById: (Guid?)request.RejectedById,
             Reason: request.Reason,
             RejectedAt: DateTimeOffset.UtcNow
         );

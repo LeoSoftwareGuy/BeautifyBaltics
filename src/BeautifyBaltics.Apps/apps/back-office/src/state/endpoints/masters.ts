@@ -59,12 +59,11 @@ import type {
   GetMasterByIdResponse,
   GetMasterJobImageByIdResponse,
   GetPendingRequestsResponse,
+  InitiateMasterKycVerificationResponse,
   ProblemDetails,
   SetMasterJobFeaturedImageRequest,
   SetMasterJobFeaturedImageResponse,
   SubmitMasterJobForReviewResponse,
-  SubmitMasterKycBody,
-  SubmitMasterKycResponse,
   UnsetMasterJobFeaturedImageResponse,
   UpdateMasterAvailabilityRequest,
   UpdateMasterAvailabilityResponse,
@@ -2515,66 +2514,101 @@ export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof 
 }
 
 /**
- * @summary Submit KYC document for identity verification
+ * @summary Initiate Didit identity verification — returns the hosted verification URL
  */
-export const submitMasterKyc = (
+export const initiateMasterKycVerification = (
   id: string,
-  submitMasterKycBody: SubmitMasterKycBody,
   signal?: AbortSignal,
-) => {
-  const formData = new FormData();
-  formData.append('masterId', submitMasterKycBody.masterId);
-  submitMasterKycBody.files.forEach((value) => formData.append('files', value));
+) => customClient<InitiateMasterKycVerificationResponse>(
+  { url: `/api/v1/masters/${id}/kyc/initiate`, method: 'POST', signal },
+);
 
-  return customClient<SubmitMasterKycResponse>(
-    {
-      url: `/api/v1/masters/${id}/kyc`,
-      method: 'POST',
-      headers: { 'Content-Type': 'multipart/form-data' },
-      data: formData,
-      signal,
-    },
-  );
-};
-
-export const getSubmitMasterKycMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitMasterKyc>>, TError, { id: string;data: SubmitMasterKycBody }, TContext>, },
-  ): UseMutationOptions<Awaited<ReturnType<typeof submitMasterKyc>>, TError, { id: string;data: SubmitMasterKycBody }, TContext> => {
-  const mutationKey = ['submitMasterKyc'];
+export const getInitiateMasterKycVerificationMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initiateMasterKycVerification>>, TError, { id: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof initiateMasterKycVerification>>, TError, { id: string }, TContext> => {
+  const mutationKey = ['initiateMasterKycVerification'];
   const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
     : { mutation: { mutationKey } };
 
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitMasterKyc>>, { id: string;data: SubmitMasterKycBody }> = (props) => {
-    const { id, data } = props ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof initiateMasterKycVerification>>, { id: string }> = (props) => {
+    const { id } = props ?? {};
 
-    return submitMasterKyc(id, data);
+    return initiateMasterKycVerification(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type SubmitMasterKycMutationResult = NonNullable<Awaited<ReturnType<typeof submitMasterKyc>>>;
-export type SubmitMasterKycMutationBody = SubmitMasterKycBody;
-export type SubmitMasterKycMutationError = ProblemDetails | ValidationProblemDetails;
+export type InitiateMasterKycVerificationMutationResult = NonNullable<Awaited<ReturnType<typeof initiateMasterKycVerification>>>;
+
+export type InitiateMasterKycVerificationMutationError = ProblemDetails | ValidationProblemDetails;
 
 /**
- * @summary Submit KYC document for identity verification
+ * @summary Initiate Didit identity verification — returns the hosted verification URL
  */
-export const useSubmitMasterKyc = <TError = ProblemDetails | ValidationProblemDetails,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitMasterKyc>>, TError, { id: string;data: SubmitMasterKycBody }, TContext>, },
+export const useInitiateMasterKycVerification = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initiateMasterKycVerification>>, TError, { id: string }, TContext>, },
     queryClient?: QueryClient): UseMutationResult<
-  Awaited<ReturnType<typeof submitMasterKyc>>,
+  Awaited<ReturnType<typeof initiateMasterKycVerification>>,
   TError,
-  { id: string;data: SubmitMasterKycBody },
+  { id: string },
   TContext
   > => {
-  const mutationOptions = getSubmitMasterKycMutationOptions(options);
+  const mutationOptions = getInitiateMasterKycVerificationMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary Sync KYC status by polling Didit for the current session state
+ */
+export const syncMasterKycStatus = (
+  id: string,
+  callbackStatus?: string,
+) => customClient<void>(
+  { url: `/api/v1/masters/${id}/kyc/sync-status`, method: 'POST', params: callbackStatus ? { callbackStatus } : undefined },
+);
+
+export const getSyncMasterKycStatusMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncMasterKycStatus>>, TError, { id: string; callbackStatus?: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof syncMasterKycStatus>>, TError, { id: string; callbackStatus?: string }, TContext> => {
+  const mutationKey = ['syncMasterKycStatus'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof syncMasterKycStatus>>, { id: string; callbackStatus?: string }> = (props) => {
+    const { id, callbackStatus } = props ?? {};
+
+    return syncMasterKycStatus(id, callbackStatus);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SyncMasterKycStatusMutationResult = NonNullable<Awaited<ReturnType<typeof syncMasterKycStatus>>>;
+export type SyncMasterKycStatusMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Sync KYC status by polling Didit for the current session state
+ */
+export const useSyncMasterKycStatus = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncMasterKycStatus>>, TError, { id: string; callbackStatus?: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof syncMasterKycStatus>>,
+  TError,
+  { id: string; callbackStatus?: string },
+  TContext
+  > => {
+  const mutationOptions = getSyncMasterKycStatusMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
 /**
  * @summary Update master buffer time between bookings
  */

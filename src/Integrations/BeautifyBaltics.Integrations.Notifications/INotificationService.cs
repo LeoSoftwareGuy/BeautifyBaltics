@@ -7,7 +7,6 @@ public interface INotificationService
     Task NotifyBookingCancelledAsync(BookingNotificationContext context, CancellationToken cancellationToken = default);
     Task NotifyKycApprovedAsync(KycNotificationContext context, CancellationToken cancellationToken = default);
     Task NotifyKycRejectedAsync(KycNotificationContext context, CancellationToken cancellationToken = default);
-    Task NotifyAdminKycSubmittedAsync(KycNotificationContext context, CancellationToken cancellationToken = default);
 }
 
 public record KycNotificationContext(

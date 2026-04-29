@@ -233,36 +233,6 @@ public class NotificationService(
         );
     }
 
-    public async Task NotifyAdminKycSubmittedAsync(KycNotificationContext context, CancellationToken cancellationToken = default)
-    {
-        logger.LogInformation("Sending KYC submission notification to admin for master {MasterEmail}", context.MasterEmail);
-
-        if (string.IsNullOrWhiteSpace(_adminEmail))
-        {
-            logger.LogWarning("Admin email not configured — skipping KYC submission notification.");
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(_templates.AdminKycSubmitted))
-        {
-            logger.LogWarning("AdminKycSubmitted email template not configured — skipping email.");
-            return;
-        }
-
-        var templateData = new
-        {
-            master_name = context.MasterName,
-            master_email = context.MasterEmail,
-        };
-
-        await emailService.SendWithTemplateAsync(
-            _adminEmail,
-            _templates.AdminKycSubmitted,
-            templateData,
-            cancellationToken
-        );
-    }
-
     private static string BuildLocationSnippet(BookingNotificationContext context)
     {
         if (string.IsNullOrWhiteSpace(context.LocationName) && string.IsNullOrWhiteSpace(context.LocationAddress))

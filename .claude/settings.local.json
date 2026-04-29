@@ -13,7 +13,18 @@
       "Bash(getent:*)",
       "Bash(python3:*)",
       "Bash(find:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(for f:*)",
+      "Bash(xargs grep:*)",
+      "Bash(grep:*)",
+      "Bash(npx orval:*)",
+      "WebSearch",
+      "WebFetch(domain:developers.telnyx.com)",
+      "WebFetch(domain:www.nuget.org)",
+      "WebFetch(domain:support.telnyx.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.didit.me)",
+      "Bash(dotnet sln:*)"
     ]
   }
 }

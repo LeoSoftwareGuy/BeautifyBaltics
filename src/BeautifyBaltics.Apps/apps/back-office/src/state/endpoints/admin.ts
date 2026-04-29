@@ -45,6 +45,7 @@ import type {
   GetServiceStatisticsResponse,
   GetUserStatisticsResponse,
   ProblemDetails,
+  RebuildProjectionResponse,
   SetUserRoleRequest,
   SetUserRoleResponse,
   UpdateJobCategoryRequest,
@@ -1189,6 +1190,48 @@ export const useDeleteUser = <TError = ProblemDetails,
   TContext
   > => {
   const mutationOptions = getDeleteUserMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+export const rebuildProjection = (
+  projectionName: string,
+  signal?: AbortSignal,
+) => customClient<RebuildProjectionResponse>(
+  { url: `/api/v1/admin/projections/${projectionName}/rebuild`, method: 'POST', signal },
+);
+
+export const getRebuildProjectionMutationOptions = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rebuildProjection>>, TError, { projectionName: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof rebuildProjection>>, TError, { projectionName: string }, TContext> => {
+  const mutationKey = ['rebuildProjection'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof rebuildProjection>>, { projectionName: string }> = (props) => {
+    const { projectionName } = props ?? {};
+
+    return rebuildProjection(projectionName);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RebuildProjectionMutationResult = NonNullable<Awaited<ReturnType<typeof rebuildProjection>>>;
+
+export type RebuildProjectionMutationError = ProblemDetails;
+
+export const useRebuildProjection = <TError = ProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rebuildProjection>>, TError, { projectionName: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof rebuildProjection>>,
+  TError,
+  { projectionName: string },
+  TContext
+  > => {
+  const mutationOptions = getRebuildProjectionMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

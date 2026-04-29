@@ -1,4 +1,5 @@
 export { default as MasterBookingsPage } from './master-bookings-page';
+export { default as MasterKycPage } from './master-kyc-page';
 export { default as MasterServicesPage } from './master-services-page';
 export { default as MasterSettingsPage } from './master-settings-page';
 export { default as MasterTimeSlotsPage } from './master-time-slots-page';

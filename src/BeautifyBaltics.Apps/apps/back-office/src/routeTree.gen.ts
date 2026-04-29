@@ -24,12 +24,12 @@ import { Route as MastersMasterIdIndexRouteRouteImport } from './routes/masters/
 import { Route as MasterTimeSlotsIndexRouteRouteImport } from './routes/master/time-slots/index.route'
 import { Route as MasterSettingsIndexRouteRouteImport } from './routes/master/settings/index.route'
 import { Route as MasterServicesIndexRouteRouteImport } from './routes/master/services/index.route'
+import { Route as MasterKycIndexRouteRouteImport } from './routes/master/kyc/index.route'
 import { Route as MasterBookingsIndexRouteRouteImport } from './routes/master/bookings/index.route'
 import { Route as ClientExploreIndexRouteRouteImport } from './routes/client/explore/index.route'
 import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bookings/index.route'
 import { Route as AdminUsersIndexRouteRouteImport } from './routes/admin/users/index.route'
 import { Route as AdminServicesIndexRouteRouteImport } from './routes/admin/services/index.route'
-import { Route as AdminKycIndexRouteRouteImport } from './routes/admin/kyc/index.route'
 import { Route as AdminChangesetsIndexRouteRouteImport } from './routes/admin/changesets/index.route'
 import { Route as AdminBookingsIndexRouteRouteImport } from './routes/admin/bookings/index.route'
 
@@ -112,6 +112,11 @@ const MasterServicesIndexRouteRoute =
     path: '/master/services/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const MasterKycIndexRouteRoute = MasterKycIndexRouteRouteImport.update({
+  id: '/master/kyc/',
+  path: '/master/kyc/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterBookingsIndexRouteRoute =
   MasterBookingsIndexRouteRouteImport.update({
     id: '/master/bookings/',
@@ -137,11 +142,6 @@ const AdminUsersIndexRouteRoute = AdminUsersIndexRouteRouteImport.update({
 const AdminServicesIndexRouteRoute = AdminServicesIndexRouteRouteImport.update({
   id: '/admin/services/',
   path: '/admin/services/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminKycIndexRouteRoute = AdminKycIndexRouteRouteImport.update({
-  id: '/admin/kyc/',
-  path: '/admin/kyc/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminChangesetsIndexRouteRoute =
@@ -170,12 +170,12 @@ export interface FileRoutesByFullPath {
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
   '/admin/changesets': typeof AdminChangesetsIndexRouteRoute
-  '/admin/kyc': typeof AdminKycIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
   '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
+  '/master/kyc': typeof MasterKycIndexRouteRoute
   '/master/services': typeof MasterServicesIndexRouteRoute
   '/master/settings': typeof MasterSettingsIndexRouteRoute
   '/master/time-slots': typeof MasterTimeSlotsIndexRouteRoute
@@ -195,12 +195,12 @@ export interface FileRoutesByTo {
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
   '/admin/changesets': typeof AdminChangesetsIndexRouteRoute
-  '/admin/kyc': typeof AdminKycIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
   '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
   '/client/explore': typeof ClientExploreIndexRouteRoute
   '/master/bookings': typeof MasterBookingsIndexRouteRoute
+  '/master/kyc': typeof MasterKycIndexRouteRoute
   '/master/services': typeof MasterServicesIndexRouteRoute
   '/master/settings': typeof MasterSettingsIndexRouteRoute
   '/master/time-slots': typeof MasterTimeSlotsIndexRouteRoute
@@ -221,12 +221,12 @@ export interface FileRoutesById {
   '/top-masters/': typeof TopMastersIndexRouteRoute
   '/admin/bookings/': typeof AdminBookingsIndexRouteRoute
   '/admin/changesets/': typeof AdminChangesetsIndexRouteRoute
-  '/admin/kyc/': typeof AdminKycIndexRouteRoute
   '/admin/services/': typeof AdminServicesIndexRouteRoute
   '/admin/users/': typeof AdminUsersIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
   '/client/explore/': typeof ClientExploreIndexRouteRoute
   '/master/bookings/': typeof MasterBookingsIndexRouteRoute
+  '/master/kyc/': typeof MasterKycIndexRouteRoute
   '/master/services/': typeof MasterServicesIndexRouteRoute
   '/master/settings/': typeof MasterSettingsIndexRouteRoute
   '/master/time-slots/': typeof MasterTimeSlotsIndexRouteRoute
@@ -248,12 +248,12 @@ export interface FileRouteTypes {
     | '/top-masters'
     | '/admin/bookings'
     | '/admin/changesets'
-    | '/admin/kyc'
     | '/admin/services'
     | '/admin/users'
     | '/client/bookings'
     | '/client/explore'
     | '/master/bookings'
+    | '/master/kyc'
     | '/master/services'
     | '/master/settings'
     | '/master/time-slots'
@@ -273,12 +273,12 @@ export interface FileRouteTypes {
     | '/top-masters'
     | '/admin/bookings'
     | '/admin/changesets'
-    | '/admin/kyc'
     | '/admin/services'
     | '/admin/users'
     | '/client/bookings'
     | '/client/explore'
     | '/master/bookings'
+    | '/master/kyc'
     | '/master/services'
     | '/master/settings'
     | '/master/time-slots'
@@ -298,12 +298,12 @@ export interface FileRouteTypes {
     | '/top-masters/'
     | '/admin/bookings/'
     | '/admin/changesets/'
-    | '/admin/kyc/'
     | '/admin/services/'
     | '/admin/users/'
     | '/client/bookings/'
     | '/client/explore/'
     | '/master/bookings/'
+    | '/master/kyc/'
     | '/master/services/'
     | '/master/settings/'
     | '/master/time-slots/'
@@ -324,12 +324,12 @@ export interface RootRouteChildren {
   TopMastersIndexRouteRoute: typeof TopMastersIndexRouteRoute
   AdminBookingsIndexRouteRoute: typeof AdminBookingsIndexRouteRoute
   AdminChangesetsIndexRouteRoute: typeof AdminChangesetsIndexRouteRoute
-  AdminKycIndexRouteRoute: typeof AdminKycIndexRouteRoute
   AdminServicesIndexRouteRoute: typeof AdminServicesIndexRouteRoute
   AdminUsersIndexRouteRoute: typeof AdminUsersIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
   ClientExploreIndexRouteRoute: typeof ClientExploreIndexRouteRoute
   MasterBookingsIndexRouteRoute: typeof MasterBookingsIndexRouteRoute
+  MasterKycIndexRouteRoute: typeof MasterKycIndexRouteRoute
   MasterServicesIndexRouteRoute: typeof MasterServicesIndexRouteRoute
   MasterSettingsIndexRouteRoute: typeof MasterSettingsIndexRouteRoute
   MasterTimeSlotsIndexRouteRoute: typeof MasterTimeSlotsIndexRouteRoute
@@ -443,6 +443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MasterServicesIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/master/kyc/': {
+      id: '/master/kyc/'
+      path: '/master/kyc'
+      fullPath: '/master/kyc'
+      preLoaderRoute: typeof MasterKycIndexRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/master/bookings/': {
       id: '/master/bookings/'
       path: '/master/bookings'
@@ -478,13 +485,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminServicesIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/kyc/': {
-      id: '/admin/kyc/'
-      path: '/admin/kyc'
-      fullPath: '/admin/kyc'
-      preLoaderRoute: typeof AdminKycIndexRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/changesets/': {
       id: '/admin/changesets/'
       path: '/admin/changesets'
@@ -516,12 +516,12 @@ const rootRouteChildren: RootRouteChildren = {
   TopMastersIndexRouteRoute: TopMastersIndexRouteRoute,
   AdminBookingsIndexRouteRoute: AdminBookingsIndexRouteRoute,
   AdminChangesetsIndexRouteRoute: AdminChangesetsIndexRouteRoute,
-  AdminKycIndexRouteRoute: AdminKycIndexRouteRoute,
   AdminServicesIndexRouteRoute: AdminServicesIndexRouteRoute,
   AdminUsersIndexRouteRoute: AdminUsersIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,
   ClientExploreIndexRouteRoute: ClientExploreIndexRouteRoute,
   MasterBookingsIndexRouteRoute: MasterBookingsIndexRouteRoute,
+  MasterKycIndexRouteRoute: MasterKycIndexRouteRoute,
   MasterServicesIndexRouteRoute: MasterServicesIndexRouteRoute,
   MasterSettingsIndexRouteRoute: MasterSettingsIndexRouteRoute,
   MasterTimeSlotsIndexRouteRoute: MasterTimeSlotsIndexRouteRoute,

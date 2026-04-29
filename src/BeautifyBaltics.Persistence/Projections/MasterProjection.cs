@@ -36,7 +36,8 @@ public record Master(Guid Id) : Projection
     public bool HasPendingChangesets => PendingChangesetsCount > 0;
 
     public KycStatus KycStatus { get; init; } = KycStatus.NotSubmitted;
-    public string? KycDocumentBlobName { get; init; }
+    public string? KycSessionId { get; init; }
+    public string? KycVerificationUrl { get; init; }
     public DateTimeOffset? KycSubmittedAt { get; init; }
     public string? KycRejectionReason { get; init; }
 
@@ -141,11 +142,21 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
                 .ToArray()
         };
 
+    public static Master Apply(MasterKycVerificationInitiated @event, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Pending,
+            KycSessionId = @event.SessionId,
+            KycVerificationUrl = @event.VerificationUrl,
+            KycSubmittedAt = @event.InitiatedAt,
+            KycRejectionReason = null,
+        };
+
+    // Kept for event-stream replay of old MasterKycSubmitted events
     public static Master Apply(MasterKycSubmitted @event, Master current) =>
         current with
         {
             KycStatus = KycStatus.Pending,
-            KycDocumentBlobName = @event.BlobName,
             KycSubmittedAt = @event.SubmittedAt,
             KycRejectionReason = null,
         };
@@ -154,6 +165,7 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
         current with
         {
             KycStatus = KycStatus.Approved,
+            KycVerificationUrl = null,
             KycRejectionReason = null,
         };
 
@@ -161,6 +173,14 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
         current with
         {
             KycStatus = KycStatus.Rejected,
+            KycVerificationUrl = null,
             KycRejectionReason = @event.Reason,
+        };
+
+    public static Master Apply(MasterKycSessionAbandoned _, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Abandoned,
+            KycVerificationUrl = null,
         };
 }

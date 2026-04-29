@@ -30,7 +30,8 @@ using Wolverine;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterAvailability;
 using Microsoft.AspNetCore.Authorization;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UnsetMasterJobFeatureImage;
-using BeautifyBaltics.Core.API.Application.Master.Commands.SubmitMasterKyc;
+using BeautifyBaltics.Core.API.Application.Master.Commands.InitiateMasterKycVerification;
+using BeautifyBaltics.Core.API.Application.Master.Commands.SyncMasterKycStatus;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -482,18 +483,30 @@ public class MastersController(IMessageBus bus) : ApiController
     }
 
     /// <summary>
-    /// Submit KYC document for identity verification
+    /// Sync KYC status by polling Didit for the current session state
     /// </summary>
     /// <param name="id">Master id</param>
-    /// <param name="request">KYC document upload</param>
-    [HttpPost("{id:guid}/kyc", Name = "SubmitMasterKyc")]
-    [Consumes("multipart/form-data")]
-    [ProducesResponseType(typeof(SubmitMasterKycResponse), StatusCodes.Status200OK)]
+    /// <param name="callbackStatus">Optional KYC status from Didit callback to avoid unnecessary polling</param>
+    [HttpPost("{id:guid}/kyc/sync-status", Name = "SyncMasterKycStatus")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> SyncKycStatus([FromRoute] Guid id, [FromQuery] string? callbackStatus = null)
+    {
+        await bus.InvokeAsync(new SyncMasterKycStatusRequest { MasterId = id, CallbackStatus = callbackStatus });
+        return Ok();
+    }
+
+    /// <summary>
+    /// Initiate Didit identity verification — returns the hosted verification URL
+    /// </summary>
+    /// <param name="id">Master id</param>
+    [HttpPost("{id:guid}/kyc/initiate", Name = "InitiateMasterKycVerification")]
+    [ProducesResponseType(typeof(InitiateMasterKycVerificationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> SubmitKyc([FromRoute] Guid id, [FromForm] SubmitMasterKycRequest request)
+    public async Task<ActionResult<InitiateMasterKycVerificationResponse>> InitiateKyc([FromRoute] Guid id)
     {
-        var response = await bus.InvokeAsync<SubmitMasterKycResponse>(request with { MasterId = id });
+        var response = await bus.InvokeAsync<InitiateMasterKycVerificationResponse>(new InitiateMasterKycVerificationRequest { MasterId = id });
         return Ok(response);
     }
 

@@ -15,8 +15,8 @@ public partial class MasterAggregate : ApprovableAggregate
     public Guid UserId { get; private set; }
 
     public KycStatus KycStatus { get; private set; } = KycStatus.NotSubmitted;
-    public string? KycDocumentBlobName { get; private set; }
-    public string? KycDocumentFileName { get; private set; }
+    public string? KycSessionId { get; private set; }
+    public string? KycVerificationUrl { get; private set; }
     public string? KycRejectionReason { get; private set; }
     public DateTimeOffset? KycSubmittedAt { get; private set; }
     public string FirstName { get; private set; } = string.Empty;
@@ -220,11 +220,19 @@ public partial class MasterAggregate : ApprovableAggregate
         BufferMinutes = @event.BufferMinutes;
     }
 
+    internal void Apply(MasterKycVerificationInitiated @event)
+    {
+        KycStatus = KycStatus.Pending;
+        KycSessionId = @event.SessionId;
+        KycVerificationUrl = @event.VerificationUrl;
+        KycRejectionReason = null;
+        KycSubmittedAt = @event.InitiatedAt;
+    }
+
+    // Kept for event-stream replay of old MasterKycSubmitted events
     internal void Apply(MasterKycSubmitted @event)
     {
         KycStatus = KycStatus.Pending;
-        KycDocumentBlobName = @event.BlobName;
-        KycDocumentFileName = @event.FileName;
         KycRejectionReason = null;
         KycSubmittedAt = @event.SubmittedAt;
     }
@@ -233,12 +241,20 @@ public partial class MasterAggregate : ApprovableAggregate
     {
         KycStatus = KycStatus.Approved;
         KycRejectionReason = null;
+        KycVerificationUrl = null;
     }
 
     internal void Apply(MasterKycRejected @event)
     {
         KycStatus = KycStatus.Rejected;
         KycRejectionReason = @event.Reason;
+        KycVerificationUrl = null;
+    }
+
+    internal void Apply(MasterKycSessionAbandoned _)
+    {
+        KycStatus = KycStatus.Abandoned;
+        KycVerificationUrl = null;
     }
 
     public bool IsAvailable(DateTime startAt, DateTime endAt)

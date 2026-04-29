@@ -13,8 +13,7 @@ namespace BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterById;
 public class GetMasterByIdHandler(
     IMasterRepository masterRepository,
     IChangesetRepository changesetRepository,
-    IBlobStorageService<MasterAggregate.MasterProfileImage> blobStorageService,
-    IBlobStorageService<MasterAggregate.MasterKycDocument> kycBlobStorageService
+    IBlobStorageService<MasterAggregate.MasterProfileImage> blobStorageService
 )
 {
     public async Task<GetMasterByIdResponse> Handle(GetMasterByIdRequest request, CancellationToken cancellationToken)
@@ -34,9 +33,6 @@ public class GetMasterByIdHandler(
         response = response with
         {
             ProfileImageUrl = blobStorageService.GetBlobUrl(master.ProfileImageBlobName),
-            KycDocumentUrl = master.KycDocumentBlobName is not null
-                ? kycBlobStorageService.GetBlobUrl(master.KycDocumentBlobName)
-                : null,
         };
 
         if (!request.Proposal || !master.HasPendingChangesets) return response;

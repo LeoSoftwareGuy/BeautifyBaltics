@@ -1,0 +1,3 @@
+namespace BeautifyBaltics.Core.API.Application.Master.Commands.InitiateMasterKycVerification;
+
+public record InitiateMasterKycVerificationResponse(string VerificationUrl);

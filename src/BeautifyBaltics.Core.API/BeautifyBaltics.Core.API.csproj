@@ -35,6 +35,7 @@
     <ProjectReference Include="..\BeautifyBaltics.ServiceDefaults\BeautifyBaltics.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Integrations\BeautifyBaltics.Integrations.BlobStorage\BeautifyBaltics.Integrations.BlobStorage.csproj" />
     <ProjectReference Include="..\Integrations\BeautifyBaltics.Integrations.Notifications\BeautifyBaltics.Integrations.Notifications.csproj" />
+    <ProjectReference Include="..\Integrations\BeautifyBaltics.Integrations.Didit\BeautifyBaltics.Integrations.Didit.csproj" />
   </ItemGroup>
 
 </Project>
