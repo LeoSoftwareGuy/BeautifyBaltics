@@ -166,7 +166,7 @@ function MasterDashboardPage() {
         {/* KYC verification banner */}
         {showKycBanner && (
           <Box px="md" pt="lg">
-            <UnstyledButton style={{ width: '100%' }} onClick={() => navigate({ to: '/master/kyc' })}>
+            <UnstyledButton style={{ width: '100%' }} onClick={() => navigate({ to: '/master/kyc', search: {} })}>
               <Box
                 p="md"
                 style={{
@@ -383,7 +383,7 @@ function MasterDashboardPage() {
         <Stack gap="xl" px="md" pb="xl">
           {/* KYC verification banner */}
           {showKycBanner && (
-            <UnstyledButton onClick={() => navigate({ to: '/master/kyc' })}>
+            <UnstyledButton onClick={() => navigate({ to: '/master/kyc', search: {} })}>
               <Box
                 p="md"
                 style={{

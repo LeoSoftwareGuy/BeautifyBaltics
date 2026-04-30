@@ -6,7 +6,6 @@ public record GetMasterByIdRequest
 {
     [Required]
     public Guid Id { get; init; }
-    public bool Proposal { get; init; }
     /// <summary>Authenticated caller's user ID — set by controller, not from request body</summary>
     public Guid? RequesterId { get; init; }
 }

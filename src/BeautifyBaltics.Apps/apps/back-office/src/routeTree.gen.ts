@@ -30,7 +30,6 @@ import { Route as ClientExploreIndexRouteRouteImport } from './routes/client/exp
 import { Route as ClientBookingsIndexRouteRouteImport } from './routes/client/bookings/index.route'
 import { Route as AdminUsersIndexRouteRouteImport } from './routes/admin/users/index.route'
 import { Route as AdminServicesIndexRouteRouteImport } from './routes/admin/services/index.route'
-import { Route as AdminChangesetsIndexRouteRouteImport } from './routes/admin/changesets/index.route'
 import { Route as AdminBookingsIndexRouteRouteImport } from './routes/admin/bookings/index.route'
 
 const IndexRouteRoute = IndexRouteRouteImport.update({
@@ -144,12 +143,6 @@ const AdminServicesIndexRouteRoute = AdminServicesIndexRouteRouteImport.update({
   path: '/admin/services/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminChangesetsIndexRouteRoute =
-  AdminChangesetsIndexRouteRouteImport.update({
-    id: '/admin/changesets/',
-    path: '/admin/changesets/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AdminBookingsIndexRouteRoute = AdminBookingsIndexRouteRouteImport.update({
   id: '/admin/bookings/',
   path: '/admin/bookings/',
@@ -169,7 +162,6 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordIndexRouteRoute
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
-  '/admin/changesets': typeof AdminChangesetsIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
   '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
@@ -194,7 +186,6 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordIndexRouteRoute
   '/top-masters': typeof TopMastersIndexRouteRoute
   '/admin/bookings': typeof AdminBookingsIndexRouteRoute
-  '/admin/changesets': typeof AdminChangesetsIndexRouteRoute
   '/admin/services': typeof AdminServicesIndexRouteRoute
   '/admin/users': typeof AdminUsersIndexRouteRoute
   '/client/bookings': typeof ClientBookingsIndexRouteRoute
@@ -220,7 +211,6 @@ export interface FileRoutesById {
   '/reset-password/': typeof ResetPasswordIndexRouteRoute
   '/top-masters/': typeof TopMastersIndexRouteRoute
   '/admin/bookings/': typeof AdminBookingsIndexRouteRoute
-  '/admin/changesets/': typeof AdminChangesetsIndexRouteRoute
   '/admin/services/': typeof AdminServicesIndexRouteRoute
   '/admin/users/': typeof AdminUsersIndexRouteRoute
   '/client/bookings/': typeof ClientBookingsIndexRouteRoute
@@ -247,7 +237,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/top-masters'
     | '/admin/bookings'
-    | '/admin/changesets'
     | '/admin/services'
     | '/admin/users'
     | '/client/bookings'
@@ -272,7 +261,6 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/top-masters'
     | '/admin/bookings'
-    | '/admin/changesets'
     | '/admin/services'
     | '/admin/users'
     | '/client/bookings'
@@ -297,7 +285,6 @@ export interface FileRouteTypes {
     | '/reset-password/'
     | '/top-masters/'
     | '/admin/bookings/'
-    | '/admin/changesets/'
     | '/admin/services/'
     | '/admin/users/'
     | '/client/bookings/'
@@ -323,7 +310,6 @@ export interface RootRouteChildren {
   ResetPasswordIndexRouteRoute: typeof ResetPasswordIndexRouteRoute
   TopMastersIndexRouteRoute: typeof TopMastersIndexRouteRoute
   AdminBookingsIndexRouteRoute: typeof AdminBookingsIndexRouteRoute
-  AdminChangesetsIndexRouteRoute: typeof AdminChangesetsIndexRouteRoute
   AdminServicesIndexRouteRoute: typeof AdminServicesIndexRouteRoute
   AdminUsersIndexRouteRoute: typeof AdminUsersIndexRouteRoute
   ClientBookingsIndexRouteRoute: typeof ClientBookingsIndexRouteRoute
@@ -485,13 +471,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminServicesIndexRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/changesets/': {
-      id: '/admin/changesets/'
-      path: '/admin/changesets'
-      fullPath: '/admin/changesets'
-      preLoaderRoute: typeof AdminChangesetsIndexRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/bookings/': {
       id: '/admin/bookings/'
       path: '/admin/bookings'
@@ -515,7 +494,6 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordIndexRouteRoute: ResetPasswordIndexRouteRoute,
   TopMastersIndexRouteRoute: TopMastersIndexRouteRoute,
   AdminBookingsIndexRouteRoute: AdminBookingsIndexRouteRoute,
-  AdminChangesetsIndexRouteRoute: AdminChangesetsIndexRouteRoute,
   AdminServicesIndexRouteRoute: AdminServicesIndexRouteRoute,
   AdminUsersIndexRouteRoute: AdminUsersIndexRouteRoute,
   ClientBookingsIndexRouteRoute: ClientBookingsIndexRouteRoute,

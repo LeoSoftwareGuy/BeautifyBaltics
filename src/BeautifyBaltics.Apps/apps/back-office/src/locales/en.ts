@@ -1010,6 +1010,7 @@ const en = {
           bookings: 'Bookings',
           rating: 'Rating',
           earnings: 'Earnings',
+          kyc: 'KYC',
           admin: 'Admin',
         },
         noRecords: 'No users found',

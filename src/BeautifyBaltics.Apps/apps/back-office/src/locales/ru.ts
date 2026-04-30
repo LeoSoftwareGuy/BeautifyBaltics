@@ -137,6 +137,7 @@ const ru: CommonLocale = {
           bookings: 'Бронирования',
           rating: 'Рейтинг',
           earnings: 'Доход',
+          kyc: 'KYC',
           admin: 'Админ',
         },
         noRecords: 'Пользователи не найдены',

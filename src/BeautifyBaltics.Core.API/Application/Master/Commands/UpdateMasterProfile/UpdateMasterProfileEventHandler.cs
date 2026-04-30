@@ -1,6 +1,4 @@
-using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
-using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
@@ -22,7 +20,8 @@ public class UpdateMasterProfileEventHandler
             throw DomainException.WithMessage("Identity verification must be submitted before updating your profile.");
         }
 
-        var change = new MasterProfileChangeProposed(
+        var profileUpdated = new MasterProfileUpdated(
+            MasterId: master.Id,
             FirstName: request.FirstName,
             LastName: request.LastName,
             Age: request.Age,
@@ -38,14 +37,10 @@ public class UpdateMasterProfileEventHandler
             PostalCode: request.PostalCode
         );
 
-        var proposed = new MasterChangeProposed
-        {
-            AggregateId = master.Id,
-            ProposedById = master.UserId,
-            Type = typeof(MasterProfileChangeProposed).FullName!,
-            ProposedChange = JsonSerializer.SerializeToElement(change),
-        };
+        var events = new Events { profileUpdated };
 
-        return Task.FromResult<(Events, OutgoingMessages)>(([proposed], [new UpdateMasterProfileResponse(request.MasterId)]));
+        if (!master.IsVisible) events.Add(new MasterActivated(master.Id));
+
+        return Task.FromResult<(Events, OutgoingMessages)>((events, [new UpdateMasterProfileResponse(request.MasterId)]));
     }
 }

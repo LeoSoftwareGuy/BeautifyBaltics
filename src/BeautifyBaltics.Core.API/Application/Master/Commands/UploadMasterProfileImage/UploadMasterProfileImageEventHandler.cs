@@ -1,6 +1,4 @@
-using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
-using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
@@ -26,25 +24,21 @@ public class UploadMasterProfileImageEventHandler(IBlobStorageService<MasterAggr
             throw DomainException.WithMessage("Identity verification must be submitted before uploading a profile image.");
         }
 
+        if (master.ProfileImage is { } oldImage)
+            await blobStorageService.DeleteAsync(oldImage.BlobName, cancellationToken);
+
         var blobFile = new BlobFileDTO(request.Files[0].FileName, request.Files[0], request.Files[0].ContentType);
         var blobName = await blobStorageService.UploadAsync(master.Id, blobFile, cancellationToken);
 
-        var change = new MasterProfileImageChangeProposed(
-            MasterProfileImageId: CombGuidIdGeneration.NewGuid(),
+        var @event = new MasterProfileImageUploaded(
+            MasterId: master.Id,
             BlobName: blobName,
             FileName: request.Files[0].FileName,
             FileMimeType: request.Files[0].ContentType,
             FileSize: request.Files[0].Length
-        );
+        )
+        { MasterProfileImageId = CombGuidIdGeneration.NewGuid() };
 
-        var proposed = new MasterChangeProposed
-        {
-            AggregateId = master.Id,
-            ProposedById = master.UserId,
-            Type = typeof(MasterProfileImageChangeProposed).FullName!,
-            ProposedChange = JsonSerializer.SerializeToElement(change),
-        };
-
-        return ([proposed], [new UploadMasterProfileImageResponse(master.Id)]);
+        return ([@event], [new UploadMasterProfileImageResponse(master.Id)]);
     }
 }

@@ -137,6 +137,7 @@ const et: CommonLocale = {
           bookings: 'Broneeringud',
           rating: 'Reiting',
           earnings: 'Tulud',
+          kyc: 'KYC',
           admin: 'Admin',
         },
         noRecords: 'Kasutajaid ei leitud',

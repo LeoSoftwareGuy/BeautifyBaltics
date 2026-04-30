@@ -25,6 +25,7 @@ public record AdminUserStatistics(Guid Id) : Projection
     public decimal Rating { get; init; }
     public int TotalBookings { get; init; }
     public decimal Earnings { get; init; }
+    public KycStatus? KycStatus { get; init; }
 }
 
 public class AdminUserStatisticsProjection : MultiStreamProjection<AdminUserStatistics, Guid>
@@ -79,6 +80,36 @@ public class AdminUserStatisticsProjection : MultiStreamProjection<AdminUserStat
             doc => doc.Id,
             doc => doc.ClientId,
             e => e.Data.ClientId
+        ));
+
+        CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, MasterKycVerificationInitiated>(
+            doc => doc.Id,
+            doc => doc.MasterId,
+            e => e.Data.MasterId
+        ));
+
+        CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, MasterKycSubmitted>(
+            doc => doc.Id,
+            doc => doc.MasterId,
+            e => e.Data.MasterId
+        ));
+
+        CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, MasterKycApproved>(
+            doc => doc.Id,
+            doc => doc.MasterId,
+            e => e.Data.MasterId
+        ));
+
+        CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, MasterKycRejected>(
+            doc => doc.Id,
+            doc => doc.MasterId,
+            e => e.Data.MasterId
+        ));
+
+        CustomGrouping(new ForeignKeyEventGrouper<AdminUserStatistics, Guid, MasterKycSessionAbandoned>(
+            doc => doc.Id,
+            doc => doc.MasterId,
+            e => e.Data.MasterId
         ));
 
         DeleteEvent<UserDeleted>();
@@ -153,4 +184,19 @@ public class AdminUserStatisticsProjection : MultiStreamProjection<AdminUserStat
 
     public static AdminUserStatistics Apply(IEvent<BookingCompleted> @event, AdminUserStatistics current) =>
         current with { Earnings = current.Earnings + @event.Data.Price };
+
+    public static AdminUserStatistics Apply(IEvent<MasterKycVerificationInitiated> _, AdminUserStatistics current) =>
+        current with { KycStatus = KycStatus.NotSubmitted };
+
+    public static AdminUserStatistics Apply(IEvent<MasterKycSubmitted> _, AdminUserStatistics current) =>
+        current with { KycStatus = KycStatus.Pending };
+
+    public static AdminUserStatistics Apply(IEvent<MasterKycApproved> _, AdminUserStatistics current) =>
+        current with { KycStatus = KycStatus.Approved };
+
+    public static AdminUserStatistics Apply(IEvent<MasterKycRejected> _, AdminUserStatistics current) =>
+        current with { KycStatus = KycStatus.Rejected };
+
+    public static AdminUserStatistics Apply(IEvent<MasterKycSessionAbandoned> _, AdminUserStatistics current) =>
+        current with { KycStatus = KycStatus.Abandoned };
 }

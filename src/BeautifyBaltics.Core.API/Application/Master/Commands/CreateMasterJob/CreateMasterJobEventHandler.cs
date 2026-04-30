@@ -1,5 +1,6 @@
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Persistence.Repositories.Job;
 using Wolverine;
@@ -13,6 +14,9 @@ public class CreateMasterJobEventHandler(IJobRepository jobRepository)
     public async Task<(Events, OutgoingMessages)> Handle(CreateMasterJobRequest request, MasterAggregate master, CancellationToken cancellationToken)
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
+
+        if (master.KycStatus != KycStatus.Approved && master.KycStatus != KycStatus.Pending)
+            throw DomainException.WithMessage("Identity verification must be submitted before creating services.");
 
         var jobDefinition = await jobRepository.GetByIdAsync(request.Job.JobId, cancellationToken)
                             ?? throw NotFoundException.For<Domain.Documents.Job>(request.Job.JobId);

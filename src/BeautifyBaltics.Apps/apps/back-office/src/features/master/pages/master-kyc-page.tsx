@@ -27,7 +27,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSearch } from '@tanstack/react-router';
 
 import { KycStatus } from '@/state/endpoints/api.schemas';
-import { getGetMasterByIdQueryKey, useGetMasterById, useInitiateMasterKycVerification, useSyncMasterKycStatus } from '@/state/endpoints/masters';
+import {
+  getGetMasterByIdQueryKey, useGetMasterById, useInitiateMasterKycVerification, useSyncMasterKycStatus,
+} from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
 function KycStatusBadge({ status }: { status: KycStatus | undefined }) {
@@ -57,7 +59,7 @@ export default function MasterKycPage() {
 
   const { data: masterData, isLoading } = useGetMasterById(
     masterId,
-    { id: masterId, proposal: true },
+    { id: masterId },
     { query: { enabled: !!masterId } },
   );
 

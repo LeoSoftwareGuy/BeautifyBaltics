@@ -3,7 +3,7 @@ import {
   ActionIcon, Alert, Box, Button, Card, Group, Stack, Text, Title,
 } from '@mantine/core';
 import { IconArrowLeft, IconLogout, IconShieldCheck } from '@tabler/icons-react';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 
 import { useSession } from '@/contexts/session-context';
 import { KycStatus } from '@/state/endpoints/api.schemas';
@@ -89,11 +89,10 @@ function MasterSettingsPage() {
                 {t('master.settings.kyc.softLock.message')}
               </Text>
               <Button
-                component={Link}
-                to="/master/kyc"
                 size="xs"
                 color={isKycPending ? 'blue' : 'orange'}
                 variant="light"
+                onClick={() => navigate({ to: '/master/kyc', search: {} })}
               >
                 {t('master.settings.kyc.softLock.action')}
               </Button>

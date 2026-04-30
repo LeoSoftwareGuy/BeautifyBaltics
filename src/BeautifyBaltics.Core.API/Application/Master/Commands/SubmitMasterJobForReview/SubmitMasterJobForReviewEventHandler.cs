@@ -1,6 +1,4 @@
-using System.Text.Json;
 using BeautifyBaltics.Domain.Aggregates.Master;
-using BeautifyBaltics.Domain.Aggregates.Master.Changesets;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
@@ -30,23 +28,12 @@ public class SubmitMasterJobForReviewEventHandler
         if (job.Status != MasterJobStatus.Draft)
         {
             throw DomainException.WithMessage($"Job must be in Draft status to submit for review. Current status: {job.Status}.");
-        }          
+        }
 
-        var submittedEvent = new MasterJobSubmittedForReview(master.Id, job.MasterJobId);
-
-        var change = new MasterJobSubmitForReviewChangeProposed(job.MasterJobId);
-
-        var proposed = new MasterChangeProposed
-        {
-            AggregateId = master.Id,
-            ProposedById = master.UserId,
-            EntityId = job.MasterJobId,
-            Type = typeof(MasterJobSubmitForReviewChangeProposed).FullName!,
-            ProposedChange = JsonSerializer.SerializeToElement(change),
-        };
+        var activatedEvent = new MasterJobActivated(master.Id, job.MasterJobId);
 
         return Task.FromResult<(Events, OutgoingMessages)>(
-            ([submittedEvent, proposed], [new SubmitMasterJobForReviewResponse(master.Id, job.MasterJobId)])
+            ([activatedEvent], [new SubmitMasterJobForReviewResponse(master.Id, job.MasterJobId)])
         );
     }
 }

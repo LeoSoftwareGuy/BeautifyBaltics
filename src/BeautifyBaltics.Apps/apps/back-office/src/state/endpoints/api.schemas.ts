@@ -546,6 +546,8 @@ export type FindUsersResponse = {
   earnings: number;
   /** Master rating, 0 for clients */
   rating: number;
+  /** KYC verification status (masters only) */
+  kycStatus?: KycStatus;
 };
 
 export type FindUsersResponsePagedResponse = {

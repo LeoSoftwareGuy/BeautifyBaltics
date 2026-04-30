@@ -76,4 +76,9 @@ public record FindUsersResponse
     /// </summary>
     [Required]
     public decimal Rating { get; init; }
+
+    /// <summary>
+    /// KYC verification status (masters only)
+    /// </summary>
+    public KycStatus? KycStatus { get; init; }
 }

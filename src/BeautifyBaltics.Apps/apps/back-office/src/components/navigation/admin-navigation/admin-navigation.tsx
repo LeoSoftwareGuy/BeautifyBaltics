@@ -1,10 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import {
-  Badge, Group, Stack, Text, UnstyledButton,
+  Group, Stack, Text, UnstyledButton,
 } from '@mantine/core';
 import {
   IconCalendarEvent,
-  IconCheckbox,
   IconLayoutDashboard,
   IconLogout,
   IconSparkles,
@@ -14,7 +13,6 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { useSession } from '@/contexts/session-context';
 import { useLayout } from '@/layouts';
-import { useGetPendingChangesetsCount } from '@/state/endpoints/changesets';
 
 import NavigationItem from '../main-navigation/navigation-item';
 
@@ -23,10 +21,6 @@ export default function AdminNavigation() {
   const navigate = useNavigate();
   const layout = useLayout();
   const { t } = useTranslation();
-  const { data: pendingCount } = useGetPendingChangesetsCount({
-    query: { refetchInterval: 30_000 },
-  });
-  const count = pendingCount?.count ?? 0;
 
   const handleLogout = async () => {
     try {
@@ -41,14 +35,6 @@ export default function AdminNavigation() {
       <NavigationItem icon={IconUsers} label={t('navigation.admin.users')} href="/admin/users" />
       <NavigationItem icon={IconCalendarEvent} label={t('navigation.admin.bookings')} href="/admin/bookings" />
       <NavigationItem icon={IconSparkles} label={t('navigation.admin.services')} href="/admin/services" />
-      <NavigationItem
-        icon={IconCheckbox}
-        label={t('navigation.admin.changesets')}
-        href="/admin/changesets"
-        rightSection={count > 0 ? (
-          <Badge size="xs" color="yellow" variant="filled" circle>{count}</Badge>
-        ) : undefined}
-      />
 
       <UnstyledButton
         onClick={handleLogout}

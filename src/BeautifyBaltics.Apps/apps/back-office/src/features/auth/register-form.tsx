@@ -75,7 +75,13 @@ export function RegisterForm({ onRequireEmailVerification, defaultRole = 'client
       });
 
       if (response.status === 409 || response.status === 400) {
-        form.setFieldError('email', 'An account with this email already exists for the selected account type.');
+        const body = await response.json().catch(() => ({}));
+        const detail: string = body?.detail ?? '';
+        if (detail.toLowerCase().includes('phone')) {
+          form.setFieldError('phoneNumber', 'An account with this phone number already exists.');
+        } else {
+          form.setFieldError('email', 'An account with this email already exists for the selected account type.');
+        }
         return;
       }
 

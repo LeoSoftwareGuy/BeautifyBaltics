@@ -18,6 +18,7 @@ import { notifications } from '@mantine/notifications';
 import {
   IconDotsVertical,
   IconSearch,
+  IconShieldCheck,
   IconStar,
   IconTrash,
 } from '@tabler/icons-react';
@@ -35,6 +36,7 @@ import {
   FindUsersParams,
   FindUsersResponse,
   FindUsersResponsePagedResponse,
+  KycStatus,
   UserRole,
 } from '@/state/endpoints/api.schemas';
 
@@ -181,6 +183,26 @@ export function AdminUsersDataTable() {
           <NumberFormatter value={user.earnings ?? 0} prefix="€" decimalScale={2} fixedDecimalScale />
         </Text>
       ),
+    },
+    {
+      accessor: 'kycStatus',
+      title: t('admin.users.table.columns.kyc'),
+      render: (user) => {
+        if (user.role !== UserRole.Master) return <Text size="sm" c="dimmed">—</Text>;
+        switch (user.kycStatus) {
+          case KycStatus.Approved:
+            return <Badge variant="light" color="teal" size="sm" leftSection={<IconShieldCheck size={10} />}>{t('master.kyc.status.approved')}</Badge>;
+          case KycStatus.Pending:
+            return <Badge variant="light" color="yellow" size="sm">{t('master.kyc.status.pending')}</Badge>;
+          case KycStatus.Rejected:
+            return <Badge variant="light" color="red" size="sm">{t('master.kyc.status.rejected')}</Badge>;
+          case KycStatus.Abandoned:
+          case KycStatus.Expired:
+            return <Badge variant="light" color="orange" size="sm">{t('master.kyc.status.abandoned')}</Badge>;
+          default:
+            return <Badge variant="light" color="gray" size="sm">{t('master.kyc.status.notSubmitted')}</Badge>;
+        }
+      },
     },
     {
       accessor: 'isAdmin',

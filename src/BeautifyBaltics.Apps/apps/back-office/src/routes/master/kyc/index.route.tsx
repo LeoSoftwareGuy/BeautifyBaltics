@@ -4,9 +4,9 @@ import MasterKycPage from '@/features/master/pages/master-kyc-page';
 import { requireAuthenticated } from '@/utils/auth';
 
 export const Route = createFileRoute('/master/kyc/')({
-  validateSearch: (search: Record<string, unknown>) => ({
-    verificationSessionId: search['verificationSessionId'] as string | undefined,
-    status: search['status'] as string | undefined,
+  validateSearch: (search: Record<string, unknown>): { verificationSessionId?: string; status?: string } => ({
+    verificationSessionId: search.verificationSessionId as string | undefined,
+    status: search.status as string | undefined,
   }),
   beforeLoad: async ({ location }) => {
     await requireAuthenticated(location.pathname ?? '/master/kyc');
