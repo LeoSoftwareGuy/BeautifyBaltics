@@ -1,32 +1,38 @@
-app = "beautify-baltics-api"
-primary_region = "arn"
+# fly.toml app configuration file generated for beautifybaltics on 2026-05-01T09:30:13Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'beautifybaltics'
+primary_region = 'arn'
 
 [build]
-  dockerfile = "src/BeautifyBaltics.Core.API/Dockerfile"
+  dockerfile = 'src/BeautifyBaltics.Core.API/Dockerfile'
 
 [env]
-  ASPNETCORE_ENVIRONMENT = "Production"
+  ASPNETCORE_ENVIRONMENT = 'Production'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = "stop"
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 1
 
   [http_service.concurrency]
-    type = "requests"
+    type = 'requests'
     hard_limit = 200
     soft_limit = 150
 
-[[http_service.checks]]
-  grace_period = "30s"
-  interval = "15s"
-  method = "GET"
-  path = "/health"
-  timeout = "10s"
+  [[http_service.checks]]
+    interval = '15s'
+    timeout = '10s'
+    grace_period = '30s'
+    method = 'GET'
+    path = '/health'
 
 [[vm]]
-  memory = "512mb"
-  cpu_kind = "shared"
+  memory = '512mb'
+  cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 512
