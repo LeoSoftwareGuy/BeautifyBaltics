@@ -39,7 +39,7 @@ export function BaseMasterServicesForm({ form }: BaseMasterServicesFormProps) {
     if (jobId) {
       const job = jobs.find((j) => j.id === jobId);
       if (job) {
-        form.setValues({ jobId, title: job.name, duration: job.durationMinutes });
+        form.setValues({ jobId, title: job.name });
         return;
       }
     }

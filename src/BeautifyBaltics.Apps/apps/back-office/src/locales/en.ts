@@ -37,8 +37,16 @@ const en = {
       bookings: 'Bookings',
       timeSlots: 'Time Slots',
       services: 'Services',
+      kyc: 'Verification',
       settings: 'Settings',
       howTo: 'How It Works',
+    },
+    admin: {
+      dashboard: 'Dashboard',
+      services: 'Services',
+      bookings: 'Bookings',
+      users: 'Users',
+      changesets: 'Approvals',
     },
     breadcrumbs: {
       brand: 'Beautify Baltics',
@@ -56,7 +64,13 @@ const en = {
       masterServices: 'Services',
       masterTimeSlots: 'Time Slots',
       masterSettings: 'Settings',
+      masterKyc: 'Verification',
       masterProfile: 'Master Profile',
+      adminDashboard: 'Admin',
+      adminServices: 'Services',
+      adminBookings: 'Bookings',
+      adminUsers: 'Users',
+      adminChangesets: 'Approvals',
     },
   },
   auth: {
@@ -89,15 +103,23 @@ const en = {
     },
     login: {
       title: 'Welcome back',
-      subtitle: 'Sign in with your Beautify Baltics account to continue.',
+      subtitle: 'Enter your credentials to access your account',
       accountTypeLabel: 'Account type',
       accountTypeHint: 'Choose which workspace you want to access',
       roleClient: 'Client',
       roleMaster: 'Master',
       registeredTitle: 'Registration successful',
       registeredMessage: 'Please log in with your new credentials.',
-      noAccount: 'Don\'t have an account?',
-      createAccountLink: 'Create one',
+      noAccount: 'New to Beautify Baltics?',
+      createAccountLink: 'Create an account',
+      forgotPassword: 'Forgot password?',
+      signIn: 'Sign In',
+      resetPasswordTitle: 'Reset password',
+      resetPasswordSubtitle: 'Enter your email and we\'ll send you a link to reset your password.',
+      sendResetLink: 'Send reset link',
+      resetCheckInboxTitle: 'Check your inbox',
+      resetCheckInboxMessage: 'A password reset link has been sent to your email address.',
+      backToSignIn: 'Back to sign in',
     },
     register: {
       title: 'Create an account',
@@ -107,6 +129,7 @@ const en = {
       roleClient: 'Client',
       roleMaster: 'Master',
       submitButton: 'Create account',
+      alreadyHaveAccount: 'Already have an account?',
       notifications: {
         checkInboxTitle: 'Check your inbox',
         checkInboxMessage: 'Please confirm your email before signing in.',
@@ -144,6 +167,11 @@ const en = {
     },
     filters: {
       title: 'Filters',
+      availability: 'Availability',
+      dateLabel: 'Date',
+      datePlaceholder: 'Pick a date',
+      timeLabel: 'Time',
+      timePlaceholder: 'Any time',
       priceRange: 'Price range',
     },
     categories: {
@@ -288,6 +316,9 @@ const en = {
         scheduledTime: 'Scheduled Time',
         status: 'Status',
       },
+      commentSection: {
+        title: 'Your Note',
+      },
       contactSection: {
         title: 'Contact Details',
         empty: 'No contact details available',
@@ -303,6 +334,10 @@ const en = {
         serviceLabel: 'Service',
         servicePlaceholder: 'All Services',
         priceRange: 'Price Range',
+        dateLabel: 'Date',
+        datePlaceholder: 'Pick a date',
+        timeLabel: 'Time',
+        timePlaceholder: 'Any time',
       },
       results: {
         title: 'Top Rated Masters',
@@ -402,6 +437,11 @@ const en = {
         viewAll: 'View All',
         incomeDynamics: 'Income Dynamics',
       },
+      kycBanner: {
+        title: 'Complete identity verification',
+        message: 'Verify your identity to become visible to clients and start receiving bookings.',
+        action: 'Verify now',
+      },
     },
     bookings: {
       page: {
@@ -442,6 +482,7 @@ const en = {
         viewInvoice: 'View Invoice',
         confirm: 'Confirm',
         cancel: 'Cancel',
+        clientComment: 'Client note',
         noRecords: 'No bookings found',
       },
       status: {
@@ -545,6 +586,11 @@ const en = {
         count_one: '{{count}} service added',
         count_other: '{{count}} services added',
       },
+      status: {
+        draft: 'Draft',
+        pendingReview: 'Pending Review',
+        active: 'Active',
+      },
       notifications: {
         createSuccessTitle: 'Service added',
         createSuccessMessage: 'Your service has been added successfully.',
@@ -570,10 +616,16 @@ const en = {
         deleteImageSuccessMessage: 'The image has been removed.',
         deleteImageErrorTitle: 'Failed to delete image',
         deleteImageErrorMessage: 'Please try again.',
+        submitSuccessTitle: 'Submitted for review',
+        submitSuccessMessage: 'Your service has been submitted for admin review.',
+        submitErrorTitle: 'Failed to submit service',
+        submitErrorMessage: 'An error occurred while submitting the service.',
       },
       cards: {
         addServiceTitle: 'Add New Service',
         addServiceSubtitle: 'Expand your catalog with a new service',
+        submitForReview: 'Submit for Review',
+        pendingReviewTooltip: 'Pending admin review — editing is disabled',
       },
       form: {
         description: 'Select a category first, then choose the service you want to offer',
@@ -628,9 +680,45 @@ const en = {
         imageAltWithIndex: 'Work sample {{index}}',
       },
     },
+    kyc: {
+      title: 'Identity Verification',
+      subtitle: 'Verify your identity to become visible to clients and start receiving bookings.',
+      status: {
+        notSubmitted: 'Not verified',
+        pending: 'In progress',
+        approved: 'Verified',
+        rejected: 'Rejected',
+        abandoned: 'Incomplete',
+      },
+      approvedTitle: 'Identity Verified',
+      approvedMessage: 'Your identity has been verified. You are visible to clients.',
+      pendingTitle: 'Verification in Progress',
+      pendingMessage: 'Please complete the verification steps in the Didit window. Come back here when done.',
+      rejectedTitle: 'Verification Not Successful',
+      rejectedReason: 'Reason: {{reason}}',
+      rejectedHint: 'You can start a new verification attempt below.',
+      abandonedMessage: 'Your previous verification session was not completed. Start a new one below.',
+      howItWorksTitle: 'How it works',
+      howItWorksMessage: 'Click the button below to open the secure Didit verification window in a new tab. You will scan your ID and take a live selfie. The result is usually instant.',
+      startButton: 'Start Verification',
+      retryButton: 'Start New Verification',
+      checkStatusButton: 'Check Status',
+      reopenButton: 'Re-open Verification Window',
+      notifications: {
+        errorTitle: 'Failed to start verification',
+        errorMessage: 'An error occurred. Please try again.',
+      },
+    },
     settings: {
       page: {
         title: 'Settings',
+      },
+      kyc: {
+        softLock: {
+          title: 'Identity verification required',
+          message: 'Complete identity verification before submitting changes.',
+          action: 'Verify identity',
+        },
       },
       profile: {
         loading: 'Loading profile...',
@@ -653,6 +741,12 @@ const en = {
           lastName: 'Last name is required (1-128 characters)',
           email: 'Email is required',
           phone: 'Phone number is required',
+        },
+        pendingPreview: {
+          viewingProposed: 'Viewing pending changes (awaiting approval)',
+          viewingApproved: 'Viewing approved version (currently public)',
+          pending: 'Pending',
+          approved: 'Approved',
         },
         photo: {
           title: 'Profile Photo',
@@ -760,6 +854,8 @@ const en = {
       phoneFallback: 'Phone not provided',
       booking: 'Booking...',
       confirmBooking: 'Confirm Booking',
+      commentLabel: 'Note for master (optional)',
+      commentPlaceholder: 'Any special requests or notes for the master...',
       notifications: {
         successTitle: 'Booking created',
         successMessage: 'Your booking was successfully created',
@@ -850,6 +946,276 @@ const en = {
       subtitle: 'Choose the role that fits you best and start booking in minutes.',
       master: 'Join as a Master',
       client: 'Book as a Client',
+    },
+  },
+  admin: {
+    navigation: {
+      dashboard: 'Dashboard',
+      services: 'Services',
+      bookings: 'Bookings',
+      users: 'Users',
+    },
+    breadcrumbs: {
+      adminDashboard: 'Admin',
+      adminServices: 'Services',
+      adminBookings: 'Bookings',
+      adminUsers: 'Users',
+    },
+    dashboard: {
+      page: {
+        title: 'Platform Overview',
+        subtitle: 'Here\'s what\'s happening with Beautify Baltics.',
+        exportReport: 'Export Report',
+      },
+      stats: {
+        totalClients: 'Total Clients',
+        totalMasters: 'Total Masters',
+        totalBookings: 'Total Bookings',
+      },
+      monthlyPerformance: {
+        title: 'Monthly Performance',
+        subtitle: 'Booking trends across all service categories',
+        completed: 'Completed',
+        confirmed: 'Confirmed',
+        cancelled: 'Cancelled',
+      },
+      recentActivity: {
+        title: 'Recent Activity',
+        viewAll: 'View All',
+        booked: 'booked',
+        with: 'with',
+        noActivity: 'No recent activity',
+      },
+      serviceCategories: {
+        title: 'Service Categories',
+        totalRevenue: 'Total revenue (last 12 months)',
+        noData: 'No category data available',
+      },
+    },
+    users: {
+      page: {
+        title: 'User Management',
+        subtitle: 'Manage platform users, roles and accounts',
+      },
+      stats: {
+        totalUsers: 'Total Users',
+        totalMasters: 'Active Masters',
+        totalClients: 'Active Clients',
+        platformVolume: 'Platform Volume',
+      },
+      table: {
+        columns: {
+          name: 'Name',
+          role: 'Role',
+          bookings: 'Bookings',
+          rating: 'Rating',
+          earnings: 'Earnings',
+          kyc: 'KYC',
+          admin: 'Admin',
+        },
+        noRecords: 'No users found',
+      },
+      filters: {
+        searchPlaceholder: 'Search by name or email...',
+        allRoles: 'All roles',
+      },
+      role: {
+        client: 'Client',
+        master: 'Master',
+        admin: 'Admin',
+      },
+      verified: 'Verified',
+      unverified: 'Unverified',
+      actions: {
+        promoteToAdmin: 'Promote to Admin',
+        delete: 'Delete Account',
+      },
+      promoteModal: {
+        title: 'Promote to Admin',
+        message: 'Are you sure you want to promote {{name}} to Admin? This will grant full platform access.',
+        confirm: 'Promote',
+      },
+      deleteModal: {
+        title: 'Delete Account',
+        message: 'Are you sure you want to delete {{name}}? This action cannot be undone.',
+        confirm: 'Delete',
+      },
+      notifications: {
+        roleUpdated: 'User role updated successfully',
+        deleted: 'User deleted successfully',
+        errorTitle: 'Error',
+        error: 'Something went wrong. Please try again.',
+      },
+      detail: {
+        profile: {
+          title: 'Master Profile',
+        },
+        chart: {
+          title: 'Booking History (6 months)',
+          bookings: 'Bookings',
+          earnings: 'Earnings',
+        },
+        quickActions: 'Quick Actions',
+        memberSince: 'Member since {{date}}',
+        viewProfile: 'View Public Profile',
+      },
+    },
+    bookings: {
+      page: {
+        title: 'Bookings Management',
+        subtitle: 'View and monitor all bookings on the platform',
+      },
+      stats: {
+        totalBookings: 'Total Bookings',
+        confirmed: 'Confirmed',
+        pending: 'Pending',
+        revenueThisMonth: 'Revenue This Month',
+      },
+      table: {
+        columns: {
+          client: 'Client',
+          master: 'Master',
+          service: 'Service',
+          scheduledAt: 'Scheduled At',
+          price: 'Price',
+          status: 'Status',
+        },
+        noRecords: 'No bookings found',
+      },
+      filters: {
+        searchPlaceholder: 'Search by client or service...',
+        allStatuses: 'All statuses',
+        fromDate: 'From date',
+        toDate: 'To date',
+      },
+      status: {
+        requested: 'Requested',
+        confirmed: 'Confirmed',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
+      },
+    },
+    services: {
+      page: {
+        title: 'Services Management',
+        subtitle: 'Manage job categories and services offered on the platform',
+      },
+      stats: {
+        totalServices: 'Total Services',
+        totalCategories: 'Total Categories',
+        averagePrice: 'Average Price',
+      },
+      tabs: {
+        services: 'Services',
+        categories: 'Categories',
+      },
+      servicesTable: {
+        columns: {
+          name: 'Service Name',
+          category: 'Category',
+          duration: 'Duration',
+          price: 'Price',
+          actions: 'Actions',
+        },
+        noRecords: 'No services found',
+      },
+      categoriesTable: {
+        columns: {
+          name: 'Category Name',
+          actions: 'Actions',
+        },
+        noRecords: 'No categories found',
+      },
+      filters: {
+        searchPlaceholder: 'Search services...',
+        categorySearchPlaceholder: 'Search categories...',
+        categoryFilterPlaceholder: 'All categories',
+      },
+      actions: {
+        addService: 'Add Service',
+        addCategory: 'Add Category',
+        edit: 'Edit',
+        delete: 'Delete',
+      },
+      jobModal: {
+        createTitle: 'Create Service',
+        editTitle: 'Edit Service',
+        fields: {
+          name: 'Service Name',
+          category: 'Category',
+          description: 'Description',
+          durationMinutes: 'Duration (minutes)',
+          price: 'Price (EUR)',
+        },
+        submit: 'Save',
+        notifications: {
+          createSuccess: 'Service created successfully',
+          updateSuccess: 'Service updated successfully',
+          errorTitle: 'Error',
+          error: 'Something went wrong. Please try again.',
+        },
+      },
+      categoryModal: {
+        createTitle: 'Create Category',
+        editTitle: 'Edit Category',
+        deleteTitle: 'Delete Category',
+        deleteMessage: 'Are you sure you want to delete this category? This action cannot be undone.',
+        fields: {
+          name: 'Category Name',
+        },
+        submit: 'Save',
+        notifications: {
+          createSuccess: 'Category created successfully',
+          updateSuccess: 'Category updated successfully',
+          deleteSuccess: 'Category deleted successfully',
+          errorTitle: 'Error',
+          error: 'Something went wrong. Please try again.',
+        },
+      },
+    },
+    changesets: {
+      pageTitle: 'Approvals',
+      status: {
+        pending: 'Pending',
+        approved: 'Approved',
+        rejected: 'Rejected',
+      },
+      filters: {
+        allStatuses: 'All statuses',
+      },
+      table: {
+        columns: {
+          changeType: 'Change Type',
+          masterId: 'Master',
+          proposedAt: 'Proposed At',
+          status: 'Status',
+        },
+        noRecords: 'No changesets found',
+      },
+      proposedChange: 'Proposed Change',
+      comment: 'Comment',
+      actions: {
+        approve: 'Approve',
+        reject: 'Reject',
+      },
+      approveModal: {
+        title: 'Approve Change',
+        message: 'Are you sure you want to approve this change? It will be applied immediately.',
+        commentPlaceholder: 'Optional comment...',
+        confirm: 'Approve',
+      },
+      rejectModal: {
+        title: 'Reject Change',
+        message: 'Are you sure you want to reject this change? The action cannot be undone.',
+        commentPlaceholder: 'Reason for rejection (optional)...',
+        confirm: 'Reject',
+      },
+      notifications: {
+        approved: 'Change approved successfully',
+        rejected: 'Change rejected',
+        errorTitle: 'Error',
+        error: 'Something went wrong. Please try again.',
+      },
     },
   },
   data: {

@@ -33,7 +33,7 @@ import {
 } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
-function MasterProfileSettings() {
+function MasterProfileSettings({ isKycLocked = false }: { isKycLocked?: boolean }) {
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
   const { t } = useTranslation();
@@ -42,7 +42,6 @@ function MasterProfileSettings() {
     data: masterData,
     isLoading: isMasterLoading,
     isError: isMasterError,
-    dataUpdatedAt,
     refetch,
   } = useGetMasterById(masterId, { id: masterId }, {
     query: { enabled: !!masterId },
@@ -102,7 +101,7 @@ function MasterProfileSettings() {
       form.resetDirty();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [masterData, masterId, dataUpdatedAt]);
+  }, [masterData, masterId]);
 
   const { mutateAsync, isPending } = useUpdateMasterProfile({
     mutation: {
@@ -343,13 +342,13 @@ function MasterProfileSettings() {
             </div>
             <LocationPicker
               value={{
-                latitude: form.getValues().latitude ?? undefined,
-                longitude: form.getValues().longitude ?? undefined,
-                city: form.getValues().city,
-                country: form.getValues().country,
-                addressLine1: form.getValues().addressLine1,
-                addressLine2: form.getValues().addressLine2,
-                postalCode: form.getValues().postalCode,
+                latitude: masterData?.latitude ?? undefined,
+                longitude: masterData?.longitude ?? undefined,
+                city: masterData?.city ?? null,
+                country: masterData?.country ?? null,
+                addressLine1: masterData?.addressLine1 ?? null,
+                addressLine2: masterData?.addressLine2 ?? null,
+                postalCode: masterData?.postalCode ?? null,
               }}
               onChange={handleLocationChange}
             />
@@ -363,7 +362,7 @@ function MasterProfileSettings() {
           hiddenFrom="sm"
           leftSection={<IconDeviceFloppy size={16} />}
           loading={isPending}
-          disabled={!form.isDirty()}
+          disabled={!form.isDirty() || isKycLocked}
         >
           {t('master.settings.profile.form.submit')}
         </Button>
@@ -372,7 +371,7 @@ function MasterProfileSettings() {
             type="submit"
             leftSection={<IconDeviceFloppy size={16} />}
             loading={isPending}
-            disabled={!form.isDirty()}
+            disabled={!form.isDirty() || isKycLocked}
           >
             {t('master.settings.profile.form.submit')}
           </Button>

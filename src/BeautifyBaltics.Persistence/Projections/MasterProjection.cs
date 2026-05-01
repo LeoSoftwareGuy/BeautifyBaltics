@@ -2,10 +2,11 @@ using BeautifyBaltics.Domain.Aggregates.Master.Events;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
 using JasperFx.Events;
-
 using Marten.Events.Aggregation;
 
 namespace BeautifyBaltics.Persistence.Projections;
+
+public record MasterAvailabilityWindow(Guid Id, DateTime StartAt, DateTime EndAt, AvailabilitySlotType SlotType);
 
 public record Master(Guid Id) : Projection
 {
@@ -30,6 +31,17 @@ public record Master(Guid Id) : Projection
     public string? ProfileImageMimeType { get; init; }
     public long? ProfileImageSize { get; init; }
     public int BufferMinutes { get; init; }
+    public bool IsVisible { get; init; }
+    public int PendingChangesetsCount { get; init; }
+    public bool HasPendingChangesets => PendingChangesetsCount > 0;
+
+    public KycStatus KycStatus { get; init; } = KycStatus.NotSubmitted;
+    public string? KycSessionId { get; init; }
+    public string? KycVerificationUrl { get; init; }
+    public DateTimeOffset? KycSubmittedAt { get; init; }
+    public string? KycRejectionReason { get; init; }
+
+    public IReadOnlyList<MasterAvailabilityWindow> Availabilities { get; init; } = [];
 
     public string? LocationName =>
         !string.IsNullOrWhiteSpace(City) ? City :
@@ -96,4 +108,79 @@ public class MasterProjection : SingleStreamProjection<Master, Guid>
     public static Master Apply(MasterBufferTimeUpdated @event, Master current) => current with { BufferMinutes = @event.BufferMinutes };
 
     public static Master Apply(MasterRatingUpdated @event, Master current) => current with { Rating = @event.AverageRating };
+
+    public static Master Apply(MasterActivated _, Master current) => current with { IsVisible = true };
+
+    public static Master Apply(MasterChangeProposed _, Master current) =>
+        current with { PendingChangesetsCount = current.PendingChangesetsCount + 1 };
+
+    public static Master Apply(MasterChangesetApproved _, Master current) =>
+        current with { PendingChangesetsCount = Math.Max(0, current.PendingChangesetsCount - 1) };
+
+    public static Master Apply(MasterChangesetRejected _, Master current) =>
+        current with { PendingChangesetsCount = Math.Max(0, current.PendingChangesetsCount - 1) };
+
+    public static Master Apply(MasterAvailabilitySlotCreated @event, Master current)
+    {
+        var slot = new MasterAvailabilityWindow(@event.MasterAvailabilityId, @event.StartAt, @event.EndAt, @event.SlotType);
+        return current with { Availabilities = [.. current.Availabilities, slot] };
+    }
+
+    public static Master Apply(MasterAvailabilitySlotUpdated @event, Master current)
+    {
+        var updated = current.Availabilities
+            .Select(s => s.Id == @event.MasterAvailabilityId ? s with { StartAt = @event.StartAt, EndAt = @event.EndAt } : s)
+            .ToArray();
+        return current with { Availabilities = updated };
+    }
+
+    public static Master Apply(MasterAvailabilitySlotDeleted @event, Master current) =>
+        current with
+        {
+            Availabilities = current.Availabilities
+                .Where(s => s.Id != @event.MasterAvailabilitySlotId)
+                .ToArray()
+        };
+
+    public static Master Apply(MasterKycVerificationInitiated @event, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Pending,
+            KycSessionId = @event.SessionId,
+            KycVerificationUrl = @event.VerificationUrl,
+            KycSubmittedAt = @event.InitiatedAt,
+            KycRejectionReason = null,
+        };
+
+    // Kept for event-stream replay of old MasterKycSubmitted events
+    public static Master Apply(MasterKycSubmitted @event, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Pending,
+            KycSubmittedAt = @event.SubmittedAt,
+            KycRejectionReason = null,
+        };
+
+    public static Master Apply(MasterKycApproved _, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Approved,
+            KycVerificationUrl = null,
+            KycRejectionReason = null,
+        };
+
+    public static Master Apply(MasterKycRejected @event, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Rejected,
+            KycVerificationUrl = null,
+            KycRejectionReason = @event.Reason,
+        };
+
+    public static Master Apply(MasterKycSessionAbandoned _, Master current) =>
+        current with
+        {
+            KycStatus = KycStatus.Abandoned,
+            KycVerificationUrl = null,
+        };
 }

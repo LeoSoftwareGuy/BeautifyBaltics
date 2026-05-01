@@ -40,6 +40,7 @@ const ru: CommonLocale = {
       timeSlots: 'Тайм-слоты',
       services: 'Услуги',
       settings: 'Настройки',
+      kyc: 'Верификация',
       howTo: 'Как это работает',
     },
     breadcrumbs: {
@@ -59,6 +60,289 @@ const ru: CommonLocale = {
       masterTimeSlots: 'Тайм-слоты',
       masterSettings: 'Настройки',
       masterProfile: 'Профиль мастера',
+      adminDashboard: 'Панель Админа',
+      adminServices: 'Сервисы',
+      adminBookings: 'Бронирования',
+      adminUsers: 'Пользователи',
+      adminChangesets: 'Согласования',
+      masterKyc: 'Верификация',
+    },
+    admin: {
+      dashboard: 'Панель',
+      services: 'Услуги',
+      bookings: 'Бронирования',
+      users: 'Пользователи',
+      changesets: 'Согласования',
+    },
+  },
+  admin: {
+    navigation: {
+      dashboard: 'Панель',
+      services: 'Услуги',
+      bookings: 'Бронирования',
+      users: 'Пользователи',
+    },
+    breadcrumbs: {
+      adminDashboard: 'Панель Админа',
+      adminServices: 'Услуги',
+      adminBookings: 'Бронирования',
+      adminUsers: 'Пользователи',
+    },
+    dashboard: {
+      page: {
+        title: 'Обзор платформы',
+        subtitle: 'Вот что происходит в Beautify Baltics сегодня.',
+        exportReport: 'Экспорт отчёта',
+      },
+      stats: {
+        totalClients: 'Всего клиентов',
+        totalMasters: 'Всего мастеров',
+        totalBookings: 'Всего бронирований',
+      },
+      monthlyPerformance: {
+        title: 'Ежемесячная статистика',
+        subtitle: 'Тренды бронирований по всем категориям услуг',
+        completed: 'Завершено',
+        confirmed: 'Подтверждено',
+        cancelled: 'Отменено',
+      },
+      recentActivity: {
+        title: 'Последние действия',
+        viewAll: 'Смотреть все',
+        booked: 'забронировал(а)',
+        with: 'с',
+        noActivity: 'Нет последних действий',
+      },
+      serviceCategories: {
+        title: 'Категории услуг',
+        totalRevenue: 'Общая выручка (последние 12 месяцев)',
+        noData: 'Данные по категориям отсутствуют',
+      },
+    },
+    users: {
+      page: {
+        title: 'Управление пользователями',
+        subtitle: 'Управляйте пользователями платформы, ролями и аккаунтами',
+      },
+      stats: {
+        totalUsers: 'Всего пользователей',
+        totalMasters: 'Активных мастеров',
+        totalClients: 'Активных клиентов',
+        platformVolume: 'Объём платформы',
+      },
+      table: {
+        columns: {
+          name: 'Имя',
+          role: 'Роль',
+          bookings: 'Бронирования',
+          rating: 'Рейтинг',
+          earnings: 'Доход',
+          kyc: 'KYC',
+          admin: 'Админ',
+        },
+        noRecords: 'Пользователи не найдены',
+      },
+      filters: {
+        searchPlaceholder: 'Поиск по имени или email...',
+        allRoles: 'Все роли',
+      },
+      role: {
+        client: 'Клиент',
+        master: 'Мастер',
+        admin: 'Админ',
+      },
+      verified: 'Подтверждён',
+      unverified: 'Не подтверждён',
+      actions: {
+        promoteToAdmin: 'Сделать админом',
+        delete: 'Удалить аккаунт',
+      },
+      promoteModal: {
+        title: 'Сделать админом',
+        message: 'Вы уверены, что хотите назначить {{name}} администратором? Это даст полный доступ к платформе.',
+        confirm: 'Назначить',
+      },
+      deleteModal: {
+        title: 'Удалить аккаунт',
+        message: 'Вы уверены, что хотите удалить пользователя {{name}}? Это действие нельзя отменить.',
+        confirm: 'Удалить',
+      },
+      notifications: {
+        roleUpdated: 'Роль пользователя успешно обновлена',
+        deleted: 'Пользователь успешно удалён',
+        errorTitle: 'Ошибка',
+        error: 'Что-то пошло не так. Попробуйте ещё раз.',
+      },
+      detail: {
+        profile: {
+          title: 'Профиль мастера',
+        },
+        chart: {
+          title: 'История бронирований (6 мес.)',
+          bookings: 'Бронирования',
+          earnings: 'Доход',
+        },
+        quickActions: 'Быстрые действия',
+        memberSince: 'Участник с {{date}}',
+        viewProfile: 'Открыть публичный профиль',
+      },
+    },
+    bookings: {
+      page: {
+        title: 'Управление бронированиями',
+        subtitle: 'Просматривайте и отслеживайте все бронирования на платформе',
+      },
+      stats: {
+        totalBookings: 'Всего бронирований',
+        confirmed: 'Подтверждено',
+        pending: 'Ожидает',
+        revenueThisMonth: 'Доход за месяц',
+      },
+      table: {
+        columns: {
+          client: 'Клиент',
+          master: 'Мастер',
+          service: 'Услуга',
+          scheduledAt: 'Дата и время',
+          price: 'Цена',
+          status: 'Статус',
+        },
+        noRecords: 'Бронирования не найдены',
+      },
+      filters: {
+        searchPlaceholder: 'Поиск по клиенту или услуге...',
+        allStatuses: 'Все статусы',
+        fromDate: 'С даты',
+        toDate: 'По дату',
+      },
+      status: {
+        requested: 'Ожидает',
+        confirmed: 'Подтверждено',
+        completed: 'Завершено',
+        cancelled: 'Отменено',
+      },
+    },
+    services: {
+      page: {
+        title: 'Управление услугами',
+        subtitle: 'Управляйте категориями и услугами, предлагаемыми на платформе',
+      },
+      stats: {
+        totalServices: 'Всего услуг',
+        totalCategories: 'Всего категорий',
+        averagePrice: 'Средняя цена',
+      },
+      tabs: {
+        services: 'Услуги',
+        categories: 'Категории',
+      },
+      servicesTable: {
+        columns: {
+          name: 'Название услуги',
+          category: 'Категория',
+          duration: 'Длительность',
+          price: 'Цена',
+          actions: 'Действия',
+        },
+        noRecords: 'Услуги не найдены',
+      },
+      categoriesTable: {
+        columns: {
+          name: 'Название категории',
+          actions: 'Действия',
+        },
+        noRecords: 'Категории не найдены',
+      },
+      filters: {
+        searchPlaceholder: 'Поиск услуг...',
+        categorySearchPlaceholder: 'Поиск категорий...',
+        categoryFilterPlaceholder: 'Все категории',
+      },
+      actions: {
+        addService: 'Добавить услугу',
+        addCategory: 'Добавить категорию',
+        edit: 'Редактировать',
+        delete: 'Удалить',
+      },
+      jobModal: {
+        createTitle: 'Создать услугу',
+        editTitle: 'Редактировать услугу',
+        fields: {
+          name: 'Название услуги',
+          category: 'Категория',
+          description: 'Описание',
+          durationMinutes: 'Длительность (минуты)',
+          price: 'Цена (EUR)',
+        },
+        submit: 'Сохранить',
+        notifications: {
+          createSuccess: 'Услуга успешно создана',
+          updateSuccess: 'Услуга успешно обновлена',
+          errorTitle: 'Ошибка',
+          error: 'Что-то пошло не так. Попробуйте ещё раз.',
+        },
+      },
+      categoryModal: {
+        createTitle: 'Создать категорию',
+        editTitle: 'Редактировать категорию',
+        deleteTitle: 'Удалить категорию',
+        deleteMessage: 'Вы уверены, что хотите удалить эту категорию? Это действие нельзя отменить.',
+        fields: {
+          name: 'Название категории',
+        },
+        submit: 'Сохранить',
+        notifications: {
+          createSuccess: 'Категория успешно создана',
+          updateSuccess: 'Категория успешно обновлена',
+          deleteSuccess: 'Категория успешно удалена',
+          errorTitle: 'Ошибка',
+          error: 'Что-то пошло не так. Попробуйте ещё раз.',
+        },
+      },
+    },
+    changesets: {
+      pageTitle: 'Согласования',
+      status: {
+        pending: 'Ожидает',
+        approved: 'Одобрено',
+        rejected: 'Отклонено',
+      },
+      filters: {
+        allStatuses: 'Все статусы',
+      },
+      table: {
+        columns: {
+          changeType: 'Тип изменения',
+          masterId: 'Мастер',
+          proposedAt: 'Предложено',
+          status: 'Статус',
+        },
+        noRecords: 'Записи не найдены',
+      },
+      proposedChange: 'Предлагаемое изменение',
+      comment: 'Комментарий',
+      actions: {
+        approve: 'Одобрить',
+        reject: 'Отклонить',
+      },
+      approveModal: {
+        title: 'Одобрить изменение',
+        message: 'Вы уверены, что хотите одобрить это изменение? Оно будет применено немедленно.',
+        commentPlaceholder: 'Необязательный комментарий...',
+        confirm: 'Одобрить',
+      },
+      rejectModal: {
+        title: 'Отклонить изменение',
+        message: 'Вы уверены, что хотите отклонить это изменение? Действие нельзя отменить.',
+        commentPlaceholder: 'Причина отклонения (необязательно)...',
+        confirm: 'Отклонить',
+      },
+      notifications: {
+        approved: 'Изменение успешно одобрено',
+        rejected: 'Изменение отклонено',
+        errorTitle: 'Ошибка',
+        error: 'Что-то пошло не так. Попробуйте ещё раз.',
+      },
     },
   },
   auth: {
@@ -91,15 +375,23 @@ const ru: CommonLocale = {
     },
     login: {
       title: 'С возвращением',
-      subtitle: 'Войдите в аккаунт Beautify Baltics, чтобы продолжить.',
+      subtitle: 'Введите данные для доступа к аккаунту',
       accountTypeLabel: 'Тип аккаунта',
       accountTypeHint: 'Выберите нужный кабинет',
       roleClient: 'Клиент',
       roleMaster: 'Мастер',
       registeredTitle: 'Регистрация прошла успешно',
       registeredMessage: 'Пожалуйста, войдите с новыми учетными данными.',
-      noAccount: 'Нет аккаунта?',
-      createAccountLink: 'Зарегистрируйтесь',
+      noAccount: 'Впервые в Beautify Baltics?',
+      createAccountLink: 'Создать аккаунт',
+      forgotPassword: 'Забыли пароль?',
+      signIn: 'Войти',
+      resetPasswordTitle: 'Сброс пароля',
+      resetPasswordSubtitle: 'Введите адрес электронной почты, и мы отправим ссылку для сброса пароля.',
+      sendResetLink: 'Отправить ссылку для сброса',
+      resetCheckInboxTitle: 'Проверьте почту',
+      resetCheckInboxMessage: 'Ссылка для сброса пароля отправлена на ваш адрес электронной почты.',
+      backToSignIn: 'Вернуться ко входу',
     },
     register: {
       title: 'Создать аккаунт',
@@ -109,6 +401,7 @@ const ru: CommonLocale = {
       roleClient: 'Клиент',
       roleMaster: 'Мастер',
       submitButton: 'Создать аккаунт',
+      alreadyHaveAccount: 'Уже есть аккаунт?',
       notifications: {
         checkInboxTitle: 'Проверьте почту',
         checkInboxMessage: 'Подтвердите адрес электронной почты перед входом.',
@@ -146,6 +439,11 @@ const ru: CommonLocale = {
     },
     filters: {
       title: 'Фильтры',
+      availability: 'Доступность',
+      dateLabel: 'Дата',
+      datePlaceholder: 'Выберите дату',
+      timeLabel: 'Время',
+      timePlaceholder: 'Любое время',
       priceRange: 'Диапазон цены',
     },
     categories: {
@@ -290,6 +588,9 @@ const ru: CommonLocale = {
         scheduledTime: 'Запланированное время',
         status: 'Статус',
       },
+      commentSection: {
+        title: 'Ваша заметка',
+      },
       contactSection: {
         title: 'Контакты',
         empty: 'Контактные данные отсутствуют',
@@ -305,6 +606,10 @@ const ru: CommonLocale = {
         serviceLabel: 'Услуга',
         servicePlaceholder: 'Все услуги',
         priceRange: 'Диапазон цены',
+        dateLabel: 'Дата',
+        datePlaceholder: 'Выберите дату',
+        timeLabel: 'Время',
+        timePlaceholder: 'Любое время',
       },
       results: {
         title: 'Лучшие мастера',
@@ -404,6 +709,11 @@ const ru: CommonLocale = {
         viewAll: 'Смотреть все',
         incomeDynamics: 'Динамика дохода',
       },
+      kycBanner: {
+        title: 'Завершите верификацию личности',
+        message: 'Подтвердите личность, чтобы стать видимым для клиентов и начать получать бронирования.',
+        action: 'Верифицировать',
+      },
     },
     bookings: {
       page: {
@@ -444,6 +754,7 @@ const ru: CommonLocale = {
         viewInvoice: 'Смотреть счёт',
         confirm: 'Подтвердить',
         cancel: 'Отменить',
+        clientComment: 'Заметка клиента',
         noRecords: 'Бронирования не найдены',
       },
       status: {
@@ -547,6 +858,11 @@ const ru: CommonLocale = {
         count_one: '{{count}} услуга добавлена',
         count_other: '{{count}} услуг добавлено',
       },
+      status: {
+        draft: 'Черновик',
+        pendingReview: 'На проверке',
+        active: 'Активна',
+      },
       notifications: {
         createSuccessTitle: 'Услуга добавлена',
         createSuccessMessage: 'Услуга успешно добавлена.',
@@ -572,10 +888,16 @@ const ru: CommonLocale = {
         deleteImageSuccessMessage: 'Фото успешно удалено.',
         deleteImageErrorTitle: 'Не удалось удалить изображение',
         deleteImageErrorMessage: 'Повторите попытку.',
+        submitSuccessTitle: 'Отправлено на проверку',
+        submitSuccessMessage: 'Услуга отправлена администратору на проверку.',
+        submitErrorTitle: 'Не удалось отправить услугу',
+        submitErrorMessage: 'Произошла ошибка при отправке услуги.',
       },
       cards: {
         addServiceTitle: 'Добавить новую услугу',
         addServiceSubtitle: 'Расширьте свой каталог услуг',
+        submitForReview: 'Отправить на проверку',
+        pendingReviewTooltip: 'Ожидает проверки администратором — редактирование недоступно',
       },
       form: {
         description: 'Сначала выберите категорию, затем услугу.',
@@ -630,9 +952,45 @@ const ru: CommonLocale = {
         imageAltWithIndex: 'Пример работы {{index}}',
       },
     },
+    kyc: {
+      title: 'Верификация личности',
+      subtitle: 'Подтвердите личность, чтобы стать видимым для клиентов и начать получать бронирования.',
+      status: {
+        notSubmitted: 'Не подтверждён',
+        pending: 'В процессе',
+        approved: 'Подтверждён',
+        rejected: 'Отклонено',
+        abandoned: 'Не завершено',
+      },
+      approvedTitle: 'Личность подтверждена',
+      approvedMessage: 'Ваша личность подтверждена. Вы видны клиентам.',
+      pendingTitle: 'Верификация в процессе',
+      pendingMessage: 'Пожалуйста, завершите шаги верификации в окне Didit. Вернитесь сюда, когда закончите.',
+      rejectedTitle: 'Верификация не прошла',
+      rejectedReason: 'Причина: {{reason}}',
+      rejectedHint: 'Вы можете начать новую попытку верификации ниже.',
+      abandonedMessage: 'Ваша предыдущая сессия верификации не была завершена. Начните новую ниже.',
+      howItWorksTitle: 'Как это работает',
+      howItWorksMessage: 'Нажмите кнопку ниже, чтобы открыть безопасное окно верификации Didit в новой вкладке. Вам нужно будет отсканировать удостоверение личности и сделать селфи. Результат обычно мгновенный.',
+      startButton: 'Начать верификацию',
+      retryButton: 'Начать новую верификацию',
+      checkStatusButton: 'Проверить статус',
+      reopenButton: 'Открыть окно верификации снова',
+      notifications: {
+        errorTitle: 'Не удалось начать верификацию',
+        errorMessage: 'Произошла ошибка. Пожалуйста, попробуйте ещё раз.',
+      },
+    },
     settings: {
       page: {
         title: 'Настройки',
+      },
+      kyc: {
+        softLock: {
+          title: 'Требуется верификация личности',
+          message: 'Завершите верификацию личности перед отправкой изменений.',
+          action: 'Подтвердить личность',
+        },
       },
       profile: {
         loading: 'Загружаем профиль...',
@@ -655,6 +1013,12 @@ const ru: CommonLocale = {
           lastName: 'Фамилия обязательна (1-128 символов)',
           email: 'Email обязателен',
           phone: 'Номер телефона обязателен',
+        },
+        pendingPreview: {
+          viewingProposed: 'Просмотр ожидающих изменений (на проверке)',
+          viewingApproved: 'Просмотр одобренной версии (публичная)',
+          pending: 'На проверке',
+          approved: 'Одобрено',
         },
         photo: {
           title: 'Фото профиля',
@@ -762,6 +1126,8 @@ const ru: CommonLocale = {
       phoneFallback: 'Телефон не указан',
       booking: 'Бронирую...',
       confirmBooking: 'Подтвердить бронирование',
+      commentLabel: 'Заметка для мастера (необязательно)',
+      commentPlaceholder: 'Особые пожелания или заметки для мастера...',
       notifications: {
         successTitle: 'Бронирование создано',
         successMessage: 'Ваше бронирование успешно создано',

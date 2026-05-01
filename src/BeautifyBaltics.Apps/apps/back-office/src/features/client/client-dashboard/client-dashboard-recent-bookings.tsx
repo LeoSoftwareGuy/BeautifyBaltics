@@ -5,6 +5,8 @@ import {
   Card, Stack, Text, Title,
 } from '@mantine/core';
 import { DatesRangeValue } from '@mantine/dates';
+import { notifications } from '@mantine/notifications';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useTranslateData } from '@/hooks/use-translate-data';
 import {
@@ -13,12 +15,19 @@ import {
   FindBookingsResponse,
   FindBookingsResponsePagedResponse,
 } from '@/state/endpoints/api.schemas';
-import { useFindBookings } from '@/state/endpoints/bookings';
+import {
+  getFindBookingsQueryKey,
+  useCancelBooking,
+  useFindBookings,
+  useForceCompleteBooking,
+} from '@/state/endpoints/bookings';
+import { useFindRatings } from '@/state/endpoints/ratings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
 
 import { ClientBookingsDataTableFilters } from '../client-bookings-data-table/client-bookings-data-table-filters';
 import {
+  BookingActionsRenderer,
   BookingStatusBadge,
   renderDuration,
   renderPrice,
@@ -34,9 +43,11 @@ export function ClientDashboardRecentBookings() {
   const clientId = user?.id ?? '';
   const { t } = useTranslation();
   const { translateService } = useTranslateData();
+  const queryClient = useQueryClient();
 
   const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
   const [status, setStatus] = useState<string>('');
+  const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
 
   const {
     query,
@@ -71,6 +82,46 @@ export function ClientDashboardRecentBookings() {
       },
     },
   );
+
+  const { data: ratingsData } = useFindRatings(
+    { pageSize: 100 },
+    { query: { enabled: !!clientId } },
+  );
+
+  const bookingIds = new Set(bookingsData?.items?.map((b) => b.id) ?? []);
+  const ratedBookingIds = new Set(
+    ratingsData?.items?.filter((r) => bookingIds.has(r.bookingId)).map((r) => r.bookingId) ?? [],
+  );
+
+  const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking({
+    mutation: {
+      onSuccess: () => {
+        notifications.show({
+          title: t('client.bookings.notifications.cancelSuccessTitle'),
+          message: t('client.bookings.notifications.cancelSuccessMessage'),
+          color: 'green',
+        });
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+        setCancellingBookingId(null);
+      },
+      onError: () => {
+        setCancellingBookingId(null);
+      },
+    },
+  });
+
+  const { mutate: forceComplete, isPending: isForceCompleting } = useForceCompleteBooking({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+      },
+    },
+  });
+
+  const handleCancel = (bookingId: string) => {
+    setCancellingBookingId(bookingId);
+    cancelBooking({ id: bookingId, data: { bookingId, clientId } });
+  };
 
   const handleDateRangeChange = (value: DatesRangeValue) => {
     setDateRange(value);
@@ -115,6 +166,20 @@ export function ClientDashboardRecentBookings() {
       title: t('client.recentBookings.table.columns.status'),
       sortKey: 'status',
       render: BookingStatusBadge,
+    },
+    {
+      accessor: 'actions',
+      title: t('client.bookings.table.columns.actions'),
+      render: (booking) => (
+        <BookingActionsRenderer
+          booking={booking}
+          onCancel={handleCancel}
+          isCancelling={isCancelling && cancellingBookingId === booking.id}
+          isRated={ratedBookingIds.has(booking.id)}
+          onForceComplete={(id) => forceComplete({ id: id as string })}
+          isForceCompleting={isForceCompleting}
+        />
+      ),
     },
   ];
 

@@ -132,7 +132,7 @@ export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMaste
       }}
       onClick={handleClick}
     >
-      <Box pos="relative" h={180}>
+      <Box pos="relative" h={240}>
         <Image
           src={master.profileImageUrl}
           alt={fullName}
@@ -164,7 +164,7 @@ export function ClientExploreMasterCard({ master, onSelect }: ClientExploreMaste
         <div>
           <Text fw={700} size="lg" lineClamp={1}>{fullName}</Text>
           {master.description && (
-            <Text size="sm" c="dimmed" lineClamp={2} mt={4}>{master.description}</Text>
+            <Text size="sm" c="dimmed" lineClamp={1} mt={4}>{master.description}</Text>
           )}
         </div>
         <Group gap="xs" c="dimmed">

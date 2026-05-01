@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using BeautifyBaltics.Core.API.Authentication;
-using BeautifyBaltics.Domain.Documents.User;
+using BeautifyBaltics.Domain.Enumerations;
+using BeautifyBaltics.Persistence.Projections;
 using JasperFx.Core;
 using Marten;
 using Microsoft.AspNetCore.Authentication;
@@ -14,8 +15,11 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.Login
         {
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
-            var userAccount = await querySession.Query<User>()
+            var userAccount = await querySession.Query<UserProjection>()
                 .FirstOrDefaultAsync(x => x.Email == normalizedEmail && x.Role == request.Role, cancellationToken);
+
+            userAccount ??= await querySession.Query<UserProjection>()
+                .FirstOrDefaultAsync(x => x.Email == normalizedEmail && x.Role == UserRole.Admin, cancellationToken);
 
             if (userAccount is null || !BCrypt.Net.BCrypt.Verify(request.Password, userAccount.PasswordHash))
             {

@@ -66,7 +66,10 @@ public class BookingCompletionBackgroundService(
 
             var completedEvent = new BookingCompleted(
                 BookingId: booking.Id,
-                CompletedAt: completedAt
+                CompletedAt: completedAt,
+                MasterId: booking.MasterId,
+                ClientId: booking.ClientId,
+                Price: booking.Price
             );
 
             session.Events.Append(booking.Id, completedEvent);

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BeautifyBaltics.Domain.Enumerations;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Queries.Shared;
 
@@ -51,6 +52,12 @@ public record MasterJobDTO
     /// </summary>
     [Required]
     public required int DurationMinutes { get; init; }
+
+    /// <summary>
+    /// Job status
+    /// </summary>
+    [Required]
+    public required MasterJobStatus Status { get; init; }
 
     /// <summary>
     /// Featured image identifier

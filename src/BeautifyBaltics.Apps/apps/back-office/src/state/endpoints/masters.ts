@@ -45,6 +45,7 @@ import type {
   FindMasterAvailabilitiesParams,
   FindMasterAvailabilitiesResponsePagedResponse,
   FindMasterJobImagesResponse,
+  FindMasterJobsParams,
   FindMasterJobsResponse,
   FindMastersParams,
   FindMastersResponsePagedResponse,
@@ -58,9 +59,11 @@ import type {
   GetMasterByIdResponse,
   GetMasterJobImageByIdResponse,
   GetPendingRequestsResponse,
+  InitiateMasterKycVerificationResponse,
   ProblemDetails,
   SetMasterJobFeaturedImageRequest,
   SetMasterJobFeaturedImageResponse,
+  SubmitMasterJobForReviewResponse,
   UnsetMasterJobFeaturedImageResponse,
   UpdateMasterAvailabilityRequest,
   UpdateMasterAvailabilityResponse,
@@ -550,78 +553,30 @@ export const useCreateMasterJob = <TError = ProblemDetails | ValidationProblemDe
  */
 export const findMasterJobs = (
   id: string,
+  params?: FindMasterJobsParams,
   signal?: AbortSignal,
 ) => customClient<FindMasterJobsResponse>(
-  { url: `/api/v1/masters/${id}/jobs`, method: 'GET', signal },
+  {
+    url: `/api/v1/masters/${id}/jobs`,
+    method: 'GET',
+    params,
+    signal,
+  },
 );
 
-export const getFindMasterJobsQueryKey = (id?: string) => [`/api/v1/masters/${id}/jobs`] as const;
+export const getFindMasterJobsQueryKey = (
+  id?: string,
+  params?: FindMasterJobsParams,
+) => [`/api/v1/masters/${id}/jobs`, ...(params ? [params] : [])] as const;
 
-export const getFindMasterJobsInfiniteQueryOptions = <TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
+  params?: FindMasterJobsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, signal);
-
-  return {
-    queryKey, queryFn, enabled: !!(id), ...queryOptions,
-  } as UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
-};
-
-export type FindMasterJobsInfiniteQueryResult = NonNullable<Awaited<ReturnType<typeof findMasterJobs>>>;
-export type FindMasterJobsInfiniteQueryError = ProblemDetails | ValidationProblemDetails;
-
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options: { query:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
-  DefinedInitialDataOptions<
-  Awaited<ReturnType<typeof findMasterJobs>>,
-  TError,
-  Awaited<ReturnType<typeof findMasterJobs>>
-  >, 'initialData'
-  >, }
-  , queryClient?: QueryClient
-): DefinedUseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
-  UndefinedInitialDataOptions<
-  Awaited<ReturnType<typeof findMasterJobs>>,
-  TError,
-  Awaited<ReturnType<typeof findMasterJobs>>
-  >, 'initialData'
-  >, }
-  , queryClient?: QueryClient
-): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
-  , queryClient?: QueryClient
-): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-/**
- * @summary Find master jobs
- */
-
-export function useFindMasterJobsInfinite<TData = InfiniteData<Awaited<ReturnType<typeof findMasterJobs>>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string,
-  options?: { query?:Partial<UseInfiniteQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
-  queryClient?: QueryClient,
-): UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterJobsInfiniteQueryOptions(id, options);
-
-  const query = useInfiniteQuery(queryOptions, queryClient) as UseInfiniteQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
-export const getFindMasterJobsQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
-) => {
-  const { query: queryOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, params, signal);
 
   return {
     queryKey, queryFn, enabled: !!(id), ...queryOptions,
@@ -632,7 +587,8 @@ export type FindMasterJobsQueryResult = NonNullable<Awaited<ReturnType<typeof fi
 export type FindMasterJobsQueryError = ProblemDetails | ValidationProblemDetails;
 
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  id: string,
+  params: undefined | FindMasterJobsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   DefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
   TError,
@@ -642,7 +598,8 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   , queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
+  id: string,
+  params?: FindMasterJobsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>> & Pick<
   UndefinedInitialDataOptions<
   Awaited<ReturnType<typeof findMasterJobs>>,
   TError,
@@ -652,7 +609,8 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  id: string,
+  params?: FindMasterJobsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
@@ -661,10 +619,11 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
 
 export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
+  params?: FindMasterJobsParams,
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterJobsQueryOptions(id, options);
+  const queryOptions = getFindMasterJobsQueryOptions(id, params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -673,13 +632,14 @@ export function useFindMasterJobs<TData = Awaited<ReturnType<typeof findMasterJo
   return query;
 }
 
-export const getFindMasterJobsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
+export const getFindMasterJobsSuspenseQueryOptions = <TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(id: string,
+  params?: FindMasterJobsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getFindMasterJobsQueryKey(id, params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findMasterJobs>>> = ({ signal }) => findMasterJobs(id, params, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> };
 };
@@ -688,15 +648,18 @@ export type FindMasterJobsSuspenseQueryResult = NonNullable<Awaited<ReturnType<t
 export type FindMasterJobsSuspenseQueryError = ProblemDetails | ValidationProblemDetails;
 
 export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  id: string,
+  params: undefined | FindMasterJobsParams, options: { query:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  id: string,
+  params?: FindMasterJobsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
-  id: string, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
+  id: string,
+  params?: FindMasterJobsParams, options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, }
   , queryClient?: QueryClient
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
@@ -705,10 +668,11 @@ export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof find
 
 export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof findMasterJobs>>, TError = ProblemDetails | ValidationProblemDetails>(
   id: string,
+  params?: FindMasterJobsParams,
   options?: { query?:Partial<UseSuspenseQueryOptions<Awaited<ReturnType<typeof findMasterJobs>>, TError, TData>>, },
   queryClient?: QueryClient,
 ): UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getFindMasterJobsSuspenseQueryOptions(id, options);
+  const queryOptions = getFindMasterJobsSuspenseQueryOptions(id, params, options);
 
   const query = useSuspenseQuery(queryOptions, queryClient) as UseSuspenseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -717,6 +681,55 @@ export function useFindMasterJobsSuspense<TData = Awaited<ReturnType<typeof find
   return query;
 }
 
+/**
+ * @summary Submit a master job for review
+ */
+export const submitMasterJobForReview = (
+  id: string,
+  jobId: string,
+  signal?: AbortSignal,
+) => customClient<SubmitMasterJobForReviewResponse>(
+  { url: `/api/v1/masters/${id}/jobs/${jobId}/submit`, method: 'POST', signal },
+);
+
+export const getSubmitMasterJobForReviewMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitMasterJobForReview>>, TError, { id: string;jobId: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof submitMasterJobForReview>>, TError, { id: string;jobId: string }, TContext> => {
+  const mutationKey = ['submitMasterJobForReview'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitMasterJobForReview>>, { id: string;jobId: string }> = (props) => {
+    const { id, jobId } = props ?? {};
+
+    return submitMasterJobForReview(id, jobId);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SubmitMasterJobForReviewMutationResult = NonNullable<Awaited<ReturnType<typeof submitMasterJobForReview>>>;
+
+export type SubmitMasterJobForReviewMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Submit a master job for review
+ */
+export const useSubmitMasterJobForReview = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitMasterJobForReview>>, TError, { id: string;jobId: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof submitMasterJobForReview>>,
+  TError,
+  { id: string;jobId: string },
+  TContext
+  > => {
+  const mutationOptions = getSubmitMasterJobForReviewMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * @summary Find all images for a master's jobs
  */
@@ -2499,6 +2512,102 @@ export function useGetPendingRequestsSuspense<TData = Awaited<ReturnType<typeof 
 
   return query;
 }
+
+/**
+ * @summary Initiate Didit identity verification — returns the hosted verification URL
+ */
+export const initiateMasterKycVerification = (
+  id: string,
+  signal?: AbortSignal,
+) => customClient<InitiateMasterKycVerificationResponse>(
+  { url: `/api/v1/masters/${id}/kyc/initiate`, method: 'POST', signal },
+);
+
+export const getInitiateMasterKycVerificationMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initiateMasterKycVerification>>, TError, { id: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof initiateMasterKycVerification>>, TError, { id: string }, TContext> => {
+  const mutationKey = ['initiateMasterKycVerification'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof initiateMasterKycVerification>>, { id: string }> = (props) => {
+    const { id } = props ?? {};
+
+    return initiateMasterKycVerification(id);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type InitiateMasterKycVerificationMutationResult = NonNullable<Awaited<ReturnType<typeof initiateMasterKycVerification>>>;
+
+export type InitiateMasterKycVerificationMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Initiate Didit identity verification — returns the hosted verification URL
+ */
+export const useInitiateMasterKycVerification = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof initiateMasterKycVerification>>, TError, { id: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof initiateMasterKycVerification>>,
+  TError,
+  { id: string },
+  TContext
+  > => {
+  const mutationOptions = getInitiateMasterKycVerificationMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * @summary Sync KYC status by polling Didit for the current session state
+ */
+export const syncMasterKycStatus = (
+  id: string,
+  callbackStatus?: string,
+) => customClient<void>(
+  { url: `/api/v1/masters/${id}/kyc/sync-status`, method: 'POST', params: callbackStatus ? { callbackStatus } : undefined },
+);
+
+export const getSyncMasterKycStatusMutationOptions = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncMasterKycStatus>>, TError, { id: string; callbackStatus?: string }, TContext>, },
+  ): UseMutationOptions<Awaited<ReturnType<typeof syncMasterKycStatus>>, TError, { id: string; callbackStatus?: string }, TContext> => {
+  const mutationKey = ['syncMasterKycStatus'];
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof syncMasterKycStatus>>, { id: string; callbackStatus?: string }> = (props) => {
+    const { id, callbackStatus } = props ?? {};
+
+    return syncMasterKycStatus(id, callbackStatus);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SyncMasterKycStatusMutationResult = NonNullable<Awaited<ReturnType<typeof syncMasterKycStatus>>>;
+export type SyncMasterKycStatusMutationError = ProblemDetails | ValidationProblemDetails;
+
+/**
+ * @summary Sync KYC status by polling Didit for the current session state
+ */
+export const useSyncMasterKycStatus = <TError = ProblemDetails | ValidationProblemDetails,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncMasterKycStatus>>, TError, { id: string; callbackStatus?: string }, TContext>, },
+    queryClient?: QueryClient): UseMutationResult<
+  Awaited<ReturnType<typeof syncMasterKycStatus>>,
+  TError,
+  { id: string; callbackStatus?: string },
+  TContext
+  > => {
+  const mutationOptions = getSyncMasterKycStatusMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 
 /**
  * @summary Update master buffer time between bookings

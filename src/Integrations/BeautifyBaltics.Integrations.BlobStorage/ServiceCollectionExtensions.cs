@@ -6,8 +6,10 @@ namespace BeautifyBaltics.Integrations.BlobStorage
     {
         public static IServiceCollection AddBlobStorageIntegration(
             this IServiceCollection services,
-            Action<IBlobStorageConfigurator>? configure = null)
+            Action<IBlobStorageConfigurator>? configure = null
+        )
         {
+            services.AddHttpClient("supabase-storage");
             services.AddScoped(typeof(IBlobStorageService<>), typeof(BlobStorageService<>));
 
             var configurator = new BlobStorageConfigurator(services);

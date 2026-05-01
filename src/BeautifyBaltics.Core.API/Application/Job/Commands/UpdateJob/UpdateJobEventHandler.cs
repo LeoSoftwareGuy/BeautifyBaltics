@@ -18,7 +18,6 @@ namespace BeautifyBaltics.Core.API.Application.Job.Commands.UpdateJob
                 name: request.Name,
                 categoryId: category.Id,
                 categoryName: category.Name,
-                duration: TimeSpan.FromMinutes(request.DurationMinutes),
                 description: request.Description
             );
 

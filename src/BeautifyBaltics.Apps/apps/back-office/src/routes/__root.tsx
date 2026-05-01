@@ -7,6 +7,7 @@ import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/re
 
 import { LanguageSwitcher } from '@/components/language-switcher';
 import {
+  AdminNavigation,
   AuthQuickActions,
   ClientBottomNav,
   ClientNavigation,
@@ -38,6 +39,12 @@ export const Route = createRootRouteWithContext<RouteContext>()({
   notFoundComponent: NotFound,
 });
 
+function getMobileBottomNav(isAdmin: boolean, isMaster: boolean, pathname: string) {
+  if (isAdmin) return null;
+  if (isMaster || pathname === '/master' || pathname.startsWith('/master/')) return <MasterBottomNav />;
+  return <ClientBottomNav />;
+}
+
 function Root() {
   usePageTitle();
   const location = useRouterState({ select: (state) => state.location });
@@ -46,9 +53,12 @@ function Root() {
 
   const { data: user } = useGetUser({ query: { enabled: !isAuthOnlyRoute } });
   const isMaster = user?.role === UserRole.Master;
+  const isAdmin = user?.role === UserRole.Admin;
   let navContent = null;
   if (user) {
-    navContent = isMaster ? <MasterNavigation /> : <ClientNavigation />;
+    if (isAdmin) navContent = <AdminNavigation />;
+    else if (isMaster) navContent = <MasterNavigation />;
+    else navContent = <ClientNavigation />;
   }
 
   // Minimal layout: auth pages always, home page only when not logged in
@@ -86,7 +96,7 @@ function Root() {
         lowerMiddle: null,
         bottom: <SidebarFooter />,
       }}
-      mobileBottomNav={isMaster || location.pathname === '/master' || location.pathname.startsWith('/master/') ? <MasterBottomNav /> : <ClientBottomNav />}
+      mobileBottomNav={getMobileBottomNav(isAdmin, isMaster, location.pathname)}
       devtools={(
         <DevtoolsContainer>
           <TanStackRouterDevtools key="router-devtools" enabled={import.meta.env.DEV} />

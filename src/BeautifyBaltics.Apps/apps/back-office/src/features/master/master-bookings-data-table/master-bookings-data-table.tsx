@@ -23,6 +23,7 @@ import {
   IconCalendarEvent,
   IconClock,
   IconCurrencyEuro,
+  IconMessage,
   IconSearch,
 } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,6 +40,7 @@ import {
   useCancelBooking,
   useConfirmBooking,
   useFindBookings,
+  useForceCompleteBooking,
 } from '@/state/endpoints/bookings';
 import { useGetUser } from '@/state/endpoints/users';
 import datetime from '@/utils/datetime';
@@ -63,7 +65,9 @@ type MobileBookingCardProps = {
   onCancel: (id: string) => void;
   isConfirming: boolean;
   isCancelling: boolean;
-  labels: { confirm: string; cancel: string };
+  onForceComplete: (id: string) => void;
+  isForceCompleting: boolean;
+  labels: { confirm: string; cancel: string; clientComment: string };
 };
 
 function MobileBookingCard({
@@ -73,12 +77,15 @@ function MobileBookingCard({
   onCancel,
   isConfirming,
   isCancelling,
+  onForceComplete,
+  isForceCompleting,
   labels,
 }: MobileBookingCardProps) {
   const { translateService } = useTranslateData();
   const date = datetime.formatDate(booking.scheduledAt);
   const time = datetime.formatTimeFromDate(booking.scheduledAt);
   const isPending = booking.status === BookingStatus.Requested;
+  const showForceComplete = import.meta.env.DEV && booking.status === BookingStatus.Confirmed;
   const hoursUntil = (new Date(booking.scheduledAt).getTime() - Date.now()) / (1000 * 60 * 60);
   const isCancellable = booking.status !== BookingStatus.Cancelled
     && booking.status !== BookingStatus.Completed
@@ -135,6 +142,20 @@ function MobileBookingCard({
         </Group>
       </SimpleGrid>
 
+      {booking.clientComment && (
+        <Box
+          pt="sm"
+          mt="sm"
+          style={{ borderTop: '1px solid var(--mantine-color-gray-1)' }}
+        >
+          <Group gap="xs" mb={4}>
+            <IconMessage size={13} color="var(--mantine-color-dimmed)" />
+            <Text size="xs" fw={600} tt="uppercase" c="dimmed">{labels.clientComment}</Text>
+          </Group>
+          <Text size="xs">{booking.clientComment}</Text>
+        </Box>
+      )}
+
       {isPending && (
         <Group grow mt="md">
           <Button
@@ -166,6 +187,18 @@ function MobileBookingCard({
           loading={isCancelling}
         >
           {labels.cancel}
+        </Button>
+      )}
+      {showForceComplete && (
+        <Button
+          fullWidth
+          variant="light"
+          color="teal"
+          mt="md"
+          onClick={() => onForceComplete(booking.id)}
+          loading={isForceCompleting}
+        >
+          [DEV] Force complete
         </Button>
       )}
     </Paper>
@@ -268,6 +301,19 @@ export function MasterBookingsDataTable() {
     },
   });
 
+  const { mutate: forceComplete, isPending: isForceCompleting } = useForceCompleteBooking({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getFindBookingsQueryKey() });
+      },
+    },
+  });
+
+  const handleForceComplete = (bookingId: string) => {
+    setActionBookingId(bookingId);
+    forceComplete({ id: bookingId });
+  };
+
   const handleConfirm = (bookingId: string) => {
     setActionBookingId(bookingId);
     confirmBooking({
@@ -346,6 +392,8 @@ export function MasterBookingsDataTable() {
           onCancel={handleCancel}
           isConfirming={isConfirming && actionBookingId === booking.id}
           isCancelling={isCancelling && actionBookingId === booking.id}
+          onForceComplete={handleForceComplete}
+          isForceCompleting={isForceCompleting && actionBookingId === booking.id}
           labels={{
             viewInvoice: t('master.bookings.table.viewInvoice'),
             confirm: t('master.bookings.table.confirm'),
@@ -411,9 +459,12 @@ export function MasterBookingsDataTable() {
               onCancel={handleCancel}
               isConfirming={isConfirming && actionBookingId === booking.id}
               isCancelling={isCancelling && actionBookingId === booking.id}
+              onForceComplete={handleForceComplete}
+              isForceCompleting={isForceCompleting && actionBookingId === booking.id}
               labels={{
                 confirm: t('master.bookings.table.confirm'),
                 cancel: t('master.bookings.table.cancel'),
+                clientComment: t('master.bookings.table.clientComment'),
               }}
             />
           ))}
@@ -442,6 +493,21 @@ export function MasterBookingsDataTable() {
             sortStatus={sortStatus}
             onSortStatusChange={(newStatus) => handleSortStatusChange(newStatus, columns)}
             noRecordsText={t('master.bookings.table.noRecords')}
+            rowExpansion={{
+              allowMultiple: false,
+              collapseProps: { transitionDuration: 150 },
+              content: ({ record }) => (record.clientComment ? (
+                <Box py="sm" px="xl" style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
+                  <Group gap="xs" mb={4}>
+                    <IconMessage size={14} color="var(--mantine-color-dimmed)" />
+                    <Text size="xs" fw={600} tt="uppercase" c="dimmed">
+                      {t('master.bookings.table.clientComment')}
+                    </Text>
+                  </Group>
+                  <Text size="sm">{record.clientComment}</Text>
+                </Box>
+              ) : null),
+            }}
           />
         </Stack>
       </Card>

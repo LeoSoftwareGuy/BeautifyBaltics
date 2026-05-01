@@ -1,4 +1,5 @@
 ﻿using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Projections.SeedWork;
 using Marten.Events.Projections;
 
@@ -15,6 +16,7 @@ public record MasterJob(Guid Id, Guid MasterId) : Projection
     public string Title { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public TimeSpan Duration { get; init; }
+    public MasterJobStatus Status { get; init; } = MasterJobStatus.Draft;
     public Guid? FeaturedImageId { get; init; }
     public double FeaturedImageFocusX { get; init; } = 0.5;
     public double FeaturedImageFocusY { get; init; } = 0.5;
@@ -26,7 +28,11 @@ public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
 {
     public MasterJobProjection()
     {
+        Identity<MasterJobDraftCreated>(e => e.MasterJobId);
         Identity<MasterJobCreated>(e => e.MasterJobId);
+        Identity<MasterJobSubmittedForReview>(e => e.MasterJobId);
+        Identity<MasterJobActivated>(e => e.MasterJobId);
+        Identity<MasterJobDeclined>(e => e.MasterJobId);
         Identity<MasterJobUpdated>(e => e.MasterJobId);
         Identity<MasterJobDeleted>(e => e.MasterJobId);
         Identity<MasterJobImageUploaded>(e => e.MasterJobId);
@@ -37,6 +43,22 @@ public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
         DeleteEvent<MasterJobDeleted>();
     }
 
+    public static MasterJob Create(MasterJobDraftCreated @event)
+    {
+        return new MasterJob(@event.MasterJobId, @event.MasterId)
+        {
+            JobId = @event.JobId,
+            JobName = @event.JobName,
+            JobCategoryId = @event.JobCategoryId,
+            JobCategoryName = @event.JobCategoryName,
+            Title = @event.Title,
+            Price = @event.Price,
+            Duration = @event.Duration,
+            Status = MasterJobStatus.Draft
+        };
+    }
+
+    // Backward compat: jobs approved via old changeset flow
     public static MasterJob Create(MasterJobCreated @event)
     {
         return new MasterJob(@event.MasterJobId, @event.MasterId)
@@ -47,9 +69,19 @@ public class MasterJobProjection : MultiStreamProjection<MasterJob, Guid>
             JobCategoryName = @event.JobCategoryName,
             Title = @event.Title,
             Price = @event.Price,
-            Duration = @event.Duration
+            Duration = @event.Duration,
+            Status = MasterJobStatus.Active
         };
     }
+
+    public static MasterJob Apply(MasterJobSubmittedForReview _, MasterJob current) =>
+        current with { Status = MasterJobStatus.PendingReview };
+
+    public static MasterJob Apply(MasterJobActivated _, MasterJob current) =>
+        current with { Status = MasterJobStatus.Active };
+
+    public static MasterJob Apply(MasterJobDeclined _, MasterJob current) =>
+        current with { Status = MasterJobStatus.Draft };
 
     public static MasterJob Apply(MasterJobUpdated @event, MasterJob current) =>
         current with

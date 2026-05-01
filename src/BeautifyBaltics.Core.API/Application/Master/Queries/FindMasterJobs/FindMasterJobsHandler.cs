@@ -14,35 +14,36 @@ public class FindMasterJobsHandler(
 {
     public async Task<FindMasterJobsResponse> Handle(FindMasterJobsRequest request, CancellationToken cancellationToken)
     {
-        if (!await masterRepository.ExistsByAsync(x => x.Id == request.MasterId, cancellationToken)) throw NotFoundException.For<Persistence.Projections.Master>(request.MasterId);
+        if (!await masterRepository.ExistsByAsync(x => x.Id == request.MasterId, cancellationToken))
+            throw NotFoundException.For<Persistence.Projections.Master>(request.MasterId);
 
         var jobs = await masterJobRepository.GetListByAsync(j => j.MasterId == request.MasterId, cancellationToken);
 
-        return new FindMasterJobsResponse
+        var jobDtos = jobs.Select(job => new MasterJobDTO
         {
-            Jobs = [.. jobs.Select(job => new MasterJobDTO
+            Id = job.Id,
+            JobId = job.JobId,
+            JobCategoryId = job.JobCategoryId,
+            JobCategoryName = job.JobCategoryName,
+            JobName = job.JobName,
+            Title = job.Title,
+            Price = job.Price,
+            DurationMinutes = (int)job.Duration.TotalMinutes,
+            Status = job.Status,
+            FeaturedImageId = job.FeaturedImageId,
+            FeaturedImageFocusX = job.FeaturedImageFocusX,
+            FeaturedImageFocusY = job.FeaturedImageFocusY,
+            FeaturedImageZoom = job.FeaturedImageZoom,
+            Images = job.Images?.Select(image => new MasterJobImageDTO
             {
-                Id = job.Id,
-                JobId = job.JobId,
-                JobCategoryId = job.JobCategoryId,
-                JobCategoryName = job.JobCategoryName,
-                JobName = job.JobName,
-                Title = job.Title,
-                Price = job.Price,
-                DurationMinutes = (int)job.Duration.TotalMinutes,
-                FeaturedImageId = job.FeaturedImageId,
-                FeaturedImageFocusX = job.FeaturedImageFocusX,
-                FeaturedImageFocusY = job.FeaturedImageFocusY,
-                FeaturedImageZoom = job.FeaturedImageZoom,
-                Images = job.Images?.Select(image => new MasterJobImageDTO
-                {
-                    Id = image.Id,
-                    FileName = image.FileName,
-                    FileMimeType = image.FileMimeType,
-                    FileSize = image.FileSize,
-                    Url = blobStorageService.GetBlobUrl(image.BlobName) ?? string.Empty
-                }).ToArray() ?? []
-            })]
-        };
+                Id = image.Id,
+                FileName = image.FileName,
+                FileMimeType = image.FileMimeType,
+                FileSize = image.FileSize,
+                Url = blobStorageService.GetBlobUrl(image.BlobName) ?? string.Empty
+            }).ToArray() ?? []
+        });
+
+        return new FindMasterJobsResponse { Jobs = [.. jobDtos] };
     }
 }

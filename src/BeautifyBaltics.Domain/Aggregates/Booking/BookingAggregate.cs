@@ -14,6 +14,7 @@ public class BookingAggregate : Aggregate
     public DateTime ScheduledAt { get; private set; }
     public TimeSpan Duration { get; private set; }
     public decimal Price { get; private set; }
+    public string? ClientComment { get; private set; }
     public BookingStatus Status { get; private set; } = BookingStatus.Requested;
 
     private static readonly TimeSpan MinimumCancellationNotice = TimeSpan.FromHours(24);
@@ -26,6 +27,7 @@ public class BookingAggregate : Aggregate
         ScheduledAt = @event.ScheduledAt;
         Duration = @event.Duration;
         Price = @event.Price;
+        ClientComment = @event.ClientComment;
         Status = BookingStatus.Requested;
     }
 

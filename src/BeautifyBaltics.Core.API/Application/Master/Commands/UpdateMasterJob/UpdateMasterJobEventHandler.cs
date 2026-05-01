@@ -1,10 +1,10 @@
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Persistence.Repositories.Job;
 using Wolverine;
 using Wolverine.Marten;
-using static BeautifyBaltics.Domain.Aggregates.Master.MasterAggregate;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterJob;
 
@@ -15,15 +15,19 @@ public class UpdateMasterJobEventHandler(IJobRepository jobRepository)
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        var job = master.Jobs.SingleOrDefault(j => j.MasterJobId == request.MasterJobId)
-            ?? throw NotFoundException.For<MasterJob>(request.MasterJobId);
+        var job = master.GetJobOrThrow(request.MasterJobId);
+
+        if (job.Status == MasterJobStatus.PendingReview)
+        {
+            throw DomainException.WithMessage("Cannot update a job while it is pending review.");
+        }
 
         var jobDefinition = await jobRepository.GetByIdAsync(request.Job.JobId, cancellationToken)
                             ?? throw NotFoundException.For<Domain.Documents.Job>(request.Job.JobId);
 
-        var @event = new MasterJobUpdated(
-            MasterJobId: request.MasterJobId,
-            MasterId: request.MasterId,
+        var updatedEvent = new MasterJobUpdated(
+            MasterJobId: job.MasterJobId,
+            MasterId: master.Id,
             JobId: request.Job.JobId,
             Price: request.Job.Price,
             Duration: TimeSpan.FromMinutes(request.Job.DurationMinutes),
@@ -33,6 +37,6 @@ public class UpdateMasterJobEventHandler(IJobRepository jobRepository)
             JobName: jobDefinition.Name
         );
 
-        return ([@event], [new UpdateMasterJobResponse(request.MasterId, request.MasterJobId)]);
+        return ([updatedEvent], [new UpdateMasterJobResponse(request.MasterId, request.MasterJobId)]);
     }
 }

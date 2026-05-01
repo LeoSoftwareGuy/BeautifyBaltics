@@ -1,4 +1,6 @@
-﻿namespace BeautifyBaltics.Domain.Aggregates.Master;
+using BeautifyBaltics.Domain.Enumerations;
+
+namespace BeautifyBaltics.Domain.Aggregates.Master;
 
 public partial class MasterAggregate
 {
@@ -23,6 +25,7 @@ public partial class MasterAggregate
         public Guid JobCategoryId { get; private set; } = jobCategoryId;
         public string JobCategoryName { get; private set; } = jobCategoryName;
         public string JobName { get; private set; } = jobName;
+        public MasterJobStatus Status { get; private set; } = MasterJobStatus.Draft;
         public Guid? FeaturedImageId { get; private set; }
         public double FeaturedImageFocusX { get; private set; } = 0.5;
         public double FeaturedImageFocusY { get; private set; } = 0.5;
@@ -39,6 +42,12 @@ public partial class MasterAggregate
             this.JobCategoryName = jobCategoryName;
             this.JobName = jobName;
         }
+
+        public void SubmitForReview() => Status = MasterJobStatus.PendingReview;
+
+        public void Activate() => Status = MasterJobStatus.Active;
+
+        public void Decline() => Status = MasterJobStatus.Draft;
 
         public void AddImage(MasterJobImage image)
         {

@@ -25,6 +25,7 @@ public record Booking(Guid Id) : Projection
     public DateTime ScheduledAt { get; init; }
     public TimeSpan Duration { get; init; }
     public decimal Price { get; init; }
+    public string? ClientComment { get; init; }
     public BookingStatus Status { get; init; } = BookingStatus.Requested;
     public DateTime RequestedAt { get; init; }
 
@@ -76,6 +77,7 @@ public class BookingProjection : SingleStreamProjection<Booking, Guid>
             ScheduledAt = @event.Data.ScheduledAt,
             Duration = @event.Data.Duration,
             Price = @event.Data.Price,
+            ClientComment = @event.Data.ClientComment,
             Status = BookingStatus.Requested,
             RequestedAt = requestedAt
         };

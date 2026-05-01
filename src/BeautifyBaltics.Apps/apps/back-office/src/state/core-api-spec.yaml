@@ -36,6 +36,71 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/admin/job-categories/{id}':
+    put:
+      tags:
+        - Admin
+      operationId: AdminUpdateJobCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobCategoryRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobCategoryRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateJobCategoryResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+    delete:
+      tags:
+        - Admin
+      operationId: AdminDeleteJobCategory
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/admin/jobs:
     post:
       tags:
@@ -107,6 +172,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/admin/dashboard:
+    get:
+      tags:
+        - Admin
+      operationId: GetDashboardSummary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDashboardSummaryResponse'
+  /api/v1/admin/stats/services:
+    get:
+      tags:
+        - Admin
+      operationId: GetServiceStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetServiceStatisticsResponse'
+  /api/v1/admin/stats/bookings:
+    get:
+      tags:
+        - Admin
+      operationId: GetBookingStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBookingStatisticsResponse'
   /api/v1/admin/stats/masters:
     get:
       tags:
@@ -131,6 +232,210 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetClientStatisticsResponse'
+  /api/v1/admin/stats/users:
+    get:
+      tags:
+        - Admin
+      operationId: GetUserStatistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserStatisticsResponse'
+  '/api/v1/admin/users/{id}/detail':
+    get:
+      tags:
+        - Admin
+      operationId: GetAdminUserDetail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAdminUserDetailResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/admin/users:
+    get:
+      tags:
+        - Admin
+      operationId: FindUsers
+      parameters:
+        - name: search
+          in: query
+          description: Text search across name and email
+          schema:
+            type: string
+        - name: role
+          in: query
+          description: Filter by role
+          schema:
+            $ref: '#/components/schemas/UserRole'
+        - name: firstName
+          in: query
+          description: Filter by first name
+          schema:
+            type: string
+        - name: lastName
+          in: query
+          description: Filter by last name
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Filter by email address
+          schema:
+            type: string
+        - name: totalBookings
+          in: query
+          description: Filter by total bookings
+          schema:
+            type: integer
+            format: int32
+        - name: rating
+          in: query
+          description: Filter by rating
+          schema:
+            type: number
+            format: double
+        - name: earnings
+          in: query
+          description: Filter by earnings
+          schema:
+            type: number
+            format: double
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindUsersResponsePagedResponse'
+  '/api/v1/admin/users/{id}/role':
+    put:
+      tags:
+        - Admin
+      operationId: SetUserRole
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetUserRoleRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/SetUserRoleRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetUserRoleResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/admin/users/{id}':
+    delete:
+      tags:
+        - Admin
+      operationId: DeleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/admin/projections/{projectionName}/rebuild':
+    post:
+      tags:
+        - Admin
+      operationId: RebuildProjection
+      parameters:
+        - name: projectionName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RebuildProjectionResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/auth/register:
     post:
       tags:
@@ -548,6 +853,165 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/bookings/{id}/force-complete':
+    post:
+      tags:
+        - Bookings
+      summary: '[DEV ONLY] Force-complete a booking, bypassing the scheduled time check.'
+      operationId: ForceCompleteBooking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/v1/admin/changesets:
+    get:
+      tags:
+        - Changesets
+      operationId: FindChangesets
+      parameters:
+        - name: masterId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ChangesetStatus'
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            format: int32
+        - name: pageSize
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            format: int32
+        - name: sortBy
+          in: query
+          description: Sort by column
+          schema:
+            type: string
+        - name: ascending
+          in: query
+          description: 'Is sorting order ascending or descending, defaults to false (descending)'
+          schema:
+            type: boolean
+        - name: all
+          in: query
+          description: Retrieve all items
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindChangesetsResponsePagedResponse'
+  /api/v1/admin/changesets/pending-count:
+    get:
+      tags:
+        - Changesets
+      operationId: GetPendingChangesetsCount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetPendingChangesetsCountResponse'
+  '/api/v1/admin/changesets/{masterId}/{changesetId}/approve':
+    patch:
+      tags:
+        - Changesets
+      operationId: ApproveChangeset
+      parameters:
+        - name: masterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: changesetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/admin/changesets/{masterId}/{changesetId}/reject':
+    patch:
+      tags:
+        - Changesets
+      operationId: RejectChangeset
+      parameters:
+        - name: masterId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: changesetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/ChangesetActionRequest'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/clients:
     get:
       tags:
@@ -784,6 +1248,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  /api/v1/webhooks/didit:
+    post:
+      tags:
+        - DiditWebhooks
+      summary: Receive Didit verification status webhook
+      operationId: DiditWebhook
+      parameters:
+        - name: x-Timestamp
+          in: header
+          schema:
+            type: string
+        - name: x-Signature-Simple
+          in: header
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiditWebhookPayload'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DiditWebhookPayload'
+      responses:
+        '200':
+          description: OK
   /api/v1/jobs:
     get:
       tags:
@@ -791,9 +1281,9 @@ paths:
       summary: Find paged jobs
       operationId: FindJobs
       parameters:
-        - name: text
+        - name: name
           in: query
-          description: Filter by text
+          description: Filter by name
           schema:
             type: string
         - name: categoryId
@@ -1041,6 +1531,15 @@ paths:
           schema:
             type: number
             format: double
+        - name: availableDate
+          in: query
+          schema:
+            type: string
+        - name: availableTime
+          in: query
+          schema:
+            type: string
+            format: time
         - name: page
           in: query
           description: Page number
@@ -1137,6 +1636,16 @@ paths:
         - name: id
           in: query
           required: true
+          schema:
+            type: string
+            format: uuid
+        - name: proposal
+          in: query
+          schema:
+            type: boolean
+        - name: requesterId
+          in: query
+          description: 'Authenticated caller''s user ID — set by controller, not from request body'
           schema:
             type: string
             format: uuid
@@ -1255,6 +1764,12 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: proposal
+          in: query
+          description: ''
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: OK
@@ -1274,6 +1789,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetails'
+  '/api/v1/masters/{id}/jobs/{jobId}/submit':
+    post:
+      tags:
+        - Masters
+      summary: Submit a master job for review
+      operationId: SubmitMasterJobForReview
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: jobId
+          in: path
+          description: Master job id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitMasterJobForReviewResponse'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   '/api/v1/masters/{id}/images':
     get:
       tags:
@@ -2124,6 +2679,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetails'
+  '/api/v1/masters/{id}/kyc/initiate':
+    post:
+      tags:
+        - Masters
+      summary: Initiate Didit identity verification — returns the hosted verification URL
+      operationId: InitiateMasterKycVerification
+      parameters:
+        - name: id
+          in: path
+          description: Master id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitiateMasterKycVerificationResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
   '/api/v1/masters/{id}/buffer-time':
     put:
       tags:
@@ -2392,6 +2980,11 @@ components:
           type: string
           description: The scheduled start time for the booking
           format: date-time
+        clientComment:
+          maxLength: 500
+          type: string
+          description: Optional comment from the client for the master
+          nullable: true
       additionalProperties: false
     BookingDTO:
       required:
@@ -2475,6 +3068,10 @@ components:
           format: double
         status:
           $ref: '#/components/schemas/BookingStatus'
+        clientComment:
+          type: string
+          description: Optional comment left by the client at booking time
+          nullable: true
       additionalProperties: false
     BookingStatus:
       enum:
@@ -2510,6 +3107,19 @@ components:
           type: string
           format: uuid
       additionalProperties: false
+    ChangesetActionRequest:
+      type: object
+      properties:
+        comment:
+          type: string
+          nullable: true
+      additionalProperties: false
+    ChangesetStatus:
+      enum:
+        - Pending
+        - Approved
+        - Rejected
+      type: string
     ClientCommandDTO:
       required:
         - email
@@ -2629,9 +3239,9 @@ components:
       type: object
       properties:
         name:
-          maxLength: 128
           minLength: 1
           type: string
+          description: Name of the category
       additionalProperties: false
     CreateJobCategoryResponse:
       type: object
@@ -2689,6 +3299,7 @@ components:
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
         job:
           $ref: '#/components/schemas/MasterJobOfferingCommandDTO'
@@ -2746,6 +3357,53 @@ components:
           description: ID of created rating
           format: uuid
       additionalProperties: false
+    DashboardRecentActivity:
+      type: object
+      properties:
+        clientName:
+          type: string
+          nullable: true
+        serviceName:
+          type: string
+          nullable: true
+        masterName:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+        status:
+          type: string
+          nullable: true
+        bookedAt:
+          type: string
+          format: date-time
+      additionalProperties: false
+    DiditWebhookPayload:
+      required:
+        - session_id
+        - status
+        - timestamp
+        - vendor_data
+        - webhook_type
+      type: object
+      properties:
+        session_id:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        webhook_type:
+          type: string
+          nullable: true
+        timestamp:
+          type: integer
+          format: int64
+        vendor_data:
+          type: string
+          nullable: true
+      additionalProperties: false
     EarningsDataPoint:
       required:
         - label
@@ -2801,6 +3459,93 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FindBookingsResponse'
+          description: Items
+      additionalProperties: false
+    FindChangesetsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        masterId:
+          type: string
+          format: uuid
+        entityId:
+          type: string
+          format: uuid
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        proposedChange: { }
+        proposedById:
+          type: string
+          format: uuid
+        proposedAt:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ChangesetStatus'
+        approvedById:
+          type: string
+          format: uuid
+          nullable: true
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+        rejectedById:
+          type: string
+          format: uuid
+          nullable: true
+        rejectedAt:
+          type: string
+          format: date-time
+          nullable: true
+        comment:
+          type: string
+          nullable: true
+        masterName:
+          type: string
+          nullable: true
+        imageUrl:
+          type: string
+          nullable: true
+        imageUrls:
+          type: array
+          items:
+            type: string
+          nullable: true
+      additionalProperties: false
+    FindChangesetsResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindChangesetsResponse'
           description: Items
       additionalProperties: false
     FindClientsResponse:
@@ -3037,6 +3782,99 @@ components:
             $ref: '#/components/schemas/FindMastersResponse'
           description: Items
       additionalProperties: false
+    FindUsersResponse:
+      required:
+        - earnings
+        - email
+        - emailVerified
+        - firstName
+        - fullName
+        - id
+        - joinedAt
+        - lastName
+        - phoneNumber
+        - rating
+        - role
+        - totalBookings
+      type: object
+      properties:
+        id:
+          type: string
+          description: User ID
+          format: uuid
+        email:
+          minLength: 1
+          type: string
+          description: Email address
+        firstName:
+          minLength: 1
+          type: string
+          description: First name
+        lastName:
+          minLength: 1
+          type: string
+          description: Last name
+        fullName:
+          minLength: 1
+          type: string
+          description: Full name
+        phoneNumber:
+          minLength: 1
+          type: string
+          description: Phone number
+        role:
+          $ref: '#/components/schemas/UserRole'
+        emailVerified:
+          type: boolean
+          description: Whether email is verified
+        joinedAt:
+          type: string
+          description: Account registration date
+          format: date-time
+        totalBookings:
+          type: integer
+          description: Total bookings
+          format: int32
+        earnings:
+          type: number
+          description: Total earnings
+          format: double
+        rating:
+          type: number
+          description: 'Master rating, 0 for clients'
+          format: double
+      additionalProperties: false
+    FindUsersResponsePagedResponse:
+      required:
+        - items
+        - page
+        - pageCount
+        - pageSize
+        - totalItemCount
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          format: int64
+        pageSize:
+          type: integer
+          description: Page size
+          format: int64
+        pageCount:
+          type: integer
+          description: Total pages count
+          format: int64
+        totalItemCount:
+          type: integer
+          description: Total items count
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/FindUsersResponse'
+          description: Items
+      additionalProperties: false
     ForgotPasswordRequest:
       required:
         - email
@@ -3055,6 +3893,65 @@ components:
         - Female
         - Other
       type: string
+    GetAdminUserDetailResponse:
+      required:
+        - bookingHistory
+        - categories
+        - email
+        - fullName
+        - id
+        - role
+        - services
+      type: object
+      properties:
+        id:
+          type: string
+          description: User identifier
+          format: uuid
+        fullName:
+          minLength: 1
+          type: string
+          description: User full name
+        email:
+          minLength: 1
+          type: string
+          description: User email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        masterProfileId:
+          type: string
+          description: 'Master aggregate ID — used to build the public profile URL (/masters/{id})'
+          format: uuid
+          nullable: true
+        city:
+          type: string
+          description: Master city
+          nullable: true
+        description:
+          type: string
+          description: Master description
+          nullable: true
+        rating:
+          type: number
+          description: Master rating
+          format: double
+          nullable: true
+        services:
+          type: array
+          items:
+            type: string
+          description: Services offered by master
+        categories:
+          type: array
+          items:
+            type: string
+          description: Categories offered by master
+        bookingHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserBookingHistoryEntry'
+          description: Bookig history for the last 6 months
+      additionalProperties: false
     GetAvailableTimeSlotsResponse:
       required:
         - slots
@@ -3071,28 +3968,59 @@ components:
         - $ref: '#/components/schemas/BookingDTO'
         - type: object
           additionalProperties: false
+    GetBookingStatisticsResponse:
+      type: object
+      properties:
+        totalBookings:
+          type: integer
+          description: Total number of bookings
+          format: int64
+        confirmed:
+          type: integer
+          description: Number of confirmed bookings
+          format: int64
+        pending:
+          type: integer
+          description: Number of pending (requested) bookings
+          format: int64
+        revenueThisMonth:
+          type: number
+          description: Total revenue from non-cancelled bookings this month
+          format: double
+      additionalProperties: false
     GetClientByIdResponse:
       allOf:
         - $ref: '#/components/schemas/ClientDTO'
         - type: object
           additionalProperties: false
     GetClientStatisticsResponse:
+      required:
+        - activeClientsLast30Days
+        - newClientsThisMonth
+        - totalBookingsLast30Days
+        - totalClients
+        - totalCompletedBookings
       type: object
       properties:
         totalClients:
           type: integer
+          description: Total number of clients
           format: int32
         newClientsThisMonth:
           type: integer
+          description: Number of new clients which joined this month
           format: int32
         activeClientsLast30Days:
           type: integer
+          description: Number of active cliens during the last 30 days
           format: int32
         totalBookingsLast30Days:
           type: integer
+          description: Total number of bookings the last 30 days
           format: int32
-        totalCompletedBookingValue:
+        totalCompletedBookings:
           type: number
+          description: Total number of completed bookings
           format: double
       additionalProperties: false
     GetDashboardStatsResponse:
@@ -3124,6 +4052,49 @@ components:
           type: integer
           description: Number of pending booking requests
           format: int32
+      additionalProperties: false
+    GetDashboardSummaryResponse:
+      required:
+        - monthlyPerformance
+        - recentActivities
+        - serviceCategories
+        - totalBookings
+        - totalClients
+        - totalMasters
+        - totalRevenue
+      type: object
+      properties:
+        totalClients:
+          type: integer
+          description: Total number of clients
+          format: int32
+        totalMasters:
+          type: integer
+          description: Total number of masters
+          format: int32
+        totalBookings:
+          type: integer
+          description: Total number of bookings
+          format: int64
+        totalRevenue:
+          type: number
+          description: Total revenue
+          format: double
+        monthlyPerformance:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyBookingStat'
+          description: Monthly performance stats
+        recentActivities:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardRecentActivity'
+          description: Recent activities stats
+        serviceCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceCategoryRevenueStat'
+          description: Service categories
       additionalProperties: false
     GetEarningsPerformanceResponse:
       required:
@@ -3221,21 +4192,39 @@ components:
           description: Items
       additionalProperties: false
     GetMasterStatisticsResponse:
+      required:
+        - activeMastersLast30Days
+        - newMastersThisMonth
+        - pendingRequests
+        - totalBookingsLast30Days
+        - totalMasters
       type: object
       properties:
         totalMasters:
           type: integer
+          description: Total number of masters
           format: int32
         newMastersThisMonth:
           type: integer
+          description: Number of new masters this month
           format: int32
         activeMastersLast30Days:
           type: integer
+          description: Number of active masters during last 30 days
           format: int32
         totalBookingsLast30Days:
           type: integer
+          description: Total number of bookings during last 30 days
           format: int32
         pendingRequests:
+          type: integer
+          description: Number of pending requests
+          format: int32
+      additionalProperties: false
+    GetPendingChangesetsCountResponse:
+      type: object
+      properties:
+        count:
           type: integer
           format: int32
       additionalProperties: false
@@ -3255,6 +4244,21 @@ components:
           description: Total count of pending requests
           format: int32
       additionalProperties: false
+    GetServiceStatisticsResponse:
+      required:
+        - totalCategories
+        - totalServices
+      type: object
+      properties:
+        totalServices:
+          type: integer
+          description: Total services number
+          format: int64
+        totalCategories:
+          type: integer
+          description: Total categories number
+          format: int64
+      additionalProperties: false
     GetUserResponse:
       type: object
       properties:
@@ -3267,6 +4271,33 @@ components:
           type: string
           nullable: true
         fullName:
+          type: string
+          nullable: true
+      additionalProperties: false
+    GetUserStatisticsResponse:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+          description: Total number of registered users
+          format: int64
+        totalMasters:
+          type: integer
+          description: Total number of masters
+          format: int64
+        totalClients:
+          type: integer
+          description: Total number of clients
+          format: int64
+        platformVolume:
+          type: number
+          description: Total platform revenue from completed bookings
+          format: double
+      additionalProperties: false
+    InitiateMasterKycVerificationResponse:
+      type: object
+      properties:
+        verificationUrl:
           type: string
           nullable: true
       additionalProperties: false
@@ -3285,7 +4316,6 @@ components:
     JobCommandDTO:
       required:
         - categoryId
-        - durationMinutes
         - name
       type: object
       properties:
@@ -3301,19 +4331,12 @@ components:
           type: string
           description: Desciption
           nullable: true
-        durationMinutes:
-          maximum: 1440
-          minimum: 1
-          type: integer
-          description: Duration in minutes
-          format: int32
       additionalProperties: false
     JobDTO:
       required:
         - categoryId
         - categoryName
         - description
-        - durationMinutes
         - id
         - name
       type: object
@@ -3333,12 +4356,16 @@ components:
         description:
           minLength: 1
           type: string
-        durationMinutes:
-          maximum: 1440
-          minimum: 1
-          type: integer
-          format: int32
       additionalProperties: false
+    KycStatus:
+      enum:
+        - NotSubmitted
+        - Pending
+        - Approved
+        - Rejected
+        - Abandoned
+        - Expired
+      type: string
     LoginRequest:
       required:
         - email
@@ -3349,9 +4376,11 @@ components:
         email:
           minLength: 1
           type: string
+          description: Email identifier
         password:
           minLength: 1
           type: string
+          description: Password
         role:
           $ref: '#/components/schemas/UserRole'
       additionalProperties: false
@@ -3478,6 +4507,16 @@ components:
         bufferMinutes:
           type: integer
           format: int32
+        hasPendingChangesets:
+          type: boolean
+        kycStatus:
+          $ref: '#/components/schemas/KycStatus'
+        kycVerificationUrl:
+          type: string
+          nullable: true
+        kycRejectionReason:
+          type: string
+          nullable: true
       additionalProperties: false
     MasterJobDTO:
       required:
@@ -3489,6 +4528,7 @@ components:
         - jobId
         - jobName
         - price
+        - status
         - title
       type: object
       properties:
@@ -3524,6 +4564,8 @@ components:
           type: integer
           description: Job duration in minutes
           format: int32
+        status:
+          $ref: '#/components/schemas/MasterJobStatus'
         featuredImageId:
           type: string
           description: Featured image identifier
@@ -3614,27 +4656,35 @@ components:
       additionalProperties: false
     MasterJobOfferingCommandDTO:
       required:
+        - durationMinutes
         - jobId
+        - price
         - title
       type: object
       properties:
         jobId:
           type: string
+          description: Job identifier
           format: uuid
         title:
-          maxLength: 256
           minLength: 1
           type: string
+          description: Title to be displayed to clients
         price:
-          minimum: 0
           type: number
+          description: Price to be paid for the service
           format: double
         durationMinutes:
-          maximum: 1440
-          minimum: 1
           type: integer
+          description: Duration of the service
           format: int32
       additionalProperties: false
+    MasterJobStatus:
+      enum:
+        - Draft
+        - PendingReview
+        - Active
+      type: string
     MasterProfileCommandDTO:
       required:
         - email
@@ -3644,65 +4694,81 @@ components:
       type: object
       properties:
         firstName:
-          maxLength: 128
           minLength: 1
           type: string
+          description: First name
         lastName:
-          maxLength: 128
           minLength: 1
           type: string
+          description: Last name
         age:
-          maximum: 120
-          minimum: 18
           type: integer
+          description: Age
           format: int32
           nullable: true
         gender:
           $ref: '#/components/schemas/Gender'
         description:
-          maxLength: 1000
           type: string
+          description: Description
           nullable: true
         email:
           minLength: 1
           type: string
-          format: email
+          description: Email address
         phoneNumber:
-          maxLength: 32
           minLength: 1
           type: string
+          description: Phone number
         latitude:
-          maximum: 90
-          minimum: -90
           type: number
+          description: Latitude of the service lcoation
           format: double
           nullable: true
         longitude:
-          maximum: 180
-          minimum: -180
           type: number
+          description: Longitude of the service lcoation
           format: double
           nullable: true
         city:
-          maxLength: 128
           type: string
+          description: City of the service lcoation
           nullable: true
         country:
-          maxLength: 128
           type: string
+          description: Country of the service lcoation
           nullable: true
         addressLine1:
-          maxLength: 256
           type: string
+          description: Address line 1
           nullable: true
         addressLine2:
-          maxLength: 256
           type: string
+          description: Address line 2
           nullable: true
         postalCode:
-          maxLength: 32
           type: string
+          description: Postal code
           nullable: true
+      additionalProperties: false
+    MonthlyBookingStat:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        completed:
+          type: integer
+          format: int32
+        confirmed:
+          type: integer
+          format: int32
+        cancelled:
+          type: integer
+          format: int32
       additionalProperties: false
     PendingRequestDTO:
       required:
@@ -3808,6 +4874,13 @@ components:
           description: When the rating was submitted
           format: date-time
       additionalProperties: false
+    RebuildProjectionResponse:
+      type: object
+      properties:
+        projectionName:
+          type: string
+          nullable: true
+      additionalProperties: false
     RegisterUserRequest:
       required:
         - email
@@ -3821,18 +4894,23 @@ components:
         firstName:
           minLength: 1
           type: string
+          description: First name
         lastName:
           minLength: 1
           type: string
+          description: Last name
         email:
           minLength: 1
           type: string
+          description: Email address
         password:
           minLength: 1
           type: string
+          description: Password
         phoneNumber:
           minLength: 1
           type: string
+          description: Phone number
         role:
           $ref: '#/components/schemas/UserRole'
       additionalProperties: false
@@ -3879,6 +4957,19 @@ components:
           minLength: 1
           type: string
       additionalProperties: false
+    ServiceCategoryRevenueStat:
+      type: object
+      properties:
+        categoryName:
+          type: string
+          nullable: true
+        revenue:
+          type: number
+          format: double
+        percentage:
+          type: integer
+          format: int32
+      additionalProperties: false
     SetMasterJobFeaturedImageRequest:
       required:
         - masterId
@@ -3887,24 +4978,30 @@ components:
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
         masterJobId:
           type: string
+          description: Master job identifier
           format: uuid
         masterJobImageId:
           type: string
+          description: Master job image identfier to be set as featured
           format: uuid
           nullable: true
         focusX:
           type: number
+          description: Featured image horizontal adjustment
           format: double
           nullable: true
         focusY:
           type: number
+          description: Featured image vertical adjustment
           format: double
           nullable: true
         zoom:
           type: number
+          description: Featured image zoom adjustment
           format: double
           nullable: true
       additionalProperties: false
@@ -3921,6 +5018,34 @@ components:
           type: string
           format: uuid
           nullable: true
+      additionalProperties: false
+    SetUserRoleRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/UserRole'
+      additionalProperties: false
+    SetUserRoleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/UserRole'
+      additionalProperties: false
+    SubmitMasterJobForReviewResponse:
+      type: object
+      properties:
+        masterId:
+          type: string
+          format: uuid
+        masterJobId:
+          type: string
+          format: uuid
       additionalProperties: false
     UnsetMasterJobFeaturedImageResponse:
       type: object
@@ -3953,6 +5078,31 @@ components:
           type: string
           description: Id
           format: uuid
+      additionalProperties: false
+    UpdateJobCategoryRequest:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Job category identifier
+          format: uuid
+        name:
+          minLength: 1
+          type: string
+          description: Job category name
+      additionalProperties: false
+    UpdateJobCategoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          nullable: true
       additionalProperties: false
     UpdateJobRequest:
       allOf:
@@ -4041,9 +5191,11 @@ components:
       properties:
         masterId:
           type: string
+          description: Master identifier
           format: uuid
         masterJobId:
           type: string
+          description: Master job identifier
           format: uuid
         job:
           $ref: '#/components/schemas/MasterJobOfferingCommandDTO'
@@ -4067,6 +5219,7 @@ components:
           properties:
             masterId:
               type: string
+              description: Master identifier
               format: uuid
           additionalProperties: false
     UpdateMasterProfileResponse:
@@ -4105,6 +5258,22 @@ components:
           type: string
           description: Master id
           format: uuid
+      additionalProperties: false
+    UserBookingHistoryEntry:
+      type: object
+      properties:
+        year:
+          type: integer
+          format: int32
+        month:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+        earnings:
+          type: number
+          format: double
       additionalProperties: false
     UserRole:
       enum:

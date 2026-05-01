@@ -8,6 +8,7 @@ import {
   Modal,
   Stack,
   Text,
+  Textarea,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,7 +16,7 @@ import {
   AlertCircle,
   Briefcase,
   Check,
-  DollarSign,
+  Euro,
   MapPin,
   Phone,
 } from 'lucide-react';
@@ -52,6 +53,7 @@ function BookingModal({
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [comment, setComment] = useState('');
 
   const availableSlotsKeyPrefix = `/api/v1/masters/${masterId}/available-slots`;
 
@@ -79,10 +81,11 @@ function BookingModal({
         });
       },
       onError: (err) => {
-        setError(err?.detail ?? t('masterProfile.bookingModal.notifications.failMessage'));
+        const errMsg = err?.detail ?? (err as unknown as Error)?.message ?? t('masterProfile.bookingModal.notifications.failMessage');
+        setError(errMsg);
         notifications.show({
           title: t('masterProfile.bookingModal.notifications.failTitle'),
-          message: err?.detail ?? t('masterProfile.bookingModal.notifications.failMessage'),
+          message: errMsg,
           color: 'red',
         });
       },
@@ -98,6 +101,7 @@ function BookingModal({
         clientId: user.id,
         masterJobId: job.id,
         scheduledAt,
+        clientComment: comment.trim() || null,
       },
     });
   };
@@ -105,6 +109,7 @@ function BookingModal({
   const handleClose = () => {
     setIsSuccess(false);
     setError('');
+    setComment('');
     onClose();
   };
 
@@ -173,7 +178,7 @@ function BookingModal({
 
         {job && (
           <Group gap="sm">
-            <DollarSign size={18} />
+            <Euro size={18} />
             <Text fw={500}>
               {job.price}
             </Text>
@@ -189,6 +194,17 @@ function BookingModal({
           <Phone size={18} />
           <Text>{phone ?? t('masterProfile.bookingModal.phoneFallback')}</Text>
         </Group>
+
+        <Textarea
+          label={t('masterProfile.bookingModal.commentLabel')}
+          placeholder={t('masterProfile.bookingModal.commentPlaceholder')}
+          autosize
+          minRows={2}
+          maxRows={4}
+          maxLength={500}
+          value={comment}
+          onChange={(e) => setComment(e.currentTarget.value)}
+        />
 
         <Group gap="sm" mt="md">
           <Button

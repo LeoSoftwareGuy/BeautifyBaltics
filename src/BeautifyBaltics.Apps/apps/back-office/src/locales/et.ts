@@ -40,6 +40,7 @@ const et: CommonLocale = {
       timeSlots: 'Ajaaknad',
       services: 'Teenused',
       settings: 'Seaded',
+      kyc: 'Tuvastamine',
       howTo: 'Kuidas see toimib',
     },
     breadcrumbs: {
@@ -59,6 +60,289 @@ const et: CommonLocale = {
       masterTimeSlots: 'Ajaaknad',
       masterSettings: 'Seaded',
       masterProfile: 'Meistri profiil',
+      adminDashboard: 'Admin',
+      adminServices: 'Teenused',
+      adminBookings: 'Broneeringud',
+      adminUsers: 'Kasutajad',
+      adminChangesets: 'Kinnitused',
+      masterKyc: 'Tuvastamine',
+    },
+    admin: {
+      dashboard: 'Töölaud',
+      services: 'Teenused',
+      bookings: 'Broneeringud',
+      users: 'Kasutajad',
+      changesets: 'Kinnitused',
+    },
+  },
+  admin: {
+    navigation: {
+      dashboard: 'Töölaud',
+      services: 'Teenused',
+      bookings: 'Broneeringud',
+      users: 'Kasutajad',
+    },
+    breadcrumbs: {
+      adminDashboard: 'Admin',
+      adminServices: 'Teenused',
+      adminBookings: 'Broneeringud',
+      adminUsers: 'Kasutajad',
+    },
+    dashboard: {
+      page: {
+        title: 'Platvormi ülevaade',
+        subtitle: 'Siin on, mis täna Beautify Balticsis toimub.',
+        exportReport: 'Ekspordi aruanne',
+      },
+      stats: {
+        totalClients: 'Kliente kokku',
+        totalMasters: 'Meistreid kokku',
+        totalBookings: 'Broneeringuid kokku',
+      },
+      monthlyPerformance: {
+        title: 'Kuine tulemuslikkus',
+        subtitle: 'Broneeringute trend kõigis teenuskategooriates',
+        completed: 'Lõpetatud',
+        confirmed: 'Kinnitatud',
+        cancelled: 'Tühistatud',
+      },
+      recentActivity: {
+        title: 'Viimane tegevus',
+        viewAll: 'Vaata kõiki',
+        booked: 'broneeri',
+        with: 'koos',
+        noActivity: 'Viimast tegevust pole',
+      },
+      serviceCategories: {
+        title: 'Teenuste kategooriad',
+        totalRevenue: 'Kogutulude (viimased 12 kuud)',
+        noData: 'Kategooria andmed puuduvad',
+      },
+    },
+    users: {
+      page: {
+        title: 'Kasutajate haldus',
+        subtitle: 'Halda platvormi kasutajaid, rolle ja kontosid',
+      },
+      stats: {
+        totalUsers: 'Kasutajaid kokku',
+        totalMasters: 'Aktiivsed meistrid',
+        totalClients: 'Aktiivsed kliendid',
+        platformVolume: 'Platvormi käive',
+      },
+      table: {
+        columns: {
+          name: 'Nimi',
+          role: 'Roll',
+          bookings: 'Broneeringud',
+          rating: 'Reiting',
+          earnings: 'Tulud',
+          kyc: 'KYC',
+          admin: 'Admin',
+        },
+        noRecords: 'Kasutajaid ei leitud',
+      },
+      filters: {
+        searchPlaceholder: 'Otsi nime või e-posti järgi...',
+        allRoles: 'Kõik rollid',
+      },
+      role: {
+        client: 'Klient',
+        master: 'Meister',
+        admin: 'Admin',
+      },
+      verified: 'Kinnitatud',
+      unverified: 'Kinnitamata',
+      actions: {
+        promoteToAdmin: 'Tee adminiks',
+        delete: 'Kustuta konto',
+      },
+      promoteModal: {
+        title: 'Tee adminiks',
+        message: 'Kas oled kindel, et soovid teha {{name}} adminiks? See annab täieliku platvormi ligipääsu.',
+        confirm: 'Tee adminiks',
+      },
+      deleteModal: {
+        title: 'Kustuta konto',
+        message: 'Kas oled kindel, et soovid kustutada kasutaja {{name}}? Seda toimingut ei saa tagasi võtta.',
+        confirm: 'Kustuta',
+      },
+      notifications: {
+        roleUpdated: 'Kasutaja roll edukalt uuendatud',
+        deleted: 'Kasutaja edukalt kustutatud',
+        errorTitle: 'Viga',
+        error: 'Midagi läks valesti. Palun proovi uuesti.',
+      },
+      detail: {
+        profile: {
+          title: 'Meistri profiil',
+        },
+        chart: {
+          title: 'Broneeringute ajalugu (6 kuud)',
+          bookings: 'Broneeringud',
+          earnings: 'Tulud',
+        },
+        quickActions: 'Kiirtoimingud',
+        memberSince: 'Liige alates {{date}}',
+        viewProfile: 'Vaata avalikku profiili',
+      },
+    },
+    bookings: {
+      page: {
+        title: 'Broneeringute haldus',
+        subtitle: 'Vaata ja jälgi kõiki platvormi broneeringuid',
+      },
+      stats: {
+        totalBookings: 'Broneeringuid kokku',
+        confirmed: 'Kinnitatud',
+        pending: 'Ootel',
+        revenueThisMonth: 'Tulu sel kuul',
+      },
+      table: {
+        columns: {
+          client: 'Klient',
+          master: 'Meister',
+          service: 'Teenus',
+          scheduledAt: 'Aeg',
+          price: 'Hind',
+          status: 'Staatus',
+        },
+        noRecords: 'Broneeringuid ei leitud',
+      },
+      filters: {
+        searchPlaceholder: 'Otsi kliendi või teenuse järgi...',
+        allStatuses: 'Kõik staatused',
+        fromDate: 'Alates',
+        toDate: 'Kuni',
+      },
+      status: {
+        requested: 'Ootel',
+        confirmed: 'Kinnitatud',
+        completed: 'Lõpetatud',
+        cancelled: 'Tühistatud',
+      },
+    },
+    services: {
+      page: {
+        title: 'Teenuste haldus',
+        subtitle: 'Halda töökategooriaid ja platvormil pakutavaid teenuseid',
+      },
+      stats: {
+        totalServices: 'Teenuseid kokku',
+        totalCategories: 'Kategooriaid kokku',
+        averagePrice: 'Keskmine hind',
+      },
+      tabs: {
+        services: 'Teenused',
+        categories: 'Kategooriad',
+      },
+      servicesTable: {
+        columns: {
+          name: 'Teenuse nimi',
+          category: 'Kategooria',
+          duration: 'Kestus',
+          price: 'Hind',
+          actions: 'Toimingud',
+        },
+        noRecords: 'Teenuseid ei leitud',
+      },
+      categoriesTable: {
+        columns: {
+          name: 'Kategooria nimi',
+          actions: 'Toimingud',
+        },
+        noRecords: 'Kategooriaid ei leitud',
+      },
+      filters: {
+        searchPlaceholder: 'Otsi teenuseid...',
+        categorySearchPlaceholder: 'Otsi kategooriaid...',
+        categoryFilterPlaceholder: 'Kõik kategooriad',
+      },
+      actions: {
+        addService: 'Lisa teenus',
+        addCategory: 'Lisa kategooria',
+        edit: 'Muuda',
+        delete: 'Kustuta',
+      },
+      jobModal: {
+        createTitle: 'Loo teenus',
+        editTitle: 'Muuda teenust',
+        fields: {
+          name: 'Teenuse nimi',
+          category: 'Kategooria',
+          description: 'Kirjeldus',
+          durationMinutes: 'Kestus (minutites)',
+          price: 'Hind (EUR)',
+        },
+        submit: 'Salvesta',
+        notifications: {
+          createSuccess: 'Teenus edukalt loodud',
+          updateSuccess: 'Teenus edukalt uuendatud',
+          errorTitle: 'Viga',
+          error: 'Midagi läks valesti. Palun proovi uuesti.',
+        },
+      },
+      categoryModal: {
+        createTitle: 'Loo kategooria',
+        editTitle: 'Muuda kategooriat',
+        deleteTitle: 'Kustuta kategooria',
+        deleteMessage: 'Kas oled kindel, et soovid selle kategooria kustutada? Seda toimingut ei saa tagasi võtta.',
+        fields: {
+          name: 'Kategooria nimi',
+        },
+        submit: 'Salvesta',
+        notifications: {
+          createSuccess: 'Kategooria edukalt loodud',
+          updateSuccess: 'Kategooria edukalt uuendatud',
+          deleteSuccess: 'Kategooria edukalt kustutatud',
+          errorTitle: 'Viga',
+          error: 'Midagi läks valesti. Palun proovi uuesti.',
+        },
+      },
+    },
+    changesets: {
+      pageTitle: 'Kinnitused',
+      status: {
+        pending: 'Ootel',
+        approved: 'Kinnitatud',
+        rejected: 'Tagasi lükatud',
+      },
+      filters: {
+        allStatuses: 'Kõik staatused',
+      },
+      table: {
+        columns: {
+          changeType: 'Muudatuse tüüp',
+          masterId: 'Meister',
+          proposedAt: 'Esitatud',
+          status: 'Staatus',
+        },
+        noRecords: 'Kirjeid ei leitud',
+      },
+      proposedChange: 'Pakutud muudatus',
+      comment: 'Kommentaar',
+      actions: {
+        approve: 'Kinnita',
+        reject: 'Lükka tagasi',
+      },
+      approveModal: {
+        title: 'Kinnita muudatus',
+        message: 'Kas oled kindel, et soovid selle muudatuse kinnitada? See rakendatakse kohe.',
+        commentPlaceholder: 'Valikuline kommentaar...',
+        confirm: 'Kinnita',
+      },
+      rejectModal: {
+        title: 'Lükka muudatus tagasi',
+        message: 'Kas oled kindel, et soovid selle muudatuse tagasi lükata? Seda toimingut ei saa tagasi võtta.',
+        commentPlaceholder: 'Tagasilükkamise põhjus (valikuline)...',
+        confirm: 'Lükka tagasi',
+      },
+      notifications: {
+        approved: 'Muudatus edukalt kinnitatud',
+        rejected: 'Muudatus tagasi lükatud',
+        errorTitle: 'Viga',
+        error: 'Midagi läks valesti. Palun proovi uuesti.',
+      },
     },
   },
   auth: {
@@ -91,15 +375,23 @@ const et: CommonLocale = {
     },
     login: {
       title: 'Tere tulemast tagasi',
-      subtitle: 'Logi Beautify Balticsi kontoga jätkamiseks.',
+      subtitle: 'Sisesta oma andmed konto kasutamiseks',
       accountTypeLabel: 'Konto tüüp',
       accountTypeHint: 'Vali, millist keskkonda soovid kasutada',
       roleClient: 'Klient',
       roleMaster: 'Meister',
       registeredTitle: 'Registreerimine õnnestus',
       registeredMessage: 'Palun logi sisse oma uute andmetega.',
-      noAccount: 'Pole kontot?',
+      noAccount: 'Uus Beautify Balticsisse?',
       createAccountLink: 'Loo konto',
+      forgotPassword: 'Unustasite parooli?',
+      signIn: 'Logi sisse',
+      resetPasswordTitle: 'Lähtesta parool',
+      resetPasswordSubtitle: 'Sisesta oma e-posti aadress ja saadame sulle parooli lähtestamise lingi.',
+      sendResetLink: 'Saada lähtestamislink',
+      resetCheckInboxTitle: 'Kontrolli postkasti',
+      resetCheckInboxMessage: 'Parooli lähtestamise link on saadetud sinu e-posti aadressile.',
+      backToSignIn: 'Tagasi sisselogimisele',
     },
     register: {
       title: 'Loo konto',
@@ -109,6 +401,7 @@ const et: CommonLocale = {
       roleClient: 'Klient',
       roleMaster: 'Meister',
       submitButton: 'Loo konto',
+      alreadyHaveAccount: 'Kas sul on juba konto?',
       notifications: {
         checkInboxTitle: 'Kontrolli oma postkasti',
         checkInboxMessage: 'Palun kinnita e-post enne sisselogimist.',
@@ -146,6 +439,11 @@ const et: CommonLocale = {
     },
     filters: {
       title: 'Filtrid',
+      availability: 'Saadavus',
+      dateLabel: 'Kuupäev',
+      datePlaceholder: 'Vali kuupäev',
+      timeLabel: 'Kellaaeg',
+      timePlaceholder: 'Igal ajal',
       priceRange: 'Hinnavahemik',
     },
     categories: {
@@ -290,6 +588,9 @@ const et: CommonLocale = {
         scheduledTime: 'Planeeritud aeg',
         status: 'Staatus',
       },
+      commentSection: {
+        title: 'Sinu märkus',
+      },
       contactSection: {
         title: 'Kontaktandmed',
         empty: 'Kontaktandmed puuduvad',
@@ -305,6 +606,10 @@ const et: CommonLocale = {
         serviceLabel: 'Teenus',
         servicePlaceholder: 'Kõik teenused',
         priceRange: 'Hinnavahemik',
+        dateLabel: 'Kuupäev',
+        datePlaceholder: 'Vali kuupäev',
+        timeLabel: 'Kellaaeg',
+        timePlaceholder: 'Igal ajal',
       },
       results: {
         title: 'Parimad meistrid',
@@ -404,6 +709,11 @@ const et: CommonLocale = {
         viewAll: 'Vaata kõiki',
         incomeDynamics: 'Tulude dünaamika',
       },
+      kycBanner: {
+        title: 'Lõpetage isiku tuvastamine',
+        message: 'Kinnitage oma isik, et muutuda klientidele nähtavaks ja hakata broneeringuid vastu võtma.',
+        action: 'Tuvasta kohe',
+      },
     },
     bookings: {
       page: {
@@ -444,6 +754,7 @@ const et: CommonLocale = {
         viewInvoice: 'Vaata arvet',
         confirm: 'Kinnita',
         cancel: 'Tühista',
+        clientComment: 'Kliendi märkus',
         noRecords: 'Broneeringuid ei leitud',
       },
       status: {
@@ -547,6 +858,11 @@ const et: CommonLocale = {
         count_one: '{{count}} teenus lisatud',
         count_other: '{{count}} teenust lisatud',
       },
+      status: {
+        draft: 'Mustand',
+        pendingReview: 'Ülevaatamisel',
+        active: 'Aktiivne',
+      },
       notifications: {
         createSuccessTitle: 'Teenus lisatud',
         createSuccessMessage: 'Teenus lisati edukalt.',
@@ -572,10 +888,16 @@ const et: CommonLocale = {
         deleteImageSuccessMessage: 'Pilt eemaldati edukalt.',
         deleteImageErrorTitle: 'Pildi kustutamine ebaõnnestus',
         deleteImageErrorMessage: 'Palun proovi uuesti.',
+        submitSuccessTitle: 'Ülevaatamisele saadetud',
+        submitSuccessMessage: 'Teenus on saadetud administraatorile ülevaatamiseks.',
+        submitErrorTitle: 'Saatmine ebaõnnestus',
+        submitErrorMessage: 'Teenuse saatmisel tekkis viga.',
       },
       cards: {
         addServiceTitle: 'Lisa uus teenus',
         addServiceSubtitle: 'Täienda oma teenuste nimekirja',
+        submitForReview: 'Saada ülevaatamisele',
+        pendingReviewTooltip: 'Ootel administraatori ülevaatus — muutmine on keelatud',
       },
       form: {
         description: 'Vali kõigepealt kategooria ja seejärel teenus.',
@@ -630,9 +952,45 @@ const et: CommonLocale = {
         imageAltWithIndex: 'Töönäidis {{index}}',
       },
     },
+    kyc: {
+      title: 'Isikutuvastus',
+      subtitle: 'Kinnita oma isik, et muutuda klientidele nähtavaks ja hakata broneeringuid vastu võtma.',
+      status: {
+        notSubmitted: 'Kinnitamata',
+        pending: 'Pooleli',
+        approved: 'Kinnitatud',
+        rejected: 'Tagasi lükatud',
+        abandoned: 'Lõpetamata',
+      },
+      approvedTitle: 'Isik kinnitatud',
+      approvedMessage: 'Sinu isik on kinnitatud. Oled klientidele nähtav.',
+      pendingTitle: 'Tuvastamine pooleli',
+      pendingMessage: 'Palun lõpeta tuvastamise sammud Diditi aknas. Tule siia tagasi, kui oled valmis.',
+      rejectedTitle: 'Tuvastamine ebaõnnestus',
+      rejectedReason: 'Põhjus: {{reason}}',
+      rejectedHint: 'Saad alustada uut tuvastamist allpool.',
+      abandonedMessage: 'Sinu eelmine tuvastamise sessioon jäi pooleli. Alusta uus allpool.',
+      howItWorksTitle: 'Kuidas see toimib',
+      howItWorksMessage: 'Klõpsa alloleval nupul, et avada turvaline Diditi tuvastamise aken uuel vahelehel. Skannid oma isikutunnistuse ja teed selfie. Tulemus on tavaliselt kohene.',
+      startButton: 'Alusta tuvastamist',
+      retryButton: 'Alusta uut tuvastamist',
+      checkStatusButton: 'Kontrolli staatust',
+      reopenButton: 'Ava tuvastamise aken uuesti',
+      notifications: {
+        errorTitle: 'Tuvastamise alustamine ebaõnnestus',
+        errorMessage: 'Tekkis viga. Palun proovi uuesti.',
+      },
+    },
     settings: {
       page: {
         title: 'Seaded',
+      },
+      kyc: {
+        softLock: {
+          title: 'Isikutuvastus nõutav',
+          message: 'Lõpeta isikutuvastus enne muudatuste esitamist.',
+          action: 'Kinnita isik',
+        },
       },
       profile: {
         loading: 'Profiil laadib...',
@@ -655,6 +1013,12 @@ const et: CommonLocale = {
           lastName: 'Perekonnanimi on kohustuslik (1-128 märki)',
           email: 'E-post on kohustuslik',
           phone: 'Telefon on kohustuslik',
+        },
+        pendingPreview: {
+          viewingProposed: 'Vaatad ootel muudatusi (kinnitamist ootab)',
+          viewingApproved: 'Vaatad kinnitatud versiooni (avalik)',
+          pending: 'Ootel',
+          approved: 'Kinnitatud',
         },
         photo: {
           title: 'Profiilifoto',
@@ -762,6 +1126,8 @@ const et: CommonLocale = {
       phoneFallback: 'Telefon täpsustamata',
       booking: 'Broneerin...',
       confirmBooking: 'Kinnita broneering',
+      commentLabel: 'Märkus meistrile (valikuline)',
+      commentPlaceholder: 'Eripäringud või märkused meistrile...',
       notifications: {
         successTitle: 'Broneering loodud',
         successMessage: 'Sinu broneering loodi edukalt',

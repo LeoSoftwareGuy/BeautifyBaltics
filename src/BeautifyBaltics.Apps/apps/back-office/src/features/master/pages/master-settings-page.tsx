@@ -1,11 +1,14 @@
 import { useTranslation } from 'react-i18next';
 import {
-  ActionIcon, Box, Button, Card, Group, Stack, Title,
+  ActionIcon, Alert, Box, Button, Card, Group, Stack, Text, Title,
 } from '@mantine/core';
-import { IconArrowLeft, IconLogout } from '@tabler/icons-react';
+import { IconArrowLeft, IconLogout, IconShieldCheck } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
 
 import { useSession } from '@/contexts/session-context';
+import { KycStatus } from '@/state/endpoints/api.schemas';
+import { useGetMasterById } from '@/state/endpoints/masters';
+import { useGetUser } from '@/state/endpoints/users';
 
 import MasterProfileSettings from '../master-profile-settings';
 import { MasterSchedulingSettings } from '../master-scheduling-settings';
@@ -14,6 +17,20 @@ function MasterSettingsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { logout } = useSession();
+
+  const { data: user } = useGetUser();
+  const masterId = user?.id ?? '';
+
+  const { data: masterData } = useGetMasterById(
+    masterId,
+    { id: masterId, proposal: true },
+    { query: { enabled: !!masterId } },
+  );
+
+  const kycStatus = masterData?.kycStatus;
+  const isKycApproved = kycStatus === KycStatus.Approved;
+  const isKycPending = kycStatus === KycStatus.Pending;
+  const isKycLocked = !isKycApproved && !isKycPending;
 
   const handleLogout = async () => {
     try {
@@ -58,12 +75,39 @@ function MasterSettingsPage() {
       </Box>
 
       <Stack gap="xl" px="md" pb="xl" pt={{ base: 'md', md: 0 }}>
+        {/* KYC status banner — links to KYC page */}
+        {!isKycApproved && (
+          <Alert
+            icon={<IconShieldCheck size={16} />}
+            color={isKycPending ? 'blue' : 'orange'}
+            variant="light"
+          >
+            <Group justify="space-between" align="center" wrap="nowrap">
+              <Text size="sm">
+                <strong>{t('master.settings.kyc.softLock.title')}</strong>
+                {' — '}
+                {t('master.settings.kyc.softLock.message')}
+              </Text>
+              <Button
+                size="xs"
+                color={isKycPending ? 'blue' : 'orange'}
+                variant="light"
+                onClick={() => navigate({ to: '/master/kyc', search: {} })}
+              >
+                {t('master.settings.kyc.softLock.action')}
+              </Button>
+            </Group>
+          </Alert>
+        )}
+
+        {/* Profile settings */}
         <Card withBorder>
-          <MasterProfileSettings />
+          <MasterProfileSettings isKycLocked={isKycLocked} />
         </Card>
 
+        {/* Scheduling settings */}
         <Card withBorder>
-          <MasterSchedulingSettings />
+          <MasterSchedulingSettings isKycLocked={isKycLocked} />
         </Card>
 
         <Button

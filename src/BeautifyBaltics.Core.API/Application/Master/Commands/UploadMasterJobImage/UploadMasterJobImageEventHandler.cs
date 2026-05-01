@@ -1,7 +1,9 @@
 using BeautifyBaltics.Domain.Aggregates.Master;
 using BeautifyBaltics.Domain.Aggregates.Master.Events;
+using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Integrations.BlobStorage;
+using JasperFx.Core;
 using Wolverine;
 using Wolverine.Marten;
 
@@ -18,15 +20,16 @@ public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterAggregat
     {
         if (master == null) throw NotFoundException.For<MasterAggregate>(request.MasterId);
 
-        var job = master.Jobs.SingleOrDefault(j => j.MasterJobId == request.MasterJobId) ??
-                  throw DomainException.WithMessage($"Master job {request.MasterJobId} not found.");
+        if (master.KycStatus != KycStatus.Approved && master.KycStatus != KycStatus.Pending)
+            throw DomainException.WithMessage("Identity verification must be submitted before uploading service images.");
+
+        var job = master.GetJobOrThrow(request.MasterJobId);
 
         var events = new Events();
 
         foreach (var file in request.Files)
         {
             var blobFile = new BlobFileDTO(file.FileName, file, file.ContentType);
-
             var blobName = await blobStorageService.UploadAsync(master.Id, blobFile, cancellationToken);
 
             events.Add(new MasterJobImageUploaded(
@@ -36,7 +39,8 @@ public class UploadMasterJobImageEventHandler(IBlobStorageService<MasterAggregat
                 FileName: file.FileName,
                 FileMimeType: file.ContentType,
                 FileSize: file.Length
-            ));
+            )
+            { MasterJobImageId = CombGuidIdGeneration.NewGuid() });
         }
 
         return (events, [new UploadMasterJobImageResponse(master.Id, job.JobId)]);

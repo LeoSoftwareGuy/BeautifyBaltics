@@ -8,7 +8,6 @@ using BeautifyBaltics.Persistence.Projections;
 using BeautifyBaltics.Persistence.Repositories.Booking;
 using BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 using BeautifyBaltics.Persistence.Repositories.Master;
-using BeautifyBaltics.Persistence.Repositories.Master.DTOs;
 using BeautifyBaltics.Persistence.Repositories.SeedWork;
 using Wolverine.Marten;
 
@@ -17,7 +16,6 @@ namespace BeautifyBaltics.Core.API.Application.Booking.Commands.CreateBooking;
 public class CreateBookingEventHandler(
     ICommandRepository commandRepository,
     IMasterJobRepository masterJobRepository,
-    IMasterAvailabilitySlotRepository masterAvailabilitySlotRepository,
     IBookingRepository bookingRepository
 )
 {
@@ -48,15 +46,9 @@ public class CreateBookingEventHandler(
         var dayStart = scheduledAt.Date;
         var dayEnd = dayStart.AddDays(1);
 
-        var availabilityWindows = await masterAvailabilitySlotRepository.GetListAsync(
-            new MasterAvailabilitySlotSearchDTO
-            {
-                MasterId = request.MasterId,
-                StartAt = dayStart,
-                EndAt = dayEnd
-            },
-            cancellationToken
-        );
+        var availabilityWindows = master.Availabilities
+            .Where(s => s.StartAt < dayEnd && s.EndAt > dayStart)
+            .ToList();
 
         // Only consider Available windows (not Break slots)
         var validWindow = availabilityWindows.FirstOrDefault(w =>
@@ -116,7 +108,8 @@ public class CreateBookingEventHandler(
             MasterJobId: request.MasterJobId,
             ScheduledAt: scheduledAt,
             Duration: masterJob.Duration,
-            Price: masterJob.Price
+            Price: masterJob.Price,
+            ClientComment: request.ClientComment
         );
 
         var bookingId = commandRepository.StartStream<BookingAggregate>(bookingCreatedEvent);

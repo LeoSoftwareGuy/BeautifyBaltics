@@ -4,6 +4,7 @@ import {
   ActionIcon,
   Badge,
   Box,
+  Button,
   Card,
   Drawer,
   Group,
@@ -11,22 +12,32 @@ import {
   Text,
 } from '@mantine/core';
 import {
-  IconClock, IconEdit, IconPhoto, IconTrash, IconUpload,
+  IconClock, IconEdit, IconPhoto, IconSend, IconTrash, IconUpload,
 } from '@tabler/icons-react';
 
 import useRoutedModal from '@/hooks/use-routed-modal';
 import { useTranslateData } from '@/hooks/use-translate-data';
 import type { MasterJobDTO } from '@/state/endpoints/api.schemas';
+import { MasterJobStatus } from '@/state/endpoints/api.schemas';
 
 import { EditMasterServicesForm } from './master-services-form';
 import { MasterServicesUpload } from './master-services-upload';
+
+const STATUS_COLORS: Record<MasterJobStatus, string> = {
+  [MasterJobStatus.Draft]: 'gray',
+  [MasterJobStatus.PendingReview]: 'yellow',
+  [MasterJobStatus.Active]: 'green',
+};
 
 type MasterServiceCardProps = {
   masterId: string;
   service: MasterJobDTO;
   onClick: (id: string) => void;
   onDelete: (id: string) => void;
+  onSubmit: (id: string) => void;
   isDeleting?: boolean;
+  isSubmitting?: boolean;
+  isKycLocked?: boolean;
 };
 
 export function MasterServiceCard({
@@ -34,11 +45,16 @@ export function MasterServiceCard({
   service,
   onClick,
   onDelete,
+  onSubmit,
   isDeleting,
+  isSubmitting,
+  isKycLocked = false,
 }: MasterServiceCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const { translateService, translateCategory } = useTranslateData();
   const { t } = useTranslation();
+  const isPendingReview = service.status === MasterJobStatus.PendingReview;
+  const isDraft = service.status === MasterJobStatus.Draft;
 
   const { onOpen: onOpenEdit, opened: editOpened, onClose: onCloseEdit } = useRoutedModal(`edit-service-${service.id}`);
   const { onOpen: onOpenUpload, opened: uploadOpened, onClose: onCloseUpload } = useRoutedModal(`upload-service-${service.id}`);
@@ -122,50 +138,62 @@ export function MasterServiceCard({
               {translateCategory(service.jobCategoryName)}
             </Badge>
           )}
-          <Group
-            gap={4}
+          <Badge
+            variant="filled"
+            color={STATUS_COLORS[service.status]}
+            size="sm"
             pos="absolute"
             top={8}
-            right={8}
-            style={{
-              opacity: isHovered ? 1 : 0,
-              transition: 'opacity 150ms ease',
-            }}
+            left={8}
           >
-            <ActionIcon
-              variant="filled"
-              color="white"
-              c="brand"
-              radius="md"
-              size="md"
-              onClick={(e) => { e.stopPropagation(); onOpenUpload(); }}
-              style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
+            {t(`master.services.status.${service.status === MasterJobStatus.PendingReview ? 'pendingReview' : service.status.toLowerCase()}`)}
+          </Badge>
+          {!isPendingReview && (
+            <Group
+              gap={4}
+              pos="absolute"
+              top={8}
+              right={8}
+              style={{
+                opacity: isHovered ? 1 : 0,
+                transition: 'opacity 150ms ease',
+              }}
             >
-              <IconUpload size={16} />
-            </ActionIcon>
-            <ActionIcon
-              variant="filled"
-              color="white"
-              c="dark"
-              radius="md"
-              size="md"
-              onClick={(e) => { e.stopPropagation(); onOpenEdit(); }}
-              style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
-            >
-              <IconEdit size={16} />
-            </ActionIcon>
-            <ActionIcon
-              variant="filled"
-              color="red"
-              radius="md"
-              size="md"
-              loading={isDeleting}
-              onClick={(e) => { e.stopPropagation(); onDelete(service.id); }}
-              style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
-            >
-              <IconTrash size={16} />
-            </ActionIcon>
-          </Group>
+              <ActionIcon
+                variant="filled"
+                color="white"
+                c="brand"
+                radius="md"
+                size="md"
+                onClick={(e) => { e.stopPropagation(); onOpenUpload(); }}
+                style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
+              >
+                <IconUpload size={16} />
+              </ActionIcon>
+              <ActionIcon
+                variant="filled"
+                color="white"
+                c="dark"
+                radius="md"
+                size="md"
+                onClick={(e) => { e.stopPropagation(); onOpenEdit(); }}
+                style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
+              >
+                <IconEdit size={16} />
+              </ActionIcon>
+              <ActionIcon
+                variant="filled"
+                color="red"
+                radius="md"
+                size="md"
+                loading={isDeleting}
+                onClick={(e) => { e.stopPropagation(); onDelete(service.id); }}
+                style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)' }}
+              >
+                <IconTrash size={16} />
+              </ActionIcon>
+            </Group>
+          )}
         </Box>
         <Stack gap={4} p="md">
           <Text fw={600} lineClamp={1}>
@@ -191,6 +219,25 @@ export function MasterServiceCard({
               </Group>
             </Group>
           </Group>
+          {isDraft && (
+            <Button
+              size="xs"
+              variant="light"
+              color="brand"
+              leftSection={<IconSend size={14} />}
+              loading={isSubmitting}
+              disabled={isKycLocked}
+              onClick={(e) => { e.stopPropagation(); onSubmit(service.id); }}
+              mt={4}
+            >
+              {t('master.services.cards.submitForReview')}
+            </Button>
+          )}
+          {isPendingReview && (
+            <Text size="xs" c="dimmed" mt={4}>
+              {t('master.services.cards.pendingReviewTooltip')}
+            </Text>
+          )}
         </Stack>
       </Card>
 

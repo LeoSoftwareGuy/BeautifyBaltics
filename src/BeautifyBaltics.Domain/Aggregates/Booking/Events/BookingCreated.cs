@@ -6,5 +6,6 @@ public record BookingCreated(
     Guid MasterJobId,
     DateTime ScheduledAt,
     TimeSpan Duration,
-    decimal Price
+    decimal Price,
+    string? ClientComment
 );

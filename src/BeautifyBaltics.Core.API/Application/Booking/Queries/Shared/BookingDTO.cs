@@ -100,5 +100,10 @@ public record BookingDTO
     /// Status
     /// </summary>
     [Required]
-    public required BookingStatus Status { get; init; } 
+    public required BookingStatus Status { get; init; }
+
+    /// <summary>
+    /// Optional comment left by the client at booking time
+    /// </summary>
+    public string? ClientComment { get; init; }
 }

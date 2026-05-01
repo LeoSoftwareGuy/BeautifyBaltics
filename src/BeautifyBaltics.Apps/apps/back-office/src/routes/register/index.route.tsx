@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
@@ -29,6 +30,7 @@ export const Route = createFileRoute('/register/')({
 });
 
 function RegisterView() {
+  const { t } = useTranslation();
   const search = Route.useSearch();
   const router = useRouter();
   const { isAuthenticated, loading } = useSession();
@@ -142,10 +144,10 @@ function RegisterView() {
               defaultRole={defaultRole}
             />
             <Text c="dimmed" fz="sm" ta="center" mt="xl">
-              Already have an account?
+              {t('auth.register.alreadyHaveAccount')}
               {' '}
               <AnchorLink to="/login" search={() => ({ redirect: redirectPath })}>
-                Sign in
+                {t('auth.quickAccess.signIn')}
               </AnchorLink>
             </Text>
           </Box>

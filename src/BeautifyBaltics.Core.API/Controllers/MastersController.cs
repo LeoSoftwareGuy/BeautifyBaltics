@@ -1,4 +1,5 @@
 using BeautifyBaltics.Core.API.Application.Master.Commands.AddMasterJob;
+using BeautifyBaltics.Core.API.Application.Master.Commands.SubmitMasterJobForReview;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterAvailability;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJob;
 using BeautifyBaltics.Core.API.Application.Master.Commands.DeleteMasterJobImage;
@@ -29,6 +30,8 @@ using Wolverine;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UpdateMasterAvailability;
 using Microsoft.AspNetCore.Authorization;
 using BeautifyBaltics.Core.API.Application.Master.Commands.UnsetMasterJobFeatureImage;
+using BeautifyBaltics.Core.API.Application.Master.Commands.InitiateMasterKycVerification;
+using BeautifyBaltics.Core.API.Application.Master.Commands.SyncMasterKycStatus;
 
 namespace BeautifyBaltics.Core.API.Controllers;
 
@@ -63,7 +66,9 @@ public class MastersController(IMessageBus bus) : ApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetMasterByIdResponse>> Get([FromRoute] Guid id, [FromQuery] GetMasterByIdRequest request)
     {
-        var response = await bus.InvokeAsync<GetMasterByIdResponse>(request with { Id = id });
+        var requesterIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var requesterId = requesterIdStr is not null && Guid.TryParse(requesterIdStr, out var rid) ? rid : (Guid?)null;
+        var response = await bus.InvokeAsync<GetMasterByIdResponse>(request with { Id = id, RequesterId = requesterId });
         return Ok(response);
     }
 
@@ -116,15 +121,25 @@ public class MastersController(IMessageBus bus) : ApiController
     }
 
     /// <summary>
-    /// Find master jobs
+    /// Submit a master job for review
     /// </summary>
     /// <param name="id">Master id</param>
-    /// <returns>Master jobs</returns>
+    /// <param name="jobId">Master job id</param>
+    /// <returns>Master id and master job id</returns>
+    [HttpPost("{id:guid}/jobs/{jobId:guid}/submit", Name = "SubmitMasterJobForReview")]
+    [ProducesResponseType(typeof(SubmitMasterJobForReviewResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> SubmitMasterJobForReview([FromRoute] Guid id, [FromRoute] Guid jobId)
+    {
+        var response = await bus.InvokeAsync<SubmitMasterJobForReviewResponse>(
+            new SubmitMasterJobForReviewRequest { MasterId = id, MasterJobId = jobId });
+        return Ok(response);
+    }
+
     [HttpGet("{id:guid}/jobs", Name = "FindMasterJobs")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(FindMasterJobsResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<FindMasterJobsResponse>> FindMasterJobs([FromRoute] Guid id)
     {
         var response = await bus.InvokeAsync<FindMasterJobsResponse>(new FindMasterJobsRequest { MasterId = id });
@@ -456,6 +471,34 @@ public class MastersController(IMessageBus bus) : ApiController
     public async Task<ActionResult<GetPendingRequestsResponse>> GetPendingRequests([FromRoute] Guid id)
     {
         var response = await bus.InvokeAsync<GetPendingRequestsResponse>(new GetPendingRequestsRequest { MasterId = id });
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Sync KYC status by polling Didit for the current session state
+    /// </summary>
+    /// <param name="id">Master id</param>
+    /// <param name="callbackStatus">Optional KYC status from Didit callback to avoid unnecessary polling</param>
+    [HttpPost("{id:guid}/kyc/sync-status", Name = "SyncMasterKycStatus")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> SyncKycStatus([FromRoute] Guid id, [FromQuery] string? callbackStatus = null)
+    {
+        await bus.InvokeAsync(new SyncMasterKycStatusRequest { MasterId = id, CallbackStatus = callbackStatus });
+        return Ok();
+    }
+
+    /// <summary>
+    /// Initiate Didit identity verification — returns the hosted verification URL
+    /// </summary>
+    /// <param name="id">Master id</param>
+    [HttpPost("{id:guid}/kyc/initiate", Name = "InitiateMasterKycVerification")]
+    [ProducesResponseType(typeof(InitiateMasterKycVerificationResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<ActionResult<InitiateMasterKycVerificationResponse>> InitiateKyc([FromRoute] Guid id)
+    {
+        var response = await bus.InvokeAsync<InitiateMasterKycVerificationResponse>(new InitiateMasterKycVerificationRequest { MasterId = id });
         return Ok(response);
     }
 

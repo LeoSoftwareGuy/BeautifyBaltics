@@ -15,7 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getGetMasterByIdQueryKey, useGetMasterById, useUpdateMasterBufferTime } from '@/state/endpoints/masters';
 import { useGetUser } from '@/state/endpoints/users';
 
-export function MasterSchedulingSettings() {
+export function MasterSchedulingSettings({ isKycLocked = false }: { isKycLocked?: boolean }) {
   const queryClient = useQueryClient();
   const { data: user } = useGetUser();
   const masterId = user?.id ?? '';
@@ -89,7 +89,7 @@ export function MasterSchedulingSettings() {
           color="brand"
           onClick={handleSave}
           loading={isPending}
-          disabled={bufferMinutes === ''}
+          disabled={bufferMinutes === '' || isKycLocked}
         >
           {t('master.settings.scheduling.save')}
         </Button>

@@ -31,7 +31,7 @@ export default function AppLayout({
   const { t } = useTranslation();
   const [collapsedNavbar, setCollapsedNavbar] = useLocalStorage({
     key: storageKeygen.create('layout', 'navbar', 'collapsed'),
-    defaultValue: true,
+    defaultValue: false,
   });
 
   const contextValue = useMemo(() => {

@@ -2,13 +2,10 @@ using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Persistence.Repositories.Booking;
 using BeautifyBaltics.Persistence.Repositories.Booking.DTOs;
 using BeautifyBaltics.Persistence.Repositories.Master;
-using BeautifyBaltics.Persistence.Repositories.Master.DTOs;
-using Marten;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Queries.GetAvailableTimeSlots;
 
 public class GetAvailableTimeSlotsHandler(
-    IMasterAvailabilitySlotRepository masterAvailabilitySlotRepository,
     IBookingRepository bookingRepository,
     IMasterRepository masterRepository
 )
@@ -22,15 +19,9 @@ public class GetAvailableTimeSlotsHandler(
         var master = await masterRepository.GetByIdAsync(request.MasterId, cancellationToken);
         var bufferTime = TimeSpan.FromMinutes(master?.BufferMinutes ?? 0);
 
-        var availabilityWindows = await masterAvailabilitySlotRepository.GetListAsync(
-            new MasterAvailabilitySlotSearchDTO
-            {
-                MasterId = request.MasterId,
-                StartAt = dayStart,
-                EndAt = dayEnd
-            },
-            cancellationToken
-        );
+        var availabilityWindows = master?.Availabilities
+            .Where(s => s.StartAt < dayEnd && s.EndAt > dayStart)
+            .ToList() ?? [];
 
         var existingBookings = await bookingRepository.GetListAsync(
             new BookingSearchDTO

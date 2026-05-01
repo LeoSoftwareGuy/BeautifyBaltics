@@ -5,19 +5,16 @@ using Mapster;
 
 namespace BeautifyBaltics.Core.API.Application.Master.Queries.GetMasterAvailability;
 
-public class GetMasterAvailabilityHandler(
-    IMasterRepository masterRepository,
-    IMasterAvailabilitySlotRepository masterAvailabilitySlotRepository
-)
+public class GetMasterAvailabilityHandler(IMasterRepository masterRepository)
 {
     public async Task<GetMasterAvailabilityResponse> Handle(GetMasterAvailabilityRequest request, CancellationToken cancellationToken)
     {
-        if (!await masterRepository.ExistsByAsync(x => x.Id == request.MasterId, cancellationToken))
-            throw NotFoundException.For<Persistence.Projections.Master>(request.MasterId);
+        var master = await masterRepository.GetByIdAsync(request.MasterId, cancellationToken)
+            ?? throw NotFoundException.For<Persistence.Projections.Master>(request.MasterId);
 
-        var availability = await masterAvailabilitySlotRepository.GetByIdAsync(request.MasterAvailabilityId, cancellationToken)
-            ?? throw NotFoundException.For<MasterAvailabilitySlot>(request.MasterAvailabilityId);
+        var slot = master.Availabilities.FirstOrDefault(s => s.Id == request.MasterAvailabilityId)
+            ?? throw NotFoundException.For<MasterAvailabilityWindow>(request.MasterAvailabilityId);
 
-        return availability.Adapt<GetMasterAvailabilityResponse>();
+        return slot.Adapt<GetMasterAvailabilityResponse>();
     }
 }

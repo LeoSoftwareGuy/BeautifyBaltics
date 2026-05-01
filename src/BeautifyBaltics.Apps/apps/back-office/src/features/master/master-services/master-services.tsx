@@ -8,7 +8,7 @@ import { useGetUser } from '@/state/endpoints/users';
 
 import { MasterServicesList } from './master-services-list/master-services-list';
 
-export function MasterServices() {
+export function MasterServices({ isKycLocked = false }: { isKycLocked?: boolean }) {
   const { data: user, isLoading: isUserLoading } = useGetUser();
   const masterId = user?.id ?? '';
   const { t } = useTranslation();
@@ -30,5 +30,5 @@ export function MasterServices() {
     );
   }
 
-  return <MasterServicesList masterId={masterId} />;
+  return <MasterServicesList masterId={masterId} isKycLocked={isKycLocked} />;
 }

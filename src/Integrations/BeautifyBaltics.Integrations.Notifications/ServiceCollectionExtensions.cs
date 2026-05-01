@@ -3,6 +3,7 @@ using BeautifyBaltics.Integrations.Notifications.Options;
 using BeautifyBaltics.Integrations.Notifications.Sms;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace BeautifyBaltics.Integrations.Notifications;
 
@@ -14,7 +15,13 @@ public static class ServiceCollectionExtensions
         ConfigureSmsOptions(services, configuration);
         ConfigureEmailOptions(services, configuration);
 
-        services.AddSingleton<ISmsService, TwilioSmsService>();
+        services.AddHttpClient(nameof(TelnyxSmsService), (sp, client) =>
+        {
+            var options = sp.GetRequiredService<IOptions<SmsOptions>>().Value;
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", options.ApiKey);
+        });
+        services.AddSingleton<ISmsService, TelnyxSmsService>();
         services.AddSingleton<IEmailService, SendGridEmailService>();
         services.AddScoped<INotificationService, NotificationService>();
 

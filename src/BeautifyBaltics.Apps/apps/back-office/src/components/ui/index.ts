@@ -8,6 +8,7 @@ export * from './formatters';
 export { default as InfiniteScrollArea } from './infinite-scroll-area';
 export { default as InsightCard } from './insight-card';
 export { default as PageTitle } from './page-title';
+export * from './stat-card';
 export { default as StickyActionButtons } from './sticky-action-buttons';
 export { default as ViewportContainer } from './viewport-container';
 export * from './widgets';

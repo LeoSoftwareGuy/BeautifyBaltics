@@ -1,4 +1,5 @@
 export { default as ActionIconLink } from './action-icon-link';
+export * from './admin-navigation';
 export { default as AnchorLink } from './anchor-link';
 export { default as AuthQuickActions } from './auth-quick-actions';
 export { default as ButtonLink } from './button-link';

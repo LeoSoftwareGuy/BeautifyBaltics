@@ -14,6 +14,7 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import {
   useDeleteMasterJob,
   useFindMasterJobs,
+  useSubmitMasterJobForReview,
 } from '@/state/endpoints/masters';
 
 import { AddServiceCard } from '../add-service-card';
@@ -24,9 +25,10 @@ import { MasterServicesListFilter } from './master-services-list-filter';
 
 type MasterServicesListProps = {
   masterId: string;
+  isKycLocked?: boolean;
 };
 
-export function MasterServicesList({ masterId }: MasterServicesListProps) {
+export function MasterServicesList({ masterId, isKycLocked = false }: MasterServicesListProps) {
   const { t } = useTranslation();
   const [detailModalOpened, setDetailModalOpened] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
@@ -36,8 +38,8 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
     data: jobsData,
     isLoading,
     isError,
-    refetch,
-  } = useFindMasterJobs(masterId, {
+    refetch: refetchJobs,
+  } = useFindMasterJobs(masterId, undefined, {
     query: { enabled: !!masterId },
   });
 
@@ -63,7 +65,7 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
   const { mutateAsync: deleteJob, isPending: isDeleting } = useDeleteMasterJob({
     mutation: {
       onSuccess: async () => {
-        await refetch();
+        await refetchJobs();
         notifications.show({
           title: t('master.services.notifications.deleteSuccessTitle'),
           message: t('master.services.notifications.deleteSuccessMessage'),
@@ -80,9 +82,33 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
     },
   });
 
+  const { mutateAsync: submitJob, isPending: isSubmitting } = useSubmitMasterJobForReview({
+    mutation: {
+      onSuccess: () => {
+        refetchJobs();
+        notifications.show({
+          title: t('master.services.notifications.submitSuccessTitle'),
+          message: t('master.services.notifications.submitSuccessMessage'),
+          color: 'green',
+        });
+      },
+      onError: (error) => {
+        notifications.show({
+          title: t('master.services.notifications.submitErrorTitle'),
+          message: error.detail ?? t('master.services.notifications.submitErrorMessage'),
+          color: 'red',
+        });
+      },
+    },
+  });
+
   const handleDelete = async (jobId: string) => {
     if (selectedJobId === jobId) setSelectedJobId(null);
     await deleteJob({ id: masterId, jobId });
+  };
+
+  const handleSubmit = async (jobId: string) => {
+    await submitJob({ id: masterId, jobId });
   };
 
   const handleOpenDetailModal = (jobId: string) => {
@@ -136,7 +162,10 @@ export function MasterServicesList({ masterId }: MasterServicesListProps) {
               service={service}
               onClick={handleOpenDetailModal}
               onDelete={handleDelete}
+              onSubmit={handleSubmit}
               isDeleting={isDeleting}
+              isSubmitting={isSubmitting}
+              isKycLocked={isKycLocked}
             />
           ))}
           <AddServiceCard masterId={masterId} />
