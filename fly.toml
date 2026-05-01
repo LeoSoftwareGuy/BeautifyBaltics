@@ -1,6 +1,10 @@
 app = 'beautifybaltics'
 primary_region = 'arn'
 
+[deploy]
+  strategy = 'immediate'
+  wait_timeout = '5m'
+
 [build]
   dockerfile = 'src/BeautifyBaltics.Core.API/Dockerfile'
 
@@ -22,7 +26,7 @@ primary_region = 'arn'
   [[http_service.checks]]
     interval = '15s'
     timeout = '10s'
-    grace_period = '180s'
+    grace_period = '30s'
     method = 'GET'
     path = '/health'
 
