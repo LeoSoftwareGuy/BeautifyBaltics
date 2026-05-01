@@ -17,6 +17,7 @@ COPY src/BeautifyBaltics.Persistence/BeautifyBaltics.Persistence.csproj src/Beau
 COPY src/BeautifyBaltics.ServiceDefaults/BeautifyBaltics.ServiceDefaults.csproj src/BeautifyBaltics.ServiceDefaults/
 COPY src/Integrations/BeautifyBaltics.Integrations.BlobStorage/BeautifyBaltics.Integrations.BlobStorage.csproj src/Integrations/BeautifyBaltics.Integrations.BlobStorage/
 COPY src/Integrations/BeautifyBaltics.Integrations.Notifications/BeautifyBaltics.Integrations.Notifications.csproj src/Integrations/BeautifyBaltics.Integrations.Notifications/
+COPY src/Integrations/BeautifyBaltics.Integrations.Didit/BeautifyBaltics.Integrations.Didit.csproj src/Integrations/BeautifyBaltics.Integrations.Didit/
 RUN dotnet restore src/BeautifyBaltics.Core.API/BeautifyBaltics.Core.API.csproj
 
 # Copy source and publish

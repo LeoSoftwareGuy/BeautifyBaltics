@@ -1,8 +1,3 @@
-# fly.toml app configuration file generated for beautifybaltics on 2026-05-01T09:30:13Z
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'beautifybaltics'
 primary_region = 'arn'
 
