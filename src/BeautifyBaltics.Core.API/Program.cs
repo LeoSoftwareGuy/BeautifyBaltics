@@ -1,7 +1,3 @@
-using Azure.Extensions.AspNetCore.Configuration.Secrets;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using Azure.Storage.Blobs;
 using BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Middlewares;
@@ -34,17 +30,8 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        ConfigureKeyVault(builder);
-
         builder.AddServiceDefaults();
         builder.AddNpgsqlDataSource(connectionName: "postgres", s => { s.DisableHealthChecks = true; });
-
-        // Register Azure Blob Storage clients in the IoC container
-        builder.AddAzureBlobServiceClient(connectionName: "blobs", s =>
-        {
-            s.DisableHealthChecks = true;
-            s.DisableTracing = false;
-        });
 
         builder.Logging.AddSimpleConsole(o =>
         {
@@ -55,6 +42,12 @@ internal class Program
 
         // Register Mapster in the IoC container
         builder.Services.AddMapster();
+
+        builder.Services.Configure<SupabaseBlobStorageOptions>(opt =>
+        {
+            opt.Url = builder.Configuration["Supabase:Url"]!;
+            opt.ServiceRoleKey = builder.Configuration["Supabase:ServiceRoleKey"]!;
+        });
 
         builder.Services.AddBlobStorageIntegration(c =>
         {
@@ -130,31 +123,14 @@ internal class Program
         builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
             .Configure<ITicketStore>((o, store) => o.SessionStore = store);
 
-        // Data Protection — keys persisted to Azure Blob Storage
-        var dataProtectionBuilder = builder.Services.AddDataProtection()
+        // Data Protection — ephemeral keys (acceptable for MVP; add persistence once user base grows)
+        builder.Services.AddDataProtection()
             .SetApplicationName("BeautifyBaltics");
-
-        if (!string.IsNullOrWhiteSpace(builder.Configuration.GetConnectionString("blobs")))
-        {
-            dataProtectionBuilder.PersistKeysToAzureBlobStorage(sp =>
-            {
-                var blobServiceClient = sp.GetRequiredService<BlobServiceClient>();
-                return blobServiceClient.GetBlobContainerClient("data-protection").GetBlobClient("keys.xml");
-            });
-        }
-
-        if (builder.Environment.IsProduction())
-        {
-            var keyVaultUri = builder.Configuration.GetConnectionString("key-vault")!;
-            var credential = new DefaultAzureCredential();
-            dataProtectionBuilder.ProtectKeysWithAzureKeyVault(new Uri($"{keyVaultUri.TrimEnd('/')}/keys/data-protection"), credential);
-        }
 
         builder.Services.AddAuthorization();
 
         builder.AddDefaultHealthChecks()
-            .AddNpgSql(name: "npgsql")
-            .AddAzureBlobStorage(name: "azureblobstorage");
+            .AddNpgSql(name: "npgsql");
 
         builder.Services.AddApiControllers(o =>
         {
@@ -186,16 +162,6 @@ internal class Program
 
         var app = builder.Build();
 
-        if (!builder.Environment.IsProduction())
-        {
-            var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(Program));
-            var testSecret = app.Configuration["test-secret"];
-            if (!string.IsNullOrWhiteSpace(testSecret))
-            {
-                logger.LogInformation("Key Vault secret 'test-secret' read successfully (length {Length}).", testSecret.Length);
-            }
-        }
-
         app.UseForwardedHeaders();
 
         // Configure the HTTP request pipeline.
@@ -225,26 +191,5 @@ internal class Program
         app.MapDeadLettersEndpoints("/api/v1/debug/dead-letters").WithTags("Debug");
 
         return await app.RunJasperFxCommands(args);
-    }
-
-    private static void ConfigureKeyVault(WebApplicationBuilder builder)
-    {
-        var keyVaultUri = builder.Configuration.GetConnectionString("key-vault");
-        if (string.IsNullOrWhiteSpace(keyVaultUri)) return;
-
-        var options = new SecretClientOptions
-        {
-            Retry =
-            {
-                MaxRetries = 2,
-                NetworkTimeout = TimeSpan.FromSeconds(10),
-            },
-        };
-
-        var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential(), options);
-        builder.Configuration.AddAzureKeyVault(secretClient, new AzureKeyVaultConfigurationOptions
-        {
-            ReloadInterval = TimeSpan.FromHours(8)
-        });
     }
 }

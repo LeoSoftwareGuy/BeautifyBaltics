@@ -1,75 +1,51 @@
-﻿using Azure.Storage;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Storage.Sas;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BeautifyBaltics.Integrations.BlobStorage
 {
-    internal static class UserDelegationKeyCache
-    {
-        private static UserDelegationKey? _key;
-        private static DateTimeOffset _expiry = DateTimeOffset.MinValue;
-        private static readonly object _lock = new();
-
-        public static UserDelegationKey Get(BlobServiceClient client)
-        {
-            if (_key is not null && DateTimeOffset.UtcNow < _expiry)
-                return _key;
-
-            lock (_lock)
-            {
-                if (_key is not null && DateTimeOffset.UtcNow < _expiry)
-                    return _key;
-
-                var response = client.GetUserDelegationKey(
-                    DateTimeOffset.UtcNow.AddMinutes(-5),
-                    DateTimeOffset.UtcNow.AddHours(6));
-
-                _key = response.Value;
-                _expiry = DateTimeOffset.UtcNow.AddHours(5);
-                return _key;
-            }
-        }
-    }
-
     public class BlobStorageService<TFile>(
+        IHttpClientFactory httpClientFactory,
         IOptions<BlobStorageOptions<TFile>> options,
-        BlobServiceClient blobServiceClient,
+        IOptions<SupabaseBlobStorageOptions> supabaseOptions,
         ILogger<BlobStorageService<TFile>> logger
     ) : IBlobStorageService<TFile>
         where TFile : notnull
     {
-        public async Task<string> UploadAsync(Guid containerId, BlobFileDTO file, string tenantId, CancellationToken cancellationToken = default)
-            => await UploadInternalAsync(containerId, file, tenantId, cancellationToken);
+        private readonly string _bucket = options.Value.ContainerName;
+        private readonly string _baseUrl = supabaseOptions.Value.Url.TrimEnd('/');
+        private readonly string _serviceKey = supabaseOptions.Value.ServiceRoleKey;
 
-        public async Task<string> UploadAsync(Guid containerId, BlobFileDTO file, CancellationToken cancellationToken = default)
-            => await UploadInternalAsync(containerId, file, tenantId: null, cancellationToken);
+        public Task<string> UploadAsync(Guid containerId, BlobFileDTO file, string tenantId, CancellationToken cancellationToken = default)
+            => UploadInternalAsync(containerId, file, cancellationToken);
 
-        private async Task<string> UploadInternalAsync(Guid containerId, BlobFileDTO file, string? tenantId, CancellationToken cancellationToken)
+        public Task<string> UploadAsync(Guid containerId, BlobFileDTO file, CancellationToken cancellationToken = default)
+            => UploadInternalAsync(containerId, file, cancellationToken);
+
+        private async Task<string> UploadInternalAsync(Guid containerId, BlobFileDTO file, CancellationToken cancellationToken)
         {
+            var path = $"{containerId}/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+
             try
             {
-                var containerClient = await GetContainerClientAsync(cancellationToken);
+                var client = httpClientFactory.CreateClient("supabase-storage");
 
-                var blobName = $"{containerId}/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-                var blobClient = containerClient.GetBlobClient(blobName);
+                using var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/storage/v1/object/{_bucket}/{path}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
+                request.Headers.Add("x-upsert", "true");
+                request.Content = new ByteArrayContent(file.Content);
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 
-                var blobUploadOptions = new BlobUploadOptions
-                {
-                    HttpHeaders = new BlobHttpHeaders { ContentType = file.ContentType },
-                    Metadata = tenantId is null ? null : new Dictionary<string, string> { { "tenantId", tenantId } },
-                    TransferOptions = new StorageTransferOptions { MaximumConcurrency = 8, MaximumTransferSize = 4 * 1024 * 1024 }
-                };
+                var response = await client.SendAsync(request, cancellationToken);
+                response.EnsureSuccessStatusCode();
 
-                var binaryData = BinaryData.FromBytes(file.Content);
-                await blobClient.UploadAsync(binaryData, blobUploadOptions, cancellationToken);
-                return blobName;
+                return path;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error uploading blob {FileName} to container {ContainerName}", file.FileName, options.Value.ContainerName);
+                logger.LogError(ex, "Error uploading blob {FileName} to bucket {Bucket}", file.FileName, _bucket);
                 throw;
             }
         }
@@ -78,21 +54,21 @@ namespace BeautifyBaltics.Integrations.BlobStorage
         {
             try
             {
-                var containerClient = await GetContainerClientAsync(cancellationToken);
-                var blobClient = containerClient.GetBlobClient(blobName);
+                var client = httpClientFactory.CreateClient("supabase-storage");
 
-                if (!await blobClient.ExistsAsync(cancellationToken))
-                {
-                    throw new FileNotFoundException($"Blob {blobName} not found in {options.Value.ContainerName}");
-                }
+                using var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/storage/v1/object/{_bucket}/{blobName}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
 
-                var downloadInfo = await blobClient.DownloadContentAsync(cancellationToken);
+                var response = await client.SendAsync(request, cancellationToken);
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    throw new FileNotFoundException($"Blob {blobName} not found in bucket {_bucket}");
+                response.EnsureSuccessStatusCode();
 
-                return downloadInfo.Value.Content.ToArray();
+                return await response.Content.ReadAsByteArrayAsync(cancellationToken);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not FileNotFoundException)
             {
-                logger.LogError(ex, "Error downloading blob {BlobName} from container {ContainerName}", blobName, options.Value.ContainerName);
+                logger.LogError(ex, "Error downloading blob {BlobName} from bucket {Bucket}", blobName, _bucket);
                 throw;
             }
         }
@@ -101,13 +77,20 @@ namespace BeautifyBaltics.Integrations.BlobStorage
         {
             try
             {
-                var containerClient = await GetContainerClientAsync(cancellationToken);
-                var blobClient = containerClient.GetBlobClient(blobName);
-                return await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+                var client = httpClientFactory.CreateClient("supabase-storage");
+
+                using var request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}/storage/v1/object/{_bucket}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
+                request.Content = new StringContent(
+                    JsonSerializer.Serialize(new { prefixes = new[] { blobName } }),
+                    Encoding.UTF8, "application/json");
+
+                var response = await client.SendAsync(request, cancellationToken);
+                return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error deleting blob {BlobName} from container {ContainerName}", blobName, options.Value.ContainerName);
+                logger.LogError(ex, "Error deleting blob {BlobName} from bucket {Bucket}", blobName, _bucket);
                 throw;
             }
         }
@@ -115,51 +98,7 @@ namespace BeautifyBaltics.Integrations.BlobStorage
         public string? GetBlobUrl(string? blobName, TimeSpan? expiresIn = null)
         {
             if (string.IsNullOrEmpty(blobName)) return null;
-
-            try
-            {
-                var containerClient = blobServiceClient.GetBlobContainerClient(options.Value.ContainerName);
-                var blobClient = containerClient.GetBlobClient(blobName);
-
-                var sasExpiry = DateTimeOffset.UtcNow.Add(expiresIn ?? TimeSpan.FromHours(1));
-
-                var sasBuilder = new BlobSasBuilder
-                {
-                    BlobContainerName = options.Value.ContainerName,
-                    BlobName = blobName,
-                    Resource = "b",
-                    ExpiresOn = sasExpiry
-                };
-                sasBuilder.SetPermissions(BlobSasPermissions.Read);
-
-                if (blobClient.CanGenerateSasUri)
-                {
-                    return blobClient.GenerateSasUri(sasBuilder).ToString();
-                }
-
-                // Fallback: User Delegation SAS for Managed Identity auth
-                var delegationKey = GetCachedUserDelegationKey();
-                var blobUriBuilder = new BlobUriBuilder(blobClient.Uri)
-                {
-                    Sas = sasBuilder.ToSasQueryParameters(delegationKey, blobServiceClient.AccountName)
-                };
-                return blobUriBuilder.ToUri().ToString();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error generating SAS URL for blob {BlobName}", blobName);
-                return null;
-            }
-        }
-
-        private UserDelegationKey GetCachedUserDelegationKey()
-            => UserDelegationKeyCache.Get(blobServiceClient);
-
-        private async Task<BlobContainerClient> GetContainerClientAsync(CancellationToken cancellationToken = default)
-        {
-            var containerClient = blobServiceClient.GetBlobContainerClient(options.Value.ContainerName);
-            await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
-            return containerClient;
+            return $"{_baseUrl}/storage/v1/object/public/{_bucket}/{blobName}";
         }
     }
 }
