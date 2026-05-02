@@ -46,6 +46,9 @@ public sealed class SupabaseDataProtectionXmlRepository : IXmlRepository, IDispo
             if (!response.IsSuccessStatusCode)
             {
                 var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                // Supabase returns HTTP 400 with error "not_found" when the object doesn't exist yet (first boot).
+                if (body.Contains("\"not_found\""))
+                    return [];
                 throw new HttpRequestException(
                     $"GET keys.xml → {(int)response.StatusCode} {response.StatusCode}. Body: {body}");
             }
