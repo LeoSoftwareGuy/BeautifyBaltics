@@ -36,6 +36,7 @@ public sealed class SupabaseDataProtectionXmlRepository : IXmlRepository, IDispo
             using var request = new HttpRequestMessage(HttpMethod.Get,
                 $"{_baseUrl}/storage/v1/object/{Bucket}/{BlobName}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
+            request.Headers.Add("apikey", _serviceKey);
 
             using var response = _httpClient.Send(request);
 
@@ -77,11 +78,18 @@ public sealed class SupabaseDataProtectionXmlRepository : IXmlRepository, IDispo
             using var request = new HttpRequestMessage(HttpMethod.Post,
                 $"{_baseUrl}/storage/v1/object/{Bucket}/{BlobName}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
+            request.Headers.Add("apikey", _serviceKey);
             request.Headers.Add("x-upsert", "true");
             request.Content = new StringContent(xml, Encoding.UTF8, "application/xml");
 
             using var response = _httpClient.Send(request);
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                throw new HttpRequestException(
+                    $"POST keys.xml → {(int)response.StatusCode} {response.StatusCode}. Body: {body}");
+            }
 
             _logger.LogInformation("DataProtection key '{FriendlyName}' persisted to Supabase Storage", friendlyName);
         }
