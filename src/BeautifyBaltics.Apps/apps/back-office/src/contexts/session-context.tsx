@@ -2,12 +2,14 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useState,
 } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { UserRole } from '@/state/endpoints/api.schemas';
-import { getGetUserQueryKey, useGetUser } from '@/state/endpoints/users';
+import { getGetUserQueryKey } from '@/state/endpoints/users';
 
 type AuthUser = {
   id: string;
@@ -31,15 +33,38 @@ interface SessionProviderProps {
 }
 
 function SessionProvider({ children }: SessionProviderProps) {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
-  const { data: userData, isLoading } = useGetUser({ query: { retry: false } });
 
-  const user = useMemo<AuthUser | null>(() => {
-    if (!userData?.id || !userData.email || !userData.role) return null;
-    return {
-      id: userData.id, email: userData.email, role: userData.role, fullName: userData.fullName ?? null,
+  useEffect(() => {
+    let mounted = true;
+
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/v1/users', { credentials: 'include' });
+        if (!mounted) return;
+        if (response.ok) {
+          const data = await response.json();
+          const authUser: AuthUser = {
+            id: data.id, email: data.email, role: data.role, fullName: data.fullName ?? null,
+          };
+          setUser(authUser);
+          queryClient.setQueryData(getGetUserQueryKey(), data);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     };
-  }, [userData]);
+
+    checkAuth();
+
+    return () => { mounted = false; };
+  }, [queryClient]);
 
   const login = useCallback(async ({ email, password, role }: { email: string; password: string; role: UserRole }) => {
     const response = await fetch('/api/v1/auth/login', {
@@ -55,6 +80,9 @@ function SessionProvider({ children }: SessionProviderProps) {
     }
 
     const data = await response.json();
+    setUser({
+      id: data.id, email: data.email, role: data.role, fullName: data.fullName ?? null,
+    });
     queryClient.clear();
     queryClient.setQueryData(getGetUserQueryKey(), data);
   }, [queryClient]);
@@ -64,6 +92,7 @@ function SessionProvider({ children }: SessionProviderProps) {
       method: 'POST',
       credentials: 'include',
     });
+    setUser(null);
     queryClient.clear();
   }, [queryClient]);
 
@@ -71,11 +100,11 @@ function SessionProvider({ children }: SessionProviderProps) {
     () => ({
       user,
       isAuthenticated: user !== null,
-      loading: isLoading,
+      loading,
       login,
       logout,
     }),
-    [user, isLoading, login, logout],
+    [user, loading, login, logout],
   );
 
   return <SessionContext.Provider value={contextValue}>{children}</SessionContext.Provider>;
