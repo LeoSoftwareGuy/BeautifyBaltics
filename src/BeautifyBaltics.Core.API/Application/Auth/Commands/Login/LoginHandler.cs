@@ -11,6 +11,10 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.Login
 {
     public class LoginHandler(IQuerySession querySession, IHttpContextAccessor httpContextAccessor)
     {
+        // BCrypt is CPU-saturating — cap concurrent verifications so the health check
+        // can always get CPU time on a single shared-CPU machine.
+        private static readonly SemaphoreSlim _bcryptGate = new(2, 2);
+
         public async Task<LoginResponse> Handle(LoginRequest request, CancellationToken cancellationToken)
         {
             var normalizedEmail = request.Email.Trim().ToLowerInvariant();
@@ -21,7 +25,12 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.Login
             userAccount ??= await querySession.Query<UserProjection>()
                 .FirstOrDefaultAsync(x => x.Email == normalizedEmail && x.Role == UserRole.Admin, cancellationToken);
 
-            if (userAccount is null || !BCrypt.Net.BCrypt.Verify(request.Password, userAccount.PasswordHash))
+            await _bcryptGate.WaitAsync(cancellationToken);
+            bool passwordValid;
+            try { passwordValid = await Task.Run(() => BCrypt.Net.BCrypt.Verify(request.Password, userAccount?.PasswordHash ?? string.Empty), cancellationToken); }
+            finally { _bcryptGate.Release(); }
+
+            if (userAccount is null || !passwordValid)
             {
                 throw new UnauthorizedAccessException("Invalid email or password.");
             }
