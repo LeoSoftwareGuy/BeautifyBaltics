@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using BeautifyBaltics.Domain.Documents.User;
 using Marten;
 
@@ -79,7 +80,7 @@ public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, ID
         if (session?.Ticket is null) return null;
         if (session.ExpirationTime < DateTime.UtcNow) return null;
 
-        return DeserializeTicket(session.Ticket);
+        return TryDeserializeTicket(session.Ticket);
     }
 
     public async Task RemoveAsync(string key)
@@ -102,7 +103,17 @@ public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, ID
 
     private byte[] SerializeTicket(AuthenticationTicket ticket) => _protector.Protect(TicketSerializer.Default.Serialize(ticket));
 
-    private AuthenticationTicket DeserializeTicket(byte[] protectedTicket) =>
-        TicketSerializer.Default.Deserialize(_protector.Unprotect(protectedTicket))
-        ?? throw new InvalidOperationException("Unable to deserialize the authentication ticket.");
+    private AuthenticationTicket? TryDeserializeTicket(byte[] protectedTicket)
+    {
+        try
+        {
+            return TicketSerializer.Default.Deserialize(_protector.Unprotect(protectedTicket));
+        }
+        catch (CryptographicException)
+        {
+            // Key was rotated (e.g. after a restart before persistence was configured).
+            // Returning null forces the cookie to be rejected and the user to re-authenticate.
+            return null;
+        }
+    }
 }

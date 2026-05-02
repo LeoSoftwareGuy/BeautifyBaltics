@@ -1,5 +1,6 @@
 using BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 using BeautifyBaltics.Core.API.Authentication;
+using BeautifyBaltics.Core.API.Infrastructure.DataProtection;
 using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Domain.Aggregates.Booking.Events;
 using BeautifyBaltics.Domain.Aggregates.Client;
@@ -17,7 +18,10 @@ using JasperFx.Resources;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http.Timeouts;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Wolverine;
@@ -28,10 +32,24 @@ internal class Program
 {
     private static async Task<int> Main(string[] args)
     {
+        // Raise thread pool floor so the pool doesn't need to grow slowly on the 1-CPU Fly.io machine.
+        // With async I/O these threads spend most of their time yielded, so the overhead is low.
+        ThreadPool.SetMinThreads(50, 50);
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.AddServiceDefaults();
-        builder.AddNpgsqlDataSource(connectionName: "postgres", s => { s.DisableHealthChecks = true; });
+        builder.AddNpgsqlDataSource(
+            connectionName: "postgres",
+            configureSettings: s => s.DisableHealthChecks = true,
+            configureDataSourceBuilder: dsBuilder =>
+            {
+                // Command timeout: fail SQL commands after 25 s so a stuck query can't block
+                // a request thread past the 30-s request timeout below.
+                dsBuilder.ConnectionStringBuilder.CommandTimeout = 25;
+                // Pool cap: direct Supabase connections are limited; stay well within the limit.
+                dsBuilder.ConnectionStringBuilder.MaxPoolSize = 20;
+            });
 
         builder.Logging.AddSimpleConsole(o =>
         {
@@ -123,7 +141,13 @@ internal class Program
         builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
             .Configure<ITicketStore>((o, store) => o.SessionStore = store);
 
-        // Data Protection — ephemeral keys (acceptable for MVP; add persistence once user base grows)
+        // DataProtection keys persisted to Supabase Storage bucket "data-protection-keys".
+        // The repository owns its HttpClient (not from the factory) to avoid the global
+        // AddStandardResilienceHandler pipeline blocking the thread during synchronous Send().
+        builder.Services.AddSingleton<SupabaseDataProtectionXmlRepository>();
+        builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(sp =>
+            new ConfigureOptions<KeyManagementOptions>(options =>
+                options.XmlRepository = sp.GetRequiredService<SupabaseDataProtectionXmlRepository>()));
         builder.Services.AddDataProtection()
             .SetApplicationName("BeautifyBaltics");
 
@@ -154,7 +178,10 @@ internal class Program
             o.Assemblies = [typeof(Program).Assembly];
         });
 
-        builder.Services.AddRequestTimeouts();
+        // Default 30-s timeout on every request. SQL commands are capped at 25 s (above),
+        // so a stuck DB call will always fail before this fires and unblock the thread.
+        builder.Services.AddRequestTimeouts(options =>
+            options.DefaultPolicy = new RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(30) });
         builder.Services.AddOutputCache();
 
         // Configure Wolverine to use CritterStack for resource management
