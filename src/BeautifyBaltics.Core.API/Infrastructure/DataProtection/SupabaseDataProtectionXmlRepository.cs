@@ -42,7 +42,12 @@ public sealed class SupabaseDataProtectionXmlRepository : IXmlRepository, IDispo
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 return [];
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                throw new HttpRequestException(
+                    $"GET keys.xml → {(int)response.StatusCode} {response.StatusCode}. Body: {body}");
+            }
 
             using var stream = response.Content.ReadAsStream();
             var doc = XDocument.Load(stream);
@@ -50,7 +55,8 @@ public sealed class SupabaseDataProtectionXmlRepository : IXmlRepository, IDispo
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load DataProtection keys from Supabase Storage — starting with empty key set");
+            _logger.LogError(ex, "Failed to load DataProtection keys from {Url} — starting with empty key set",
+                $"{_baseUrl}/storage/v1/object/{Bucket}/{BlobName}");
             return [];
         }
     }
