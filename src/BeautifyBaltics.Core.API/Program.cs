@@ -44,10 +44,14 @@ internal class Program
             configureSettings: s => s.DisableHealthChecks = true,
             configureDataSourceBuilder: dsBuilder =>
             {
-                // Command timeout: fail SQL commands after 25 s so a stuck query can't block
-                // a request thread past the 30-s request timeout below.
+                // Fail fast when the pool is exhausted or Supabase rejects a new connection.
+                // Wolverine uses a sync Npgsql code path for some polling operations which blocks
+                // a real thread for the full timeout — keep it short so threads are freed quickly.
+                dsBuilder.ConnectionStringBuilder.ConnectionTimeout = 5;
+                // Command timeout: SQL commands fail after 25 s, well before the 30-s request timeout.
                 dsBuilder.ConnectionStringBuilder.CommandTimeout = 25;
-                // Pool cap: direct Supabase connections are limited; stay well within the limit.
+                // Pool cap: Marten daemon + Wolverine transport + background services use ~8-10
+                // connections; 20 leaves headroom for concurrent HTTP handlers within Supabase's limits.
                 dsBuilder.ConnectionStringBuilder.MaxPoolSize = 20;
             });
 
