@@ -1,6 +1,7 @@
 using BeautifyBaltics.Core.API.Application.Users.Queries.UserProfile;
 using BeautifyBaltics.Core.API.Controllers.SeedWork;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Wolverine;
 using BeautifyBaltics.Core.API.Application.Users.Queries.GetUser;
 
@@ -15,6 +16,7 @@ public class UsersController(IMessageBus bus) : ApiController
     /// <returns>Returns user</returns>
     
     [HttpGet(Name = "GetUser")]
+    [OutputCache(PolicyName = "PerUser")]
     [ProducesResponseType(typeof(GetUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<GetUserResponse>> Get()

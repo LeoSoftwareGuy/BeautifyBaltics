@@ -1,5 +1,6 @@
 using BeautifyBaltics.Core.API.Application.Booking.BackgroundServices;
 using BeautifyBaltics.Core.API.Authentication;
+using BeautifyBaltics.Core.API.Infrastructure.Caching;
 using BeautifyBaltics.Core.API.Infrastructure.DataProtection;
 using BeautifyBaltics.Core.API.Middlewares;
 using BeautifyBaltics.Domain.Aggregates.Booking.Events;
@@ -186,7 +187,8 @@ internal class Program
         // so a stuck DB call will always fail before this fires and unblock the thread.
         builder.Services.AddRequestTimeouts(options =>
             options.DefaultPolicy = new RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(30) });
-        builder.Services.AddOutputCache();
+        builder.Services.AddOutputCache(options =>
+            options.AddPolicy("PerUser", PerUserCachePolicy.Instance));
 
         // Configure Wolverine to use CritterStack for resource management
         builder.Host.UseResourceSetupOnStartup();
