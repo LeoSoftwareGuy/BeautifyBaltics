@@ -5,13 +5,15 @@ using Marten;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace BeautifyBaltics.Core.API.Authentication;
 
-public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, IDataProtectionProvider dataProtectionProvider) : ITicketStore
+public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, IDataProtectionProvider dataProtectionProvider, IMemoryCache memoryCache) : ITicketStore
 {
     private readonly IDataProtector _protector = dataProtectionProvider.CreateProtector("UserSessionTicketStore");
     private const double DefaultSessionTimeoutInDays = 30;
+    private static readonly TimeSpan SessionCacheTtl = TimeSpan.FromSeconds(30);
 
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
@@ -51,6 +53,8 @@ public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, ID
     {
         if (!Guid.TryParse(key, out var sessionId)) throw new InvalidOperationException("Invalid session key.");
 
+        memoryCache.Remove(key);
+
         using var scope = serviceScopeFactory.CreateScope();
         var documentSession = scope.ServiceProvider.GetRequiredService<IDocumentSession>();
         var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -73,6 +77,9 @@ public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, ID
     {
         if (!Guid.TryParse(key, out var sessionId)) return null;
 
+        if (memoryCache.TryGetValue(key, out AuthenticationTicket? cached))
+            return cached;
+
         using var scope = serviceScopeFactory.CreateScope();
         var documentSession = scope.ServiceProvider.GetRequiredService<IDocumentSession>();
 
@@ -80,12 +87,18 @@ public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, ID
         if (session?.Ticket is null) return null;
         if (session.ExpirationTime < DateTime.UtcNow) return null;
 
-        return TryDeserializeTicket(session.Ticket);
+        var ticket = TryDeserializeTicket(session.Ticket);
+        if (ticket is not null)
+            memoryCache.Set(key, ticket, SessionCacheTtl);
+
+        return ticket;
     }
 
     public async Task RemoveAsync(string key)
     {
         if (!Guid.TryParse(key, out var sessionId)) return;
+
+        memoryCache.Remove(key);
 
         using var scope = serviceScopeFactory.CreateScope();
         var documentSession = scope.ServiceProvider.GetRequiredService<IDocumentSession>();
