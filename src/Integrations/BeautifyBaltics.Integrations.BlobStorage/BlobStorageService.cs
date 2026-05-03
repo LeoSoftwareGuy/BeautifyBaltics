@@ -34,6 +34,7 @@ namespace BeautifyBaltics.Integrations.BlobStorage
 
                 using var request = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/storage/v1/object/{_bucket}/{path}");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
+                request.Headers.Add("apikey", _serviceKey);
                 request.Headers.Add("x-upsert", "true");
                 request.Content = new ByteArrayContent(file.Content);
                 request.Content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
@@ -58,6 +59,7 @@ namespace BeautifyBaltics.Integrations.BlobStorage
 
                 using var request = new HttpRequestMessage(HttpMethod.Get, $"{_baseUrl}/storage/v1/object/{_bucket}/{blobName}");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
+                request.Headers.Add("apikey", _serviceKey);
 
                 var response = await client.SendAsync(request, cancellationToken);
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -81,6 +83,7 @@ namespace BeautifyBaltics.Integrations.BlobStorage
 
                 using var request = new HttpRequestMessage(HttpMethod.Delete, $"{_baseUrl}/storage/v1/object/{_bucket}");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _serviceKey);
+                request.Headers.Add("apikey", _serviceKey);
                 request.Content = new StringContent(
                     JsonSerializer.Serialize(new { prefixes = new[] { blobName } }),
                     Encoding.UTF8, "application/json");
