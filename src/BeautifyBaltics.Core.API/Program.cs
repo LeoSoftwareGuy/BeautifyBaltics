@@ -187,6 +187,7 @@ internal class Program
         // so a stuck DB call will always fail before this fires and unblock the thread.
         builder.Services.AddRequestTimeouts(options =>
             options.DefaultPolicy = new RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(30) });
+        builder.Services.AddMemoryCache();
         builder.Services.AddOutputCache(options =>
             options.AddPolicy("PerUser", PerUserCachePolicy.Instance));
 
