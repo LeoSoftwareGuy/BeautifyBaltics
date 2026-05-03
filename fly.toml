@@ -31,6 +31,6 @@ primary_region = 'fra'
     path = '/alive'
 
 [[vm]]
-  cpu_kind = 'shared'
-  cpus = 2
+  cpu_kind = 'performance'
+  cpus = 1
   memory_mb = 2048
