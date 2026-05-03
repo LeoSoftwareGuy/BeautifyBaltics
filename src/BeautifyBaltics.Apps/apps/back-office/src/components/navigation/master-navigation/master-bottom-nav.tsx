@@ -5,9 +5,9 @@ import { useMediaQuery } from '@mantine/hooks';
 import {
   IconCalendarEvent,
   IconClock,
-  IconHelpCircle,
   IconLayoutDashboard,
   IconSettings,
+  IconShieldCheck,
   IconSparkles,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from '@tanstack/react-router';
@@ -19,8 +19,8 @@ const NAV_ITEMS: { icon: typeof IconLayoutDashboard; href: keyof FileRoutesByTo;
   { icon: IconCalendarEvent, href: '/master/bookings' },
   { icon: IconClock, href: '/master/time-slots' },
   { icon: IconSparkles, href: '/master/services' },
+  { icon: IconShieldCheck, href: '/master/kyc' },
   { icon: IconSettings, href: '/master/settings' },
-  { icon: IconHelpCircle, href: '/how-to' },
 ];
 
 export default function MasterBottomNav() {
