@@ -80,18 +80,28 @@ public class UserSessionTicketStore(IServiceScopeFactory serviceScopeFactory, ID
         if (memoryCache.TryGetValue(key, out AuthenticationTicket? cached))
             return cached;
 
-        using var scope = serviceScopeFactory.CreateScope();
-        var documentSession = scope.ServiceProvider.GetRequiredService<IDocumentSession>();
+        try
+        {
+            using var scope = serviceScopeFactory.CreateScope();
+            var documentSession = scope.ServiceProvider.GetRequiredService<IDocumentSession>();
 
-        var session = await documentSession.LoadAsync<UserSession>(sessionId);
-        if (session?.Ticket is null) return null;
-        if (session.ExpirationTime < DateTime.UtcNow) return null;
+            var session = await documentSession.LoadAsync<UserSession>(sessionId);
+            if (session?.Ticket is null) return null;
+            if (session.ExpirationTime < DateTime.UtcNow) return null;
 
-        var ticket = TryDeserializeTicket(session.Ticket);
-        if (ticket is not null)
-            memoryCache.Set(key, ticket, SessionCacheTtl);
+            var ticket = TryDeserializeTicket(session.Ticket);
+            if (ticket is not null)
+                memoryCache.Set(key, ticket, SessionCacheTtl);
 
-        return ticket;
+            return ticket;
+        }
+        catch (Marten.Exceptions.MartenCommandException ex)
+            when (ex.InnerException is Npgsql.PostgresException { SqlState: "42P01" })
+        {
+            // Table doesn't exist yet (e.g. after a schema drop + restart race).
+            // Treat as no session — forces re-authentication.
+            return null;
+        }
     }
 
     public async Task RemoveAsync(string key)
