@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using BeautifyBaltics.Core.API.Authentication;
 using BeautifyBaltics.Core.API.Authentication.SeedWork;
 using BeautifyBaltics.Domain.Aggregates.User;
 using BeautifyBaltics.Domain.Aggregates.User.Events;
@@ -5,7 +7,10 @@ using BeautifyBaltics.Domain.Documents.User;
 using BeautifyBaltics.Domain.Enumerations;
 using BeautifyBaltics.Domain.Exceptions;
 using BeautifyBaltics.Persistence.Projections;
+using JasperFx.Core;
 using Marten;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace BeautifyBaltics.Core.API.Application.Auth.Commands.VerifyEmail
 {
@@ -44,8 +49,32 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.VerifyEmail
 
             await session.SaveChangesAsync(cancellationToken);
 
+            var sessionId = CombGuidIdGeneration.NewGuid();
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, userAccount.Id.ToString()),
+                new(ClaimTypes.Email, userAccount.Email),
+                new(ClaimTypes.Role, userAccount.Role.ToString()),
+                new(CustomClaimTypes.SessionId, sessionId.ToString()),
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            await httpContextAccessor.HttpContext!.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30) }
+            );
+
             var appUrl = Helpers.GetAppUrl(configuration, httpContextAccessor);
-            return new VerifyEmailResponse($"{appUrl}/login?verified=true");
+            var homeUrl = userAccount.Role switch
+            {
+                UserRole.Admin => $"{appUrl}/admin",
+                UserRole.Master => $"{appUrl}/master",
+                _ => $"{appUrl}/home",
+            };
+
+            return new VerifyEmailResponse(homeUrl);
         }
     }
 }
