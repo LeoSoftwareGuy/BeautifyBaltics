@@ -98,7 +98,7 @@ public static class ServiceCollectionExtensions
                 options.Events.UseOptimizedProjectionRebuilds = true;
 
                 // Give the high‐water checker 30 seconds before skipping
-                options.Projections.StaleSequenceThreshold = TimeSpan.FromSeconds(30);
+                options.Projections.StaleSequenceThreshold = TimeSpan.FromSeconds(3);
 
                 options.Policies.ForAllDocuments(x =>
                 {
