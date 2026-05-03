@@ -6,11 +6,16 @@ import { routeTree } from '@/routeTree.gen';
 
 const parseSearch = (search: string) => {
   if (!search) return {};
-  const { state } = qs.parse(search, { ignoreQueryPrefix: true });
-  const decoded = decodeURIComponent(Array.prototype.map
-    .call(atob(state as string), (c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
-    .join(''));
-  return qs.parse(decoded);
+  const parsed = qs.parse(search, { ignoreQueryPrefix: true });
+  if (typeof parsed.state !== 'string') return parsed;
+  try {
+    const decoded = decodeURIComponent(Array.prototype.map
+      .call(atob(parsed.state), (c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
+      .join(''));
+    return qs.parse(decoded);
+  } catch {
+    return parsed;
+  }
 };
 
 const stringifySearch = (search: Record<string, any>) => {
