@@ -37,23 +37,35 @@ function SessionProvider({ children }: SessionProviderProps) {
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
 
+  const syncCurrentUser = useCallback(async () => {
+    const response = await fetch('/api/v1/users', { credentials: 'include' });
+
+    if (!response.ok) {
+      setUser(null);
+      return null;
+    }
+
+    const data = await response.json();
+    const authUser: AuthUser = {
+      id: data.id,
+      email: data.email,
+      role: data.role,
+      fullName: data.fullName ?? null,
+    };
+
+    setUser(authUser);
+    queryClient.setQueryData(getGetUserQueryKey(), data);
+
+    return authUser;
+  }, [queryClient]);
+
   useEffect(() => {
     let mounted = true;
 
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/v1/users', { credentials: 'include' });
         if (!mounted) return;
-        if (response.ok) {
-          const data = await response.json();
-          const authUser: AuthUser = {
-            id: data.id, email: data.email, role: data.role, fullName: data.fullName ?? null,
-          };
-          setUser(authUser);
-          queryClient.setQueryData(getGetUserQueryKey(), data);
-        } else {
-          setUser(null);
-        }
+        await syncCurrentUser();
       } catch {
         if (mounted) setUser(null);
       } finally {
@@ -64,7 +76,7 @@ function SessionProvider({ children }: SessionProviderProps) {
     checkAuth();
 
     return () => { mounted = false; };
-  }, [queryClient]);
+  }, [syncCurrentUser]);
 
   const login = useCallback(async ({ email, password, role }: { email: string; password: string; role: UserRole }) => {
     const response = await fetch('/api/v1/auth/login', {
@@ -79,13 +91,9 @@ function SessionProvider({ children }: SessionProviderProps) {
       throw data;
     }
 
-    const data = await response.json();
-    setUser({
-      id: data.id, email: data.email, role: data.role, fullName: data.fullName ?? null,
-    });
     queryClient.clear();
-    queryClient.setQueryData(getGetUserQueryKey(), data);
-  }, [queryClient]);
+    await syncCurrentUser();
+  }, [queryClient, syncCurrentUser]);
 
   const logout = useCallback(async () => {
     await fetch('/api/v1/auth/logout', {

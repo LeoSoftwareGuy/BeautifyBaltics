@@ -147,10 +147,15 @@ internal class Program
         // DataProtection keys persisted to Supabase Storage bucket "data-protection-keys".
         // The repository owns its HttpClient (not from the factory) to avoid the global
         // AddStandardResilienceHandler pipeline blocking the thread during synchronous Send().
-        builder.Services.AddSingleton<SupabaseDataProtectionXmlRepository>();
-        builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(sp =>
-            new ConfigureOptions<KeyManagementOptions>(options =>
-                options.XmlRepository = sp.GetRequiredService<SupabaseDataProtectionXmlRepository>()));
+        // In Development, Supabase credentials are not available locally so the default
+        // ephemeral/file-based key storage is used instead.
+        if (!builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddSingleton<SupabaseDataProtectionXmlRepository>();
+            builder.Services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(sp =>
+                new ConfigureOptions<KeyManagementOptions>(options =>
+                    options.XmlRepository = sp.GetRequiredService<SupabaseDataProtectionXmlRepository>()));
+        }
         builder.Services.AddDataProtection()
             .SetApplicationName("BeautifyBaltics");
 

@@ -15,8 +15,8 @@ namespace BeautifyBaltics.Integrations.BlobStorage
         where TFile : notnull
     {
         private readonly string _bucket = options.Value.ContainerName;
-        private readonly string _baseUrl = supabaseOptions.Value.Url.TrimEnd('/');
-        private readonly string _serviceKey = supabaseOptions.Value.ServiceRoleKey;
+        private readonly string? _baseUrl = supabaseOptions.Value.Url?.TrimEnd('/');
+        private readonly string? _serviceKey = supabaseOptions.Value.ServiceRoleKey;
 
         public Task<string> UploadAsync(Guid containerId, BlobFileDTO file, string tenantId, CancellationToken cancellationToken = default)
             => UploadInternalAsync(containerId, file, cancellationToken);
