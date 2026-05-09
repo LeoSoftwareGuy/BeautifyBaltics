@@ -60,7 +60,7 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
                     UserId: userId
                 );
 
-                session.Events.StartStream<ClientAggregate>(userId, clientCreatedEvent);
+                session.Events.StartStream<ClientAggregate>(clientCreatedEvent);
             }
             else
             {
@@ -89,7 +89,7 @@ namespace BeautifyBaltics.Core.API.Application.Auth.Commands.RegisterUser
                         emailVerified: false
                     );
 
-                    session.Events.StartStream<ClientAggregate>(clientUserId, new ClientCreated(
+                    session.Events.StartStream<ClientAggregate>(new ClientCreated(
                         FirstName: request.FirstName,
                         LastName: request.LastName,
                         Contacts: new Domain.ValueObjects.ContactInformation(normalizedEmail, request.PhoneNumber),
