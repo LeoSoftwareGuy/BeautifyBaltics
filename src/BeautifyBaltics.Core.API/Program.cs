@@ -133,8 +133,8 @@ internal class Program
             {
                 options.Cookie.Name = "bb.auth.session";
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.Cookie.SameSite = SameSiteMode.Strict;
                 options.ExpireTimeSpan = TimeSpan.FromDays(30);
                 options.SlidingExpiration = true;
                 options.EventsType = typeof(CustomCookieAuthenticationEvents);
@@ -158,21 +158,6 @@ internal class Program
         }
         builder.Services.AddDataProtection()
             .SetApplicationName("BeautifyBaltics");
-
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("Frontend", policy =>
-            {
-                policy
-                    .WithOrigins(
-                        "https://beautifybaltics.ee",
-                        "https://www.beautifybaltics.ee"
-                    )
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
-            });
-        });
 
         builder.Services.AddAuthorization();
 
@@ -231,8 +216,6 @@ internal class Program
 
         app.MapDefaultEndpoints();
         app.UseRouting();
-
-        app.UseCors("Frontend");
 
         app.UseAuthentication();
         app.UseAuthorization();
