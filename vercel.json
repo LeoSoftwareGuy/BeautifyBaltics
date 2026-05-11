@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://api.beautifybaltics.ee/api/:path*"
+      "destination": "https://hetzner.beautifybaltics.ee/api/:path*"
     },
     {
       "source": "/(.*)",
