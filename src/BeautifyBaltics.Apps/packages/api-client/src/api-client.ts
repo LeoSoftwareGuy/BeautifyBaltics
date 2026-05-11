@@ -55,6 +55,7 @@ export const apiClient = async <T>({
   const response = await fetch(requestURL, {
     method,
     signal,
+    credentials: 'include',
     headers: requestHeaders,
     body: headers?.['Content-Type'] === 'application/json' ? JSON.stringify(data) : data,
   });
