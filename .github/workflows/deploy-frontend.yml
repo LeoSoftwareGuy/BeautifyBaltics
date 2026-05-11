@@ -37,6 +37,7 @@ jobs:
           tags: ghcr.io/leosoftwareguy/beautifybaltics-frontend:latest
           build-args: |
             APP_NAME=back-office
+            VITE_CORE_API_URL=
             VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
