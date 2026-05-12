@@ -32,7 +32,7 @@ public class GetAdminUserDetailHandler(
             if (stats.MasterId is Guid masterAggregateId)
             {
                 var result = await bookingRepository.GetListAsync(
-                    new BookingSearchDTO { MasterIds = [masterAggregateId], From = since.UtcDateTime, All = true },
+                    new BookingSearchDTO { MasterIds = [masterAggregateId], ScheduledDateRange = [DateOnly.FromDateTime(since.UtcDateTime), null], All = true },
                     cancellationToken);
                 bookings = [.. result];
             }
@@ -40,7 +40,7 @@ public class GetAdminUserDetailHandler(
         else if (stats.ClientId is Guid clientAggregateId)
         {
             var result = await bookingRepository.GetListAsync(
-                new BookingSearchDTO { ClientIds = [clientAggregateId], From = since.UtcDateTime, All = true },
+                new BookingSearchDTO { ClientIds = [clientAggregateId], ScheduledDateRange = [DateOnly.FromDateTime(since.UtcDateTime), null], All = true },
                 cancellationToken);
             bookings = [.. result];
         }

@@ -17,7 +17,7 @@ public class GetBookingStatisticsHandler(IBookingRepository bookingRepository)
 
         await Task.WhenAll(totalTask, confirmedTask, pendingTask);
 
-        var bookingsThisMonth = await bookingRepository.GetListAsync(new BookingSearchDTO { From = monthStart }, cancellationToken);
+        var bookingsThisMonth = await bookingRepository.GetListAsync(new BookingSearchDTO { ScheduledDateRange = [DateOnly.FromDateTime(monthStart), null] }, cancellationToken);
         var revenueThisMonth = bookingsThisMonth
             .Where(b => b.Status != BookingStatus.Cancelled)
             .Sum(b => b.Price);

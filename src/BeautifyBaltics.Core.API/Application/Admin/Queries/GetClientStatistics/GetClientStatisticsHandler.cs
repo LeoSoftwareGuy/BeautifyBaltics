@@ -19,7 +19,7 @@ public class GetClientStatisticsHandler(IClientRepository clientRepository, IBoo
 
         var bookingsLast30Days = await bookingRepository.GetListAsync(new BookingSearchDTO
         {
-            From = thirtyDaysAgo,
+            ScheduledDateRange = [DateOnly.FromDateTime(thirtyDaysAgo), null],
         }, cancellationToken);
 
         var activeClients = bookingsLast30Days

@@ -205,7 +205,10 @@ function MobileBookingCard({
   );
 }
 
-type BookingsQuery = Omit<FindBookingsParams, 'status'> & { status?: BookingStatus | 'all' };
+type BookingsQuery = Omit<FindBookingsParams, 'status' | 'scheduledDateRange'> & {
+  status?: BookingStatus | 'all';
+  scheduledDateRange?: string[] | undefined;
+};
 
 export function MasterBookingsDataTable() {
   const { data: user } = useGetUser();
@@ -228,12 +231,14 @@ export function MasterBookingsDataTable() {
     sortBy: 'scheduledAt',
     ascending: false,
     status: 'all' as BookingStatus | 'all',
-    from: undefined as Date | undefined,
-    to: undefined as Date | undefined,
+    scheduledDateRange: undefined as string[] | undefined,
     search: undefined as string | undefined,
   });
 
-  const dateRange: DatesRangeValue = [query.from ?? null, query.to ?? null];
+  const dateRange: DatesRangeValue = [
+    query.scheduledDateRange?.[0] ?? null,
+    query.scheduledDateRange?.[1] ?? null,
+  ];
 
   const {
     data: bookingsData,
@@ -246,8 +251,7 @@ export function MasterBookingsDataTable() {
       sortBy: query.sortBy,
       ascending: query.ascending,
       status: query.status && query.status !== 'all' ? (query.status as BookingStatus) : undefined,
-      from: query.from,
-      to: query.to,
+      scheduledDateRange: query.scheduledDateRange,
       search: query.search || undefined,
     },
     {
@@ -331,8 +335,9 @@ export function MasterBookingsDataTable() {
   };
 
   const handleDateRangeChange = (value: DatesRangeValue) => {
-    onFilterChange('from', datetime.toDate(value[0]));
-    onFilterChange('to', datetime.toDate(value[1]));
+    const from = value[0] ? datetime.formatDateISO(value[0]) : undefined;
+    const to = value[1] ? datetime.formatDateISO(value[1]) : undefined;
+    onFilterChange('scheduledDateRange', from || to ? [from ?? null, to ?? null] : undefined);
   };
 
   const handleStatusChange = (value: string | null) => {

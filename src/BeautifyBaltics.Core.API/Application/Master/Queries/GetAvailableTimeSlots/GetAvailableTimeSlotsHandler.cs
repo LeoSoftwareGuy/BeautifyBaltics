@@ -27,8 +27,7 @@ public class GetAvailableTimeSlotsHandler(
             new BookingSearchDTO
             {
                 MasterId = request.MasterId,
-                From = dayStart,
-                To = dayEnd
+                ScheduledDateRange = [DateOnly.FromDateTime(dayStart), DateOnly.FromDateTime(dayStart)]
             },
             cancellationToken
         );

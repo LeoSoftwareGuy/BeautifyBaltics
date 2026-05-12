@@ -21,14 +21,9 @@ public record FindBookingsRequest : PagedRequest
     public BookingStatus? Status { get; init; }
 
     /// <summary>
-    /// Filter by from
+    /// Filter by scheduled date range [from, to] (inclusive)
     /// </summary>
-    public DateTime? From { get; init; }
-
-    /// <summary>
-    /// Filter by to
-    /// </summary>
-    public DateTime? To { get; init; }
+    public DateOnly?[]? ScheduledDateRange { get; init; }
 
     /// <summary>
     /// Search by client name or job title

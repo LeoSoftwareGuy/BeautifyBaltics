@@ -8,12 +8,10 @@ public class BookingRepository(IQuerySession session) : QueryRepository<Projecti
 {
     public override Task<IPagedList<Projections.Booking>> GetPagedListAsync(BookingSearchDTO search, CancellationToken cancellationToken = default) =>
         BuildSearchQuery(search)
-            .SortBy(search.SortBy, search.Ascending)
             .ToPagedListAsync(search.Page, search.PageSize, cancellationToken);
 
     public override Task<IReadOnlyList<Projections.Booking>> GetListAsync(BookingSearchDTO search, CancellationToken cancellationToken = default) =>
         BuildSearchQuery(search)
-            .SortBy(search.SortBy, search.Ascending)
             .ToListAsync(cancellationToken);
 
     private IQueryable<Projections.Booking> BuildSearchQuery(BookingSearchDTO search)
@@ -36,16 +34,12 @@ public class BookingRepository(IQuerySession session) : QueryRepository<Projecti
         }
         if (search.Status is not null) query = query.Where(x => x.Status == search.Status);
 
-        if (search.From is not null)
+        if (search.ScheduledDateRange is not null)
         {
-            var from = DateTime.SpecifyKind(search.From.Value, DateTimeKind.Unspecified);
-            query = query.Where(x => x.ScheduledAt >= from);
-        }
-
-        if (search.To is not null)
-        {
-            var to = DateTime.SpecifyKind(search.To.Value, DateTimeKind.Unspecified);
-            query = query.Where(x => x.ScheduledAt <= to);
+            var from = search.ScheduledDateRange[0];
+            var to = search.ScheduledDateRange[1];
+            if (from is not null) query = query.Where(x => x.ScheduledAt >= from.Value.ToDateTime(TimeOnly.MinValue));
+            if (to is not null) query = query.Where(x => x.ScheduledAt <= to.Value.ToDateTime(TimeOnly.MaxValue));
         }
 
         if (!string.IsNullOrWhiteSpace(search.Search))
@@ -56,6 +50,6 @@ public class BookingRepository(IQuerySession session) : QueryRepository<Projecti
             );
         }
 
-        return query.OrderBy(x => x.ScheduledAt);
+        return query.SortBy(search.SortBy, search.Ascending);
     }
 }

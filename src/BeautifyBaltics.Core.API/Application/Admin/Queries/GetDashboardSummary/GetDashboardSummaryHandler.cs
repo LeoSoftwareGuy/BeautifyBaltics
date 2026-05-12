@@ -17,7 +17,7 @@ public class GetDashboardSummaryHandler(IUserRepository userRepository, IBooking
         var totalBookingsTask = bookingRepository.CountAsync(new BookingSearchDTO(), cancellationToken);
         var mastersTask = userRepository.CountAsync(new UserSearchDTO { Role = UserRole.Master }, cancellationToken);
         var clientsTask = userRepository.CountAsync(new UserSearchDTO { Role = UserRole.Client }, cancellationToken);
-        var bookingsTask = bookingRepository.GetListAsync(new BookingSearchDTO { From = twelveMonthsAgo }, cancellationToken);
+        var bookingsTask = bookingRepository.GetListAsync(new BookingSearchDTO { ScheduledDateRange = [DateOnly.FromDateTime(twelveMonthsAgo), null] }, cancellationToken);
 
         await Task.WhenAll(totalBookingsTask, mastersTask, clientsTask, bookingsTask);
 

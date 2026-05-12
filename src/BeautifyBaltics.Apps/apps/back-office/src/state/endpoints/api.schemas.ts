@@ -127,17 +127,6 @@ export type CancelBookingResponse = {
   bookingId?: string;
 };
 
-export type ChangesetActionRequest = {
-  /** @nullable */
-  comment?: string | null;
-};
-
-export enum ChangesetStatus {
-  Pending = 'Pending',
-  Approved = 'Approved',
-  Rejected = 'Rejected',
-
-}
 export type ClientCommandDTO = {
   /**
    * First name
@@ -353,48 +342,6 @@ export type FindBookingsResponsePagedResponse = {
   items: FindBookingsResponse[];
 };
 
-export type FindChangesetsResponse = {
-  id?: string;
-  masterId?: string;
-  /** @nullable */
-  entityId?: string | null;
-  /** @nullable */
-  type?: string | null;
-  proposedChange?: unknown;
-  proposedById?: string;
-  proposedAt?: Date;
-  status?: ChangesetStatus;
-  /** @nullable */
-  approvedById?: string | null;
-  /** @nullable */
-  approvedAt?: Date | null;
-  /** @nullable */
-  rejectedById?: string | null;
-  /** @nullable */
-  rejectedAt?: Date | null;
-  /** @nullable */
-  comment?: string | null;
-  /** @nullable */
-  masterName?: string | null;
-  /** @nullable */
-  imageUrl?: string | null;
-  /** @nullable */
-  imageUrls?: string[] | null;
-};
-
-export type FindChangesetsResponsePagedResponse = {
-  /** Current page number */
-  page: number;
-  /** Page size */
-  pageSize: number;
-  /** Total pages count */
-  pageCount: number;
-  /** Total items count */
-  totalItemCount: number;
-  /** Items */
-  items: FindChangesetsResponse[];
-};
-
 export type FindClientsResponseAllOf = { [key: string]: unknown };
 
 export type FindClientsResponse = ClientDTO & FindClientsResponseAllOf;
@@ -546,7 +493,6 @@ export type FindUsersResponse = {
   earnings: number;
   /** Master rating, 0 for clients */
   rating: number;
-  /** KYC verification status (masters only) */
   kycStatus?: KycStatus;
 };
 
@@ -755,10 +701,6 @@ export type GetMasterStatisticsResponse = {
   totalBookingsLast30Days: number;
   /** Number of pending requests */
   pendingRequests: number;
-};
-
-export type GetPendingChangesetsCountResponse = {
-  count?: number;
 };
 
 export type GetPendingRequestsResponse = {
@@ -1517,13 +1459,9 @@ export type FindBookingsParams = {
  */
   status?: BookingStatus;
   /**
- * Filter by from
+ * Filter by scheduled date range [from, to] (inclusive)
  */
-  from?: Date;
-  /**
- * Filter by to
- */
-  to?: Date;
+  scheduledDateRange?: (string | null)[];
   /**
  * Search by client name or job title
  */
@@ -1555,31 +1493,6 @@ export type GetBookingByIdParams = {
  * Id
  */
   id: string;
-};
-
-export type FindChangesetsParams = {
-  masterId?: string;
-  status?: ChangesetStatus;
-  /**
- * Page number
- */
-  page?: number;
-  /**
- * Items per page
- */
-  pageSize?: number;
-  /**
- * Sort by column
- */
-  sortBy?: string;
-  /**
- * Is sorting order ascending or descending, defaults to false (descending)
- */
-  ascending?: boolean;
-  /**
- * Retrieve all items
- */
-  all?: boolean;
 };
 
 export type FindClientsParams = {
@@ -1723,15 +1636,10 @@ export type FindMastersParams = {
 
 export type GetMasterByIdParams = {
   id: string;
-  proposal?: boolean;
   /**
  * Authenticated caller's user ID — set by controller, not from request body
  */
   requesterId?: string;
-};
-
-export type FindMasterJobsParams = {
-  proposal?: boolean;
 };
 
 export type FindMasterAvailabilitiesParams = {
@@ -1810,6 +1718,13 @@ export type GetEarningsPerformanceParams = {
  * Time period for earnings data grouping
  */
   period?: EarningsPeriod;
+};
+
+export type SyncMasterKycStatusParams = {
+/**
+ * Optional KYC status from Didit callback to avoid unnecessary polling
+ */
+  callbackStatus?: string;
 };
 
 export type FindRatingsParams = {

@@ -68,8 +68,7 @@ public class CreateBookingEventHandler(
             new BookingSearchDTO
             {
                 MasterId = request.MasterId,
-                From = dayStart,
-                To = dayEnd
+                ScheduledDateRange = [DateOnly.FromDateTime(dayStart), DateOnly.FromDateTime(dayStart)]
             },
             cancellationToken
         );
@@ -90,8 +89,7 @@ public class CreateBookingEventHandler(
             new BookingSearchDTO
             {
                 ClientId = request.ClientId,
-                From = dayStart,
-                To = dayEnd
+                ScheduledDateRange = [DateOnly.FromDateTime(dayStart), DateOnly.FromDateTime(dayStart)]
             },
             cancellationToken
         );

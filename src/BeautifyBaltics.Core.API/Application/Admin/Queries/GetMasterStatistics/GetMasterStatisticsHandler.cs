@@ -19,7 +19,7 @@ public class GetMasterStatisticsHandler(IMasterRepository masterRepository, IBoo
 
         var recentBookings = await bookingRepository.GetListAsync(new BookingSearchDTO
         {
-            From = thirtyDaysAgo,
+            ScheduledDateRange = [DateOnly.FromDateTime(thirtyDaysAgo), null],
         }, cancellationToken);
 
         var activeMasters = recentBookings

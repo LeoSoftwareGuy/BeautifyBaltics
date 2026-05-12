@@ -10,7 +10,6 @@ public record BookingSearchDTO : BaseSearchDTO
     public IReadOnlyList<Guid>? MasterIds { get; init; }
     public IReadOnlyList<Guid>? ClientIds { get; init; }
     public BookingStatus? Status { get; init; }
-    public DateTime? From { get; init; }
-    public DateTime? To { get; init; }
+    public DateOnly?[]? ScheduledDateRange { get; init; }
     public string? Search { get; init; }
 }

@@ -25,7 +25,7 @@ public class GetEarningsPerformanceHandler(IBookingRepository bookingRepository)
         {
             MasterId = request.MasterId,
             Status = BookingStatus.Completed,
-            From = startDate
+            ScheduledDateRange = [DateOnly.FromDateTime(startDate), null]
         };
 
         var completedBookings = await bookingRepository.GetListAsync(search, cancellationToken);
