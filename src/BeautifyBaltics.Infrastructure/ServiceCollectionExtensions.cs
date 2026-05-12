@@ -126,7 +126,7 @@ public static class ServiceCollectionExtensions
             .UseLightweightSessions()
             .AddAsyncDaemon(environment.IsDevelopment() ? DaemonMode.Solo : DaemonMode.HotCold)
             .ApplyAllDatabaseChangesOnStartup()
-            //.InitializeWith<SampleDataSeeder>()
+            .InitializeWith<SampleDataSeeder>()
             .InitializeWith<ProductionSampleDataSeeder>();
     }
 
