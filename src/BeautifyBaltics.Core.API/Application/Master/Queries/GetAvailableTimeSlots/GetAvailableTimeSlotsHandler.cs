@@ -74,8 +74,8 @@ public class GetAvailableTimeSlotsHandler(
                 {
                     availableSlots.Add(new AvailableTimeSlotDTO
                     {
-                        StartAt = currentSlotStart,
-                        EndAt = currentSlotEnd
+                        StartAt = DateTime.SpecifyKind(currentSlotStart, DateTimeKind.Utc),
+                        EndAt = DateTime.SpecifyKind(currentSlotEnd, DateTimeKind.Utc)
                     });
                 }
 
