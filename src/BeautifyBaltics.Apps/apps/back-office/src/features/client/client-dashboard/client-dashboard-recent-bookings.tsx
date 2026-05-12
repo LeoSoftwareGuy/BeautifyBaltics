@@ -73,8 +73,12 @@ export function ClientDashboardRecentBookings() {
       sortBy: query.sortBy,
       ascending: query.ascending,
       status: status ? (status as BookingStatus) : undefined,
-      from: datetime.toDate(dateRange[0]),
-      to: datetime.toDate(dateRange[1]),
+      scheduledDateRange: dateRange[0] || dateRange[1]
+        ? [
+          dateRange[0] ? datetime.formatDateISO(dateRange[0]) : null,
+          dateRange[1] ? datetime.formatDateISO(dateRange[1]) : null,
+        ]
+        : undefined,
     },
     {
       query: {

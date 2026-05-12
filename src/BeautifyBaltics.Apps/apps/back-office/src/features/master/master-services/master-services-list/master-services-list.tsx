@@ -39,7 +39,7 @@ export function MasterServicesList({ masterId, isKycLocked = false }: MasterServ
     isLoading,
     isError,
     refetch: refetchJobs,
-  } = useFindMasterJobs(masterId, undefined, {
+  } = useFindMasterJobs(masterId, {
     query: { enabled: !!masterId },
   });
 

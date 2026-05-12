@@ -41,7 +41,9 @@ import {
 
 const DEFAULT_PAGE_SIZE = 10;
 
-type BookingsQuery = FindBookingsParams;
+type BookingsQuery = Omit<FindBookingsParams, 'scheduledDateRange'> & {
+  scheduledDateRange?: (string | null)[] | undefined;
+};
 
 export function ClientBookingsDataTable() {
   const { data: user } = useGetUser();
@@ -68,11 +70,13 @@ export function ClientBookingsDataTable() {
     sortBy: 'scheduledAt',
     ascending: false,
     status: undefined as BookingStatus | undefined,
-    from: undefined as Date | undefined,
-    to: undefined as Date | undefined,
+    scheduledDateRange: undefined as (string | null)[] | undefined,
   });
 
-  const dateRange: DatesRangeValue = [query.from ?? null, query.to ?? null];
+  const dateRange: DatesRangeValue = [
+    query.scheduledDateRange?.[0] ? new Date(query.scheduledDateRange[0]) : null,
+    query.scheduledDateRange?.[1] ? new Date(query.scheduledDateRange[1]) : null,
+  ];
 
   const {
     data: bookingsData,
@@ -85,8 +89,7 @@ export function ClientBookingsDataTable() {
       sortBy: query.sortBy,
       ascending: query.ascending,
       status: query.status ? (query.status as BookingStatus) : undefined,
-      from: query.from,
-      to: query.to,
+      scheduledDateRange: query.scheduledDateRange,
     },
     {
       query: {
@@ -144,8 +147,9 @@ export function ClientBookingsDataTable() {
   };
 
   const handleDateRangeChange = (value: DatesRangeValue) => {
-    onFilterChange('from', datetime.toDate(value[0]));
-    onFilterChange('to', datetime.toDate(value[1]));
+    const from = value[0] ? datetime.formatDateISO(value[0]) : undefined;
+    const to = value[1] ? datetime.formatDateISO(value[1]) : undefined;
+    onFilterChange('scheduledDateRange', from || to ? [from ?? null, to ?? null] : undefined);
   };
 
   const handleStatusChange = (value: string | null) => {

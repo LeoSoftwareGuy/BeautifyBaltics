@@ -101,7 +101,7 @@ export default function MasterKycPage() {
 
   useEffect(() => {
     if (masterId && callbackStatus && kycStatus !== 'Approved') {
-      syncStatus({ id: masterId, callbackStatus });
+      syncStatus({ id: masterId, params: { callbackStatus } });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [masterId, callbackStatus]);

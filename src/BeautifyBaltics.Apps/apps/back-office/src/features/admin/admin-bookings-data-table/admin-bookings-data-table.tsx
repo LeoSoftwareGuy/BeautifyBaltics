@@ -25,6 +25,11 @@ import { AdminBookingsStats } from './admin-bookings-stats';
 
 const DEFAULT_PAGE_SIZE = 10;
 
+type AdminBookingsQuery = FindBookingsParams & {
+  fromDate?: string;
+  toDate?: string;
+};
+
 const STATUS_COLORS: Record<BookingStatus, string> = {
   [BookingStatus.Requested]: 'yellow',
   [BookingStatus.Confirmed]: 'green',
@@ -42,15 +47,15 @@ export function AdminBookingsDataTable() {
     onRecordsPerPageChange,
     onFilterChange,
     handleSortStatusChange,
-  } = usePagedTableQuery<FindBookingsParams, FindBookingsResponse>({
+  } = usePagedTableQuery<AdminBookingsQuery, FindBookingsResponse>({
     page: 1,
     pageSize: DEFAULT_PAGE_SIZE,
     sortBy: 'scheduledAt',
     ascending: false,
     search: undefined as string | undefined,
     status: undefined as BookingStatus | undefined,
-    from: undefined as Date | undefined,
-    to: undefined as Date | undefined,
+    fromDate: undefined as string | undefined,
+    toDate: undefined as string | undefined,
   });
 
   const { data: bookingsData, isLoading } = useFindBookings({
@@ -60,8 +65,9 @@ export function AdminBookingsDataTable() {
     ascending: query.ascending,
     search: query.search || undefined,
     status: query.status || undefined,
-    from: query.from || undefined,
-    to: query.to || undefined,
+    scheduledDateRange: query.fromDate || query.toDate
+      ? [query.fromDate ?? null, query.toDate ?? null]
+      : undefined,
   });
 
   const statusOptions = [
@@ -156,16 +162,16 @@ export function AdminBookingsDataTable() {
             />
             <DatePickerInput
               placeholder={t('admin.bookings.filters.fromDate')}
-              value={query.from ? new Date(query.from) : null}
-              onChange={(v) => onFilterChange('from', v ?? undefined)}
+              value={query.fromDate ? new Date(query.fromDate) : null}
+              onChange={(v) => onFilterChange('fromDate', v ? (v as unknown as Date).toISOString().split('T')[0] : undefined)}
               radius="md"
               clearable
               style={{ minWidth: 160 }}
             />
             <DatePickerInput
               placeholder={t('admin.bookings.filters.toDate')}
-              value={query.to ? new Date(query.to) : null}
-              onChange={(v) => onFilterChange('to', v ?? undefined)}
+              value={query.toDate ? new Date(query.toDate) : null}
+              onChange={(v) => onFilterChange('toDate', v ? (v as unknown as Date).toISOString().split('T')[0] : undefined)}
               radius="md"
               clearable
               style={{ minWidth: 160 }}

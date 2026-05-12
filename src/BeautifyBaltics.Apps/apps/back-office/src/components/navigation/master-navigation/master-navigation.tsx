@@ -43,7 +43,7 @@ export default function MasterNavigation() {
   const masterId = user?.id ?? '';
   const { data: masterData } = useGetMasterById(
     masterId,
-    { id: masterId, proposal: true },
+    { id: masterId },
     { query: { enabled: !!masterId } },
   );
   const kycStatus = masterData?.kycStatus;

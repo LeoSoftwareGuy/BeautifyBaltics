@@ -55,7 +55,9 @@ export function MasterSchedule() {
 
   const { data: bookingsData } = useFindBookings(
     {
-      masterId, from: dateParams.startAt, to: dateParams.endAt, pageSize: 100,
+      masterId,
+      scheduledDateRange: [datetime.formatDateISO(dateParams.startAt), datetime.formatDateISO(dateParams.endAt)],
+      pageSize: 100,
     },
     { query: { enabled: !!masterId } },
   );

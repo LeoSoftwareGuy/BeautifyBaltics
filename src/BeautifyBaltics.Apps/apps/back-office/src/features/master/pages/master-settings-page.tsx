@@ -23,7 +23,7 @@ function MasterSettingsPage() {
 
   const { data: masterData } = useGetMasterById(
     masterId,
-    { id: masterId, proposal: true },
+    { id: masterId },
     { query: { enabled: !!masterId } },
   );
 

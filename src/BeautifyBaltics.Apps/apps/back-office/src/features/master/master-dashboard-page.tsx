@@ -91,7 +91,7 @@ function MasterDashboardPage() {
 
   const { data: masterData } = useGetMasterById(
     masterId,
-    { id: masterId, proposal: true },
+    { id: masterId },
     { query: { enabled: !!masterId } },
   );
 
@@ -102,8 +102,7 @@ function MasterDashboardPage() {
   const { data: todayBookingsData, isLoading: isTodayBookingsLoading } = useFindBookings(
     {
       masterId,
-      from: today.startOf('day').toDate(),
-      to: today.endOf('day').toDate(),
+      scheduledDateRange: [today.format('YYYY-MM-DD'), today.format('YYYY-MM-DD')],
     },
     { query: { enabled: !!masterId } },
   );
