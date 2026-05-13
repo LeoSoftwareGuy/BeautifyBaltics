@@ -35,6 +35,21 @@ function getStatusColor(status: BookingStatus) {
   }
 }
 
+function getStatusBackground(status: BookingStatus) {
+  switch (status) {
+    case BookingStatus.Confirmed:
+      return 'var(--mantine-color-teal-6)';
+    case BookingStatus.Requested:
+      return 'var(--mantine-color-yellow-6)';
+    case BookingStatus.Completed:
+      return 'var(--mantine-color-green-6)';
+    case BookingStatus.Cancelled:
+      return 'var(--mantine-color-red-6)';
+    default:
+      return 'var(--mantine-color-gray-6)';
+  }
+}
+
 export function MasterSchedulePanelCalendarBooking({
   clientName,
   serviceName,
@@ -67,8 +82,8 @@ export function MasterSchedulePanelCalendarBooking({
       p="xs"
       radius="sm"
       style={{
-        backgroundColor: 'var(--mantine-color-blue-1)',
-        border: '1px solid var(--mantine-color-blue-4)',
+        backgroundColor: getStatusBackground(status),
+        border: 'none',
         position: 'absolute',
         top: topOffset,
         left: 4,
@@ -87,11 +102,11 @@ export function MasterSchedulePanelCalendarBooking({
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text size="xs" fw={600} c="blue.8" lh={1} truncate>
+          <Text size="xs" fw={600} c="white" lh={1} truncate>
             {clientName}
           </Text>
           <Badge
-            variant="light"
+            variant="white"
             color={getStatusColor(status)}
             size="xs"
             style={{ flexShrink: 0 }}
@@ -100,11 +115,11 @@ export function MasterSchedulePanelCalendarBooking({
           </Badge>
         </div>
         {height > 40 && (
-          <Text size="xs" c="blue.6" lh={1} truncate>
+          <Text size="xs" c="white" lh={1} truncate style={{ opacity: 0.85 }}>
             {serviceName}
           </Text>
         )}
-        <Text size="xs" c="blue.5" lh={1}>
+        <Text size="xs" c="white" lh={1} style={{ opacity: 0.85 }}>
           {startTime}
           {' - '}
           {endTime}

@@ -114,6 +114,8 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
   const availableSlots = useMemo(() => {
     if (!slotsData?.slots) return [];
 
+    const now = new Date();
+
     return slotsData.slots
       .map((slot) => {
         const startAt = datetime.toDate(slot.startAt);
@@ -126,7 +128,7 @@ function MasterBookingSection({ masterId, onBook }: MasterBookingSectionProps) {
           label: datetime.formatTimeSlot(startAt, endAt),
         };
       })
-      .filter((slot): slot is NonNullable<typeof slot> => slot !== null);
+      .filter((slot): slot is NonNullable<typeof slot> => slot !== null && slot.startAt > now);
   }, [slotsData?.slots]);
 
   // Reset slot selection when date or job changes
