@@ -12,8 +12,8 @@ public class BookingCompletionBackgroundService(
 {
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
     private readonly ILogger<BookingCompletionBackgroundService> _logger = logger;
-    private readonly TimeSpan _interval = TimeSpan.FromMinutes(configuration.GetValue("BookingCompletion:IntervalMinutes", 360));
-    private readonly TimeSpan _completionThreshold = TimeSpan.FromMinutes(configuration.GetValue("BookingCompletion:ThresholdMinutes", 180));
+    private readonly TimeSpan _interval = TimeSpan.FromMinutes(configuration.GetValue("BookingCompletion:IntervalMinutes", 15));
+    private readonly TimeSpan _completionThreshold = TimeSpan.FromMinutes(configuration.GetValue("BookingCompletion:ThresholdMinutes", 60));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

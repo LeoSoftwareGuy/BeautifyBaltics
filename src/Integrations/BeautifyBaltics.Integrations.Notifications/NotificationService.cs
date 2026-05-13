@@ -13,8 +13,13 @@ public class NotificationService(
     ILogger<NotificationService> logger
 ) : INotificationService
 {
+    private static readonly TimeZoneInfo _balticsTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Tallinn");
     private readonly EmailTemplates _templates = emailOptions.Value.Templates;
     private readonly string _adminEmail = emailOptions.Value.AdminEmail;
+
+    private static string FormatLocalTime(DateTime scheduledAt) =>
+        TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(scheduledAt, DateTimeKind.Utc), _balticsTimeZone)
+            .ToString("dd.MM.yyyy HH:mm");
 
     public Task NotifyBookingRequestedAsync(BookingNotificationContext context, CancellationToken cancellationToken = default)
     {
@@ -67,31 +72,31 @@ public class NotificationService(
 
     private Task SendMasterBookingRequestSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Uus broneering! {context.ClientName} soovib {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Palun kinnita või tühista.{BuildLocationSnippet(context)}";
+        var message = $"Uus broneering! {context.ClientName} soovib {context.ServiceName} {FormatLocalTime(context.ScheduledAt)}. Palun kinnita või tühista.{BuildLocationSnippet(context)}";
         return smsService.SendSmsAsync(context.MasterPhone, message);
     }
 
     private Task SendClientConfirmationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Tere, {context.ClientName}! Teie broneering on kinnitatud: {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Meister: {context.MasterName}.{BuildLocationSnippet(context)} Aitäh!";
+        var message = $"Tere, {context.ClientName}! Teie broneering on kinnitatud: {context.ServiceName} {FormatLocalTime(context.ScheduledAt)}. Meister: {context.MasterName}.{BuildLocationSnippet(context)} Aitäh!";
         return smsService.SendSmsAsync(context.ClientPhone, message);
     }
 
     private Task SendMasterConfirmationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Uus kinnitus! {context.ClientName} broneeris {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}. Hind: {context.Price}€.{BuildLocationSnippet(context)}";
+        var message = $"Uus kinnitus! {context.ClientName} broneeris {context.ServiceName} {FormatLocalTime(context.ScheduledAt)}. Hind: {context.Price}€.{BuildLocationSnippet(context)}";
         return smsService.SendSmsAsync(context.MasterPhone, message);
     }
 
     private Task SendClientCancellationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Teie broneering {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy} on tühistatud.{BuildLocationSnippet(context)} Vabandame ebamugavuste pärast.";
+        var message = $"Teie broneering {context.ServiceName} {FormatLocalTime(context.ScheduledAt)} on tühistatud.{BuildLocationSnippet(context)} Vabandame ebamugavuste pärast.";
         return smsService.SendSmsAsync(context.ClientPhone, message);
     }
 
     private Task SendMasterCancellationSmsAsync(BookingNotificationContext context)
     {
-        var message = $"Broneering tühistatud: {context.ClientName}, {context.ServiceName} {context.ScheduledAt:dd.MM.yyyy HH:mm}.{BuildLocationSnippet(context)}";
+        var message = $"Broneering tühistatud: {context.ClientName}, {context.ServiceName} {FormatLocalTime(context.ScheduledAt)}.{BuildLocationSnippet(context)}";
         return smsService.SendSmsAsync(context.MasterPhone, message);
     }
 
@@ -103,7 +108,7 @@ public class NotificationService(
             client_name = context.ClientName,
             client_phone = context.ClientPhone,
             service_name = context.ServiceName,
-            booking_date = $"{context.ScheduledAt:dd.MM.yyyy HH:mm}",
+            booking_date = FormatLocalTime(context.ScheduledAt),
             duration = context.Duration.TotalMinutes,
             price = context.Price,
             master_name = context.MasterName,
@@ -129,7 +134,7 @@ public class NotificationService(
             client_phone = context.ClientPhone,
             client_email = context.ClientEmail,
             service_name = context.ServiceName,
-            booking_date = $"{context.ScheduledAt:dd.MM.yyyy HH:mm}",
+            booking_date = FormatLocalTime(context.ScheduledAt),
             duration = context.Duration.TotalMinutes,
             price = context.Price,
             location_name = context.LocationName ?? string.Empty,
@@ -151,7 +156,7 @@ public class NotificationService(
             booking_id = context.BookingId.ToString(),
             client_name = context.ClientName,
             service_name = context.ServiceName,
-            booking_date = $"{context.ScheduledAt:dd.MM.yyyy HH:mm}",
+            booking_date = FormatLocalTime(context.ScheduledAt),
             master_name = context.MasterName,
             location_name = context.LocationName ?? string.Empty,
             location_address = context.LocationAddress ?? string.Empty
@@ -173,7 +178,7 @@ public class NotificationService(
             master_name = context.MasterName,
             client_name = context.ClientName,
             service_name = context.ServiceName,
-            booking_date = $"{context.ScheduledAt:dd.MM.yyyy HH:mm}",
+            booking_date = FormatLocalTime(context.ScheduledAt),
             location_name = context.LocationName ?? string.Empty,
             location_address = context.LocationAddress ?? string.Empty
         };
